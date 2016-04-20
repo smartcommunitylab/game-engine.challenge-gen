@@ -156,8 +156,9 @@ public class FactoryTest {
 	    c = chFactory.createChallenge(ChallengeType.BADGECOLLECTION,
 		    "rules/templates");
 	    params = new HashMap<String, Object>();
-	    params.put("badge_collection", "park_and_ride_pioneer");
-	    params.put("bonus", new Integer(45));
+	    params.put("badge_collection", "park and ride pioneer");
+	    params.put("target", new Double(2));
+	    params.put("bonus", new Integer(27));
 	    params.put("point_type", "green leaves");
 	    c.setTemplateParams(params);
 	    c.compileChallenge(testUserId);

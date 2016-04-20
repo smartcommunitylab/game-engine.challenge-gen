@@ -12,6 +12,7 @@ public class BadgeCollectionCompletionChallenge extends Challenge {
     private String badgeCollection = null;
     private String pointType = null;
     private Integer prize = null;
+    private int badgeCollectionMax = 0; // will hold the max number of badges for the given Badge Collection
 
     public BadgeCollectionCompletionChallenge(String templateDir) {
     	super(templateDir, "BadgeCollectionCompletionTemplate.drt");
@@ -50,12 +51,18 @@ public class BadgeCollectionCompletionChallenge extends Challenge {
 		    throw new UndefinedChallengeException("undefined challenge!");
 		this.prize = ((Integer) tp.get("bonus")).intValue();
 		customData.put("ch_" + this.chId + "_bonus", this.prize);
+		
+		if (!tp.containsKey("target"))
+		    throw new UndefinedChallengeException(
+			    "undefined target for challenge!");
+		this.badgeCollectionMax = ((Double) tp.get("target")).intValue();
+		customData.put("ch_" + this.chId + "_target", this.badgeCollectionMax);
     }
 
     @Override
     public void compileChallenge(String playerId)
 	    throws UndefinedChallengeException {
-		if (badgeCollection == null || prize == null)
+		if (badgeCollection == null || prize == null || badgeCollectionMax <= 0)
 		    throw new UndefinedChallengeException("undefined challenge!");
 	
 		templateParams.put("ch_player", playerId);
@@ -73,6 +80,7 @@ public class BadgeCollectionCompletionChallenge extends Challenge {
 		sb.append(this.type + ";");
 		sb.append(";");
 		sb.append(this.badgeCollection + ";");
+		sb.append(this.badgeCollectionMax + ";");
 		sb.append(this.prize + ";");
 		sb.append(this.pointType + ";");
 		sb.append(this.chId);
