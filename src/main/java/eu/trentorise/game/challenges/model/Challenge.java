@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.UUID;
 
 import org.drools.template.ObjectDataCompiler;
@@ -21,107 +22,108 @@ import eu.trentorise.game.challenges.exception.UndefinedChallengeException;
 
 public abstract class Challenge {
 
-    // change constant in order to change number of days in the challenge
-    // (please see hours, minutes and seconds!)
-    private static final int CHALLENGE_DURATION = 3;
+	// change constant in order to change number of days in the challenge
+	// (please see hours, minutes and seconds!)
+	private static final int CHALLENGE_DURATION = 3;
 
-    protected String drlName;
+	protected String drlName;
 
-    protected int difficulty = 0;
-    protected UUID chId;
-    protected ChallengeType type;
-    protected String templateName;
-    protected Collection<Object> players = null;
+	protected int difficulty = 0;
+	protected UUID chId;
+	protected ChallengeType type;
+	protected String templateName;
+	protected Collection<Object> players = null;
 
-    protected HashMap<String, Object> templateParams = null;
-    protected HashMap<String, Object> customData = null;
-    protected String generatedRules = "";
+	protected HashMap<String, Object> templateParams = null;
+	protected HashMap<String, Object> customData = null;
+	protected String generatedRules = "";
 
-    private String templateDir;
-    private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/YYYY HH:mm:ss");
-    private static boolean printedDates = false;
+	private String templateDir;
+	private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/YYYY HH:mm:ss");
+	private static boolean printedDates = false;
 
-    /**
-     * Create a new challenge using given template
-     * 
-     * @param templateName
-     */
-    public Challenge(String templateDir, String templateName) {
-	this.templateDir = templateDir;
-	this.templateName = templateName;
-    }
-
-    public abstract void compileChallenge(String playerId)
-	    throws UndefinedChallengeException;
-
-    public abstract void setTemplateParams(Map<String, Object> tp)
-	    throws UndefinedChallengeException;
-
-    protected void setCustomData(Map<String, Object> tp)
-	    throws UndefinedChallengeException {
-	customData = new HashMap<String, Object>();
-	customData.put(Constants.CH + this.chId + Constants.TYPE, this.type);
-	// add beginning and end of challenge
-	Calendar calendar = new GregorianCalendar();
-	calendar.setTime(new Date());
-	calendar.add(Calendar.DAY_OF_MONTH, 1); // tomorrow
-	calendar.set(Calendar.HOUR_OF_DAY, 0);
-	calendar.set(Calendar.MINUTE, 0);
-	calendar.set(Calendar.SECOND, 1);
-	if (!printedDates) {
-	    System.out.println("Challenge starting time: "
-		    + sdf.format(calendar.getTime()));
+	/**
+	 * Create a new challenge using given template
+	 * 
+	 * @param templateName
+	 */
+	public Challenge(String templateDir, String templateName) {
+		this.templateDir = templateDir;
+		this.templateName = templateName;
 	}
-	customData.put(Constants.CH + this.chId + Constants.START_CHTS,
-		calendar.getTimeInMillis());
-	calendar.add(Calendar.DAY_OF_MONTH, CHALLENGE_DURATION); // tomorrow + 1
-								 // week
-	customData.put(Constants.CH + this.chId + Constants.END_CHTS,
-		calendar.getTimeInMillis());
-	if (!printedDates) {
-	    System.out.println("Challenge end time: "
-		    + sdf.format(calendar.getTime()));
+
+	public abstract void compileChallenge(String playerId)
+			throws UndefinedChallengeException;
+
+	public abstract void setTemplateParams(Map<String, Object> tp)
+			throws UndefinedChallengeException;
+
+	protected void setCustomData(Map<String, Object> tp)
+			throws UndefinedChallengeException {
+		customData = new HashMap<String, Object>();
+		customData.put(Constants.CH + this.chId + Constants.TYPE, this.type);
+		// add beginning and end of challenge
+		Calendar calendar = new GregorianCalendar();
+		calendar.setTimeZone(TimeZone.getTimeZone("GMT + 1"));
+		calendar.setTime(new Date());
+		calendar.add(Calendar.DAY_OF_MONTH, 1); // tomorrow
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 1);
+		if (!printedDates) {
+			System.out.println("Challenge starting time: "
+					+ sdf.format(calendar.getTime()));
+		}
+		customData.put(Constants.CH + this.chId + Constants.START_CHTS,
+				calendar.getTimeInMillis());
+		calendar.add(Calendar.DAY_OF_MONTH, CHALLENGE_DURATION); // tomorrow + 1
+		// week
+		customData.put(Constants.CH + this.chId + Constants.END_CHTS,
+				calendar.getTimeInMillis());
+		if (!printedDates) {
+			System.out.println("Challenge end time: "
+					+ sdf.format(calendar.getTime()));
+		}
+		printedDates = true;
+		customData.put(Constants.CH + this.chId + Constants.SUCCESS, false);
 	}
-	printedDates = true;
-	customData.put(Constants.CH + this.chId + Constants.SUCCESS, false);
-    }
 
-    protected final void generateChId() {
-	this.chId = UUID.randomUUID();
-    }
-
-    protected String generateRules() throws IOException {
-	ObjectDataCompiler compiler = new ObjectDataCompiler();
-	InputStream templateStream = Thread
-		.currentThread()
-		.getContextClassLoader()
-		.getResourceAsStream(
-			templateDir + File.separator + templateName);
-	if (templateStream == null) {
-	    templateStream = new FileInputStream(templateDir + File.separator
-		    + templateName);
+	protected final void generateChId() {
+		this.chId = UUID.randomUUID();
 	}
-	return compiler.compile(Arrays.asList(templateParams), templateStream);
-    }
 
-    public UUID getChId() {
-	return chId;
-    }
+	protected String generateRules() throws IOException {
+		ObjectDataCompiler compiler = new ObjectDataCompiler();
+		InputStream templateStream = Thread
+				.currentThread()
+				.getContextClassLoader()
+				.getResourceAsStream(
+						templateDir + File.separator + templateName);
+		if (templateStream == null) {
+			templateStream = new FileInputStream(templateDir + File.separator
+					+ templateName);
+		}
+		return compiler.compile(Arrays.asList(templateParams), templateStream);
+	}
 
-    public ChallengeType getType() {
-	return type;
-    }
+	public UUID getChId() {
+		return chId;
+	}
 
-    public String getGeneratedRules() {
-	return generatedRules;
-    }
+	public ChallengeType getType() {
+		return type;
+	}
 
-    public HashMap<String, Object> getTemplateParams() {
-	return templateParams;
-    }
+	public String getGeneratedRules() {
+		return generatedRules;
+	}
 
-    public HashMap<String, Object> getCustomData() {
-	return customData;
-    }
+	public HashMap<String, Object> getTemplateParams() {
+		return templateParams;
+	}
+
+	public HashMap<String, Object> getCustomData() {
+		return customData;
+	}
 
 }
