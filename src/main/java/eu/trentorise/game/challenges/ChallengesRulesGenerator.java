@@ -71,8 +71,6 @@ public class ChallengesRulesGenerator {
 			throws UndefinedChallengeException, IOException {
 		Map<String, Object> params = new HashMap<String, Object>();
 		buffer = new StringBuffer();
-		buffer.append("/** " + challengeSpec.getType() + " "
-				+ challengeSpec.getTarget().toString() + " **/\n");
 		reportBuffer = new StringBuffer();
 		playerIdCustomData.clear();
 		// get right challenge
@@ -113,6 +111,10 @@ public class ChallengesRulesGenerator {
 				increaseChallenge(user.getPlayerId());
 			}
 		}
+		if (buffer.toString().isEmpty()) {
+			return "";
+		}
+
 		// rest custom data counters
 		playerIdCustomData = resetAllGamesCounter(playerIdCustomData);
 
@@ -120,7 +122,10 @@ public class ChallengesRulesGenerator {
 		IOUtils.write(reportBuffer.toString(), fout);
 
 		// remove package declaration after first
-		String result = filterPackageDeclaration(buffer.toString());
+		String result = filterPackageDeclaration("/** "
+				+ challengeSpec.getType() + " "
+				+ challengeSpec.getTarget().toString() + " **/\n"
+				+ buffer.toString());
 
 		// write generate rule to a file
 		IOUtils.write(result, rout);

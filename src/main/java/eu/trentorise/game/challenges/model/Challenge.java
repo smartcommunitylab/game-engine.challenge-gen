@@ -24,7 +24,7 @@ public abstract class Challenge {
 
 	// change constant in order to change number of days in the challenge
 	// (please see hours, minutes and seconds!)
-	private static final int CHALLENGE_DURATION = 3;
+	private static final int CHALLENGE_DURATION = 1;
 
 	protected String drlName;
 

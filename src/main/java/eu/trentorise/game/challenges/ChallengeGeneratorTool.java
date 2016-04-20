@@ -199,6 +199,9 @@ public class ChallengeGeneratorTool {
 				}
 				return;
 			}
+			if (res == null || res.isEmpty()) {
+				continue;
+			}
 			tot++;
 			// define rule
 			RuleDto rule = new RuleDto();
