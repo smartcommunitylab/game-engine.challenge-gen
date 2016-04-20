@@ -16,202 +16,236 @@ import eu.trentorise.game.challenges.rest.PointConcept;
 
 public class Matcher {
 
-    private static final Logger logger = LogManager.getLogger(Matcher.class);
-    private static final String[] operators = { "&&" };
-    private static final String[] comparisonOperator = { "==", "<=", ">=", "<",
-	    ">" };
-    private ChallengeRuleRow challenge;
-    private ScriptEngineManager manager;
-    private ScriptEngine engine;
+	private static final Logger logger = LogManager.getLogger(Matcher.class);
+	private static final String[] operators = { "&&" };
+	private static final String[] comparisonOperator = { "==", "<=", ">=", "<",
+			">" };
+	private ChallengeRuleRow challenge;
+	private ScriptEngineManager manager;
+	private ScriptEngine engine;
 
-    public Matcher(ChallengeRuleRow challenge) throws IllegalArgumentException {
-	this.challenge = challenge;
-	this.manager = new ScriptEngineManager();
-	this.engine = manager.getEngineFactories().get(0).getScriptEngine();
-	// check if at least one type of criteria is defined
-	// TODO: Do we need some sort of validation of criteria before use them
-	// ?
-	if (challenge.getSelectionCriteriaCustomData() != null
-		&& !challenge.getSelectionCriteriaCustomData().isEmpty()) {
-	    // ok
-	} else if (challenge.getSelectionCriteriaPoints() != null
-		&& !challenge.getSelectionCriteriaPoints().isEmpty()) {
-	    // ok
-	} else if (challenge.getSelectionCriteriaBadges() != null
-		&& !challenge.getSelectionCriteriaBadges().isEmpty()) {
-	    // ok
-	} else {
-	    throw new IllegalArgumentException(
-		    "no criteria defined for challenge: " + challenge.getName());
-	}
-    }
-
-    public List<Content> match(List<Content> users) {
-	List<Content> result = new ArrayList<Content>();
-	for (Content user : users) {
-	    if (challenge.getSelectionCriteriaCustomData() != null
-		    && !challenge.getSelectionCriteriaCustomData().isEmpty()) {
-		if (customDataMatch(user)) {
-		    result.add(user);
+	public Matcher(ChallengeRuleRow challenge) throws IllegalArgumentException {
+		this.challenge = challenge;
+		this.manager = new ScriptEngineManager();
+		this.engine = manager.getEngineFactories().get(0).getScriptEngine();
+		// check if at least one type of criteria is defined
+		// TODO: Do we need some sort of validation of criteria before use them
+		// ?
+		if (challenge.getSelectionCriteriaCustomData() != null
+				&& !challenge.getSelectionCriteriaCustomData().isEmpty()) {
+			// ok
+		} else if (challenge.getSelectionCriteriaPoints() != null
+				&& !challenge.getSelectionCriteriaPoints().isEmpty()) {
+			// ok
+		} else if (challenge.getSelectionCriteriaBadges() != null
+				&& !challenge.getSelectionCriteriaBadges().isEmpty()) {
+			// ok
+		} else {
+			throw new IllegalArgumentException(
+					"no criteria defined for challenge: " + challenge.getName());
 		}
-	    } else if (challenge.getSelectionCriteriaPoints() != null
-		    && !challenge.getSelectionCriteriaPoints().isEmpty()) {
-		if (pointsMatch(user)) {
-		    result.add(user);
+	}
+
+	public List<Content> match(List<Content> users) {
+		List<Content> result = new ArrayList<Content>();
+		for (Content user : users) {
+			if (challenge.getSelectionCriteriaCustomData() != null
+					&& !challenge.getSelectionCriteriaCustomData().isEmpty()) {
+				if (customDataMatch(user)) {
+					result.add(user);
+				}
+			} else if (challenge.getSelectionCriteriaPoints() != null
+					&& !challenge.getSelectionCriteriaPoints().isEmpty()) {
+				if (pointsMatch(user)) {
+					result.add(user);
+				}
+			} else if (challenge.getSelectionCriteriaBadges() != null
+					&& !challenge.getSelectionCriteriaBadges().isEmpty()) {
+				// TODO
+			}
+
 		}
-	    } else if (challenge.getSelectionCriteriaBadges() != null
-		    && !challenge.getSelectionCriteriaBadges().isEmpty()) {
-		// TODO
-	    }
-
+		return result;
 	}
-	return result;
-    }
 
-    private boolean customDataMatch(Content user) {
-	String criteria = challenge.getSelectionCriteriaCustomData();
-	logger.debug("criteria to evaluate: " + criteria);
-	if (criteria.equalsIgnoreCase("true")) {
-	    return true;
-	}
-	if (isUserValidCustomData(user, criteria)) {
-	    List<String> vars = getVariablesFromCriteria(criteria);
-	    for (String var : vars) {
-		engine.put(var, user.getCustomData().getAdditionalProperties()
-			.get(var));
-	    }
-	    try {
-		Object result = engine.eval(criteria);
-		if (result instanceof Boolean) {
-		    return (Boolean) result;
+	private boolean customDataMatch(Content user) {
+		String criteria = challenge.getSelectionCriteriaCustomData();
+		logger.debug("criteria to evaluate: " + criteria);
+		if (criteria.equalsIgnoreCase("true")) {
+			return true;
+		}
+		if (isUserValidCustomData(user, criteria)) {
+			List<String> vars = getVariablesFromCriteria(criteria);
+			for (String var : vars) {
+				engine.put(var, user.getCustomData().getAdditionalProperties()
+						.get(var));
+			}
+			try {
+				Object result = engine.eval(criteria);
+				if (result instanceof Boolean) {
+					return (Boolean) result;
+				}
+				return false;
+			} catch (ScriptException e) {
+				logger.error(e.getMessage(), e);
+			}
 		}
 		return false;
-	    } catch (ScriptException e) {
-		logger.error(e.getMessage(), e);
-	    }
 	}
-	return false;
-    }
 
-    private boolean pointsMatch(Content user) {
-	String criteria = challenge.getSelectionCriteriaPoints();
-	logger.debug("criteria to evaluate: " + criteria);
-	if (criteria.equalsIgnoreCase("true")) {
-	    return true;
-	}
-	// get current point type to evaluate
-	String pointType = getVariableFromPointCriteria(criteria);
-	if (pointType.isEmpty()) {
-	    logger.warn("Point type criteria malformed, empty point type found");
-	    return false;
-	}
-	if (user.getState() != null
-		&& user.getState().getPointConcept() != null) {
-	    String originalName = new String(pointType);
-	    String newName = "";
-	    String newCriteria = "";
-	    for (PointConcept pc : user.getState().getPointConcept()) {
-		if (pc.getName().equalsIgnoreCase(pointType)) {
-		    // because javascriptengine don't like variable with blank
-		    // space in declaration, change them with anotherChar
-		    newName = StringUtils.replaceChars(pointType, " ", "_");
-		    newCriteria = StringUtils.replace(criteria, originalName,
-			    newName);
-		    // evaluate criteria
-		    engine.put(newName, pc.getScore());
-		    try {
+	private boolean pointsMatch(Content user) {
+		String criteria = challenge.getSelectionCriteriaPoints();
+		logger.debug("criteria to evaluate: " + criteria);
+		if (criteria.equalsIgnoreCase("true")) {
+			return true;
+		}
+		// get current point type to evaluate
+		List<String> vars = getVariableFromPointCriteria(criteria);
+		if (vars.isEmpty()) {
+			logger.warn("Point type criteria malformed, empty point type found");
+			return false;
+		}
+		for (String var : vars) {
+			if (!isPointConcept(user, var)) {
+				logger.warn("User " + user.getPlayerId()
+						+ " don't have point concept with name " + var);
+				return false;
+			}
+		}
+		String originalName = "";
+		String newName = "";
+		String newCriteria = "";
+		// gather data
+		for (String var : vars) {
+			// because javascriptengine don't like variable with blank
+			// space in declaration, change them with anotherChar
+			originalName = new String(var);
+			newName = StringUtils.replaceChars(var, " ", "_");
+			newCriteria = StringUtils.replace(criteria, originalName, newName);
+			double score = getScoreFromConcept(user, var);
+			// evaluate criteria
+			engine.put(newName, score);
+		}
+		// evaluate criteria
+		try {
 			Object result = engine.eval(newCriteria);
 			if (result instanceof Boolean) {
-			    return (Boolean) result;
+				return (Boolean) result;
 			}
 			return false;
-		    } catch (ScriptException e) {
+		} catch (ScriptException e) {
 			logger.error(e.getMessage(), e);
-		    }
-
 		}
-	    }
 
+		return false;
 	}
-	return false;
-    }
 
-    private String getVariableFromPointCriteria(String criteria) {
-	for (String operator : comparisonOperator) {
-	    String[] expressions = criteria.split(operator);
-	    if (expressions != null && expressions.length > 1) {
-		for (int i = 0; i < expressions.length; i++) {
-		    // expression in the form: var operator value
-		    if (expressions[i] != null && !expressions[i].isEmpty()) {
-			return StringUtils.stripEnd(expressions[i], null);
-		    }
+	private double getScoreFromConcept(Content user, String var) {
+		for (PointConcept pc : user.getState().getPointConcept()) {
+			if (pc.getName().equalsIgnoreCase(var)) {
+				return pc.getScore();
+			}
 		}
-	    }
+		return 0;
 	}
-	return "";
-    }
 
-    /**
-     * @return true if user exist and contains all custom data mentioned in
-     *         criteria
-     */
-    private boolean isUserValidCustomData(Content user, String criteria) {
-	if (user != null && criteria != null && !criteria.isEmpty()
-		&& user.getCustomData() != null
-		&& user.getCustomData().getAdditionalProperties() != null) {
-	    List<String> vars = new ArrayList<String>();
-	    if (containsAnyOperator(criteria)) {
-		vars = getVariablesFromCriteria(criteria);
-	    } else {
-		vars = getVariablesFromSingleCriteria(criteria);
-	    }
-	    for (String var : vars) {
-		if (criteria.contains("null")) {
-		    // do nothing
-		} else if (!user.getCustomData().getAdditionalProperties()
-			.containsKey(var)) {
-		    logger.warn("Custom data not found " + var);
-		    return false;
+	private boolean isPointConcept(Content user, String pointType) {
+		if (user.getState() != null
+				&& user.getState().getPointConcept() != null) {
+			boolean found = false;
+			for (PointConcept pc : user.getState().getPointConcept()) {
+				if (pc.getName().equalsIgnoreCase(pointType)) {
+					found = true;
+				}
+			}
+			return found;
 		}
-	    }
-	    return true;
+		return false;
 	}
-	logger.warn("user null or not custom data available");
-	return false;
-    }
 
-    private List<String> getVariablesFromCriteria(String criteria) {
-	List<String> result = new ArrayList<String>();
-	for (String operator : operators) {
-	    String[] expressions = criteria.split(operator);
-	    for (int i = 0; i < expressions.length; i++) {
+	private List<String> getVariableFromPointCriteria(String criteria) {
+		List<String> result = new ArrayList<String>();
+		for (String separator : operators) {
+			String[] expressions = criteria.split(separator);
+			if (expressions != null && expressions.length > 1) {
+				for (String exp : expressions) {
+					for (String operator : comparisonOperator) {
+						String[] exps = exp.split(operator);
+						if (exps != null && exps.length > 1) {
+							String v = StringUtils.stripEnd(exps[0], null);
+							v = StringUtils.stripStart(v, null);
+							if (!result.contains(v)) {
+								result.add(v);
+							}
+						}
+					}
+				}
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * @return true if user exist and contains all custom data mentioned in
+	 *         criteria
+	 */
+	private boolean isUserValidCustomData(Content user, String criteria) {
+		if (user != null && criteria != null && !criteria.isEmpty()
+				&& user.getCustomData() != null
+				&& user.getCustomData().getAdditionalProperties() != null) {
+			List<String> vars = new ArrayList<String>();
+			if (containsAnyOperator(criteria)) {
+				vars = getVariablesFromCriteria(criteria);
+			} else {
+				vars = getVariablesFromSingleCriteria(criteria);
+			}
+			for (String var : vars) {
+				if (criteria.contains("null")) {
+					// do nothing
+				} else if (!user.getCustomData().getAdditionalProperties()
+						.containsKey(var)) {
+					logger.warn("Custom data not found " + var);
+					return false;
+				}
+			}
+			return true;
+		}
+		logger.warn("user null or not custom data available");
+		return false;
+	}
+
+	private List<String> getVariablesFromCriteria(String criteria) {
+		List<String> result = new ArrayList<String>();
+		for (String operator : operators) {
+			String[] expressions = criteria.split(operator);
+			for (int i = 0; i < expressions.length; i++) {
+				// expression in the form: var operator value
+				String var = StringUtils.stripStart(expressions[i], null)
+						.split(" ")[0];
+				if (!result.contains(var)) {
+					result.add(var);
+				}
+			}
+		}
+		return result;
+	}
+
+	private List<String> getVariablesFromSingleCriteria(String expression) {
+		List<String> result = new ArrayList<String>();
 		// expression in the form: var operator value
-		String var = StringUtils.stripStart(expressions[i], null)
-			.split(" ")[0];
+		String var = StringUtils.stripStart(expression, null).split(" ")[0];
 		if (!result.contains(var)) {
-		    result.add(var);
+			result.add(var);
 		}
-	    }
+		return result;
 	}
-	return result;
-    }
 
-    private List<String> getVariablesFromSingleCriteria(String expression) {
-	List<String> result = new ArrayList<String>();
-	// expression in the form: var operator value
-	String var = StringUtils.stripStart(expression, null).split(" ")[0];
-	if (!result.contains(var)) {
-	    result.add(var);
+	private boolean containsAnyOperator(String value) {
+		for (String operator : operators) {
+			if (value.contains(operator)) {
+				return true;
+			}
+		}
+		return false;
 	}
-	return result;
-    }
-
-    private boolean containsAnyOperator(String value) {
-	for (String operator : operators) {
-	    if (value.contains(operator)) {
-		return true;
-	    }
-	}
-	return false;
-    }
 }

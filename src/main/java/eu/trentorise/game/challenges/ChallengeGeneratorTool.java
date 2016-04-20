@@ -4,7 +4,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -202,7 +204,8 @@ public class ChallengeGeneratorTool {
 			RuleDto rule = new RuleDto();
 			rule.setContent(res);
 			rule.setName(challengeSpec.getName());
-			rule.setCustomData(crg.getPlayerIdCustomData());
+			rule.setCustomData(new HashMap<String, Map<String, Object>>(crg
+					.getPlayerIdCustomData()));
 			toWrite.add(rule);
 		}
 		// write result
