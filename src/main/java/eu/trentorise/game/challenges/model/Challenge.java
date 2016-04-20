@@ -64,7 +64,7 @@ public abstract class Challenge {
 		customData.put(Constants.CH + this.chId + Constants.TYPE, this.type);
 		// add beginning and end of challenge
 		Calendar calendar = new GregorianCalendar();
-		calendar.setTimeZone(TimeZone.getTimeZone("GMT + 1"));
+		calendar.setTimeZone(TimeZone.getTimeZone("Europe/Berlin"));
 		calendar.setTime(new Date());
 		calendar.add(Calendar.DAY_OF_MONTH, 1); // tomorrow
 		calendar.set(Calendar.HOUR_OF_DAY, 0);
