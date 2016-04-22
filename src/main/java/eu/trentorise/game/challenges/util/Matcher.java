@@ -11,6 +11,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import eu.trentorise.game.challenges.rest.BadgeCollectionConcept;
 import eu.trentorise.game.challenges.rest.Content;
 import eu.trentorise.game.challenges.rest.PointConcept;
 
@@ -47,6 +48,10 @@ public class Matcher {
 	}
 
 	public List<Content> match(List<Content> users) {
+		if (users == null || users.isEmpty()) {
+			logger.warn("No users to match");
+			return new ArrayList<Content>();
+		}
 		List<Content> result = new ArrayList<Content>();
 		for (Content user : users) {
 			if (challenge.getSelectionCriteriaCustomData() != null
@@ -61,7 +66,9 @@ public class Matcher {
 				}
 			} else if (challenge.getSelectionCriteriaBadges() != null
 					&& !challenge.getSelectionCriteriaBadges().isEmpty()) {
-				// TODO
+				if (badgeMatch(user)) {
+					result.add(user);
+				}
 			}
 
 		}
@@ -138,6 +145,44 @@ public class Matcher {
 		}
 
 		return false;
+	}
+
+	private boolean badgeMatch(Content user) {
+		String criteria = challenge.getSelectionCriteriaBadges();
+		logger.debug("criteria to evaluate: " + criteria);
+		if (user.getState() != null
+				&& user.getState().getBadgeCollectionConcept() != null
+				&& !user.getState().getBadgeCollectionConcept().isEmpty()) {
+			// find right badge collection
+			for (BadgeCollectionConcept bc : user.getState()
+					.getBadgeCollectionConcept()) {
+				if (bc.getName().equalsIgnoreCase(challenge.getGoalType())) {
+					if (criteria.contains("size")) {
+						String value = getValueFromCriteria(criteria);
+						if (!value.isEmpty()) {
+							if (bc.getBadgeEarned().size() == Integer
+									.valueOf(value)) {
+								return true;
+							}
+						}
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	private String getValueFromCriteria(String criteria) {
+		if (criteria == null) {
+			return "";
+		}
+		for (String co : comparisonOperator) {
+			String[] elements = criteria.split(co);
+			if (elements != null && elements.length == 2) {
+				return StringUtils.stripStart(elements[1], null);
+			}
+		}
+		return "";
 	}
 
 	private double getScoreFromConcept(Content user, String var) {
