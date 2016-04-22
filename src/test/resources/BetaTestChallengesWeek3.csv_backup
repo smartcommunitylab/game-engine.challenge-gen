@@ -1,0 +1,13 @@
+NAME;TYPE;GOAL_TYPE;TARGET;BONUS;POINT_TYPE;DIFFICULTY;BASELINE_VARIABLE;SELECTION_CRITERIA_CUSTOM_DATA;SELECTION_CRITERIA_POINTS;SELECTION_CRITERIA_BADGES
+beta_test_w3_bike_sharing_trips_3;TRIPNUMBER;bikeDistance;3;30;green leaves;;;bikesharing_trips_past >= 1 && bikesharing_trips_past < 4;;
+beta_test_w3_bike_sharing_trips_5;TRIPNUMBER;bikeDistance;5;40;green leaves;;;bikesharing_trips_past >= 4 ;;
+beta_test_w1_nextbadge_BS_1;NEXTBADGE;bike sharing pioneer;1;30;green leaves;;;;;size >= 1
+beta_test_w3_try_bike;TRIPNUMBER;bikeDistance;1;30;green leaves;;;bike_trips_past == null;;
+beta_test_w3_bike_KMpercent_100;PERCENT;bikeDistance;0.99;40;green leaves;;bike_km_past;bike_km_past > 0 && bike_km_past <=4;;
+beta_test_w3_bike_KMpercent_50;PERCENT;bikeDistance;0.5;40;green leaves;;bike_km_past;bike_km_past > 4 && bike_km_past <=10;;
+beta_test_w3_bike_KMpercent_20;PERCENT;bikeDistance;0.2;40;green leaves;;bike_km_past;bike_km_past > 10 && bike_km_past <=40;;
+beta_test_w3_nextbadge_GL_1;NEXTBADGE;green leaves;1;30;green leaves;;;bike_trips_past == null;;
+beta_test_w3_try_bike_sharing;TRIPNUMBER;bikeDistance;1;50;green leaves;;;bikesharing_trips_past == null;;
+beta_test_w3_bike_sharing_KMpercent_50;PERCENT;bikeDistance;50;40;green leaves;;bikesharing_km_past;bikesharing_km_past > 0 && bikesharing_km_past <=4 ;;
+beta_test_w3_bike_sharing_KMpercent_20;PERCENT;bikeDistance;30;40;green leaves;;bikesharing_km_past;bikesharing_km_past > 4  ;;
+beta_test_w3_nextbadge_GL_2;NEXTBADGE;green leaves;1;30;green leaves;;;TRUE;;
