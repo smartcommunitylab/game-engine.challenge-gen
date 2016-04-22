@@ -11,8 +11,8 @@ import eu.trentorise.game.challenges.model.ChallengeType;
 // import eu.trentorise.game.model.Player;
 
 public class TripNumberChallenge extends Challenge {
+    protected String mode = null;
     private int nTrips = 0;
-    private String mode = null;
     private Integer prize = null;
     private String pointType = null;
 

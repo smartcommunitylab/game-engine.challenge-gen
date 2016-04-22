@@ -44,11 +44,55 @@ public class FactoryTest {
 	Assert.assertTrue(c.getGeneratedRules() != null
 		&& !c.getGeneratedRules().equals(""));
 	System.out.println(c.getGeneratedRules() + "\n\n");
+	
+	// BSPERCENT (BIKE SHARE) Challenge building
+	try {
+	    c = chFactory.createChallenge(ChallengeType.BSPERCENT,
+		    "rules/templates");
+	    params = new HashMap<String, Object>();
+	    params.put("target", new Double(15));
+	    params.put("mode", "bikesharing");
+	    params.put("bonus", new Integer(50));
+	    params.put("point_type", "green leaves");
+	    params.put("baseline", new Double(100.0));
+	    c.setTemplateParams(params);
+	    c.compileChallenge(testUserId);
+	} catch (UndefinedChallengeException uce) {
+	    uce.printStackTrace();
+	}
+	Assert.assertTrue("Challenge " + ChallengeType.BSPERCENT + " created",
+		c != null);
+	Assert.assertTrue(c.getType().equals(ChallengeType.BSPERCENT));
+	Assert.assertTrue(c.getGeneratedRules() != null
+		&& !c.getGeneratedRules().equals(""));
+	System.out.println(c.getGeneratedRules() + "\n\n");
 
 	// TRIPNUMBER Challenge building
 	try {
 	    // TODO: cambiare nome per allinearlo a drt? e' TravelMode
 	    c = chFactory.createChallenge(ChallengeType.TRIPNUMBER,
+		    "rules/templates");
+	    params = new HashMap<String, Object>();
+	    params.put("trips", new Integer(1));
+	    params.put("mode", "busDistance");
+	    params.put("bonus", new Integer(50));
+	    params.put("target", new Double(20));
+	    params.put("point_type", "green leaves");
+	    c.setTemplateParams(params);
+	    c.compileChallenge(testUserId);
+	} catch (UndefinedChallengeException uce) {
+	    uce.printStackTrace();
+	}
+	Assert.assertTrue("Challenge " + ChallengeType.TRIPNUMBER + " created",
+		c != null);
+	Assert.assertTrue(c.getType().equals(ChallengeType.TRIPNUMBER));
+	Assert.assertTrue(c.getGeneratedRules() != null
+		&& !c.getGeneratedRules().equals(""));
+	System.out.println(c.getGeneratedRules() + "\n\n");
+	
+	// BSTRIPNUMBER (BIKE SHARE) Challenge building
+	try {
+	    c = chFactory.createChallenge(ChallengeType.BSTRIPNUMBER,
 		    "rules/templates");
 	    params = new HashMap<String, Object>();
 	    params.put("trips", new Integer(1));
@@ -61,9 +105,9 @@ public class FactoryTest {
 	} catch (UndefinedChallengeException uce) {
 	    uce.printStackTrace();
 	}
-	Assert.assertTrue("Challenge " + ChallengeType.TRIPNUMBER + " created",
+	Assert.assertTrue("Challenge " + ChallengeType.BSTRIPNUMBER + " created",
 		c != null);
-	Assert.assertTrue(c.getType().equals(ChallengeType.TRIPNUMBER));
+	Assert.assertTrue(c.getType().equals(ChallengeType.BSTRIPNUMBER));
 	Assert.assertTrue(c.getGeneratedRules() != null
 		&& !c.getGeneratedRules().equals(""));
 	System.out.println(c.getGeneratedRules() + "\n\n");

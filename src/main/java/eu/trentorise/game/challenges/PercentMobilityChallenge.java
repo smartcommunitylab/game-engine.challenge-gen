@@ -11,7 +11,7 @@ import eu.trentorise.game.challenges.model.Challenge;
 import eu.trentorise.game.challenges.model.ChallengeType;
 
 public class PercentMobilityChallenge extends Challenge {
-    private String mode = null;
+    protected String mode = null;
     private Double percent = 0.0;
     private Double baseline = 0.0;
     private Integer prize = null;

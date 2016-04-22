@@ -1,6 +1,7 @@
 template header
 
 ch_ID
+ch_mode
 ch_player
 ch_point_type
 
@@ -10,6 +11,7 @@ package eu.trentorise.game.model
 
 /* Parameters for the template:
 ch_ID = unique Challenge ID (ALWAYS!): obtained via UUID
+ch_mode    NOTE! not used for bikesharing mode
 ch_player = unique Player ID 
 ch_point_type
 */
@@ -26,15 +28,16 @@ CustomData to have   []=used by
   - ch_ID_type [presentation]
   - ch_ID_point_type [presentation] type of bonus point -> it must contain the name of PointConcept ("green leaves" for example)
   - ch_ID_success [rule] [presentation]
+  - ch_ID_mode [presentation] modality of trip [values allowed: walk, bike, bikesharing, train, bus, car]
 */
 
 	
-template MobilityPercentImproveTemplate
+template BikeSharePercentImproveTemplate
 
 rule "ch_@{ch_ID}_trace"
 lock-on-active
 when 
-	/* definition of bikesharing */
+	/* check on bikesharing */
 	InputData($distance: data["bikeDistance"] != null, data["bikesharing"] == true)	
 	$c: CustomData($now: System.currentTimeMillis(), this['ch_@{ch_ID}_startChTs'] <= $now, this['ch_@{ch_ID}_endChTs'] > $now, $counter : this['ch_@{ch_ID}_Km_traveled_during_challenge']	)
 	Player(id == "@{ch_player}") 
@@ -57,7 +60,7 @@ then
 	$pc.setScore($pc.getScore() + (Integer)$c.get("ch_@{ch_ID}_bonus"));
 	$c.put('ch_@{ch_ID}_success',true);
 	insert(new PointDelta((Integer)$c.get("ch_@{ch_ID}_bonus"),"green leaves")); 
-	log('ch_@{ch_ID} successful');
+	log('ch_@{ch_ID} BIKE SHARE KM PERCENT successful');
 	update($pc); 
 end
 	
