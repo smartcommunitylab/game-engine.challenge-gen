@@ -28,7 +28,7 @@ public class FactoryTest {
 	    c = chFactory.createChallenge(ChallengeType.PERCENT,
 		    "rules/templates");
 	    params = new HashMap<String, Object>();
-	    params.put("target", new Double(15));
+	    params.put("target", new Double(0.15));
 	    params.put("mode", "walkDistance");
 	    params.put("bonus", new Integer(50));
 	    params.put("point_type", "green leaves");
@@ -50,7 +50,7 @@ public class FactoryTest {
 	    c = chFactory.createChallenge(ChallengeType.BSPERCENT,
 		    "rules/templates");
 	    params = new HashMap<String, Object>();
-	    params.put("target", new Double(15));
+	    params.put("target", new Double(0.15));
 	    params.put("mode", "bikesharing");
 	    params.put("bonus", new Integer(50));
 	    params.put("point_type", "green leaves");
