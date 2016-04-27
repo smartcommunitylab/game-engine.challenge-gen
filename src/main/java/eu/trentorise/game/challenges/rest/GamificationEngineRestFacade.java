@@ -228,6 +228,19 @@ public class GamificationEngineRestFacade {
 		}
 		logger.error("response code: " + response.getStatus());
 		return false;
+	}
 
+	public boolean executeAction(ExecutionDataDTO input) {
+		if (input == null) {
+			throw new IllegalArgumentException("input cannot be null");
+		}
+		WebTarget target = getTarget().path(EXECUTE);
+		Response response = target.request().post(Entity.json(input));
+		if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+			logger.debug("response code: " + response.getStatus());
+			return true;
+		}
+		logger.error("response code: " + response.getStatus());
+		return false;
 	}
 }
