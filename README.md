@@ -103,7 +103,8 @@ usage: challengeUploader -host <host> -gameId <gameId> -input <input json file>
 java -jar challengeUploader.jar -host http://localhost:8080/gamification/ -gameId 56e7bf3b570ac89331c37262 -input generated.json
 ```
 
+## License
 
-
+Project is licensed under the Apache License Version 2.0
 
  
