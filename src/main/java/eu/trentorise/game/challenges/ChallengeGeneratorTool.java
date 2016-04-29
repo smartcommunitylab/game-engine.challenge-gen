@@ -152,11 +152,10 @@ public class ChallengeGeneratorTool {
 			System.err.println("Warning: no users for game " + gameId);
 			return;
 		}
-
 		System.out
 				.println("Reading game from gamification engine game state for gameId: "
 						+ gameId);
-
+		System.out.println("Users in game: " + users.size());
 		ChallengesRulesGenerator crg;
 		try {
 			crg = new ChallengesRulesGenerator(new ChallengeFactory(),
