@@ -126,6 +126,7 @@ public class RestTest {
 		IOUtils.write(toWrite.toString(),
 				new FileOutputStream("gameStatus.csv"));
 
+		assertTrue(!toWrite.toString().isEmpty());
 	}
 
 	private Double getScore(Content content) {
