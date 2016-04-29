@@ -10,6 +10,8 @@ import static eu.trentorise.challenge.PropertiesUtil.USERNAME;
 import static eu.trentorise.challenge.PropertiesUtil.get;
 import static org.junit.Assert.assertTrue;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +25,7 @@ import eu.trentorise.game.challenges.rest.Content;
 import eu.trentorise.game.challenges.rest.ExecutionDataDTO;
 import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
 import eu.trentorise.game.challenges.rest.InsertedRuleDto;
+import eu.trentorise.game.challenges.rest.PointConcept;
 import eu.trentorise.game.challenges.util.ConverterUtil;
 import eu.trentorise.game.challenges.util.JourneyData;
 
@@ -108,6 +111,30 @@ public class RestTest {
 		// result = insertFacade.updateChallengeCustomData(get(GAMEID), "178",
 		// customData);
 		// assertTrue(result);
+	}
+
+	@Test
+	public void printGameStatus() throws FileNotFoundException, IOException {
+		List<Content> result = facade.readGameState(get(GAMEID));
+		assertTrue(!result.isEmpty());
+		StringBuffer toWrite = new StringBuffer();
+		toWrite.append("PLAYER_ID;SCORE_GREEN_LEAVES\n");
+		for (Content content : result) {
+			toWrite.append(content.getPlayerId() + ";" + getScore(content)
+					+ "\n");
+		}
+		IOUtils.write(toWrite.toString(),
+				new FileOutputStream("gameStatus.csv"));
+
+	}
+
+	private Double getScore(Content content) {
+		for (PointConcept pc : content.getState().getPointConcept()) {
+			if (pc.getName().equalsIgnoreCase("green leaves")) {
+				return pc.getScore();
+			}
+		}
+		return null;
 	}
 
 }
