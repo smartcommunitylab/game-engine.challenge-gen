@@ -24,7 +24,7 @@ public abstract class Challenge {
 
 	// change constant in order to change number of days in the challenge
 	// (please see hours, minutes and seconds!)
-	private static final int CHALLENGE_DURATION = 1;
+	private static final int CHALLENGE_DURATION = 7;
 
 	protected String drlName;
 
@@ -39,7 +39,8 @@ public abstract class Challenge {
 	protected String generatedRules = "";
 
 	private String templateDir;
-	private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/YYYY HH:mm:ss");
+	private SimpleDateFormat sdf = new SimpleDateFormat(
+			"dd/MM/YYYY HH:mm:ss , zzz ZZ");
 	private static boolean printedDates = false;
 
 	/**
@@ -66,7 +67,7 @@ public abstract class Challenge {
 		Calendar calendar = new GregorianCalendar();
 		calendar.setTimeZone(TimeZone.getTimeZone("Europe/Berlin"));
 		calendar.setTime(new Date());
-		calendar.add(Calendar.DAY_OF_MONTH, 1); // tomorrow
+		calendar.add(Calendar.DAY_OF_MONTH, 1); // yesterday
 		calendar.set(Calendar.HOUR_OF_DAY, 0);
 		calendar.set(Calendar.MINUTE, 0);
 		calendar.set(Calendar.SECOND, 1);
