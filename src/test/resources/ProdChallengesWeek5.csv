@@ -1,0 +1,12 @@
+NAME;TYPE;GOAL_TYPE;TARGET;BONUS;POINT_TYPE;DIFFICULTY;BASELINE_VARIABLE;SELECTION_CRITERIA_CUSTOM_DATA;SELECTION_CRITERIA_POINTS;SELECTION_CRITERIA_BADGES
+w5_try_train_car;TRIPNUMBER;trainDistance;1;60;green leaves;;;train_trips_past == null && car_km_past > 10;;
+w5_try_train_bus;TRIPNUMBER;trainDistance;1;60;green leaves;;;train_trips_past == null && bus_trips_past >= 1;;
+w5_try_bus;TRIPNUMBER;busDistance;1;50;green leaves;;;bus_trips_past == null;;
+w5_bus_trips_4;TRIPNUMBER;busDistance;4;40;green leaves;;;bus_trips_past > 0  && bus_trips_past <= 2;;
+w5_bus_trips_8;TRIPNUMBER;busDistance;8;50;green leaves;;;bus_trips_past > 2  && bus_trips_past <= 6;;
+w5_bus_trips_10;TRIPNUMBER;busDistance;10;60;green leaves;;;bus_trips_past > 6;;
+w5_train_trips_4;TRIPNUMBER;trainDistance;4;40;green leaves;;;train_trips_past > 0  && train_trips_past <= 4;;
+w5_train_trips_8;TRIPNUMBER;trainDistance;8;50;green leaves;;;train_trips_past > 2  && train_trips_past <= 6;;
+w5_train_trips_10;TRIPNUMBER;trainDistance;10;60;green leaves;;;train_trips_past > 6;;
+w5_walk_KMpercent_50;PERCENT;walkDistance;0.5;30;green leaves;;walk_km_past;walk_km_past >= 1;;
+w5_nextbadge_GL_1;NEXTBADGE;green leaves;1;40;green leaves;;;TRUE;;
