@@ -214,7 +214,7 @@ public class GamificationEngineRestFacade {
 		values.putAll(customData);
 		ObjectMapper mapper = new ObjectMapper();
 		try {
-			System.out.println(mapper.writeValueAsString(values));
+			logger.debug(mapper.writeValueAsString(values));
 		} catch (JsonProcessingException e) {
 			logger.error(e);
 			return false;
