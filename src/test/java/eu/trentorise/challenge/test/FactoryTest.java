@@ -141,6 +141,7 @@ public class FactoryTest {
  	    params.put("target", new Long(100));
  	    params.put("bonus", new Integer(50));
  	    params.put("point_type", "green leaves");
+ 	    params.put("ch_point_type_baseline", "green leaves week 3");
  	    c.setTemplateParams(params);
  	    c.compileChallenge(testUserId);
  	} catch (UndefinedChallengeException uce) {

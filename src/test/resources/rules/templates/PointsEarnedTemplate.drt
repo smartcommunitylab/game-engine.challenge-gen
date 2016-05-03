@@ -3,6 +3,7 @@ template header
 ch_ID
 ch_player
 ch_point_type
+ch_point_type_baseline
 
 package eu.trentorise.game.model
 
@@ -13,6 +14,7 @@ package eu.trentorise.game.model
 ch_ID = unique Challenge ID (ALWAYS!): obtained via UUID
 ch_player = unique Player ID - for now simply Object.toString()
 ch_point_type
+ch_point_type_baseline - the points that are checked to see if challenge is fulfilled
 */
 
 /*
@@ -21,7 +23,7 @@ ch_point_type
   
   - ch_ID_startChTs [rule] [presentation]
   - ch_ID_endChTs [rule] [presentation]
-  - ch_ID_points_earned_during_challenges [rule] [presentation]
+  - ch_ID_point_type_baseline [rule] [presentation] the points that are checked to see if challenge is fulfilled
   - ch_ID_target [rule] [presentation]
   - ch_ID_bonus [presentation]
   - ch_ID_type [presentation]
@@ -35,9 +37,11 @@ template PointsEarnedTemplate
 rule 'ch_@{ch_ID}_check'
 when
 	Player(id == '@{ch_player}')
-	$c : CustomData($now : System.currentTimeMillis(), this['ch_@{ch_ID}_startChTs'] <= $now, this['ch_@{ch_ID}_endChTs'] > $now, this["gp_current"] >= this['ch_@{ch_ID}_target'], 
-		this['ch_@{ch_ID}_success'] == false)
 	$pc : PointConcept(name == '@{ch_point_type}')
+	$pcb : PointConcept(name == '@{ch_point_type_baseline}')
+	$c : CustomData($now : System.currentTimeMillis(), this['ch_@{ch_ID}_startChTs'] <= $now, this['ch_@{ch_ID}_endChTs'] > $now, $pcb.getScore() >= this['ch_@{ch_ID}_target'], 
+		this['ch_@{ch_ID}_success'] != true)
+	
 then
 	$pc.setScore($pc.getScore() + (Integer)$c.get("ch_@{ch_ID}_bonus"));
 	log('ch_@{ch_ID} success');

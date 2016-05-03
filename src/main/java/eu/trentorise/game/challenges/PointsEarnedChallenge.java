@@ -11,6 +11,7 @@ import eu.trentorise.game.challenges.model.ChallengeType;
 
 public class PointsEarnedChallenge extends Challenge {
     private String pointType = null;
+    private String baselinePointType = null;
     private Integer prize = null;
     private long pointsTarget = 0l;
 
@@ -30,6 +31,11 @@ public class PointsEarnedChallenge extends Challenge {
 	    throw new UndefinedChallengeException("undefined challenge!");
 	this.pointType = (String) tp.get(Constants.POINT_TYPE);
 	templateParams.put(Constants.CH_POINT_TYPE, this.pointType);
+	
+	if (!tp.containsKey("ch_point_type_baseline"))
+	    throw new UndefinedChallengeException("undefined challenge!");
+	this.baselinePointType = (String) tp.get("ch_point_type_baseline");
+	templateParams.put("ch_point_type_baseline", this.baselinePointType);
 
 	setCustomData(tp);
     }
@@ -39,12 +45,12 @@ public class PointsEarnedChallenge extends Challenge {
 	    throws UndefinedChallengeException {
 	super.setCustomData(tp);
 
-	customData
-		.put(Constants.CH + this.chId + "_point_type", this.pointType);
+	customData.put(Constants.CH + this.chId + "_point_type", this.pointType);
+	customData.put(Constants.CH + this.chId + "point_type_baseline", this.baselinePointType);
 	if (!tp.containsKey("bonus"))
 	    throw new UndefinedChallengeException("undefined challenge!");
 	this.prize = (Integer) tp.get("bonus");
-	customData.put("ch_" + this.chId + "_bonus", this.prize);
+	customData.put(Constants.CH + this.chId + "_bonus", this.prize);
 
 	if (!tp.containsKey("target"))
 	    throw new UndefinedChallengeException("undefined challenge!");
@@ -64,7 +70,7 @@ public class PointsEarnedChallenge extends Challenge {
     @Override
     public void compileChallenge(String playerId)
 	    throws UndefinedChallengeException {
-	if (pointsTarget <= 0l || prize == null || pointType == null)
+	if (pointsTarget <= 0l || prize == null || pointType == null || baselinePointType == null)
 	    throw new UndefinedChallengeException("undefined challenge!");
 
 	// here find the players affected by this one challenge
@@ -87,6 +93,7 @@ public class PointsEarnedChallenge extends Challenge {
 	sb.append(this.pointsTarget + ";");
 	sb.append(this.prize + ";");
 	sb.append(this.pointType + ";");
+	sb.append(this.baselinePointType + ";");
 	sb.append(this.chId);
 	return sb.toString();
     }
