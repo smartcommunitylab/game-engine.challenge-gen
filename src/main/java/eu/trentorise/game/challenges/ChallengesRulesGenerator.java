@@ -94,10 +94,17 @@ public class ChallengesRulesGenerator {
 				}
 				params.put("bonus", challengeSpec.getBonus());
 				params.put("point_type", challengeSpec.getPointType());
-				params.put(
-						"baseline",
-						user.getCustomData().getAdditionalProperties()
-								.get(challengeSpec.getBaselineVar()));
+				if (!user.getCustomData().getAdditionalProperties()
+						.containsKey(challengeSpec.getBaselineVar())) {
+					// do nothing
+					params.put("ch_point_type_baseline",
+							challengeSpec.getBaselineVar());
+				} else {
+					params.put(
+							"baseline",
+							user.getCustomData().getAdditionalProperties()
+									.get(challengeSpec.getBaselineVar()));
+				}
 				c.setTemplateParams(params);
 				c.compileChallenge(user.getPlayerId());
 				buffer.append(c.getGeneratedRules());

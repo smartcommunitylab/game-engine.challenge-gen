@@ -1,4 +1,5 @@
 NAME;TYPE;GOAL_TYPE;TARGET;BONUS;POINT_TYPE;DIFFICULTY;BASELINE_VARIABLE;SELECTION_CRITERIA_CUSTOM_DATA;SELECTION_CRITERIA_POINTS;SELECTION_CRITERIA_BADGES
+w5_do_someting;POINTSEARNED;green leaves;100;30;green leaves;;green leaves week 3;;green leaves >= 0 && green leaves <= 200;
 w5_try_train_car;TRIPNUMBER;trainDistance;1;60;green leaves;;;train_trips_past == null && car_km_past > 10;;
 w5_try_train_bus;TRIPNUMBER;trainDistance;1;60;green leaves;;;train_trips_past == null && bus_trips_past >= 1;;
 w5_try_bus;TRIPNUMBER;busDistance;1;50;green leaves;;;bus_trips_past == null;;
