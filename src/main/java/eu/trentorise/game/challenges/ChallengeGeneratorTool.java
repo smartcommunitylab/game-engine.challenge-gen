@@ -128,6 +128,7 @@ public class ChallengeGeneratorTool {
 			System.out.println("Error in loading : " + input);
 			return;
 		}
+		System.out.println("Challenge definition file: " + input);
 		// get users from gamification engine
 		GamificationEngineRestFacade facade;
 		if (username != null && password != null && !username.isEmpty()
