@@ -118,10 +118,29 @@ public class RestTest {
 		List<Content> result = facade.readGameState(get(GAMEID));
 		assertTrue(!result.isEmpty());
 		StringBuffer toWrite = new StringBuffer();
-		toWrite.append("PLAYER_ID;SCORE_GREEN_LEAVES\n");
+		toWrite.append("PLAYER_ID;SCORE_GREEN_LEAVES;BIKE_TRIPS;BIKE_SHARING_TRIPS_PAST;TRAIN_TRIPS;BUS_TRIPS;WALK_KM_PAST;CAR_KM_PAST\n");
 		for (Content content : result) {
-			toWrite.append(content.getPlayerId() + ";" + getScore(content)
-					+ "\n");
+			toWrite.append(content.getPlayerId()
+					+ ";"
+					+ getScore(content)
+					+ ";"
+					+ content.getCustomData().getAdditionalProperties()
+							.get("bike_trips")
+					+ ";"
+					+ content.getCustomData().getAdditionalProperties()
+							.get("bikesharing_trips_past")
+					+ ";"
+					+ content.getCustomData().getAdditionalProperties()
+							.get("train_trips")
+					+ ";"
+					+ content.getCustomData().getAdditionalProperties()
+							.get("bus_trips")
+					+ ";"
+					+ content.getCustomData().getAdditionalProperties()
+							.get("walk_km_past")
+					+ ";"
+					+ content.getCustomData().getAdditionalProperties()
+							.get("car_km_past") + "\n");
 		}
 		IOUtils.write(toWrite.toString(),
 				new FileOutputStream("gameStatus.csv"));
