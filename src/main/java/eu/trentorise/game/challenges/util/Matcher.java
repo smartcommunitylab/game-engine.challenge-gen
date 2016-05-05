@@ -160,9 +160,15 @@ public class Matcher {
 					if (criteria.contains("size")) {
 						String value = getValueFromCriteria(criteria);
 						if (!value.isEmpty()) {
-							if (bc.getBadgeEarned().size() == Integer
-									.valueOf(value)) {
-								return true;
+							engine.put("size", bc.getBadgeEarned().size());
+							try {
+								Object result = engine.eval(criteria);
+								if (result instanceof Boolean) {
+									return (Boolean) result;
+								}
+								return false;
+							} catch (ScriptException e) {
+								logger.error(e.getMessage(), e);
 							}
 						}
 					}
