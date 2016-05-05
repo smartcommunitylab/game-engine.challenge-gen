@@ -231,6 +231,17 @@ public class Matcher {
 						}
 					}
 				}
+			} else {
+					for (String operator : comparisonOperator) {
+						String[] exps = expressions[0].split(operator);
+						if (exps != null && exps.length > 1) {
+							String v = StringUtils.stripEnd(exps[0], null);
+							v = StringUtils.stripStart(v, null);
+							if (!result.contains(v)) {
+								result.add(v);
+							}
+						}
+				}
 			}
 		}
 		return result;

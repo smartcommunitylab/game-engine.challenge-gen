@@ -51,7 +51,7 @@ public class GenerationTest {
 			IllegalArgumentException, IOException {
 		// load
 		ChallengeRules result = ChallengeRulesLoader
-				.load("ProdChallengesWeek3.csv");
+				.load("ProdChallengesWeek4.csv");
 
 		assertTrue(result != null && !result.getChallenges().isEmpty());
 
@@ -71,7 +71,7 @@ public class GenerationTest {
 			IllegalArgumentException, IOException, UndefinedChallengeException {
 		// load
 		ChallengeRules result = ChallengeRulesLoader
-				.load("ProdChallengesWeek3.csv");
+				.load("ProdChallengesWeek4.csv");
 
 		assertTrue(result != null && !result.getChallenges().isEmpty());
 

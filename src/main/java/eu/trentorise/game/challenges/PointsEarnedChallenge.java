@@ -32,9 +32,9 @@ public class PointsEarnedChallenge extends Challenge {
 	this.pointType = (String) tp.get(Constants.POINT_TYPE);
 	templateParams.put(Constants.CH_POINT_TYPE, this.pointType);
 	
-	if (!tp.containsKey("ch_point_type_baseline"))
+	if (!tp.containsKey(Constants.MODE))
 	    throw new UndefinedChallengeException("undefined challenge!");
-	this.baselinePointType = (String) tp.get("ch_point_type_baseline");
+	this.baselinePointType = (String) tp.get(Constants.MODE);
 	templateParams.put("ch_point_type_baseline", this.baselinePointType);
 
 	setCustomData(tp);

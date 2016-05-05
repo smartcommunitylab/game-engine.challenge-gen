@@ -217,5 +217,27 @@ public class FactoryTest {
 		&& !c.getGeneratedRules().equals(""));
 	System.out.println(c.getGeneratedRules() + "\n\n");
 
-    }	
+	// LEADERBOARD IMPROVEMENT Challange building
+	try {
+	    c = chFactory.createChallenge(ChallengeType.LEADERBOARDPOSITION,
+		    "rules/templates");
+	    params = new HashMap<String, Object>();
+	    params.put("baseline", "week classification green_past");
+	    params.put("leaderboard", "week classification green");
+	    params.put("bonus", new Integer(15));
+	    params.put("point_type", "green leaves");
+	    c.setTemplateParams(params);
+	    c.compileChallenge(testUserId);
+	} catch (UndefinedChallengeException uce) {
+	    uce.printStackTrace();
+	}
+	Assert.assertTrue("Challenge " + ChallengeType.LEADERBOARDPOSITION
+		+ " created", c != null);
+	Assert.assertTrue(c.getType().equals(ChallengeType.LEADERBOARDPOSITION));
+	Assert.assertTrue(c.getGeneratedRules() != null
+		&& !c.getGeneratedRules().equals(""));
+	System.out.println(c.getGeneratedRules() + "\n\n");
+    }
+    
+    
 }
