@@ -118,17 +118,17 @@ public class RestTest {
 		List<Content> result = facade.readGameState(get(GAMEID));
 		assertTrue(!result.isEmpty());
 		StringBuffer toWrite = new StringBuffer();
-		toWrite.append("PLAYER_ID;SCORE_GREEN_LEAVES;BIKE_TRIPS;BIKE_SHARING_TRIPS_PAST;TRAIN_TRIPS;BUS_TRIPS;WALK_KM_PAST;CAR_KM_PAST\n");
+		toWrite.append("PLAYER_ID;SCORE_GREEN_LEAVES;BIKE_KM_PAST;BIKE_SHARING_km_PAST;TRAIN_TRIPS;BUS_TRIPS;WALK_KM_PAST;CAR_KM_PAST;CHALLENGES\n");
 		for (Content content : result) {
 			toWrite.append(content.getPlayerId()
 					+ ";"
 					+ getScore(content)
 					+ ";"
 					+ content.getCustomData().getAdditionalProperties()
-							.get("bike_trips")
+							.get("bike_km_past")
 					+ ";"
 					+ content.getCustomData().getAdditionalProperties()
-							.get("bikesharing_trips_past")
+							.get("bikesharing_km_past")
 					+ ";"
 					+ content.getCustomData().getAdditionalProperties()
 							.get("train_trips")
@@ -140,12 +140,37 @@ public class RestTest {
 							.get("walk_km_past")
 					+ ";"
 					+ content.getCustomData().getAdditionalProperties()
-							.get("car_km_past") + "\n");
+							.get("car_km_past") + ";"
+					+ getChalengesStatus(content) + "\n");
+
 		}
 		IOUtils.write(toWrite.toString(),
 				new FileOutputStream("gameStatus.csv"));
 
 		assertTrue(!toWrite.toString().isEmpty());
+	}
+
+	private String getChalengesStatus(Content content) {
+		int s = 0;
+		int t = 0;
+		if (content.getCustomData() != null
+				&& content.getCustomData().getAdditionalProperties() != null) {
+			for (String k : content.getCustomData().getAdditionalProperties()
+					.keySet()) {
+				Object v = content.getCustomData().getAdditionalProperties()
+						.get(k);
+				if (v != null) {
+					if (((String) k).endsWith("_success")) {
+						boolean c = Boolean.valueOf(v.toString());
+						t++;
+						if (c) {
+							s++;
+						}
+					}
+				}
+			}
+		}
+		return s + "/" + t;
 	}
 
 	private Double getScore(Content content) {
