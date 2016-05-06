@@ -1,6 +1,7 @@
 NAME;TYPE;GOAL_TYPE;TARGET;BONUS;POINT_TYPE;DIFFICULTY;BASELINE_VARIABLE;SELECTION_CRITERIA_CUSTOM_DATA;SELECTION_CRITERIA_POINTS;SELECTION_CRITERIA_BADGES
 w4_bike_sharing_trips_5;BSTRIPNUMBER;bikesharing;5;150;green leaves;;;bikesharing_trips_past >= 1 && bikesharing_trips_past < 4;;
-w4_bike_sharing_trips_10;BSTRIPNUMBER;bikesharing;10;150;green leaves;;;bikesharing_trips_past >= 4 ;;
+w4_bike_sharing_trips_10;BSTRIPNUMBER;bikesharing;10;150;green leaves;;;bikesharing_trips_past >= 4  && bikesharing_trips_past < 10;;
+w4_bike_sharing_trips_15;BSTRIPNUMBER;bikesharing;15;150;green leaves;;;bikesharing_trips_past >= 10;;
 w4_nextbadge_BS_1;NEXTBADGE;bike sharing pioneer;2;100;green leaves;;;;;size >= 1
 w4_bike_sharing_KMpercent_50;BSPERCENT;bikesharing;0.5;150;green leaves;;bikesharing_km_past;bikesharing_km_past > 1;;
 w4_try_bike;TRIPNUMBER;bikeDistance;1;100;green leaves;;;bike_trips_past == null;;
