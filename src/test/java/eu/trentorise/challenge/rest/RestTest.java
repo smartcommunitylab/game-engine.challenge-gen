@@ -5,6 +5,7 @@ import static eu.trentorise.challenge.PropertiesUtil.GAMEID;
 import static eu.trentorise.challenge.PropertiesUtil.HOST;
 import static eu.trentorise.challenge.PropertiesUtil.INSERT_CONTEXT;
 import static eu.trentorise.challenge.PropertiesUtil.PASSWORD;
+import static eu.trentorise.challenge.PropertiesUtil.RELEVANT_CUSTOM_DATA;
 import static eu.trentorise.challenge.PropertiesUtil.SAVE_ITINERARY;
 import static eu.trentorise.challenge.PropertiesUtil.USERNAME;
 import static eu.trentorise.challenge.PropertiesUtil.get;
@@ -13,11 +14,14 @@ import static org.junit.Assert.assertTrue;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -117,30 +121,18 @@ public class RestTest {
 	public void printGameStatus() throws FileNotFoundException, IOException {
 		List<Content> result = facade.readGameState(get(GAMEID));
 		assertTrue(!result.isEmpty());
+
+		String[] customNames = get(RELEVANT_CUSTOM_DATA).split(",");
+		assertTrue(customNames != null);
+
+		List<String> listNames = Arrays.asList(customNames);
 		StringBuffer toWrite = new StringBuffer();
-		toWrite.append("PLAYER_ID;SCORE_GREEN_LEAVES;BIKE_KM_PAST;BIKE_SHARING_km_PAST;TRAIN_TRIPS;BUS_TRIPS;WALK_KM_PAST;CAR_KM_PAST;CHALLENGES\n");
+
+		toWrite.append("PLAYER_ID;SCORE_GREEN_LEAVES;"
+				+ StringUtils.join(customNames, ";") + ";CHALLENGES\n");
 		for (Content content : result) {
-			toWrite.append(content.getPlayerId()
-					+ ";"
-					+ getScore(content)
-					+ ";"
-					+ content.getCustomData().getAdditionalProperties()
-							.get("bike_km_past")
-					+ ";"
-					+ content.getCustomData().getAdditionalProperties()
-							.get("bikesharing_km_past")
-					+ ";"
-					+ content.getCustomData().getAdditionalProperties()
-							.get("train_trips")
-					+ ";"
-					+ content.getCustomData().getAdditionalProperties()
-							.get("bus_trips")
-					+ ";"
-					+ content.getCustomData().getAdditionalProperties()
-							.get("walk_km_past")
-					+ ";"
-					+ content.getCustomData().getAdditionalProperties()
-							.get("car_km_past") + ";"
+			toWrite.append(content.getPlayerId() + ";" + getScore(content)
+					+ ";" + getCustomData(content, listNames)
 					+ getChalengesStatus(content) + "\n");
 
 		}
@@ -148,6 +140,20 @@ public class RestTest {
 				new FileOutputStream("gameStatus.csv"));
 
 		assertTrue(!toWrite.toString().isEmpty());
+	}
+
+	private String getCustomData(Content content, List<String> listNames) {
+		String result = "";
+		Iterator<String> iter = listNames.iterator();
+		while (iter.hasNext()) {
+			String name = iter.next();
+			result += content.getCustomData().getAdditionalProperties()
+					.get(name);
+			if (listNames.iterator().hasNext()) {
+				result += ";";
+			}
+		}
+		return result;
 	}
 
 	private String getChalengesStatus(Content content) {

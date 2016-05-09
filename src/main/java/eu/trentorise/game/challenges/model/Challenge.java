@@ -67,7 +67,7 @@ public abstract class Challenge {
 		Calendar calendar = new GregorianCalendar();
 		calendar.setTimeZone(TimeZone.getTimeZone("Europe/Berlin"));
 		calendar.setTime(new Date());
-		calendar.add(Calendar.DAY_OF_MONTH, 1); // yesterday
+		calendar.add(Calendar.DAY_OF_MONTH, +1); // tomorrow
 		calendar.set(Calendar.HOUR_OF_DAY, 0);
 		calendar.set(Calendar.MINUTE, 0);
 		calendar.set(Calendar.SECOND, 1);
