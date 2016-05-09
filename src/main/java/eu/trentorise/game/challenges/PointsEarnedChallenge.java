@@ -46,7 +46,7 @@ public class PointsEarnedChallenge extends Challenge {
 	super.setCustomData(tp);
 
 	customData.put(Constants.CH + this.chId + "_point_type", this.pointType);
-	customData.put(Constants.CH + this.chId + "point_type_baseline", this.baselinePointType);
+	customData.put(Constants.CH + this.chId + "_point_type_baseline", this.baselinePointType);
 	if (!tp.containsKey("bonus"))
 	    throw new UndefinedChallengeException("undefined challenge!");
 	this.prize = (Integer) tp.get("bonus");
