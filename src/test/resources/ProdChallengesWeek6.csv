@@ -1,0 +1,14 @@
+NAME;TYPE;GOAL_TYPE;TARGET;BONUS;POINT_TYPE;DIFFICULTY;BASELINE_VARIABLE;SELECTION_CRITERIA_CUSTOM_DATA;SELECTION_CRITERIA_POINTS;SELECTION_CRITERIA_BADGES
+w6_walk_KMpercent_100;PERCENT;walkDistance;0.99;150;green leaves;;walk_km_past;walk_km_past >= 0 && walk_km_past < 1;;
+w6_walk_KMpercent_50;PERCENT;walkDistance;0.5;150;green leaves;;walk_km_past;walk_km_past >= 1 && walk_km_past < 5;;
+w6_walk_KMpercent_30;PERCENT;walkDistance;0.3;150;green leaves;;walk_km_past;walk_km_past >= 5 && walk_km_past < 8;;
+w6_walk_KMpercent_20;PERCENT;walkDistance;0.2;150;green leaves;;walk_km_past;walk_km_past >= 8;;
+w6_try_bike;TRIPNUMBER;bikeDistance;1;100;green leaves;;;bike_trips == null;;
+w6_bike_trips_2;TRIPNUMBER;busDistance;2;200;green leaves;;;bike_trips_past >= 1 && bike_trips_past < 2;;
+w6_bike_trips_4;TRIPNUMBER;busDistance;4;200;green leaves;;;bike_trips_past >= 2 && bike_trips_past < 4;;
+w6_bike_trips_8;TRIPNUMBER;busDistance;8;200;green leaves;;;bike_trips_past >= 4 && bike_trips_past < 8;;
+w6_bike_trips_10;TRIPNUMBER;busDistance;10;200;green leaves;;;bike_trips_past >= 8 && bike_trips_past < 10;;
+w6_nextbadge_ZI_null;NEXTBADGE;sustainable life;1;150;green leaves;;;zero_impact_trips == null;;
+w6_nextbadge_ZI_not_null;NEXTBADGE;sustainable life;1;200;green leaves;;;zero_impact_trips > 0;;
+w6_try_bike_sharing;BSTRIPNUMBER;bikesharing;1;250;green leaves;;;bikesharing_trips == null && bike_trips != null;;
+w6_nextbadge_GL;NEXTBADGE;green leaves;1;150;green leaves;;;;TRUE;
