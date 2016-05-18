@@ -61,6 +61,7 @@ then
 	$c.put('ch_@{ch_ID}_success',true);
 	insert(new PointDelta((Integer)$c.get("ch_@{ch_ID}_bonus"),"green leaves")); 
 	log('ch_@{ch_ID} BIKE SHARE KM PERCENT successful');
+	update($c);
 	update($pc); 
 end
 	

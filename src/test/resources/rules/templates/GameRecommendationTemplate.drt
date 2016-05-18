@@ -59,6 +59,7 @@ then
 	log('ch_@{ch_ID} success');
 	$c.put("ch_@{ch_ID}_success",true);
 	insert(new PointDelta((Integer)$c.get("ch_@{ch_ID}_bonus"),"green leaves"));
+	update($c);
 	update($pc); 
 end
 
