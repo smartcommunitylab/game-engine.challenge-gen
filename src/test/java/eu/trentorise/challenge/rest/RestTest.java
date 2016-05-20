@@ -14,6 +14,8 @@ import static org.junit.Assert.assertTrue;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -37,6 +39,8 @@ public class RestTest {
 
 	private GamificationEngineRestFacade facade;
 	private GamificationEngineRestFacade insertFacade;
+	private SimpleDateFormat sdf = new SimpleDateFormat(
+			"dd/MM/YYYY HH:mm:ss, zzz ZZ");
 
 	@Before
 	public void setup() {
@@ -186,6 +190,101 @@ public class RestTest {
 			}
 		}
 		return null;
+	}
+
+	@Test
+	public void challengeStatus() throws FileNotFoundException, IOException {
+		// a small utility to get a list of all users with a given challenge in
+		// a period and its status
+		List<Content> result = facade.readGameState(get(GAMEID));
+		assertTrue(!result.isEmpty());
+
+		String[] customNames = get(RELEVANT_CUSTOM_DATA).split(",");
+		assertTrue(customNames != null);
+
+		List<String> listNames = Arrays.asList(customNames);
+		StringBuffer toWrite = new StringBuffer();
+
+		toWrite.append("PLAYER_ID;CHALLENGE_TYPE;CHALLENGE_END;SUCCESS;\n");
+		for (Content content : result) {
+			List<ChallengeTuple> cts = getChallengeWithEndDate(content);
+			if (!cts.isEmpty()) {
+				for (ChallengeTuple ct : cts) {
+					if (ct.getEndDate().equals(
+							"21/05/2016 00:00:01, CEST +0200")) {
+						toWrite.append(content.getPlayerId() + ";"
+								+ ct.getType() + ";" + ct.getEndDate() + ";"
+								+ getSuccess(ct, content) + ";\n");
+					}
+				}
+			}
+		}
+		IOUtils.write(toWrite.toString(), new FileOutputStream(
+				"challengeReportstatus.csv"));
+
+		assertTrue(!toWrite.toString().isEmpty());
+	}
+
+	private boolean getSuccess(ChallengeTuple ct, Content content) {
+		for (String key : content.getCustomData().getAdditionalProperties()
+				.keySet()) {
+			if (key.equals(ct.getUuid() + "_success")) {
+				return (boolean) content.getCustomData()
+						.getAdditionalProperties().get(key);
+			}
+		}
+		return false;
+	}
+
+	private List<ChallengeTuple> getChallengeWithEndDate(Content content) {
+		List<ChallengeTuple> result = new ArrayList<RestTest.ChallengeTuple>();
+		for (String key : content.getCustomData().getAdditionalProperties()
+				.keySet()) {
+			if (key.endsWith("_endChTs")) {
+				ChallengeTuple ct = new ChallengeTuple();
+				ct.setUuid(StringUtils.removeEnd(key, "_endChTs"));
+				ct.setEndDate(sdf.format(content.getCustomData()
+						.getAdditionalProperties().get(key)));
+				ct.setType((String) content.getCustomData()
+						.getAdditionalProperties().get(ct.getUuid() + "_type"));
+				result.add(ct);
+			}
+		}
+		return result;
+	}
+
+	private class ChallengeTuple {
+
+		private String uuid;
+
+		private String type;
+
+		public String getUuid() {
+			return uuid;
+		}
+
+		public void setUuid(String uuid) {
+			this.uuid = uuid;
+		}
+
+		public String getEndDate() {
+			return endDate;
+		}
+
+		public void setEndDate(String endDate) {
+			this.endDate = endDate;
+		}
+
+		private String endDate;
+
+		public String getType() {
+			return type;
+		}
+
+		public void setType(String type) {
+			this.type = type;
+		}
+
 	}
 
 }
