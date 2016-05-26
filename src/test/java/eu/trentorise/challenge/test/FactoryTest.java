@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import eu.trentorise.game.challenges.ChallengeFactory;
 import eu.trentorise.game.challenges.api.ChallengeFactoryInterface;
+import eu.trentorise.game.challenges.api.Constants;
 import eu.trentorise.game.challenges.exception.UndefinedChallengeException;
 import eu.trentorise.game.challenges.model.Challenge;
 import eu.trentorise.game.challenges.model.ChallengeType;
@@ -73,10 +74,10 @@ public class FactoryTest {
 	    c = chFactory.createChallenge(ChallengeType.TRIPNUMBER,
 		    "rules/templates");
 	    params = new HashMap<String, Object>();
-	    params.put("trips", new Integer(1));
+	    //params.put("trips", new Integer(1));
 	    params.put("mode", "busDistance");
 	    params.put("bonus", new Integer(50));
-	    params.put("target", new Double(20));
+	    params.put("target", new Double(1));
 	    params.put("point_type", "green leaves");
 	    c.setTemplateParams(params);
 	    c.compileChallenge(testUserId);
@@ -86,6 +87,29 @@ public class FactoryTest {
 	Assert.assertTrue("Challenge " + ChallengeType.TRIPNUMBER + " created",
 		c != null);
 	Assert.assertTrue(c.getType().equals(ChallengeType.TRIPNUMBER));
+	Assert.assertTrue(c.getGeneratedRules() != null
+		&& !c.getGeneratedRules().equals(""));
+	System.out.println(c.getGeneratedRules() + "\n\n");
+	
+	// NEGATEDMODE Challenge building 
+	//analogous to TRIPNUMBER but !mode
+	try {
+	    c = chFactory.createChallenge(ChallengeType.NEGATEDMODE,
+		    "rules/templates");
+	    params = new HashMap<String, Object>();
+	    //params.put("trips", new Integer(4));
+	    params.put("mode", "carDistance");
+	    params.put("bonus", new Integer(50));
+	    params.put("target", new Double(4));
+	    params.put("point_type", "green leaves");
+	    c.setTemplateParams(params);
+	    c.compileChallenge(testUserId);
+	} catch (UndefinedChallengeException uce) {
+	    uce.printStackTrace();
+	}
+	Assert.assertTrue("Challenge " + ChallengeType.NEGATEDMODE + " created",
+		c != null);
+	Assert.assertTrue(c.getType().equals(ChallengeType.NEGATEDMODE));
 	Assert.assertTrue(c.getGeneratedRules() != null
 		&& !c.getGeneratedRules().equals(""));
 	System.out.println(c.getGeneratedRules() + "\n\n");
@@ -141,7 +165,7 @@ public class FactoryTest {
  	    params.put("target", new Long(100));
  	    params.put("bonus", new Integer(50));
  	    params.put("point_type", "green leaves");
- 	    params.put("ch_point_type_baseline", "green leaves week 3");
+ 	    params.put((String)Constants.MODE, "green leaves week 3");
  	    c.setTemplateParams(params);
  	    c.compileChallenge(testUserId);
  	} catch (UndefinedChallengeException uce) {
@@ -217,7 +241,9 @@ public class FactoryTest {
 		&& !c.getGeneratedRules().equals(""));
 	System.out.println(c.getGeneratedRules() + "\n\n");
 
-	// LEADERBOARD IMPROVEMENT Challange building
+	// LEADERBOARD IMPROVEMENT Challenge building
+	// TODO: finish this challenge
+/*	
 	try {
 	    c = chFactory.createChallenge(ChallengeType.LEADERBOARDPOSITION,
 		    "rules/templates");
@@ -237,7 +263,8 @@ public class FactoryTest {
 	Assert.assertTrue(c.getGeneratedRules() != null
 		&& !c.getGeneratedRules().equals(""));
 	System.out.println(c.getGeneratedRules() + "\n\n");
-    }
-    
+*/
+	
+    }    
     
 }

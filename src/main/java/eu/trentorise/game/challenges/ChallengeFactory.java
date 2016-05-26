@@ -17,6 +17,8 @@ public class ChallengeFactory implements ChallengeFactoryInterface {
 				return new BikeSharePercentMobilityChallenge(templateDir);
 			case TRIPNUMBER:
 			    return new TripNumberChallenge(templateDir);
+			case NEGATEDMODE:
+				return new NegatedModeChallenge(templateDir);
 			case BSTRIPNUMBER:
 				return new BikeShareTripNumberChallenge(templateDir);
 			case BADGECOLLECTION:
@@ -29,6 +31,8 @@ public class ChallengeFactory implements ChallengeFactoryInterface {
 				return new ZeroImpactChallenge(templateDir);
 			case NEXTBADGE:
 				return new NextBadgeChallenge(templateDir);
+			case LEADERBOARDPOSITION:
+				return new ClassificationImprovementChallenge(templateDir);
 			default:
 			    throw new UndefinedChallengeException("Unknown challenge type!"
 				    + chType.toString());

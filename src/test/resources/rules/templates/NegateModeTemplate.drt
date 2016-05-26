@@ -7,7 +7,7 @@ ch_point_type
 
 package eu.trentorise.game.model
 
-// CH3 - Fai almeno <X> viaggi in <Mode M> e avrai <Y> punti bonus
+//  Fai almeno <X> viaggi senza usare  <Mode M> e avrai <Y> punti bonus
 
 /* Parameters for the template
 ch_ID = unique Challenge ID (ALWAYS!): obtained via UUID
@@ -28,16 +28,16 @@ CustomData to have   []=used by
   - ch_ID_target [rule] [presentation]
   - ch_ID_success [rule] [presentation]
   - ch_ID_point_type [presentation] type of bonus point -> it must contain the name of PointConcept ("green leaves" for example)
-  - ch_ID_mode [presentation] modality of trip [values allowed: walk, bike, bikesharing, train, bus, car]
+  - ch_ID_mode [presentation] modality NOT to be used [values allowed: walk, bike, bikesharing, train, bus, car]
 */
 	
-template TravelModeTemplate
+template NegateModeTemplate
 
 rule "ch_@{ch_ID}_trace"
-/* Player @{ch_player}: fai almeno viaggi in @{ch_mode} e vinci @{ch_point_type} */
+/* Player @{ch_player}: fai almeno viaggi senza usare @{ch_mode} e vinci @{ch_point_type} */
 lock-on-active
 when 
-	InputData($distance : data['@{ch_mode}']!=null, $distance > @{ch_mode}_try_min)
+	InputData($distance : data['@{ch_mode}'], ($distance == null || $distance == 0.0))
 	$c: CustomData($now: System.currentTimeMillis(), this['ch_@{ch_ID}_startChTs'] <= $now, this['ch_@{ch_ID}_endChTs'] > $now, $counter : this['ch_@{ch_ID}_counter'])
 	$pc : PointConcept(name == "@{ch_point_type}")
 	Player(id == "@{ch_player}") 
