@@ -37,7 +37,7 @@ rule "ch_@{ch_ID}_trace"
 /* Player @{ch_player}: fai almeno viaggi senza usare @{ch_mode} e vinci @{ch_point_type} */
 lock-on-active
 when 
-	InputData($distance : data['@{ch_mode}'], ($distance == null || $distance == 0.0))
+	InputData(!data.isEmpty(), $distance : data['@{ch_mode}'], ($distance == null || $distance == 0.0))
 	$c: CustomData($now: System.currentTimeMillis(), this['ch_@{ch_ID}_startChTs'] <= $now, this['ch_@{ch_ID}_endChTs'] > $now, $counter : this['ch_@{ch_ID}_counter'])
 	$pc : PointConcept(name == "@{ch_point_type}")
 	Player(id == "@{ch_player}") 
