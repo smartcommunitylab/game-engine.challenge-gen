@@ -1,15 +1,16 @@
 NAME;TYPE;GOAL_TYPE;TARGET;BONUS;POINT_TYPE;DIFFICULTY;BASELINE_VARIABLE;SELECTION_CRITERIA_CUSTOM_DATA;SELECTION_CRITERIA_POINTS;SELECTION_CRITERIA_BADGES
-w6_zeroimpact_trips_2;ZEROIMPACT;;2;150;green leaves;;;zero_impact_trips == null;;
-w6_zeroimpact_trips_4;ZEROIMPACT;;4;200;green leaves;;;zero_impact_trips >=0 && zero_impact_trips < 11;;
-w6_zeroimpact_trips_6;ZEROIMPACT;;6;200;green leaves;;;zero_impact_trips >=11 && zero_impact_trips < 20;;
-w6_zeroimpact_trips_8;ZEROIMPACT;;8;200;green leaves;;;zero_impact_trips >= 20;;
-w8_try_walk;TRIPNUMBER;walkDistance;1;100;green leaves;;;bike_trips != null && walk_trips == null;;
-w8_walk_KMpercent_100;PERCENT;walkDistance;1.2;150;green leaves;;walk_km_past;walk_km_past > 0 && walk_km_past < 2;;
-w8_walk_KMpercent_30;PERCENT;walkDistance;0.3;150;green leaves;;walk_km_past;walk_km_past >= 2 && walk_km_past < 8;;
-w8_walk_KMpercent_20;PERCENT;walkDistance;0.2;150;green leaves;;walk_km_past;walk_km_past >= 8;;
-w8_try_bike;TRIPNUMBER;bikeDistance;1;100;green leaves;;;bike_trips == null && walk_trips != null;;
-w8_bike_KMpercent_50;PERCENT;bikeDistance;0.5;150;green leaves;;bike_km_past;bike_km_past >=2 && bike_km_past < 4;;
+w8_no_car_4;NEGATEDMODE;carDistance;4;250;green leaves;;;car_trips > 1;;
+w8_try_bike;TRIPNUMBER;bikeDistance;1;100;green leaves;;;bike_trips_past == null && walk_trips_past > 0;;
+w8_bike_KMpercent_50;PERCENT;bikeDistance;0.5;150;green leaves;;bike_km_past;bike_km_past > 0 && bike_km_past < 4;;
 w8_bike_KMpercent_30;PERCENT;bikeDistance;0.3;200;green leaves;;bike_km_past;bike_km_past >= 4 && bike_km_past < 6;;
 w8_bike_KMpercent_20;PERCENT;bikeDistance;0.2;200;green leaves;;bike_km_past;bike_km_past >= 6 && bike_km_past < 10;;
 w8_bike_KMpercent_10;PERCENT;bikeDistance;0.1;200;green leaves;;bike_km_past;bike_km_past >= 10;;
+w8_try_walk;TRIPNUMBER;walkDistance;1;100;green leaves;;;walk_trips == null;;
+w8_walk_KMpercent_100;PERCENT;walkDistance;1.2;150;green leaves;;walk_km_past;walk_km_past > 0 && walk_km_past < 2;;
+w8_walk_KMpercent_30;PERCENT;walkDistance;0.3;150;green leaves;;walk_km_past;walk_km_past >= 2 && walk_km_past < 8;;
+w8_walk_KMpercent_20;PERCENT;walkDistance;0.2;150;green leaves;;walk_km_past;walk_km_past >= 8;;
+w8_zeroimpact_trips_2;ZEROIMPACT;;2;150;green leaves;;;zero_impact_trips == null;;
+w8_zeroimpact_trips_4;ZEROIMPACT;;4;200;green leaves;;;zero_impact_trips >=0 && zero_impact_trips < 20;;
+w8_zeroimpact_trips_6;ZEROIMPACT;;6;200;green leaves;;;zero_impact_trips >= 20 && zero_impact_trips < 40;;
+w8_zeroimpact_trips_8;ZEROIMPACT;;8;200;green leaves;;;zero_impact_trips >= 40;;
 w8_nextbadge_GL;NEXTBADGE;green leaves;1;150;green leaves;;;;TRUE;
