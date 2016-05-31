@@ -135,8 +135,9 @@ public class RestTest {
 		toWrite.append("PLAYER_ID;SCORE_GREEN_LEAVES;"
 				+ StringUtils.join(customNames, ";") + ";CHALLENGES\n");
 		for (Content content : result) {
-			toWrite.append(content.getPlayerId() + ";" + getScore(content)
-					+ ";" + getCustomData(content, listNames)
+			toWrite.append(content.getPlayerId() + ";"
+					+ getScore(content, "green leaves") + ";"
+					+ getCustomData(content, listNames)
 					+ getChalengesStatus(content) + "\n");
 
 		}
@@ -183,9 +184,9 @@ public class RestTest {
 		return s + "/" + t;
 	}
 
-	private Double getScore(Content content) {
+	private Double getScore(Content content, String points) {
 		for (PointConcept pc : content.getState().getPointConcept()) {
-			if (pc.getName().equalsIgnoreCase("green leaves")) {
+			if (pc.getName().equalsIgnoreCase(points)) {
 				return pc.getScore();
 			}
 		}
@@ -207,14 +208,16 @@ public class RestTest {
 
 		toWrite.append("PLAYER_ID;CHALLENGE_TYPE;CHALLENGE_END;SUCCESS;\n");
 		for (Content content : result) {
-			List<ChallengeTuple> cts = getChallengeWithEndDate(content);
-			if (!cts.isEmpty()) {
-				for (ChallengeTuple ct : cts) {
-					if (ct.getEndDate().equals(
-							"21/05/2016 00:00:01, CEST +0200")) {
-						toWrite.append(content.getPlayerId() + ";"
-								+ ct.getType() + ";" + ct.getEndDate() + ";"
-								+ getSuccess(ct, content) + ";\n");
+			if (getScore(content, "green leaves week 5") > 0) {
+				List<ChallengeTuple> cts = getChallengeWithEndDate(content);
+				if (!cts.isEmpty()) {
+					for (ChallengeTuple ct : cts) {
+						if (ct.getEndDate().equals(
+								"21/05/2016 00:00:01, CEST +0200")) {
+							toWrite.append(content.getPlayerId() + ";"
+									+ ct.getType() + ";" + ct.getEndDate()
+									+ ";" + getSuccess(ct, content) + ";\n");
+						}
 					}
 				}
 			}

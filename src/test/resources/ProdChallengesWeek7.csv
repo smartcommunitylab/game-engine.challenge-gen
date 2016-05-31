@@ -1,17 +1,9 @@
 NAME;TYPE;GOAL_TYPE;TARGET;BONUS;POINT_TYPE;DIFFICULTY;BASELINE_VARIABLE;SELECTION_CRITERIA_CUSTOM_DATA;SELECTION_CRITERIA_POINTS;SELECTION_CRITERIA_BADGES
-w7_walk_KMpercent_100;PERCENT;walkDistance;1.2;150;green leaves;;walk_km_past;walk_km_past > 0 && walk_km_past < 2;;
-w7_walk_KMpercent_30;PERCENT;walkDistance;0.3;150;green leaves;;walk_km_past;walk_km_past >= 2 && walk_km_past < 8;;
-w7_walk_KMpercent_20;PERCENT;walkDistance;0.2;150;green leaves;;walk_km_past;walk_km_past >= 8;;
-w7_nextbadge_ZI_2;NEXTBADGE;sustainable life;2;100;green leaves;;;;;size == 1
-w7_nextbadge_ZI_1;NEXTBADGE;sustainable life;1;100;green leaves;;;;;size > 1 
-w7_recommendation_2;RECOMMENDATION;;1;50;green leaves;;;recommendations >= 1;;
-w7_try_bike;TRIPNUMBER;bikeDistance;1;100;green leaves;;;bike_trips == null && bus_trips > 1;;
-w7_try_bus;TRIPNUMBER;busDistance;1;150;green leaves;;;bus_trips == null && bike_trips > 1;;
-w7_bike_KMpercent_50;PERCENT;bikeDistance;0.5;150;green leaves;;bike_km_past;bike_km_past >=2 && bike_km_past < 4;;
-w7_bike_KMpercent_30;PERCENT;bikeDistance;0.3;200;green leaves;;bike_km_past;bike_km_past >= 4 && bike_km_past < 6;;
-w7_bike_KMpercent_20;PERCENT;bikeDistance;0.2;200;green leaves;;bike_km_past;bike_km_past >= 6 && bike_km_past < 10;;
-w7_bike_KMpercent_10;PERCENT;bikeDistance;0.1;200;green leaves;;bike_km_past;bike_km_past >= 10;;
-w7_zeroimpact_trips_2;ZEROIMPACT;;2;150;green leaves;;;zero_impact_trips == null;;
-w7_zeroimpact_trips_4;ZEROIMPACT;;4;150;green leaves;;;zero_impact_trips >= 1 && zero_impact_trips < 8;;
-w7_zeroimpact_trips_8;ZEROIMPACT;;8;150;green leaves;;;zero_impact_trips >= 8;;
-w7_nextbadge_GL;NEXTBADGE;green leaves;1;150;green leaves;;;;TRUE;
+w7_no_car_2;NEGATEDMODE;carDistance;2;250;green leaves;;;;green leaves week 6 < 20;
+w7_no_car_4;NEGATEDMODE;carDistance;4;250;green leaves;;;;green leaves week 6 >= 20 && green leaves week 6 < 200;
+w7_no_car_8;NEGATEDMODE;carDistance;8;250;green leaves;;;;green leaves week 6 >= 200 && green leaves week 6 < 600;
+w7_no_car_12;NEGATEDMODE;carDistance;12;200;green leaves;;;;green leaves week 6 >= 600;
+w7_recommendation_1;RECOMMENDATION;;1;200;green leaves;;;;green leaves > 0 && green leaves < 1500;
+w7_recommendation_2;RECOMMENDATION;;2;250;green leaves;;;;green leaves >= 1500;
+w7_nextbadge_PR_1;NEXTBADGE;park and ride pioneer;1;200;green leaves;;;;;size <= 1
+w7_points_GL_100;POINTSEARNED;green leaves;100;100;green leaves;;;;TRUE;
