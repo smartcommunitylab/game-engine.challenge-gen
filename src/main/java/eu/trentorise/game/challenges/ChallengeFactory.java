@@ -31,6 +31,8 @@ public class ChallengeFactory implements ChallengeFactoryInterface {
 			return new ZeroImpactChallenge(templateDir);
 		case NEXTBADGE:
 			return new NextBadgeChallenge(templateDir);
+		case SURVEYDATA:
+			return new SurveyCompletionChallenge(templateDir);
 			// case LEADERBOARDPOSITION:
 			// return new ClassificationImprovementChallenge(templateDir);
 		default:

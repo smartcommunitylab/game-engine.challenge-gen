@@ -155,8 +155,27 @@ public class FactoryTest {
 	Assert.assertTrue(c.getGeneratedRules() != null
 		&& !c.getGeneratedRules().equals(""));
 	System.out.println(c.getGeneratedRules() + "\n\n");
-  
-    
+
+	
+	// SURVEY COMPLETION Challenge building
+	try {
+	    c = chFactory.createChallenge(ChallengeType.SURVEYDATA,
+		    "rules/templates");
+	    params = new HashMap<String, Object>();
+	    params.put("point_type", "green leaves");
+	    params.put("bonus", new Integer(500));
+	    c.setTemplateParams(params);
+	    c.compileChallenge(testUserId);
+	} catch (UndefinedChallengeException uce) {
+	    uce.printStackTrace();
+	}
+	Assert.assertTrue("Challenge " + ChallengeType.SURVEYDATA
+		+ " created", c != null);
+	Assert.assertTrue(c.getType().equals(ChallengeType.SURVEYDATA));
+	Assert.assertTrue(c.getGeneratedRules() != null
+		&& !c.getGeneratedRules().equals(""));
+	System.out.println(c.getGeneratedRules() + "\n\n");
+   
     // POINTSEARNED Challenge building
  	try {
  	    c = chFactory.createChallenge(ChallengeType.POINTSEARNED,
