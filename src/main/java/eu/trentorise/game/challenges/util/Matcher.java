@@ -261,10 +261,25 @@ public class Matcher {
 			} else {
 				vars = getVariablesFromSingleCriteria(criteria);
 			}
+
 			for (String var : vars) {
 				if (criteria.contains("null")) {
 					// do nothing
-				} else if (!user.getCustomData().getAdditionalProperties()
+				}
+				// if is a single criteria and have a null check, don't try to
+				// read additional properties
+				// if (isSingleCriteria(criteria)) {
+				// if (criteria.contains("null")) {
+				// // do nothing
+				// } else if (!user.getCustomData().getAdditionalProperties()
+				// .containsKey(var)
+				// || user.getCustomData().getAdditionalProperties()
+				// .get(var) == null) {
+				// logger.warn("Custom data not found " + var);
+				// return false;
+				// }
+				// }
+				else if (!user.getCustomData().getAdditionalProperties()
 						.containsKey(var)
 						|| user.getCustomData().getAdditionalProperties()
 								.get(var) == null) {
@@ -311,5 +326,10 @@ public class Matcher {
 			}
 		}
 		return false;
+	}
+
+	private boolean isSingleCriteria(String value) {
+		return StringUtils.countMatches(value, operators[0]) == 0 ? true
+				: false;
 	}
 }

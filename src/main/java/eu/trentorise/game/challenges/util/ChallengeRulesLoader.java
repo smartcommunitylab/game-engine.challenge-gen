@@ -16,73 +16,75 @@ import org.apache.logging.log4j.Logger;
  */
 public final class ChallengeRulesLoader {
 
-    private static final Logger logger = LogManager
-	    .getLogger(ChallengeRulesLoader.class);
+	private static final Logger logger = LogManager
+			.getLogger(ChallengeRulesLoader.class);
 
-    private ChallengeRulesLoader() {
-    }
+	private ChallengeRulesLoader() {
+	}
 
-    public static ChallengeRules load(String ref) throws IOException,
-	    NullPointerException, IllegalArgumentException {
-	if (ref == null) {
-	    logger.error("Input file must be not null");
-	    throw new NullPointerException("Input file must be not null");
-	}
-	if (!ref.endsWith(".csv")) {
-	    logger.error("challenges rules file must be a csv file");
-	    throw new IllegalArgumentException(
-		    "challenges rules file must be a csv file");
-	}
-	BufferedReader rdr = null;
-	try {
+	public static ChallengeRules load(String ref) throws IOException,
+			NullPointerException, IllegalArgumentException {
+		if (ref == null) {
+			logger.error("Input file must be not null");
+			throw new NullPointerException("Input file must be not null");
+		}
+		if (!ref.endsWith(".csv")) {
+			logger.error("challenges rules file must be a csv file");
+			throw new IllegalArgumentException(
+					"challenges rules file must be a csv file");
+		}
+		BufferedReader rdr = null;
+		try {
 
-	    try {
-		// open csv file
-		rdr = new BufferedReader(new StringReader(
-			IOUtils.toString(Thread.currentThread()
-				.getContextClassLoader()
-				.getResourceAsStream(ref))));
-	    } catch (IOException e) {
-		logger.error(e.getMessage(), e);
-		return null;
-	    } catch (NumberFormatException e) {
-		logger.error(e.getMessage(), e);
-		return null;
-	    } catch (NullPointerException npe) {
-		rdr = new BufferedReader(new FileReader(ref));
-	    }
-	    ChallengeRules response = new ChallengeRules();
-	    boolean first = true;
-	    for (String line = rdr.readLine(); line != null; line = rdr
-		    .readLine()) {
-		if (first) {
-		    first = false;
-		    continue;
+			try {
+				// open csv file
+				rdr = new BufferedReader(new StringReader(
+						IOUtils.toString(Thread.currentThread()
+								.getContextClassLoader()
+								.getResourceAsStream(ref))));
+			} catch (IOException e) {
+				logger.error(e.getMessage(), e);
+				return null;
+			} catch (NumberFormatException e) {
+				logger.error(e.getMessage(), e);
+				return null;
+			} catch (NullPointerException npe) {
+				rdr = new BufferedReader(new FileReader(ref));
+			}
+			ChallengeRules response = new ChallengeRules();
+			boolean first = true;
+			for (String line = rdr.readLine(); line != null; line = rdr
+					.readLine()) {
+				if (first) {
+					first = false;
+					continue;
+				}
+				String[] elements = line.split(";");
+				ChallengeRuleRow crr = new ChallengeRuleRow();
+				crr.setName(elements[0]);
+				crr.setType(elements[1]);
+				crr.setGoalType(elements[2]);
+				if (elements[3] != null && !elements[3].isEmpty()) {
+					crr.setTarget(Double.valueOf(elements[3]));
+				}
+				crr.setBonus(Integer.valueOf(elements[4]));
+				crr.setPointType(elements[5]);
+				crr.setBaselineVar(elements[7]);
+				crr.setSelectionCriteriaCustomData(elements[8]);
+				if (elements.length > 9) {
+					crr.setSelectionCriteriaPoints(elements[9]);
+				}
+				if (elements.length > 10) {
+					crr.setSelectionCriteriaBadges(elements[10]);
+				}
+				response.getChallenges().add(crr);
+			}
+			logger.debug("Rows in file " + response.getChallenges().size());
+			return response;
+		} finally {
+			if (rdr != null) {
+				rdr.close();
+			}
 		}
-		String[] elements = line.split(";");
-		ChallengeRuleRow crr = new ChallengeRuleRow();
-		crr.setName(elements[0]);
-		crr.setType(elements[1]);
-		crr.setGoalType(elements[2]);
-		crr.setTarget(Double.valueOf(elements[3]));
-		crr.setBonus(Integer.valueOf(elements[4]));
-		crr.setPointType(elements[5]);
-		crr.setBaselineVar(elements[7]);
-		crr.setSelectionCriteriaCustomData(elements[8]);
-		if (elements.length > 9) {
-		    crr.setSelectionCriteriaPoints(elements[9]);
-		}
-		if (elements.length > 10) {
-		    crr.setSelectionCriteriaBadges(elements[10]);
-		}
-		response.getChallenges().add(crr);
-	    }
-	    logger.debug("Rows in file " + response.getChallenges().size());
-	    return response;
-	} finally {
-	    if (rdr != null) {
-		rdr.close();
-	    }
 	}
-    }
 }
