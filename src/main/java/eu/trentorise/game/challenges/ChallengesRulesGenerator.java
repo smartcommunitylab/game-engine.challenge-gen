@@ -129,10 +129,16 @@ public class ChallengesRulesGenerator {
 		IOUtils.write(reportBuffer.toString(), fout);
 
 		// remove package declaration after first
-		String result = filterPackageDeclaration("/** "
-				+ challengeSpec.getType() + " "
-				+ challengeSpec.getTarget().toString() + " **/\n"
-				+ buffer.toString());
+		String temp = "";
+		if (challengeSpec.getTarget() != null) {
+			temp = "/** " + challengeSpec.getType() + " "
+					+ challengeSpec.getTarget().toString() + " **/\n"
+					+ buffer.toString();
+		} else {
+			temp = "/** " + challengeSpec.getType() + " **/\n"
+					+ buffer.toString();
+		}
+		String result = filterPackageDeclaration(temp);
 
 		// write generate rule to a file
 		IOUtils.write(result, rout);
