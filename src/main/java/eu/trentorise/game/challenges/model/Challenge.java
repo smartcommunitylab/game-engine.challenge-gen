@@ -67,7 +67,7 @@ public abstract class Challenge {
 		Calendar calendar = new GregorianCalendar();
 		calendar.setTimeZone(TimeZone.getTimeZone("Europe/Berlin"));
 		calendar.setTime(new Date());
-		calendar.add(Calendar.DAY_OF_MONTH, -1); // tomorrow
+		calendar.add(Calendar.DAY_OF_MONTH, +3); // yesterday
 		calendar.set(Calendar.HOUR_OF_DAY, 0);
 		calendar.set(Calendar.MINUTE, 0);
 		calendar.set(Calendar.SECOND, 1);
@@ -77,7 +77,8 @@ public abstract class Challenge {
 		}
 		customData.put(Constants.CH + this.chId + Constants.START_CHTS,
 				calendar.getTimeInMillis());
-		calendar.add(Calendar.DAY_OF_MONTH, CHALLENGE_DURATION); // tomorrow + 1
+		calendar.add(Calendar.DAY_OF_MONTH, CHALLENGE_DURATION); // tomorrow
+																	// + 1
 		// week
 		customData.put(Constants.CH + this.chId + Constants.END_CHTS,
 				calendar.getTimeInMillis());
