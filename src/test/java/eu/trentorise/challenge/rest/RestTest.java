@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -41,6 +43,11 @@ public class RestTest {
 	private GamificationEngineRestFacade insertFacade;
 	private SimpleDateFormat sdf = new SimpleDateFormat(
 			"dd/MM/YYYY HH:mm:ss, zzz ZZ");
+
+	private final String[] COLUMNS = new String[] { "success", "startChTs",
+			"point_type", "type", "endChTs", "counter", "target", "bonus",
+			"mode", "recommendations_sent_during_challenges",
+			"Km_traveled_during_challenge" };
 
 	@Before
 	public void setup() {
@@ -287,6 +294,146 @@ public class RestTest {
 
 		public void setType(String type) {
 			this.type = type;
+		}
+
+	}
+
+	@Test
+	public void challengeReportDetails() throws FileNotFoundException,
+			IOException {
+		// a small utility to get a list of all users with a given challenge in
+		// a period and its status
+		List<Content> result = facade.readGameState(get(GAMEID));
+		assertTrue(!result.isEmpty());
+
+		StringBuffer toWrite = new StringBuffer();
+
+		// build weeks details
+		toWrite.append("PLAYER_ID;CHALLENGE_UUID;"
+				+ StringUtils.join(COLUMNS, ";") + "\n");
+		Map<String, WeekChallenge> challenges = new HashMap<String, WeekChallenge>();
+		for (Content content : result) {
+			if (content.getCustomData() != null
+					&& content.getCustomData().getAdditionalProperties() != null
+					&& !content.getCustomData().getAdditionalProperties()
+							.isEmpty()) {
+				Map<String, Object> data = content.getCustomData()
+						.getAdditionalProperties();
+				Set<String> keys = data.keySet();
+				for (String key : keys) {
+					if (key.startsWith("ch_")) {
+						StringTokenizer stk = new StringTokenizer(key, "_");
+						String k = "";
+						try {
+							k = stk.nextToken();
+							k = stk.nextToken();
+							if (!challenges.containsKey(k)) {
+								WeekChallenge wc = new WeekChallenge();
+								if (k.endsWith("point")) {
+									k = StringUtils.removeEnd(k, "point");
+								}
+
+								wc.setId(k);
+								wc.setData(new HashMap<String, String>());
+								wc.getPlayerId().add(content.getPlayerId());
+								challenges.put(k, wc);
+							}
+							WeekChallenge c = challenges.get(k);
+							if (!c.getData().containsKey(key)) {
+								c.getData().put(key,
+										String.valueOf(data.get(key)));
+								if (!c.getPlayerId().contains(
+										content.getPlayerId())) {
+									c.getPlayerId().add(content.getPlayerId());
+								}
+								challenges.put(k, c);
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		}
+
+		for (String k : challenges.keySet()) {
+			WeekChallenge challenge = challenges.get(k);
+			toWrite.append(challenge.getPlayerId().get(0) + ";" + k + ";"
+					+ getCustomDataFromColumn(challenge, COLUMNS) + ";\n");
+		}
+
+		IOUtils.write(toWrite.toString(), new FileOutputStream(
+				"challengeReportDetails.csv"));
+
+		assertTrue(!toWrite.toString().isEmpty());
+	}
+
+	private String getCustomDataFromColumn(WeekChallenge wc, String[] cls) {
+		Map<String, Boolean> used = new HashMap<String, Boolean>();
+		StringBuffer sb = new StringBuffer();
+		for (String c : cls) {
+
+			if (!keySetContains(wc.getData().keySet(), c)) {
+				sb.append(";");
+			} else {
+				for (String key : wc.getData().keySet()) {
+					if (key.equals("ch_21912ae0-df3d-4cb2-b554-d7ed5c514aaa_point_type")) {
+						System.out.println();
+					}
+					if (key.endsWith(c)
+							&& (used.get(key) == null || used.get(key) != null
+									&& !used.get(key))) {
+						if (c.equals("type") && key.endsWith("point_type")) {
+							sb.append(";");
+							break;
+						}
+						sb.append(wc.getData().get(key)).append(";");
+						used.put(key, true);
+						break;
+					}
+				}
+			}
+		}
+		return sb.toString();
+	}
+
+	private boolean keySetContains(Set<String> keySet, String c) {
+		for (String k : keySet) {
+			if (k.endsWith(c)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private class WeekChallenge {
+
+		private String id;
+		private Map<String, String> data = new HashMap<String, String>();
+		private List<String> playerId = new ArrayList<String>();
+
+		public String getId() {
+			return id;
+		}
+
+		public void setId(String id) {
+			this.id = id;
+		}
+
+		public Map<String, String> getData() {
+			return data;
+		}
+
+		public void setData(Map<String, String> data) {
+			this.data = data;
+		}
+
+		public List<String> getPlayerId() {
+			return playerId;
+		}
+
+		public void setPlayerId(List<String> playerId) {
+			this.playerId = playerId;
 		}
 
 	}
