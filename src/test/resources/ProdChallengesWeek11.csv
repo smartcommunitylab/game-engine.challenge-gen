@@ -1,0 +1,7 @@
+NAME;TYPE;GOAL_TYPE;TARGET;BONUS;POINT_TYPE;DIFFICULTY;BASELINE_VARIABLE;SELECTION_CRITERIA_CUSTOM_DATA;SELECTION_CRITERIA_POINTS;SELECTION_CRITERIA_BADGES
+w11_survey;SURVEYDATA;;;500;green leaves;;;survey_completed != true;;
+w11_nextbadge_GL;NEXTBADGE;green leaves;1;250;green leaves;;;;TRUE;
+w11_zeroimpact_trips_2;ZEROIMPACT;;2;400;green leaves;;;zero_impact_trips == null;;
+w11_zeroimpact_trips_4;ZEROIMPACT;;4;400;green leaves;;;zero_impact_trips >= 0 && zero_impact_trips < 11;;
+w11_zeroimpact_trips_6;ZEROIMPACT;;6;250;green leaves;;;zero_impact_trips >= 11 && zero_impact_trips < 20;;
+w11_zeroimpact_trips_8;ZEROIMPACT;;8;250;green leaves;;;zero_impact_trips >= 20;;
