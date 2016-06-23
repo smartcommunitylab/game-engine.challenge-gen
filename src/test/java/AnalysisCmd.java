@@ -83,6 +83,8 @@ public class AnalysisCmd {
 						secondKey,
 						propDiff(firstData.get(secondKey),
 								secondData.get(secondKey)));
+			} else {
+				resultData.put(secondKey, new Properties());
 			}
 		}
 
@@ -103,7 +105,11 @@ public class AnalysisCmd {
 						sb.append(key + ";");
 						continue;
 					}
-					sb.append(data.get(column) + ";");
+					if (data.containsKey(column)) {
+						sb.append(data.get(column) + ";");
+					} else {
+						sb.append(secondData.get(key).get(column) + ";");
+					}
 				}
 				sb.append("\n");
 			}
