@@ -11,3 +11,6 @@
 /gamification.perf.log
 /gameStatus.csv
 /challengeReportstatus.csv
+/challengeReport.csv
+/challengeReportDetails.csv
+/diff.csv
