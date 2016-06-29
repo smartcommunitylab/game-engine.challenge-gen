@@ -3,6 +3,7 @@ package eu.trentorise.game.challenges;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +25,7 @@ import eu.trentorise.game.challenges.exception.UndefinedChallengeException;
 import eu.trentorise.game.challenges.rest.Content;
 import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
 import eu.trentorise.game.challenges.rest.RuleDto;
+import eu.trentorise.game.challenges.util.CalendarUtil;
 import eu.trentorise.game.challenges.util.ChallengeRuleRow;
 import eu.trentorise.game.challenges.util.ChallengeRules;
 import eu.trentorise.game.challenges.util.ChallengeRulesLoader;
@@ -41,6 +43,8 @@ public class ChallengeGeneratorTool {
 
 	private static Options options;
 	private static HelpFormatter helpFormatter;
+	private static SimpleDateFormat sdf = new SimpleDateFormat(
+			"dd/MM/YYYY HH:mm:ss , zzz ZZ");
 
 	public static void main(String[] args) throws ParseException {
 		// parse options
@@ -153,6 +157,10 @@ public class ChallengeGeneratorTool {
 			System.err.println("Warning: no users for game " + gameId);
 			return;
 		}
+		System.out.println("Start date "
+				+ sdf.format(CalendarUtil.getStart().getTime()));
+		System.out.println("End date "
+				+ sdf.format(CalendarUtil.getEnd().getTime()));
 		System.out
 				.println("Reading game from gamification engine game state for gameId: "
 						+ gameId);
@@ -234,7 +242,7 @@ public class ChallengeGeneratorTool {
 		} catch (IOException e) {
 			System.err.println("Error in closing stream file");
 		}
-		System.out.println("Generated rules: " + tot);
+		System.out.println("Generated rules " + tot);
 		System.out.println("Written output file " + output);
 		System.out.println("Written report file generated-rules-report.csv");
 

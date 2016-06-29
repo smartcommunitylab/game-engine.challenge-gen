@@ -4,27 +4,20 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.UUID;
 
 import org.drools.template.ObjectDataCompiler;
 
 import eu.trentorise.game.challenges.api.Constants;
 import eu.trentorise.game.challenges.exception.UndefinedChallengeException;
+import eu.trentorise.game.challenges.util.CalendarUtil;
 
 public abstract class Challenge {
-
-	// change constant in order to change number of days in the challenge
-	// (please see hours, minutes and seconds!)
-	private static final int CHALLENGE_DURATION = 9;
 
 	protected String drlName;
 
@@ -39,9 +32,6 @@ public abstract class Challenge {
 	protected String generatedRules = "";
 
 	private String templateDir;
-	private SimpleDateFormat sdf = new SimpleDateFormat(
-			"dd/MM/YYYY HH:mm:ss , zzz ZZ");
-	private static boolean printedDates = false;
 
 	/**
 	 * Create a new challenge using given template
@@ -64,29 +54,12 @@ public abstract class Challenge {
 		customData = new HashMap<String, Object>();
 		customData.put(Constants.CH + this.chId + Constants.TYPE, this.type);
 		// add beginning and end of challenge
-		Calendar calendar = new GregorianCalendar();
-		calendar.setTimeZone(TimeZone.getTimeZone("Europe/Berlin"));
-		calendar.setTime(new Date());
-		calendar.add(Calendar.DAY_OF_MONTH, +1); // tomorrow
-		calendar.set(Calendar.HOUR_OF_DAY, 0);
-		calendar.set(Calendar.MINUTE, 0);
-		calendar.set(Calendar.SECOND, 1);
-		if (!printedDates) {
-			System.out.println("Challenge starting time: "
-					+ sdf.format(calendar.getTime()));
-		}
+		Calendar calendar = (CalendarUtil.getStart());
 		customData.put(Constants.CH + this.chId + Constants.START_CHTS,
 				calendar.getTimeInMillis());
-		calendar.add(Calendar.DAY_OF_MONTH, CHALLENGE_DURATION); // tomorrow
-																	// + 1
-		// week
+		// add challenge duration
 		customData.put(Constants.CH + this.chId + Constants.END_CHTS,
-				calendar.getTimeInMillis());
-		if (!printedDates) {
-			System.out.println("Challenge end time: "
-					+ sdf.format(calendar.getTime()));
-		}
-		printedDates = true;
+				CalendarUtil.getEnd().getTimeInMillis());
 		customData.put(Constants.CH + this.chId + Constants.SUCCESS, false);
 	}
 
