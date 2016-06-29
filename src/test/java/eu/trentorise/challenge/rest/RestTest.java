@@ -216,19 +216,18 @@ public class RestTest {
 
 		toWrite.append("PLAYER_ID;CHALLENGE_TYPE;CHALLENGE_END;SUCCESS;\n");
 		for (Content content : result) {
-			if (getScore(content, "green leaves week 5") > 0) {
-				List<ChallengeTuple> cts = getChallengeWithEndDate(content);
-				if (!cts.isEmpty()) {
-					for (ChallengeTuple ct : cts) {
-						if (ct.getEndDate().equals(
-								"04/06/2016 00:00:01, CEST +0200")) {
-							toWrite.append(content.getPlayerId() + ";"
-									+ ct.getType() + ";" + ct.getEndDate()
-									+ ";" + getSuccess(ct, content) + ";\n");
-						}
+			// if (getScore(content, "green leaves week 5") > 0) {
+			List<ChallengeTuple> cts = getChallengeWithEndDate(content);
+			if (!cts.isEmpty()) {
+				for (ChallengeTuple ct : cts) {
+					if (ct.getEndDate().contains("11/07/2016")) {
+						toWrite.append(content.getPlayerId() + ";"
+								+ ct.getType() + ";" + ct.getEndDate() + ";"
+								+ getSuccess(ct, content) + ";\n");
 					}
 				}
 			}
+			// }
 		}
 		IOUtils.write(toWrite.toString(), new FileOutputStream(
 				"challengeReportstatus.csv"));
