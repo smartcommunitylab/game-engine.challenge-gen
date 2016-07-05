@@ -220,7 +220,7 @@ public class RestTest {
 			List<ChallengeTuple> cts = getChallengeWithEndDate(content);
 			if (!cts.isEmpty()) {
 				for (ChallengeTuple ct : cts) {
-					if (ct.getEndDate().contains("11/07/2016")) {
+					if (ct.getEndDate().contains("18/07/2016 00:00:01")) {
 						toWrite.append(content.getPlayerId() + ";"
 								+ ct.getType() + ";" + ct.getEndDate() + ";"
 								+ getSuccess(ct, content) + ";\n");
@@ -310,7 +310,7 @@ public class RestTest {
 		// build weeks details
 		toWrite.append("PLAYER_ID;CHALLENGE_UUID;"
 				+ StringUtils.join(COLUMNS, ";") + "\n");
-		Map<String, WeekChallenge> challenges = new HashMap<String, WeekChallenge>();
+		List<WeekChallenge> challenges = new ArrayList<WeekChallenge>();
 		for (Content content : result) {
 			if (content.getCustomData() != null
 					&& content.getCustomData().getAdditionalProperties() != null
@@ -321,23 +321,33 @@ public class RestTest {
 				Set<String> keys = data.keySet();
 				for (String key : keys) {
 					if (key.startsWith("ch_")) {
+						// try to fix error on data
+						if (key.endsWith("point_type_baseline")) {
+							if (StringUtils.countMatches(key, "_") == 3) {
+								key = StringUtils.replace(key,
+										"point_type_baseline",
+										"_point_type_baseline");
+							}
+						}
 						StringTokenizer stk = new StringTokenizer(key, "_");
 						String k = "";
 						try {
 							k = stk.nextToken();
 							k = stk.nextToken();
-							if (!challenges.containsKey(k)) {
-								WeekChallenge wc = new WeekChallenge();
+							WeekChallenge c = null;
+							if (!containChallengeWithId(challenges, k)) {
+								c = new WeekChallenge();
 								if (k.endsWith("point")) {
 									k = StringUtils.removeEnd(k, "point");
 								}
 
-								wc.setId(k);
-								wc.setData(new HashMap<String, String>());
-								wc.getPlayerId().add(content.getPlayerId());
-								challenges.put(k, wc);
+								c.setId(k);
+								c.setData(new HashMap<String, String>());
+								c.getPlayerId().add(content.getPlayerId());
+								challenges.add(c);
+							} else {
+								c = findChallegeWithId(challenges, k);
 							}
-							WeekChallenge c = challenges.get(k);
 							if (!c.getData().containsKey(key)) {
 								c.getData().put(key,
 										String.valueOf(data.get(key)));
@@ -345,7 +355,6 @@ public class RestTest {
 										content.getPlayerId())) {
 									c.getPlayerId().add(content.getPlayerId());
 								}
-								challenges.put(k, c);
 							}
 						} catch (Exception e) {
 							e.printStackTrace();
@@ -355,16 +364,35 @@ public class RestTest {
 			}
 		}
 
-		for (String k : challenges.keySet()) {
-			WeekChallenge challenge = challenges.get(k);
-			toWrite.append(challenge.getPlayerId().get(0) + ";" + k + ";"
-					+ getCustomDataFromColumn(challenge, COLUMNS) + ";\n");
+		for (WeekChallenge wc : challenges) {
+			toWrite.append(wc.getPlayerId().get(0) + ";" + wc.getId() + ";"
+					+ getCustomDataFromColumn(wc, COLUMNS) + ";\n");
 		}
 
 		IOUtils.write(toWrite.toString(), new FileOutputStream(
 				"challengeReportDetails.csv"));
 
 		assertTrue(!toWrite.toString().isEmpty());
+	}
+
+	private WeekChallenge findChallegeWithId(List<WeekChallenge> challenges,
+			String k) {
+		for (WeekChallenge wc : challenges) {
+			if (wc.getId().equals(k)) {
+				return wc;
+			}
+		}
+		return null;
+	}
+
+	private boolean containChallengeWithId(List<WeekChallenge> challenges,
+			String k) {
+		for (WeekChallenge ch : challenges) {
+			if (ch.getId().equals(k)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private String getCustomDataFromColumn(WeekChallenge wc, String[] cls) {
@@ -376,9 +404,6 @@ public class RestTest {
 				sb.append(";");
 			} else {
 				for (String key : wc.getData().keySet()) {
-					if (key.equals("ch_21912ae0-df3d-4cb2-b554-d7ed5c514aaa_point_type")) {
-						System.out.println();
-					}
 					if (key.endsWith(c)
 							&& (used.get(key) == null || used.get(key) != null
 									&& !used.get(key))) {
