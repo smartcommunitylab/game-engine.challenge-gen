@@ -1,13 +1,13 @@
 # Gamification Engine Challenge Generator
 
-Gamification Engine challenge generator create challenges (a set of drools rules) for [Gamification Engine](https://github.com/smartcommunitylab/smartcampus.gamification) from [Smart Community Lab](https://github.com/smartcommunitylab)
+The Gamification Engine challenge generator creates challenges (a set of drools rules) for [Gamification Engine](https://github.com/smartcommunitylab/smartcampus.gamification) from [Smart Community Lab](https://github.com/smartcommunitylab)
 
 ## Description
 
 Gamification Engine Challenge Generator is based on two tools:
 
 1. Challenge generator: creates a set of drools rules based on a challenge definition in csv format
-2. Challenge uploader: uplaod generated rules into [Gamification Engine](https://github.com/smartcommunitylab/smartcampus.gamification) 
+2. Challenge uploader: upload generated rules into [Gamification Engine](https://github.com/smartcommunitylab/smartcampus.gamification) 
  
 
 ## Prerequisites 
