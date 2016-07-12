@@ -103,6 +103,14 @@ usage: challengeUploader -host <host> -gameId <gameId> -input <input json file>
 java -jar challengeUploader.jar -host http://localhost:8080/gamification/ -gameId 56e7bf3b570ac89331c37262 -input generated.json
 ```
 
+## Challenges format reference
+
+In the following sections is a reference for challenge definition, it's possibile to found also a lot of examples in resource folder
+
+|NAME|TYPE|GOAL_TYPE|TARGET|BONUS|POINT_TYPE|DIFFICULTY|BASELINE_VARIABLE|SELECTION_CRITERIA_CUSTOM_DATA|SELECTION_CRITERIA_POINTS|SELECTION_CRITERIA_BADGES|
+|----|----|---------|------|-----|----------|----------|-----------------|------------------------------|-------------------------|-------------------------|
+|Name of the challenge, must be unique|Type of the challenge, used for selecting the right drools rule template (see [ChallengeType](/src/main/java/eu/trentorise/game/challenges/model/ChallengeType.java))|Type of the goal|Target value for challenge|Bonus points for completed challenge|Type of the point|Difficulty value ( not used right now )|Baseline variable used for percent challenges|Selection criteria using custom data from player state|Selection criteria using points|Selection criteria for badges|
+
 ## License
 
 Project is licensed under the Apache License Version 2.0
