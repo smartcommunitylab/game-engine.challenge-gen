@@ -43,7 +43,7 @@ public class ChallengeGeneratorTool {
 
 	private static Options options;
 	private static HelpFormatter helpFormatter;
-	private static SimpleDateFormat sdf = new SimpleDateFormat(
+	private static final SimpleDateFormat sdf = new SimpleDateFormat(
 			"dd/MM/YYYY HH:mm:ss , zzz ZZ");
 
 	public static void main(String[] args) throws ParseException {
@@ -117,22 +117,55 @@ public class ChallengeGeneratorTool {
 						options, "");
 	}
 
-	private static void generate(String host, String gameId, String input,
+	/**
+	 * Generate challenges starting from input file
+	 * 
+	 * @param host
+	 * @param gameId
+	 * @param input
+	 * @param templateDir
+	 * @param output
+	 * @param username
+	 * @param password
+	 */
+	public static void generate(String host, String gameId, String input,
 			String templateDir, String output, String username, String password) {
 		// load
 		ChallengeRules result;
 		try {
 			result = ChallengeRulesLoader.load(input);
 		} catch (NullPointerException | IllegalArgumentException | IOException e1) {
-			System.err.println("Error in challenge definition loading for "
-					+ input + ": " + e1.getMessage());
+			String msg = "Error in challenge definition loading for " + input
+					+ ": " + e1.getMessage();
+			System.err.println(msg);
 			return;
 		}
 		if (result == null) {
-			System.out.println("Error in loading : " + input);
+			String msg = "Error in loading : " + input;
+			System.out.println(msg);
 			return;
 		}
 		System.out.println("Challenge definition file: " + input);
+		generate(host, gameId, result, templateDir, output, username, password);
+	}
+
+	/**
+	 * Generate challenges starting from a {@link ChallengeRules}
+	 * 
+	 * @param host
+	 * @param gameId
+	 * @param result
+	 * @param templateDir
+	 * @param output
+	 * @param username
+	 * @param password
+	 * 
+	 * @see ChallengeRulesLoader
+	 */
+	public static String generate(String host, String gameId,
+			ChallengeRules result, String templateDir, String output,
+			String username, String password) {
+		String log = "";
 		// get users from gamification engine
 		GamificationEngineRestFacade facade;
 		if (username != null && password != null && !username.isEmpty()
@@ -143,43 +176,54 @@ public class ChallengeGeneratorTool {
 			facade = new GamificationEngineRestFacade(host + "gengine/");
 
 		}
-		System.out.println("Contacting gamification engine on host " + host);
+		String msg = "Contacting gamification engine on host " + host;
+		System.out.println(msg);
+		log += msg + "\n";
 		List<Content> users = null;
 
 		try {
 			users = facade.readGameState(gameId);
 		} catch (Exception e) {
-			System.err.println("Error in reading game state from host " + host
-					+ " for gameId " + gameId);
-			return;
+			msg = "Error in reading game state from host " + host
+					+ " for gameId " + gameId;
+			System.err.println(msg);
+			log += msg + "\n";
+			return log;
 		}
 		if (users == null || users.isEmpty()) {
-			System.err.println("Warning: no users for game " + gameId);
-			return;
+			msg = "Warning: no users for game " + gameId;
+			System.err.println(msg);
+			log += msg + "\n";
+			return log;
 		}
-		System.out.println("Start date "
-				+ sdf.format(CalendarUtil.getStart().getTime()));
-		System.out.println("End date "
-				+ sdf.format(CalendarUtil.getEnd().getTime()));
-		System.out
-				.println("Reading game from gamification engine game state for gameId: "
-						+ gameId);
-		System.out.println("Users in game: " + users.size());
+		msg = "Start date "
+				+ sdf.format(CalendarUtil.getStart().getTime())
+				+ "\n"
+				+ "End date "
+				+ sdf.format(CalendarUtil.getEnd().getTime())
+				+ "\n"
+				+ "Reading game from gamification engine game state for gameId: "
+				+ gameId + "\n" + "Users in game: " + users.size();
+		System.out.println(msg);
+		log += msg + "\n";
 		ChallengesRulesGenerator crg;
 		try {
 			crg = new ChallengesRulesGenerator(new ChallengeFactory(),
 					"generated-rules-report.csv");
 		} catch (IOException e2) {
-			System.err.println("Error in creating "
-					+ "generated-rules-report.csv");
-			return;
+			msg = "Error in creating " + "generated-rules-report.csv";
+			System.err.println(msg);
+			log += msg + "\n";
+			return log;
 		}
 		FileOutputStream fout;
 		try {
 			fout = new FileOutputStream(output);
 		} catch (FileNotFoundException e1) {
-			System.err.println("Errore in writing output file " + output);
-			return;
+			msg = "Errore in writing output file " + output;
+			System.err.println(msg);
+			log += msg + "\n";
+			return log;
 		}
 
 		// generate challenges
@@ -189,8 +233,10 @@ public class ChallengeGeneratorTool {
 			Matcher matcher = new Matcher(challengeSpec);
 			List<Content> filteredUsers = matcher.match(users);
 			if (filteredUsers.isEmpty()) {
-				System.out.println("Warning: no users for challenge : "
-						+ challengeSpec.getName());
+				msg = "Warning: no users for challenge : "
+						+ challengeSpec.getName();
+				System.out.println(msg);
+				log += msg + "\n";
 				continue;
 			}
 			String res;
@@ -198,14 +244,15 @@ public class ChallengeGeneratorTool {
 				res = crg.generateRules(challengeSpec, filteredUsers,
 						templateDir);
 			} catch (UndefinedChallengeException | IOException e) {
-				System.err.println("Error in challenge generation : "
-						+ e.getMessage());
+				msg = "Error in challenge generation : " + e.getMessage();
+				System.err.println(msg);
+				log += msg + "\n";
 				try {
 					crg.closeStream();
 					fout.close();
 				} catch (IOException e1) {
 				}
-				return;
+				return log;
 			}
 			if (res == null || res.isEmpty()) {
 				continue;
@@ -225,27 +272,34 @@ public class ChallengeGeneratorTool {
 		try {
 			IOUtils.write(mapper.writeValueAsString(toWrite), fout);
 		} catch (IOException e) {
-			System.err.println("Error in writing result " + e.getMessage());
+			msg = "Error in writing result " + e.getMessage();
+			System.err.println(msg);
+			log += msg + "\n";
 		}
 		// close stream
 		if (fout != null) {
 			try {
 				fout.close();
 			} catch (IOException e) {
-				System.err.println("Error in closing output file " + output
-						+ " " + e.getMessage());
-				return;
+				msg = "Error in closing output file " + output + " "
+						+ e.getMessage();
+				System.err.println(msg);
+				log += msg + "\n";
+				return log;
 			}
 		}
 		try {
 			crg.closeStream();
 		} catch (IOException e) {
-			System.err.println("Error in closing stream file");
+			msg = "Error in closing stream file";
+			System.err.println(msg);
+			log += msg + "\n";
 		}
-		System.out.println("Generated rules " + tot);
-		System.out.println("Written output file " + output);
-		System.out.println("Written report file generated-rules-report.csv");
-
+		msg = "Generated rules " + tot + "\n" + "Written output file " + output
+				+ "\n" + "Written report file generated-rules-report.csv";
+		System.out.println(msg);
+		log += msg + "\n";
+		return log;
 	}
 
 	private static void init() {
