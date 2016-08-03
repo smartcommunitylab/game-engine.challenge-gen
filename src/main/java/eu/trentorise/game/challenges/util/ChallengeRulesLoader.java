@@ -1,11 +1,14 @@
 package eu.trentorise.game.challenges.util;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -18,6 +21,11 @@ public final class ChallengeRulesLoader {
 
 	private static final Logger logger = LogManager
 			.getLogger(ChallengeRulesLoader.class);
+
+	private static final String[] COLUMNS = { "NAME", "TYPE", "GOAL_TYPE",
+			"TARGET", "BONUS", "POINT_TYPE", "DIFFICULTY", "BASELINE_VARIABLE",
+			"SELECTION_CRITERIA_CUSTOM_DATA", "SELECTION_CRITERIA_POINTS",
+			"SELECTION_CRITERIA_BADGES" };
 
 	private ChallengeRulesLoader() {
 	}
@@ -84,6 +92,45 @@ public final class ChallengeRulesLoader {
 		} finally {
 			if (rdr != null) {
 				rdr.close();
+			}
+		}
+	}
+
+	public static void write(File f, ChallengeRules rules) throws IOException,
+			IllegalArgumentException {
+		if (f == null) {
+			logger.error("Target file must be not null");
+			throw new IllegalArgumentException("Target file must be not null");
+		}
+		if (rules == null) {
+			logger.error("Rules must be not null");
+			throw new IllegalArgumentException("Rules must be not null");
+		}
+		FileOutputStream fos = null;
+		try {
+			StringBuffer toWrite = new StringBuffer();
+			toWrite.append(StringUtils.join(COLUMNS, ";") + "\n");
+			for (ChallengeRuleRow row : rules.getChallenges()) {
+				toWrite.append(row.getName() + ";");
+				toWrite.append(row.getType() + ";");
+				toWrite.append(row.getGoalType() + ";");
+				toWrite.append(row.getTarget() + ";");
+				toWrite.append(row.getBonus() + ";");
+				toWrite.append(row.getPointType() + ";");
+				toWrite.append(";");
+				toWrite.append(row.getBaselineVar() + ";");
+				toWrite.append(row.getSelectionCriteriaCustomData() + ";");
+				toWrite.append(row.getSelectionCriteriaPoints() + ";");
+				toWrite.append(row.getSelectionCriteriaBadges() + ";");
+				toWrite.append("\n");
+			}
+			fos = new FileOutputStream(f);
+			IOUtils.write(toWrite.toString(), fos);
+		} catch (IOException e) {
+			logger.error(e);
+		} finally {
+			if (fos != null) {
+				fos.close();
 			}
 		}
 	}
