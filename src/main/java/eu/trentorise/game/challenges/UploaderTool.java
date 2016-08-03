@@ -96,11 +96,15 @@ public class UploaderTool {
 						options, "");
 	}
 
-	private static void upload(String host, String gameId, String input,
+	public static String upload(String host, String gameId, String input,
 			String username, String password) {
+		String log = "";
+		String msg = "";
 		if (input == null) {
-			System.err.println("Input file cannot be null");
-			return;
+			msg = "Input file cannot be null";
+			log += msg + "\n";
+			System.err.println(msg);
+			return log;
 		}
 		GamificationEngineRestFacade insertFacade;
 		if (username != null && password != null && !username.isEmpty()
@@ -110,8 +114,10 @@ public class UploaderTool {
 		} else {
 			insertFacade = new GamificationEngineRestFacade(host + "console/");
 		}
-		System.out.println("Uploading on host " + host + " for gameId "
-				+ gameId + " for file " + input);
+		msg = "Uploading on host " + host + " for gameId " + gameId
+				+ " for file " + input;
+		System.out.println(msg);
+		log += msg + "\n";
 		// read input file
 		ObjectMapper mapper = new ObjectMapper();
 		List<RuleDto> rules = null;
@@ -121,14 +127,17 @@ public class UploaderTool {
 					new TypeReference<List<RuleDto>>() {
 					});
 		} catch (IOException e) {
-			System.err.println("Error in reading input file " + input + " "
-					+ e.getMessage());
-			return;
+			msg = "Error in reading input file " + input + " " + e.getMessage();
+			System.err.println(msg);
+			log += msg + "\n";
+			return log;
 		}
 		int tot = 0;
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("CHALLENGE_NAME;CHALLENGE_UUID;RULE_TEXT\n");
-		System.out.println("Read rules " + rules.size());
+		msg = "Read rules " + rules.size();
+		System.out.println(msg);
+		log += msg + "\n";
 		for (RuleDto rule : rules) {
 			// update custom data for every user related to genrate rule
 			for (String userId : rule.getCustomData().keySet()) {
@@ -143,26 +152,33 @@ public class UploaderTool {
 			if (insertedRule != null) {
 				String ruleId = StringUtils.removeStart(insertedRule.getId(),
 						Constants.RULE_PREFIX);
-				System.out.println("Uploaded rule " + insertedRule.getName()
-						+ " with id=" + ruleId);
+				msg = "Uploaded rule " + insertedRule.getName() + " with id="
+						+ ruleId;
+				System.out.println(msg);
+				log += msg + "\n";
 				buffer.append(insertedRule.getName() + ";");
 				buffer.append(ruleId + ";");
 				buffer.append("test;\n");
 				tot++;
 			} else {
-				System.err.println("Error in uploaded rule " + rule.getName());
+				msg = "Error in uploaded rule " + rule.getName();
+				System.err.println(msg);
+				log += msg + "\n";
 			}
 			System.out.println();
 		}
 		try {
 			IOUtils.write(buffer, new FileOutputStream("report.csv"));
 		} catch (IOException e) {
-			System.err.println("Error in writing report file");
-			return;
+			msg = "Error in writing report file";
+			System.err.println(msg);
+			log += msg + "\n";
+			return log;
 		}
-		System.out.println("Inserted rules " + tot);
-		System.out.println("Rule upload completed");
-
+		msg = "Inserted rules " + tot + "\n" + "Rule upload completed";
+		System.out.println(msg);
+		log += msg + "\n";
+		return log;
 	}
 
 	private static void init() {
