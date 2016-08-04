@@ -14,7 +14,7 @@ Gamification Engine Challenge Generator is based on two tools:
 
 * Java 1.7 or higher
 * Maven 3.2 or higher
-* Gamification engine, [setup guide here](https://github.com/smartcommunitylab/smartcampus.gamification/wiki/Setup) version [1.0-Final](https://github.com/smartcommunitylab/smartcampus.gamification/releases/tag/v1.0-Final)
+* Gamification engine, [setup guide here](https://github.com/smartcommunitylab/smartcampus.gamification/wiki/Setup) version [2.0.0](https://github.com/smartcommunitylab/smartcampus.gamification/tree/r2.0.0)
 
 ## How to build
 
