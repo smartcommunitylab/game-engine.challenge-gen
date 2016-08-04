@@ -75,6 +75,11 @@
 			<artifactId>commons-lang</artifactId>
 			<version>2.2</version>
 		</dependency>
+		<dependency>
+			<groupId>it.smartcommunitylab.gamification</groupId>
+			<artifactId>game-engine.web</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
