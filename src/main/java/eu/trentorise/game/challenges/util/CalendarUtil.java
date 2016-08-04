@@ -12,6 +12,7 @@ public final class CalendarUtil {
 	private static final int CHALLENGE_DURATION = 9;
 
 	private static Calendar calendar;
+	private static Calendar endCalendar;
 
 	private static void init() {
 		calendar = new GregorianCalendar();
@@ -21,6 +22,9 @@ public final class CalendarUtil {
 		calendar.set(Calendar.HOUR_OF_DAY, 0);
 		calendar.set(Calendar.MINUTE, 0);
 		calendar.set(Calendar.SECOND, 1);
+
+		endCalendar = (Calendar) calendar.clone();
+		endCalendar.add(Calendar.DAY_OF_MONTH, CalendarUtil.CHALLENGE_DURATION);
 	}
 
 	/**
@@ -36,12 +40,26 @@ public final class CalendarUtil {
 	}
 
 	public static final Calendar getEnd() {
+		if (endCalendar == null) {
+			init();
+		}
+		return (Calendar) endCalendar.clone();
+	}
+
+	public static final Calendar setStart(Date date) {
 		if (calendar == null) {
 			init();
 		}
-		Calendar copy = (Calendar) calendar.clone();
-		copy.add(Calendar.DAY_OF_MONTH, CalendarUtil.CHALLENGE_DURATION);
-		return copy;
+		calendar.setTime(date);
+		return calendar;
+	}
+
+	public static final Calendar setEnd(Date date) {
+		if (endCalendar == null) {
+			init();
+		}
+		endCalendar.setTime(date);
+		return endCalendar;
 	}
 
 }

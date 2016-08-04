@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -323,4 +324,12 @@ public class ChallengeGeneratorTool {
 		helpFormatter = new HelpFormatter();
 	}
 
+	public static String generate(String host, String gameId,
+			ChallengeRules challenges, String templateDir, String output,
+			String username, String password, Date startDate, Date endDate) {
+		CalendarUtil.setStart(startDate);
+		CalendarUtil.setEnd(endDate);
+		return generate(host, gameId, challenges, templateDir, output,
+				username, password);
+	}
 }
