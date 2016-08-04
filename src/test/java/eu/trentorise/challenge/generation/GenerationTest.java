@@ -74,8 +74,6 @@ public class GenerationTest {
 		for (ChallengeRuleRow challengeSpec : result.getChallenges()) {
 			Matcher matcher = new Matcher(challengeSpec);
 			List<Content> r = matcher.match(users);
-
-			System.out.println();
 		}
 	}
 
