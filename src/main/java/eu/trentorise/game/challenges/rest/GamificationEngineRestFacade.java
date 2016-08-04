@@ -19,7 +19,9 @@ import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import eu.trentorise.game.bean.ChallengeDataDTO;
 import eu.trentorise.game.challenges.api.Constants;
+import eu.trentorise.game.model.ChallengeModel;
 
 /**
  * A facade for handling logic for Gamification Engine Rest api
@@ -39,6 +41,9 @@ public class GamificationEngineRestFacade {
 	private static final String DB = "db";
 	private static final String EXECUTE = "execute";
 	private static final String PLAYER = "player";
+	private static final String MODEL = "model/game";
+
+	private static final String CHALLENGE = "challenge";
 
 	private WebTarget target;
 
@@ -236,6 +241,38 @@ public class GamificationEngineRestFacade {
 		}
 		WebTarget target = getTarget().path(EXECUTE);
 		Response response = target.request().post(Entity.json(input));
+		if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+			logger.debug("response code: " + response.getStatus());
+			return true;
+		}
+		logger.error("response code: " + response.getStatus());
+		return false;
+	}
+
+	public boolean insertChallengeModel(String gameId, ChallengeModel model) {
+		if (gameId == null || model == null) {
+			throw new IllegalArgumentException(
+					"gameId and model cannot be null");
+		}
+		WebTarget target = getTarget().path(MODEL).path(gameId).path(CHALLENGE);
+		Response response = target.request().post(Entity.json(model));
+		if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+			logger.debug("response code: " + response.getStatus());
+			return true;
+		}
+		logger.error("response code: " + response.getStatus());
+		return false;
+	}
+
+	public boolean assignChallengeToPlayer(ChallengeDataDTO cdd, String gameId,
+			String playerId) {
+		if (gameId == null || gameId == null || playerId == null) {
+			throw new IllegalArgumentException(
+					"challenge, gameId and playerId cannot be null");
+		}
+		WebTarget target = getTarget().path(gameId).path("player")
+				.path(playerId).path("challenges");
+		Response response = target.request().post(Entity.json(cdd));
 		if (response.getStatus() == Response.Status.OK.getStatusCode()) {
 			logger.debug("response code: " + response.getStatus());
 			return true;
