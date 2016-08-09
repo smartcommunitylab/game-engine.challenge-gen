@@ -1,14 +1,9 @@
 package eu.trentorise.game.challenges;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -18,14 +13,11 @@ import org.apache.commons.cli.MissingOptionException;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.io.IOUtils;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import eu.trentorise.game.challenges.exception.UndefinedChallengeException;
+import eu.trentorise.game.challenges.model.ChallengeDataInternalDto;
 import eu.trentorise.game.challenges.rest.Content;
 import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
-import eu.trentorise.game.challenges.rest.RuleDto;
 import eu.trentorise.game.challenges.util.CalendarUtil;
 import eu.trentorise.game.challenges.util.ChallengeRuleRow;
 import eu.trentorise.game.challenges.util.ChallengeRules;
@@ -69,7 +61,6 @@ public class ChallengeGeneratorTool {
 		String host = "";
 		String gameId = "";
 		String input = "";
-		String templateDir = "";
 		String output = "challenge.json";
 		String username = "";
 		String password = "";
@@ -91,23 +82,17 @@ public class ChallengeGeneratorTool {
 			printHelp();
 			return;
 		}
-		if (cmd.hasOption("templateDir")) {
-			templateDir = cmd.getArgList().get(3);
-		} else {
-			printHelp();
-			return;
-		}
 		if (cmd.hasOption("output")) {
-			output = cmd.getArgList().get(4);
+			output = cmd.getArgList().get(3);
 		}
 		if (cmd.hasOption("username")) {
-			username = cmd.getArgList().get(5);
+			username = cmd.getArgList().get(4);
 		}
 		if (cmd.hasOption("password")) {
-			password = cmd.getArgList().get(6);
+			password = cmd.getArgList().get(5);
 		}
 		// call generation
-		generate(host, gameId, input, templateDir, output, username, password);
+		generate(host, gameId, input, output, username, password);
 	}
 
 	private static void printHelp() {
@@ -130,7 +115,7 @@ public class ChallengeGeneratorTool {
 	 * @param password
 	 */
 	public static void generate(String host, String gameId, String input,
-			String templateDir, String output, String username, String password) {
+			String output, String username, String password) {
 		// load
 		ChallengeRules result;
 		try {
@@ -147,7 +132,7 @@ public class ChallengeGeneratorTool {
 			return;
 		}
 		System.out.println("Challenge definition file: " + input);
-		generate(host, gameId, result, templateDir, output, username, password);
+		generate(host, gameId, result, username, password);
 	}
 
 	/**
@@ -164,8 +149,7 @@ public class ChallengeGeneratorTool {
 	 * @see ChallengeRulesLoader
 	 */
 	public static String generate(String host, String gameId,
-			ChallengeRules result, String templateDir, String output,
-			String username, String password) {
+			ChallengeRules result, String username, String password) {
 		String log = "";
 		// get users from gamification engine
 		GamificationEngineRestFacade facade;
@@ -209,7 +193,7 @@ public class ChallengeGeneratorTool {
 		log += msg + "\n";
 		ChallengesRulesGenerator crg;
 		try {
-			crg = new ChallengesRulesGenerator(new ChallengeFactory(),
+			crg = new ChallengesRulesGenerator(new ChallengeInstanceFactory(),
 					"generated-rules-report.csv");
 		} catch (IOException e2) {
 			msg = "Error in creating " + "generated-rules-report.csv";
@@ -217,19 +201,8 @@ public class ChallengeGeneratorTool {
 			log += msg + "\n";
 			return log;
 		}
-		FileOutputStream fout;
-		try {
-			fout = new FileOutputStream(output);
-		} catch (FileNotFoundException e1) {
-			msg = "Errore in writing output file " + output;
-			System.err.println(msg);
-			log += msg + "\n";
-			return log;
-		}
-
 		// generate challenges
 		int tot = 0;
-		List<RuleDto> toWrite = new ArrayList<RuleDto>();
 		for (ChallengeRuleRow challengeSpec : result.getChallenges()) {
 			Matcher matcher = new Matcher(challengeSpec);
 			List<Content> filteredUsers = matcher.match(users);
@@ -240,64 +213,22 @@ public class ChallengeGeneratorTool {
 				log += msg + "\n";
 				continue;
 			}
-			String res;
+			List<ChallengeDataInternalDto> res;
 			try {
-				res = crg.generateRules(challengeSpec, filteredUsers,
-						templateDir);
+				res = crg.generateRules(challengeSpec, filteredUsers);
 			} catch (UndefinedChallengeException | IOException e) {
 				msg = "Error in challenge generation : " + e.getMessage();
 				System.err.println(msg);
 				log += msg + "\n";
-				try {
-					crg.closeStream();
-					fout.close();
-				} catch (IOException e1) {
-				}
 				return log;
 			}
 			if (res == null || res.isEmpty()) {
 				continue;
 			}
 			tot++;
-			// define rule
-			RuleDto rule = new RuleDto();
-			rule.setContent(res);
-			rule.setName(challengeSpec.getName());
-			rule.setCustomData(new HashMap<String, Map<String, Object>>(crg
-					.getPlayerIdCustomData()));
-			toWrite.add(rule);
 		}
-		// write result
-		// write json
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			IOUtils.write(mapper.writeValueAsString(toWrite), fout);
-		} catch (IOException e) {
-			msg = "Error in writing result " + e.getMessage();
-			System.err.println(msg);
-			log += msg + "\n";
-		}
-		// close stream
-		if (fout != null) {
-			try {
-				fout.close();
-			} catch (IOException e) {
-				msg = "Error in closing output file " + output + " "
-						+ e.getMessage();
-				System.err.println(msg);
-				log += msg + "\n";
-				return log;
-			}
-		}
-		try {
-			crg.closeStream();
-		} catch (IOException e) {
-			msg = "Error in closing stream file";
-			System.err.println(msg);
-			log += msg + "\n";
-		}
-		msg = "Generated rules " + tot + "\n" + "Written output file " + output
-				+ "\n" + "Written report file generated-rules-report.csv";
+		msg = "Generated rules " + tot + "\n"
+				+ "Written report file generated-rules-report.csv";
 		System.out.println(msg);
 		log += msg + "\n";
 		return log;
@@ -325,11 +256,10 @@ public class ChallengeGeneratorTool {
 	}
 
 	public static String generate(String host, String gameId,
-			ChallengeRules challenges, String templateDir, String output,
-			String username, String password, Date startDate, Date endDate) {
+			ChallengeRules challenges, String username, String password,
+			Date startDate, Date endDate) {
 		CalendarUtil.setStart(startDate);
 		CalendarUtil.setEnd(endDate);
-		return generate(host, gameId, challenges, templateDir, output,
-				username, password);
+		return generate(host, gameId, challenges, username, password);
 	}
 }

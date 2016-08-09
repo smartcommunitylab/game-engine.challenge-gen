@@ -1,9 +1,8 @@
 package eu.trentorise.game.challenges;
 
-import java.io.BufferedReader;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,11 +11,11 @@ import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import eu.trentorise.game.challenges.api.ChallengeFactoryInterface;
-import eu.trentorise.game.challenges.api.Constants;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import eu.trentorise.game.bean.ChallengeDataDTO;
 import eu.trentorise.game.challenges.exception.UndefinedChallengeException;
-import eu.trentorise.game.challenges.model.Challenge;
-import eu.trentorise.game.challenges.model.ChallengeType;
+import eu.trentorise.game.challenges.model.ChallengeDataInternalDto;
 import eu.trentorise.game.challenges.rest.Content;
 import eu.trentorise.game.challenges.util.ChallengeRuleRow;
 import eu.trentorise.game.challenges.util.ChallengeRulesLoader;
@@ -32,24 +31,22 @@ public class ChallengesRulesGenerator {
 			.getLogger(ChallengeRulesLoader.class);
 	private static final int challengeLimitNumber = 2;
 
-	private StringBuffer buffer;
-	private ChallengeFactoryInterface factory;
+	private ChallengeInstanceFactory factory;
 	private Map<String, Map<String, Object>> playerIdCustomData;
 	private StringBuffer reportBuffer;
 
 	private final String reportHeader = "PLAYER;CHALLENGE_NAME;CHALLENGE_TYPE;TRANSPORT_MODE;BASELINE_VALUE;TARGET_VALUE;PRIZE;POINT_TYPE;CH_ID\n";
 	private FileOutputStream fout;
-	private FileOutputStream rout;
 	private Map<String, Integer> challengeMap;
+	private FileOutputStream oout;
 
-	public ChallengesRulesGenerator(ChallengeFactoryInterface factory,
+	public ChallengesRulesGenerator(ChallengeInstanceFactory factory,
 			String reportName) throws IOException {
-		this.buffer = new StringBuffer();
 		this.playerIdCustomData = new HashMap<String, Map<String, Object>>();
 		this.factory = factory;
 		// prepare report output
 		fout = new FileOutputStream(reportName);
-		rout = new FileOutputStream("generatedRules.drl");
+		oout = new FileOutputStream("output.json");
 		// write header
 		IOUtils.write(reportHeader, fout);
 		// init challenge map
@@ -66,96 +63,66 @@ public class ChallengesRulesGenerator {
 	 * @throws UndefinedChallengeException
 	 * @throws IOException
 	 */
-	public String generateRules(ChallengeRuleRow challengeSpec,
-			List<Content> users, String templateDir)
+	public List<ChallengeDataInternalDto> generateRules(
+			ChallengeRuleRow challengeSpec, List<Content> users)
 			throws UndefinedChallengeException, IOException {
+		List<ChallengeDataInternalDto> result = new ArrayList<ChallengeDataInternalDto>();
 		Map<String, Object> params = new HashMap<String, Object>();
-		buffer = new StringBuffer();
 		reportBuffer = new StringBuffer();
 		playerIdCustomData.clear();
 		// get right challenge
 		for (Content user : users) {
 			// create a challenge for user only under a specific limit
 			if (getChallenges(user.getPlayerId()) < challengeLimitNumber) {
-				Challenge c = factory.createChallenge(
-						ChallengeType.valueOf(challengeSpec.getType()),
-						templateDir);
-				params = new HashMap<String, Object>();
-				if (challengeSpec.getTarget() instanceof Double) {
-					params.put("target", challengeSpec.getTarget());
-				}
-				if (challengeSpec.getType().equalsIgnoreCase(
-						ChallengeType.NEXTBADGE.toString())
-						|| challengeSpec.getType().equalsIgnoreCase(
-								ChallengeType.BADGECOLLECTION.toString())) {
-					params.put("badge_collection", challengeSpec.getGoalType());
-				} else {
-					params.put("mode", challengeSpec.getGoalType());
-				}
-				params.put("bonus", challengeSpec.getBonus());
-				params.put("point_type", challengeSpec.getPointType());
-				if (!user.getCustomData().getAdditionalProperties()
-						.containsKey(challengeSpec.getBaselineVar())) {
-					// do nothing
-					params.put("ch_point_type_baseline",
-							challengeSpec.getBaselineVar());
-				} else {
-					params.put(
-							"baseline",
-							user.getCustomData().getAdditionalProperties()
-									.get(challengeSpec.getBaselineVar()));
-				}
-				c.setTemplateParams(params);
-				c.compileChallenge(user.getPlayerId());
-				buffer.append(c.getGeneratedRules());
+				params.put("target", challengeSpec.getTarget());
+				params.put("bonusPointType", challengeSpec.getPointType());
+				params.put("bonusScore", challengeSpec.getBonus());
+
+				ChallengeDataDTO cdd = factory.createChallenge(
+						challengeSpec.getModelName(), params);
+				ChallengeDataInternalDto cdit = new ChallengeDataInternalDto();
+				cdit.setPlayerId(user.getPlayerId());
+				cdit.setGameId(user.getGameId());
+				cdit.setDto(cdd);
+				result.add(cdit);
 
 				reportBuffer.append(user.getPlayerId() + ";"
-						+ challengeSpec.getName() + ";" + c.toString() + "\n");
+						+ challengeSpec.getName() + ";"
+						+ challengeSpec.getModelName() + ";"
+						+ challengeSpec.getGoalType() + ";"
+						+ challengeSpec.getBaselineVar() + ";"
+						+ challengeSpec.getTarget() + ";"
+						+ challengeSpec.getBonus() + ";"
+						+ challengeSpec.getPointType() + ";"
+						+ cdd.getInstanceName() + "\n");
 				// save custom data for user for later use
-				playerIdCustomData.put(user.getPlayerId(), c.getCustomData());
+				playerIdCustomData.put(user.getPlayerId(), cdd.getData());
 
 				// increase challenge number for user
 				increaseChallenge(user.getPlayerId());
 			}
 		}
-		if (buffer.toString().isEmpty()) {
-			return "";
-		}
-
-		// rest custom data counters
-		playerIdCustomData = resetAllGamesCounter(playerIdCustomData);
-
 		// write report to file
 		IOUtils.write(reportBuffer.toString(), fout);
 
-		// remove package declaration after first
-		String temp = "";
-		if (challengeSpec.getTarget() != null) {
-			temp = "/** " + challengeSpec.getType() + " "
-					+ challengeSpec.getTarget().toString() + " **/\n"
-					+ buffer.toString();
-		} else {
-			temp = "/** " + challengeSpec.getType() + " **/\n"
-					+ buffer.toString();
+		// write json file
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			IOUtils.write(mapper.writeValueAsString(result), oout);
+		} catch (IOException e) {
+			System.err.println("Error in writing result " + e.getMessage());
 		}
-		String result = filterPackageDeclaration(temp);
-
-		// write generate rule to a file
-		IOUtils.write(result, rout);
-
-		return result;
-	}
-
-	private static Map<String, Map<String, Object>> resetAllGamesCounter(
-			Map<String, Map<String, Object>> cs) {
-		for (String userId : cs.keySet()) {
-			Map<String, Object> customData = cs.get(userId);
-			for (int i = 0; i < Constants.COUNTERS.length; i++) {
-				customData.put(Constants.COUNTERS[i], null);
+		// close stream
+		if (oout != null) {
+			try {
+				fout.close();
+			} catch (IOException e) {
+				System.err.println("Error in closing output file "
+						+ e.getMessage());
+				return null;
 			}
-			cs.put(userId, customData);
 		}
-		return cs;
+		return result;
 	}
 
 	private int getChallenges(String playerId) {
@@ -177,36 +144,6 @@ public class ChallengesRulesGenerator {
 		if (fout != null) {
 			fout.close();
 		}
-	}
-
-	/**
-	 * Filter buffer from package declaration after first one
-	 * 
-	 * @return filtered string or null if error
-	 */
-	private String filterPackageDeclaration(String temp) {
-		buffer = new StringBuffer();
-		boolean remove = false;
-		try {
-			BufferedReader rdr = new BufferedReader(new StringReader(temp));
-			for (String line = rdr.readLine(); line != null; line = rdr
-					.readLine()) {
-				if (line.startsWith("package") && !remove) {
-					remove = true;
-					buffer.append(line).append(LINE_SEPARATOR);
-
-				} else if (line.startsWith("package") && remove) {
-					// do nothing
-				} else {
-					buffer.append(line).append(LINE_SEPARATOR);
-				}
-			}
-			rdr.close();
-			return buffer.toString();
-		} catch (IOException e) {
-			logger.error(e);
-		}
-		return null;
 	}
 
 	public Map<String, Map<String, Object>> getPlayerIdCustomData() {

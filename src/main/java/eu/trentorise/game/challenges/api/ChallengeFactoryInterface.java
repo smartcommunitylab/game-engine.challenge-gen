@@ -9,7 +9,7 @@ import eu.trentorise.game.challenges.model.ChallengeType;
  */
 public interface ChallengeFactoryInterface {
 
-    public Challenge createChallenge(ChallengeType chType, String templateDir)
-	    throws UndefinedChallengeException;
+	public Challenge createChallenge(ChallengeType chType, String templateDir)
+			throws UndefinedChallengeException;
 
 }

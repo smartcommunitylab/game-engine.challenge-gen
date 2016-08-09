@@ -2,7 +2,7 @@ package eu.trentorise.game.challenges.util;
 
 public class ChallengeRuleRow {
 
-	private String type;
+	private String modelName;
 	private String goalType;
 	private Object target;
 	private String pointType;
@@ -12,14 +12,6 @@ public class ChallengeRuleRow {
 	private String selectionCriteriaCustomData;
 	private String selectionCriteriaPoints;
 	private String selectionCriteriaBadges;
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
 
 	public String getGoalType() {
 		return goalType;
@@ -96,6 +88,14 @@ public class ChallengeRuleRow {
 
 	@Override
 	public String toString() {
-		return "[name=" + this.name + ",type=" + this.type + "]";
+		return "[name=" + this.name + ",type=" + this.modelName + "]";
+	}
+
+	public String getModelName() {
+		return modelName;
+	}
+
+	public void setModelName(String modelName) {
+		this.modelName = modelName;
 	}
 }

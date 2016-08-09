@@ -70,7 +70,7 @@ public final class ChallengeRulesLoader {
 				String[] elements = line.split(";");
 				ChallengeRuleRow crr = new ChallengeRuleRow();
 				crr.setName(elements[0]);
-				crr.setType(elements[1]);
+				crr.setModelName(elements[1]);
 				crr.setGoalType(elements[2]);
 				if (elements[3] != null && !elements[3].isEmpty()) {
 					crr.setTarget(Double.valueOf(elements[3]));
@@ -112,7 +112,7 @@ public final class ChallengeRulesLoader {
 			toWrite.append(StringUtils.join(COLUMNS, ";") + "\n");
 			for (ChallengeRuleRow row : rules.getChallenges()) {
 				toWrite.append(row.getName() + ";");
-				toWrite.append(row.getType() + ";");
+				toWrite.append(row.getModelName() + ";");
 				toWrite.append(row.getGoalType() + ";");
 				toWrite.append(row.getTarget() + ";");
 				toWrite.append(row.getBonus() + ";");

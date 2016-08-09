@@ -5,6 +5,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
+import javax.ws.rs.ProcessingException;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -14,15 +16,12 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
-import eu.trentorise.game.challenges.api.Constants;
+import eu.trentorise.game.challenges.model.ChallengeDataInternalDto;
 import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
-import eu.trentorise.game.challenges.rest.InsertedRuleDto;
-import eu.trentorise.game.challenges.rest.RuleDto;
 
 /**
  * Uploader tool get a json file created from {@link ChallengeGeneratorTool} and
@@ -106,13 +105,14 @@ public class UploaderTool {
 			System.err.println(msg);
 			return log;
 		}
-		GamificationEngineRestFacade insertFacade;
+		GamificationEngineRestFacade challengeAssignFacade;
 		if (username != null && password != null && !username.isEmpty()
 				&& !password.isEmpty()) {
-			insertFacade = new GamificationEngineRestFacade(host + "console/",
-					username, password);
+			challengeAssignFacade = new GamificationEngineRestFacade(host
+					+ "data/game/", username, password);
 		} else {
-			insertFacade = new GamificationEngineRestFacade(host + "console/");
+			challengeAssignFacade = new GamificationEngineRestFacade(host
+					+ "data/game/");
 		}
 		msg = "Uploading on host " + host + " for gameId " + gameId
 				+ " for file " + input;
@@ -120,62 +120,67 @@ public class UploaderTool {
 		log += msg + "\n";
 		// read input file
 		ObjectMapper mapper = new ObjectMapper();
-		List<RuleDto> rules = null;
+		TypeFactory typeFactory = mapper.getTypeFactory();
+		String jsonString;
+		List<ChallengeDataInternalDto> challenges = null;
 		try {
-			String jsonString = IOUtils.toString(new FileInputStream(input));
-			rules = mapper.readValue(jsonString,
-					new TypeReference<List<RuleDto>>() {
-					});
-		} catch (IOException e) {
-			msg = "Error in reading input file " + input + " " + e.getMessage();
-			System.err.println(msg);
+			jsonString = IOUtils.toString(new FileInputStream(input));
+			challenges = mapper.readValue(jsonString, typeFactory
+					.constructCollectionType(List.class,
+							ChallengeDataInternalDto.class));
+
+		} catch (IOException e1) {
+			msg = "Error in reading input file for uploader " + input;
 			log += msg + "\n";
 			return log;
 		}
+		msg = "Read challenges " + challenges.size();
+
 		int tot = 0;
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("CHALLENGE_NAME;CHALLENGE_UUID;RULE_TEXT\n");
-		msg = "Read rules " + rules.size();
+		msg = "Read rules " + challenges.size();
 		System.out.println(msg);
 		log += msg + "\n";
-		for (RuleDto rule : rules) {
-			// update custom data for every user related to genrate rule
-			for (String userId : rule.getCustomData().keySet()) {
-				insertFacade.updateChallengeCustomData(gameId, userId, rule
-						.getCustomData().get(userId));
-			}
-
-			// insert rule
-			InsertedRuleDto toInsert = new InsertedRuleDto(rule);
-			InsertedRuleDto insertedRule = insertFacade.insertGameRule(gameId,
-					toInsert);
-			if (insertedRule != null) {
-				String ruleId = StringUtils.removeStart(insertedRule.getId(),
-						Constants.RULE_PREFIX);
-				msg = "Uploaded rule " + insertedRule.getName() + " with id="
-						+ ruleId;
+		boolean r = false;
+		for (ChallengeDataInternalDto ch : challenges) {
+			// upload and assign challenge
+			tot++;
+			try {
+				r = challengeAssignFacade.assignChallengeToPlayer(ch.getDto(),
+						ch.getGameId(), ch.getPlayerId());
+			} catch (ProcessingException e) {
+				msg = "Error on uploading challenge on gamification engine "
+						+ e.getMessage();
 				System.out.println(msg);
 				log += msg + "\n";
-				buffer.append(insertedRule.getName() + ";");
-				buffer.append(ruleId + ";");
-				buffer.append("test;\n");
-				tot++;
-			} else {
-				msg = "Error in uploaded rule " + rule.getName();
-				System.err.println(msg);
-				log += msg + "\n";
+				return null;
 			}
-			System.out.println();
+			if (!r) {
+				msg = "Error in uploading challenge instance "
+						+ ch.getDto().getInstanceName();
+				System.out.println(msg);
+				log += msg + "\n";
+				return null;
+			} else {
+				System.out.println("Inserted challenge with Id "
+						+ ch.getDto().getInstanceName());
+				buffer.append(ch.getDto().getInstanceName() + ";");
+				buffer.append(ch.getDto().getModelName() + ";");
+				buffer.append(ch.getDto().getInstanceName() + ";");
+				buffer.append(ch.getPlayerId() + ";");
+			}
 		}
 		try {
 			IOUtils.write(buffer, new FileOutputStream("report.csv"));
 		} catch (IOException e) {
-			msg = "Error in writing report file";
-			System.err.println(msg);
+			msg = "Error in writing report.csv file";
+			System.out.println(msg);
 			log += msg + "\n";
-			return log;
+			return null;
 		}
-		msg = "Inserted rules " + tot + "\n" + "Rule upload completed";
+		msg = "Inserted challenges " + tot + "\n"
+				+ "Challenges upload completed";
 		System.out.println(msg);
 		log += msg + "\n";
 		return log;
