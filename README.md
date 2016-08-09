@@ -1,6 +1,6 @@
 # Gamification Engine Challenge Generator
 
-The Gamification Engine challenge generator creates challenges (a set of drools rules) for [Gamification Engine](https://github.com/smartcommunitylab/smartcampus.gamification) from [Smart Community Lab](https://github.com/smartcommunitylab)
+The Gamification Engine challenge generator challenges for [Gamification Engine](https://github.com/smartcommunitylab/smartcampus.gamification) from [Smart Community Lab](https://github.com/smartcommunitylab)
 
 ## Description
 
@@ -44,7 +44,6 @@ This tool read challenge definition from csv file in input and using provided te
 Tool create two files:
 
 * generated-rules-report.csv : a summary of generated rules 
-* generatedRules.drl: generated rule
 * output.json: used from challenge uploader (see below)
 
 Launch using:
@@ -63,8 +62,7 @@ usage: challengeGeneratorTool -host <host> -gameId <gameId> -input <input csv fi
  -input         challenge definition as csv file
  -output        generated file name, default challenge.json
  -password      password for gamification engine
- -templateDir   challenges templates
- -username      username for gamification engine
+  -username      username for gamification engine
 ```
 
 #### Example
@@ -72,7 +70,7 @@ usage: challengeGeneratorTool -host <host> -gameId <gameId> -input <input csv fi
 In this example challenge generator interact with gamification engine without username and passowrd
 
 ```
-java -jar challengeGenerator.jar -host http://localhost:8080/gamification/ -gameId 56e7bf3b570ac89331c37262 -input BetaTestChallenges.csv -templateDir rules\templates -output output.json
+java -jar challengeGenerator.jar -host http://localhost:8080/gamification/ -gameId 56e7bf3b570ac89331c37262 -input BetaTestChallenges.csv -output output.json
 ``` 
 
 ## Challenge uploader
@@ -107,9 +105,9 @@ java -jar challengeUploader.jar -host http://localhost:8080/gamification/ -gameI
 
 In the following sections is a reference for challenge definition, it's possibile to found also a lot of examples in resource folder
 
-|NAME|TYPE|GOAL_TYPE|TARGET|BONUS|POINT_TYPE|DIFFICULTY|BASELINE_VARIABLE|SELECTION_CRITERIA_CUSTOM_DATA|SELECTION_CRITERIA_POINTS|SELECTION_CRITERIA_BADGES|
-|----|----|---------|------|-----|----------|----------|-----------------|------------------------------|-------------------------|-------------------------|
-|Name of the challenge, must be unique|Type of the challenge, used for selecting the right drools rule template (see [ChallengeType](/src/main/java/eu/trentorise/game/challenges/model/ChallengeType.java))|Type of the goal|Target value for challenge|Bonus points for completed challenge|Type of the point|Difficulty value ( not used right now )|Baseline variable used for percent challenges|Selection criteria using custom data from player state|Selection criteria using points|Selection criteria for badges|
+|NAME|MODEL_NAME|GOAL_TYPE|TARGET|BONUS|POINT_TYPE|DIFFICULTY|BASELINE_VARIABLE|SELECTION_CRITERIA_CUSTOM_DATA|SELECTION_CRITERIA_POINTS|SELECTION_CRITERIA_BADGES|
+|----|----------|---------|------|-----|----------|----------|-----------------|------------------------------|-------------------------|-------------------------|
+|Name of the challenge, must be unique|Model name of the challenge, used to get right model name defined in gamification engine|Type of the goal|Target value for challenge|Bonus points for completed challenge|Type of the point|Difficulty value ( not used right now )|Baseline variable used for percent challenges|Selection criteria using custom data from player state|Selection criteria using points|Selection criteria for badges|
 
 ## License
 
