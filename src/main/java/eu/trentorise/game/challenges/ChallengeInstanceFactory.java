@@ -6,8 +6,8 @@ import java.util.UUID;
 
 import org.joda.time.LocalDate;
 
-import eu.trentorise.game.bean.ChallengeDataDTO;
 import eu.trentorise.game.challenges.exception.UndefinedChallengeException;
+import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 
 public class ChallengeInstanceFactory {
 

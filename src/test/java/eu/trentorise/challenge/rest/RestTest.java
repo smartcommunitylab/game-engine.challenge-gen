@@ -115,20 +115,6 @@ public class RestTest {
 	}
 
 	@Test
-	public void updateChallengeCustomData() {
-		Map<String, Object> customData = new HashMap<String, Object>();
-		customData.put("target", "20");
-		boolean result = insertFacade.updateChallengeCustomData(get(GAMEID),
-				"178", customData);
-		assertTrue(result);
-		// reset custom data
-		// customData.put("target", "");
-		// result = insertFacade.updateChallengeCustomData(get(GAMEID), "178",
-		// customData);
-		// assertTrue(result);
-	}
-
-	@Test
 	public void printGameStatus() throws FileNotFoundException, IOException {
 		List<Content> result = facade.readGameState(get(GAMEID));
 		assertTrue(!result.isEmpty());

@@ -1,7 +1,5 @@
 package eu.trentorise.game.challenges.model;
 
-import eu.trentorise.game.bean.ChallengeDataDTO;
-
 public class ChallengeDataInternalDto {
 
 	private String playerId;

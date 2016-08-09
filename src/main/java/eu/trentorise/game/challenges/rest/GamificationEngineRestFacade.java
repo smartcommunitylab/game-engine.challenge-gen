@@ -19,9 +19,9 @@ import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import eu.trentorise.game.bean.ChallengeDataDTO;
 import eu.trentorise.game.challenges.api.Constants;
-import eu.trentorise.game.model.ChallengeModel;
+import eu.trentorise.game.challenges.model.ChallengeDataDTO;
+import eu.trentorise.game.challenges.model.ChallengeModel;
 
 /**
  * A facade for handling logic for Gamification Engine Rest api
