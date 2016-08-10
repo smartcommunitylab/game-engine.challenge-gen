@@ -116,16 +116,11 @@ public class GenerationTest {
 			logger.debug("found users: " + filteredUsers.size());
 			// generate rule
 			if (!filteredUsers.isEmpty()) {
-				List<ChallengeDataInternalDto> challenges = crg.generateRules(
-						challengeSpec, filteredUsers, CalendarUtil.getStart()
-								.getTime(), CalendarUtil.getEnd().getTime());
-				assertTrue(!challenges.isEmpty());
-				logger.debug("generated challenges: " + challenges.size()
-						+ "\n");
-
+				crg.generateRules(challengeSpec, filteredUsers, CalendarUtil
+						.getStart().getTime(), CalendarUtil.getEnd().getTime());
 			}
 		}
-		crg.closeStream();
+		crg.writeChallengesToFile();
 	}
 
 	@Test
@@ -152,16 +147,11 @@ public class GenerationTest {
 			logger.debug("found users: " + filteredUsers.size());
 			// generate rule
 			if (!filteredUsers.isEmpty()) {
-				List<ChallengeDataInternalDto> challenges = crg.generateRules(
-						challengeSpec, filteredUsers, CalendarUtil.getStart()
-								.getTime(), CalendarUtil.getEnd().getTime());
-				assertTrue(!challenges.isEmpty());
-				logger.debug("generated challenges: " + challenges.size()
-						+ "\n");
-
+				crg.generateRules(challengeSpec, filteredUsers, CalendarUtil
+						.getStart().getTime(), CalendarUtil.getEnd().getTime());
 			}
 		}
-		crg.closeStream();
+		crg.writeChallengesToFile();
 
 		// upload
 		String input = "output.json";

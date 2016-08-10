@@ -41,11 +41,13 @@ public class ChallengesRulesGenerator {
 	private FileOutputStream fout;
 	private Map<String, Integer> challengeMap;
 	private FileOutputStream oout;
+	private List<ChallengeDataInternalDto> challenges;
 
 	public ChallengesRulesGenerator(ChallengeInstanceFactory factory,
 			String reportName, String outputName) throws IOException {
 		// this.playerIdCustomData = new HashMap<String, Map<String, Object>>();
 		this.factory = factory;
+		this.challenges = new ArrayList<ChallengeDataInternalDto>();
 		// prepare report output
 		fout = new FileOutputStream(reportName);
 		oout = new FileOutputStream(outputName);
@@ -62,16 +64,13 @@ public class ChallengesRulesGenerator {
 	 * 
 	 * @param challengeSpec
 	 * @param users
-	 * @return list of challenges ready to be uploaded
 	 * @throws UndefinedChallengeException
 	 * @throws IOException
 	 */
-	public List<ChallengeDataInternalDto> generateRules(
-			ChallengeRuleRow challengeSpec, List<Content> users,
-			Date startDate, Date endDate) throws UndefinedChallengeException,
-			IOException {
+	public void generateRules(ChallengeRuleRow challengeSpec,
+			List<Content> users, Date startDate, Date endDate)
+			throws UndefinedChallengeException, IOException {
 		logger.debug("ChallengesRulesGenerator - started");
-		List<ChallengeDataInternalDto> result = new ArrayList<ChallengeDataInternalDto>();
 		Map<String, Object> params = new HashMap<String, Object>();
 		reportBuffer = new StringBuffer();
 		// playerIdCustomData.clear();
@@ -92,7 +91,7 @@ public class ChallengesRulesGenerator {
 				cdit.setPlayerId(user.getPlayerId());
 				cdit.setGameId(user.getGameId());
 				cdit.setDto(cdd);
-				result.add(cdit);
+				challenges.add(cdit);
 
 				reportBuffer.append(user.getPlayerId() + ";"
 						+ challengeSpec.getName() + ";"
@@ -112,26 +111,6 @@ public class ChallengesRulesGenerator {
 		}
 		// write report to file
 		IOUtils.write(reportBuffer.toString(), fout);
-
-		// write json file
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			IOUtils.write(mapper.writeValueAsString(result), oout);
-		} catch (IOException e) {
-			logger.error("Error in writing result " + e.getMessage());
-		}
-		// close stream
-		if (oout != null) {
-			try {
-				fout.close();
-			} catch (IOException e) {
-				logger.error("Error in closing output file " + e.getMessage());
-				return null;
-			}
-		}
-		logger.debug("ChallengesRulesGenerator - completed - generated challenges "
-				+ result.size());
-		return result;
 	}
 
 	private int getChallenges(String playerId) {
@@ -149,10 +128,23 @@ public class ChallengesRulesGenerator {
 		}
 	}
 
-	public void closeStream() throws IOException {
+	private void closeStream() throws IOException {
 		if (fout != null) {
 			fout.close();
 		}
+		// close stream
+		if (oout != null) {
+			oout.close();
+		}
+	}
+
+	public void writeChallengesToFile() throws IOException {
+		// write json file
+		ObjectMapper mapper = new ObjectMapper();
+		IOUtils.write(mapper.writeValueAsString(challenges), oout);
+		logger.debug("ChallengesRulesGenerator - completed - written challenges "
+				+ challenges.size());
+		closeStream();
 	}
 
 }

@@ -15,7 +15,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import eu.trentorise.game.challenges.exception.UndefinedChallengeException;
-import eu.trentorise.game.challenges.model.ChallengeDataInternalDto;
 import eu.trentorise.game.challenges.rest.Content;
 import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
 import eu.trentorise.game.challenges.util.CalendarUtil;
@@ -214,27 +213,29 @@ public class ChallengeGeneratorTool {
 				log += msg + "\n";
 				continue;
 			}
-			List<ChallengeDataInternalDto> res;
 			try {
-				res = crg.generateRules(challengeSpec, filteredUsers,
-						CalendarUtil.getStart().getTime(), CalendarUtil
-								.getEnd().getTime());
+				crg.generateRules(challengeSpec, filteredUsers, CalendarUtil
+						.getStart().getTime(), CalendarUtil.getEnd().getTime());
 			} catch (UndefinedChallengeException | IOException e) {
 				msg = "Error in challenge generation : " + e.getMessage();
 				System.err.println(msg);
 				log += msg + "\n";
 				return log;
 			}
-			if (res == null || res.isEmpty()) {
-				continue;
-			}
 			tot++;
 		}
-		msg = "Generated rules " + tot + "\n"
-				+ "Written report file generated-rules-report.csv";
-		System.out.println(msg);
-		log += msg + "\n";
-		return log;
+		try {
+			crg.writeChallengesToFile();
+			msg = "Generated rules " + tot + "\n"
+					+ "Written report file generated-rules-report.csv";
+			System.out.println(msg);
+			log += msg + "\n";
+			return log;
+		} catch (IOException e) {
+			msg = "Error in writing challenges to file";
+			log += msg + "\n";
+			return log;
+		}
 	}
 
 	private static void init() {
