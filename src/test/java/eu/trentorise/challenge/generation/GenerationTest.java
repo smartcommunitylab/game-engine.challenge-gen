@@ -81,10 +81,14 @@ public class GenerationTest {
 
 		List<Content> users = facade.readGameState(get(GAMEID));
 
+		System.out.println("Users found: " + users.size());
+
 		// generate challenges
 		for (ChallengeRuleRow challengeSpec : result.getChallenges()) {
 			Matcher matcher = new Matcher(challengeSpec);
 			List<Content> r = matcher.match(users);
+			assertTrue(r != null);
+			System.out.println("Users match: " + r.size());
 		}
 	}
 
@@ -299,63 +303,8 @@ public class GenerationTest {
 			model.setGameId(gameId);
 			models.add(model);
 		}
+		System.out.println("read models " + models.size());
 		assertTrue(!models.isEmpty());
 	}
 
-	// @Test
-	// public void generateChallengeRulesAndInsertToGamificationEngine()
-	// throws NullPointerException, IllegalArgumentException, IOException,
-	// UndefinedChallengeException {
-	// // load
-	// ChallengeRules result = ChallengeRulesLoader.load("TestChallenges.csv");
-	//
-	// assertTrue(result != null && !result.getChallenges().isEmpty());
-	//
-	// // get users from gamification engine
-	// List<Content> users = facade.readGameState(get(GAMEID));
-	//
-	// ChallengesRulesGenerator crg = new ChallengesRulesGenerator(
-	// new ChallengeInstanceFactory(), "generated-rules-report.csv");
-	//
-	// Map<String, Map<String, Object>> playerIdCustomData = new HashMap<String,
-	// Map<String, Object>>();
-	// // generate challenges
-	// for (ChallengeRuleRow challengeSpec : result.getChallenges()) {
-	// logger.debug("rules generation for challenge: "
-	// + challengeSpec.getName());
-	// Matcher matcher = new Matcher(challengeSpec);
-	// List<Content> filteredUsers = matcher.match(users);
-	// logger.debug("found users: " + filteredUsers.size());
-	// List<ChallengeDataDTO> res = crg.generateRules(challengeSpec,
-	// filteredUsers);
-	// logger.debug("generated rules \n" + res.size() + "\n");
-	//
-	// assertTrue(!res.isEmpty());
-	//
-	// // update custom data for every user in challenge
-	// playerIdCustomData = crg.getPlayerIdCustomData();
-	// for (Content user : filteredUsers) {
-	// insertFacade.updateChallengeCustomData(get(GAMEID),
-	// user.getPlayerId(),
-	// playerIdCustomData.get(user.getPlayerId()));
-	// }
-	//
-	// // define rule
-	// InsertedRuleDto rule = new InsertedRuleDto();
-	// rule.setContent(res);
-	// rule.setName(challengeSpec.getName());
-	// // insert rule
-	// InsertedRuleDto insertedRule = insertFacade.insertGameRule(
-	// get(GAMEID), rule);
-	// if (insertedRule != null) {
-	// logger.debug("Inserted rule ");
-	// assertTrue(!insertedRule.getId().isEmpty());
-	// } else {
-	// logger.error("Error during insertion of rules");
-	// }
-	//
-	// }
-	//
-	// crg.closeStream();
-	// }
 }

@@ -9,7 +9,6 @@ public class ChallengeRuleRow {
 	private Integer bonus;
 	private String name;
 	private String baselineVar;
-	private String selectionCriteriaCustomData;
 	private String selectionCriteriaPoints;
 	private String selectionCriteriaBadges;
 
@@ -35,11 +34,6 @@ public class ChallengeRuleRow {
 
 	public void setPointType(String pointType) {
 		this.pointType = pointType;
-	}
-
-	public void setSelectionCriteriaCustomData(
-			String selectionCriteriaCustomData) {
-		this.selectionCriteriaCustomData = selectionCriteriaCustomData;
 	}
 
 	public void setBonus(Integer bonus) {
@@ -72,10 +66,6 @@ public class ChallengeRuleRow {
 
 	public String getSelectionCriteriaPoints() {
 		return selectionCriteriaPoints;
-	}
-
-	public String getSelectionCriteriaCustomData() {
-		return selectionCriteriaCustomData;
 	}
 
 	public void setSelectionCriteriaBadges(String selectionCriteriaBadges) {

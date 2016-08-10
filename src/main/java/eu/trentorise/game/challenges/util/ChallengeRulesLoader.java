@@ -24,8 +24,7 @@ public final class ChallengeRulesLoader {
 
 	private static final String[] COLUMNS = { "NAME", "TYPE", "GOAL_TYPE",
 			"TARGET", "BONUS", "POINT_TYPE", "DIFFICULTY", "BASELINE_VARIABLE",
-			"SELECTION_CRITERIA_CUSTOM_DATA", "SELECTION_CRITERIA_POINTS",
-			"SELECTION_CRITERIA_BADGES" };
+			"SELECTION_CRITERIA_POINTS", "SELECTION_CRITERIA_BADGES" };
 
 	private ChallengeRulesLoader() {
 	}
@@ -78,12 +77,11 @@ public final class ChallengeRulesLoader {
 				crr.setBonus(Integer.valueOf(elements[4]));
 				crr.setPointType(elements[5]);
 				crr.setBaselineVar(elements[7]);
-				crr.setSelectionCriteriaCustomData(elements[8]);
-				if (elements.length > 9) {
-					crr.setSelectionCriteriaPoints(elements[9]);
+				if (elements.length > 8) {
+					crr.setSelectionCriteriaPoints(elements[8]);
 				}
-				if (elements.length > 10) {
-					crr.setSelectionCriteriaBadges(elements[10]);
+				if (elements.length > 9) {
+					crr.setSelectionCriteriaBadges(elements[9]);
 				}
 				response.getChallenges().add(crr);
 			}
@@ -119,7 +117,6 @@ public final class ChallengeRulesLoader {
 				toWrite.append(row.getPointType() + ";");
 				toWrite.append(";");
 				toWrite.append(row.getBaselineVar() + ";");
-				toWrite.append(row.getSelectionCriteriaCustomData() + ";");
 				toWrite.append(row.getSelectionCriteriaPoints() + ";");
 				toWrite.append(row.getSelectionCriteriaBadges() + ";");
 				toWrite.append("\n");

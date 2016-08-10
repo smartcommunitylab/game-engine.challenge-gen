@@ -32,10 +32,7 @@ public class Matcher {
 		// check if at least one type of criteria is defined
 		// TODO: Do we need some sort of validation of criteria before use them
 		// ?
-		if (challenge.getSelectionCriteriaCustomData() != null
-				&& !challenge.getSelectionCriteriaCustomData().isEmpty()) {
-			// ok
-		} else if (challenge.getSelectionCriteriaPoints() != null
+		if (challenge.getSelectionCriteriaPoints() != null
 				&& !challenge.getSelectionCriteriaPoints().isEmpty()) {
 			// ok
 		} else if (challenge.getSelectionCriteriaBadges() != null
@@ -54,12 +51,7 @@ public class Matcher {
 		}
 		List<Content> result = new ArrayList<Content>();
 		for (Content user : users) {
-			if (challenge.getSelectionCriteriaCustomData() != null
-					&& !challenge.getSelectionCriteriaCustomData().isEmpty()) {
-				if (customDataMatch(user)) {
-					result.add(user);
-				}
-			} else if (challenge.getSelectionCriteriaPoints() != null
+			if (challenge.getSelectionCriteriaPoints() != null
 					&& !challenge.getSelectionCriteriaPoints().isEmpty()) {
 				if (pointsMatch(user)) {
 					result.add(user);
@@ -75,30 +67,30 @@ public class Matcher {
 		return result;
 	}
 
-	private boolean customDataMatch(Content user) {
-		String criteria = challenge.getSelectionCriteriaCustomData();
-		logger.debug("criteria to evaluate: " + criteria);
-		if (criteria.equalsIgnoreCase("true")) {
-			return true;
-		}
-		if (isUserValidCustomData(user, criteria)) {
-			List<String> vars = getVariablesFromCriteria(criteria);
-			for (String var : vars) {
-				engine.put(var, user.getCustomData().getAdditionalProperties()
-						.get(var));
-			}
-			try {
-				Object result = engine.eval(criteria);
-				if (result instanceof Boolean) {
-					return (Boolean) result;
-				}
-				return false;
-			} catch (ScriptException e) {
-				logger.error(e.getMessage(), e);
-			}
-		}
-		return false;
-	}
+	// private boolean customDataMatch(Content user) {
+	// String criteria = challenge.getSelectionCriteriaCustomData();
+	// logger.debug("criteria to evaluate: " + criteria);
+	// if (criteria.equalsIgnoreCase("true")) {
+	// return true;
+	// }
+	// if (isUserValidCustomData(user, criteria)) {
+	// List<String> vars = getVariablesFromCriteria(criteria);
+	// for (String var : vars) {
+	// engine.put(var, user.getCustomData().getAdditionalProperties()
+	// .get(var));
+	// }
+	// try {
+	// Object result = engine.eval(criteria);
+	// if (result instanceof Boolean) {
+	// return (Boolean) result;
+	// }
+	// return false;
+	// } catch (ScriptException e) {
+	// logger.error(e.getMessage(), e);
+	// }
+	// }
+	// return false;
+	// }
 
 	private boolean pointsMatch(Content user) {
 		String criteria = challenge.getSelectionCriteriaPoints();
@@ -112,30 +104,49 @@ public class Matcher {
 			logger.warn("Point type criteria malformed, empty point type found");
 			return false;
 		}
+		// for (String var : vars) {
+		// if (getPointConcept(user, var) == null) {
+		// logger.warn("User " + user.getPlayerId()
+		// + " don't have point concept with name " + var);
+		// return false;
+		// }
+		// }
+		String newName = "";
+		// gather data
 		for (String var : vars) {
-			if (!isPointConcept(user, var)) {
-				logger.warn("User " + user.getPlayerId()
-						+ " don't have point concept with name " + var);
+			// absolute point concept value
+			if (!var.contains(".")) {
+				PointConcept absolute = getPointConcept(user, var);
+				if (absolute != null) {
+					// evaluate criteria
+					newName = StringUtils.replace(var, " ", "_");
+					engine.put(newName, absolute.getScore());
+					criteria = StringUtils.replaceOnce(criteria, var, newName);
+				} else {
+					logger.warn("User " + user.getPlayerId()
+							+ " don't have point concept with name " + var);
+					return false;
+				}
+			} else if (StringUtils.countMatches(var, ".") == 2) {
+				String[] values = StringUtils.split(var, ".");
+				Double score = 0d;
+				if (values[2].equals("previous")) {
+					score = getScorePrevious(user, values[0], values[1]);
+				} else if (values[2].equals("current")) {
+					score = getScoreCurrent(user, values[0], values[1]);
+				}
+				// evaluate criteria
+				newName = StringUtils.replace(values[0], " ", "_");
+				engine.put(newName, score);
+				criteria = StringUtils.replaceOnce(criteria, var, newName);
+			} else {
+				logger.warn("Criteria not well written : " + criteria);
 				return false;
 			}
 		}
-		String originalName = "";
-		String newName = "";
-		String newCriteria = "";
-		// gather data
-		for (String var : vars) {
-			// because javascriptengine don't like variable with blank
-			// space in declaration, change them with anotherChar
-			originalName = new String(var);
-			newName = StringUtils.replaceChars(var, " ", "_");
-			newCriteria = StringUtils.replace(criteria, originalName, newName);
-			double score = getScoreFromConcept(user, var);
-			// evaluate criteria
-			engine.put(newName, score);
-		}
 		// evaluate criteria
 		try {
-			Object result = engine.eval(newCriteria);
+			Object result = engine.eval(criteria);
 			if (result instanceof Boolean) {
 				return (Boolean) result;
 			}
@@ -145,6 +156,24 @@ public class Matcher {
 		}
 
 		return false;
+	}
+
+	private Double getScorePrevious(Content user, String pointType,
+			String periodIdentifier) {
+		PointConcept pc = getPointConcept(user, pointType);
+		if (pc != null) {
+			return pc.getPeriodPreviousScore(periodIdentifier);
+		}
+		return 0d;
+	}
+
+	private Double getScoreCurrent(Content user, String pointType,
+			String periodIdentifier) {
+		PointConcept pc = getPointConcept(user, pointType);
+		if (pc != null) {
+			return pc.getPeriodCurrentScore(periodIdentifier);
+		}
+		return 0d;
 	}
 
 	private boolean badgeMatch(Content user) {
@@ -200,18 +229,18 @@ public class Matcher {
 		return 0;
 	}
 
-	private boolean isPointConcept(Content user, String pointType) {
+	private PointConcept getPointConcept(Content user, String pointType) {
 		if (user.getState() != null
 				&& user.getState().getPointConcept() != null) {
 			boolean found = false;
 			for (PointConcept pc : user.getState().getPointConcept()) {
 				if (pc.getName().equalsIgnoreCase(pointType)) {
-					found = true;
+					return pc;
 				}
 			}
-			return found;
+			return null;
 		}
-		return false;
+		return null;
 	}
 
 	private List<String> getVariableFromPointCriteria(String criteria) {
