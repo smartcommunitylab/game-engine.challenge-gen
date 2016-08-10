@@ -3,6 +3,7 @@ package eu.trentorise.game.challenges;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import eu.trentorise.game.challenges.api.Constants;
 import eu.trentorise.game.challenges.exception.UndefinedChallengeException;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import eu.trentorise.game.challenges.model.ChallengeDataInternalDto;
@@ -65,8 +67,9 @@ public class ChallengesRulesGenerator {
 	 * @throws IOException
 	 */
 	public List<ChallengeDataInternalDto> generateRules(
-			ChallengeRuleRow challengeSpec, List<Content> users)
-			throws UndefinedChallengeException, IOException {
+			ChallengeRuleRow challengeSpec, List<Content> users,
+			Date startDate, Date endDate) throws UndefinedChallengeException,
+			IOException {
 		logger.debug("ChallengesRulesGenerator - started");
 		List<ChallengeDataInternalDto> result = new ArrayList<ChallengeDataInternalDto>();
 		Map<String, Object> params = new HashMap<String, Object>();
@@ -76,9 +79,12 @@ public class ChallengesRulesGenerator {
 		for (Content user : users) {
 			// create a challenge for user only under a specific limit
 			if (getChallenges(user.getPlayerId()) < challengeLimitNumber) {
-				params.put("target", challengeSpec.getTarget());
-				params.put("bonusPointType", challengeSpec.getPointType());
-				params.put("bonusScore", challengeSpec.getBonus());
+				params.put(Constants.TARGET, challengeSpec.getTarget());
+				params.put(Constants.BONUS_POINT_TYPE,
+						challengeSpec.getPointType());
+				params.put(Constants.BONUS_SCORE, challengeSpec.getBonus());
+				params.put(Constants.START_DATE, startDate);
+				params.put(Constants.END_DATE, endDate);
 
 				ChallengeDataDTO cdd = factory.createChallenge(
 						challengeSpec.getModelName(), params);

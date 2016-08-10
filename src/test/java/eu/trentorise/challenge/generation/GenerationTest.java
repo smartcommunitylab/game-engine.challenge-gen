@@ -40,6 +40,7 @@ import eu.trentorise.game.challenges.model.ChallengeDataInternalDto;
 import eu.trentorise.game.challenges.model.ChallengeModel;
 import eu.trentorise.game.challenges.rest.Content;
 import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
+import eu.trentorise.game.challenges.util.CalendarUtil;
 import eu.trentorise.game.challenges.util.ChallengeRuleRow;
 import eu.trentorise.game.challenges.util.ChallengeRules;
 import eu.trentorise.game.challenges.util.ChallengeRulesLoader;
@@ -112,7 +113,8 @@ public class GenerationTest {
 			// generate rule
 			if (!filteredUsers.isEmpty()) {
 				List<ChallengeDataInternalDto> challenges = crg.generateRules(
-						challengeSpec, filteredUsers);
+						challengeSpec, filteredUsers, CalendarUtil.getStart()
+								.getTime(), CalendarUtil.getEnd().getTime());
 				assertTrue(!challenges.isEmpty());
 				logger.debug("generated challenges: " + challenges.size()
 						+ "\n");
@@ -147,7 +149,8 @@ public class GenerationTest {
 			// generate rule
 			if (!filteredUsers.isEmpty()) {
 				List<ChallengeDataInternalDto> challenges = crg.generateRules(
-						challengeSpec, filteredUsers);
+						challengeSpec, filteredUsers, CalendarUtil.getStart()
+								.getTime(), CalendarUtil.getEnd().getTime());
 				assertTrue(!challenges.isEmpty());
 				logger.debug("generated challenges: " + challenges.size()
 						+ "\n");

@@ -216,7 +216,9 @@ public class ChallengeGeneratorTool {
 			}
 			List<ChallengeDataInternalDto> res;
 			try {
-				res = crg.generateRules(challengeSpec, filteredUsers);
+				res = crg.generateRules(challengeSpec, filteredUsers,
+						CalendarUtil.getStart().getTime(), CalendarUtil
+								.getEnd().getTime());
 			} catch (UndefinedChallengeException | IOException e) {
 				msg = "Error in challenge generation : " + e.getMessage();
 				System.err.println(msg);
