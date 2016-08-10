@@ -132,7 +132,7 @@ public class ChallengeGeneratorTool {
 			return;
 		}
 		System.out.println("Challenge definition file: " + input);
-		generate(host, gameId, result, username, password);
+		generate(host, gameId, result, username, password, output);
 	}
 
 	/**
@@ -149,7 +149,8 @@ public class ChallengeGeneratorTool {
 	 * @see ChallengeRulesLoader
 	 */
 	public static String generate(String host, String gameId,
-			ChallengeRules result, String username, String password) {
+			ChallengeRules result, String username, String password,
+			String output) {
 		String log = "";
 		// get users from gamification engine
 		GamificationEngineRestFacade facade;
@@ -194,7 +195,7 @@ public class ChallengeGeneratorTool {
 		ChallengesRulesGenerator crg;
 		try {
 			crg = new ChallengesRulesGenerator(new ChallengeInstanceFactory(),
-					"generated-rules-report.csv");
+					"generated-rules-report.csv", output);
 		} catch (IOException e2) {
 			msg = "Error in creating " + "generated-rules-report.csv";
 			System.err.println(msg);
@@ -257,9 +258,9 @@ public class ChallengeGeneratorTool {
 
 	public static String generate(String host, String gameId,
 			ChallengeRules challenges, String username, String password,
-			Date startDate, Date endDate) {
+			String output, Date startDate, Date endDate) {
 		CalendarUtil.setStart(startDate);
 		CalendarUtil.setEnd(endDate);
-		return generate(host, gameId, challenges, username, password);
+		return generate(host, gameId, challenges, username, password, output);
 	}
 }

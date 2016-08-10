@@ -32,7 +32,7 @@ public class ChallengesRulesGenerator {
 	private static final int challengeLimitNumber = 2;
 
 	private ChallengeInstanceFactory factory;
-	private Map<String, Map<String, Object>> playerIdCustomData;
+	// private Map<String, Map<String, Object>> playerIdCustomData;
 	private StringBuffer reportBuffer;
 
 	private final String reportHeader = "PLAYER;CHALLENGE_NAME;CHALLENGE_TYPE;TRANSPORT_MODE;BASELINE_VALUE;TARGET_VALUE;PRIZE;POINT_TYPE;CH_ID\n";
@@ -41,16 +41,17 @@ public class ChallengesRulesGenerator {
 	private FileOutputStream oout;
 
 	public ChallengesRulesGenerator(ChallengeInstanceFactory factory,
-			String reportName) throws IOException {
-		this.playerIdCustomData = new HashMap<String, Map<String, Object>>();
+			String reportName, String outputName) throws IOException {
+		// this.playerIdCustomData = new HashMap<String, Map<String, Object>>();
 		this.factory = factory;
 		// prepare report output
 		fout = new FileOutputStream(reportName);
-		oout = new FileOutputStream("output.json");
+		oout = new FileOutputStream(outputName);
 		// write header
 		IOUtils.write(reportHeader, fout);
 		// init challenge map
 		challengeMap = new HashMap<String, Integer>();
+		logger.debug("ChallengesRulesGenerator - created");
 	}
 
 	/**
@@ -59,17 +60,18 @@ public class ChallengesRulesGenerator {
 	 * 
 	 * @param challengeSpec
 	 * @param users
-	 * @return
+	 * @return list of challenges ready to be uploaded
 	 * @throws UndefinedChallengeException
 	 * @throws IOException
 	 */
 	public List<ChallengeDataInternalDto> generateRules(
 			ChallengeRuleRow challengeSpec, List<Content> users)
 			throws UndefinedChallengeException, IOException {
+		logger.debug("ChallengesRulesGenerator - started");
 		List<ChallengeDataInternalDto> result = new ArrayList<ChallengeDataInternalDto>();
 		Map<String, Object> params = new HashMap<String, Object>();
 		reportBuffer = new StringBuffer();
-		playerIdCustomData.clear();
+		// playerIdCustomData.clear();
 		// get right challenge
 		for (Content user : users) {
 			// create a challenge for user only under a specific limit
@@ -96,7 +98,7 @@ public class ChallengesRulesGenerator {
 						+ challengeSpec.getPointType() + ";"
 						+ cdd.getInstanceName() + "\n");
 				// save custom data for user for later use
-				playerIdCustomData.put(user.getPlayerId(), cdd.getData());
+				// playerIdCustomData.put(user.getPlayerId(), cdd.getData());
 
 				// increase challenge number for user
 				increaseChallenge(user.getPlayerId());
@@ -110,18 +112,19 @@ public class ChallengesRulesGenerator {
 		try {
 			IOUtils.write(mapper.writeValueAsString(result), oout);
 		} catch (IOException e) {
-			System.err.println("Error in writing result " + e.getMessage());
+			logger.error("Error in writing result " + e.getMessage());
 		}
 		// close stream
 		if (oout != null) {
 			try {
 				fout.close();
 			} catch (IOException e) {
-				System.err.println("Error in closing output file "
-						+ e.getMessage());
+				logger.error("Error in closing output file " + e.getMessage());
 				return null;
 			}
 		}
+		logger.debug("ChallengesRulesGenerator - completed - generated challenges "
+				+ result.size());
 		return result;
 	}
 
@@ -144,10 +147,6 @@ public class ChallengesRulesGenerator {
 		if (fout != null) {
 			fout.close();
 		}
-	}
-
-	public Map<String, Map<String, Object>> getPlayerIdCustomData() {
-		return playerIdCustomData;
 	}
 
 }

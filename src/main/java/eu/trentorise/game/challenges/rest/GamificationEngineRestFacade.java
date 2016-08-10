@@ -2,8 +2,10 @@ package eu.trentorise.game.challenges.rest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -266,7 +268,7 @@ public class GamificationEngineRestFacade {
 
 	public boolean assignChallengeToPlayer(ChallengeDataDTO cdd, String gameId,
 			String playerId) {
-		if (gameId == null || gameId == null || playerId == null) {
+		if (cdd == null || gameId == null || playerId == null) {
 			throw new IllegalArgumentException(
 					"challenge, gameId and playerId cannot be null");
 		}
@@ -279,5 +281,21 @@ public class GamificationEngineRestFacade {
 		}
 		logger.error("response code: " + response.getStatus());
 		return false;
+	}
+
+	public Set<ChallengeModel> readChallengesModel(String gameId) {
+		if (gameId == null) {
+			throw new IllegalArgumentException("gameId cannot be null");
+		}
+		WebTarget target = getTarget().path(gameId).path("challenge");
+		Response response = target.request().get();
+		if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+			logger.debug("response code: " + response.getStatus());
+			Set<ChallengeModel> result = (Set<ChallengeModel>) response
+					.readEntity(Set.class);
+			return result;
+		}
+		logger.error("response code: " + response.getStatus());
+		return new HashSet<ChallengeModel>();
 	}
 }

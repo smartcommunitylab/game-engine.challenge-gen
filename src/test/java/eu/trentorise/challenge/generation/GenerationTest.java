@@ -12,7 +12,11 @@ import static org.junit.Assert.assertTrue;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -26,12 +30,14 @@ import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.google.common.collect.Sets;
 
 import eu.trentorise.game.challenges.ChallengeInstanceFactory;
 import eu.trentorise.game.challenges.ChallengesRulesGenerator;
 import eu.trentorise.game.challenges.exception.UndefinedChallengeException;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import eu.trentorise.game.challenges.model.ChallengeDataInternalDto;
+import eu.trentorise.game.challenges.model.ChallengeModel;
 import eu.trentorise.game.challenges.rest.Content;
 import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
 import eu.trentorise.game.challenges.util.ChallengeRuleRow;
@@ -48,6 +54,7 @@ public class GenerationTest {
 	private GamificationEngineRestFacade insertFacade;
 	private GamificationEngineRestFacade challengeModelFacade;
 	private GamificationEngineRestFacade challengeAssignFacade;
+	private GamificationEngineRestFacade challengeModelReadFacade;
 
 	@Before
 	public void setup() {
@@ -59,6 +66,8 @@ public class GenerationTest {
 				get(USERNAME), get(PASSWORD));
 		challengeAssignFacade = new GamificationEngineRestFacade(get(HOST)
 				+ "data/game/", get(USERNAME), get(PASSWORD));
+		challengeModelReadFacade = new GamificationEngineRestFacade(get(HOST)
+				+ "model/game/", get(USERNAME), get(PASSWORD));
 	}
 
 	@Test
@@ -90,7 +99,8 @@ public class GenerationTest {
 		List<Content> users = facade.readGameState(get(GAMEID));
 
 		ChallengesRulesGenerator crg = new ChallengesRulesGenerator(
-				new ChallengeInstanceFactory(), "generated-rules-report.csv");
+				new ChallengeInstanceFactory(), "generated-rules-report.csv",
+				"output.json");
 
 		// generate challenges
 		for (ChallengeRuleRow challengeSpec : result.getChallenges()) {
@@ -124,7 +134,8 @@ public class GenerationTest {
 		List<Content> users = facade.readGameState(get(GAMEID));
 
 		ChallengesRulesGenerator crg = new ChallengesRulesGenerator(
-				new ChallengeInstanceFactory(), "generated-rules-report.csv");
+				new ChallengeInstanceFactory(), "generated-rules-report.csv",
+				"output.json");
 
 		// generate challenges
 		for (ChallengeRuleRow challengeSpec : result.getChallenges()) {
@@ -262,6 +273,30 @@ public class GenerationTest {
 		cdd.setData(data);
 		assertTrue(challengeAssignFacade.assignChallengeToPlayer(cdd,
 				get(GAMEID), "1"));
+	}
+
+	@Test
+	public void readAllChallengeModelTest() {
+		HashSet result = (HashSet) challengeModelReadFacade
+				.readChallengesModel(get(GAMEID));
+		assertTrue(result != null);
+		List<ChallengeModel> models = new ArrayList<ChallengeModel>();
+		Iterator iter = result.iterator();
+		while (iter.hasNext()) {
+			LinkedHashMap<String, Object> m = (LinkedHashMap<String, Object>) iter
+					.next();
+			String id = (String) m.get("id");
+			String name = (String) m.get("name");
+			List<String> variables = (List<String>) m.get("variables");
+			String gameId = (String) m.get("gameId");
+			ChallengeModel model = new ChallengeModel();
+			model.setId(id);
+			model.setName(name);
+			model.setVariables(Sets.newHashSet(variables));
+			model.setGameId(gameId);
+			models.add(model);
+		}
+		assertTrue(!models.isEmpty());
 	}
 
 	// @Test
