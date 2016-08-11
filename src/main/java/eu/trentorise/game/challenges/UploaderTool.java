@@ -139,7 +139,7 @@ public class UploaderTool {
 		int tot = 0;
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("CHALLENGE_NAME;CHALLENGE_UUID;RULE_TEXT\n");
-		msg = "Read rules " + challenges.size();
+		msg = "Read challenges " + challenges.size();
 		System.out.println(msg);
 		log += msg + "\n";
 		boolean r = false;

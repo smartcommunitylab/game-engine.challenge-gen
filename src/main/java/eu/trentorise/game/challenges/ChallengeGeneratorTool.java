@@ -202,7 +202,6 @@ public class ChallengeGeneratorTool {
 			return log;
 		}
 		// generate challenges
-		int tot = 0;
 		for (ChallengeRuleRow challengeSpec : result.getChallenges()) {
 			Matcher matcher = new Matcher(challengeSpec);
 			List<Content> filteredUsers = matcher.match(users);
@@ -222,12 +221,11 @@ public class ChallengeGeneratorTool {
 				log += msg + "\n";
 				return log;
 			}
-			tot++;
 		}
 		try {
 			crg.writeChallengesToFile();
-			msg = "Generated rules " + tot + "\n"
-					+ "Written report file generated-rules-report.csv";
+			msg = "Challenges generated and written report file generated-rules-report.csv , "
+					+ output + " ready to be uploaded";
 			System.out.println(msg);
 			log += msg + "\n";
 			return log;
