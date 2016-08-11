@@ -67,7 +67,7 @@ public class ChallengesRulesGenerator {
 	 * @throws UndefinedChallengeException
 	 * @throws IOException
 	 */
-	public void generateRules(ChallengeRuleRow challengeSpec,
+	public void generateChallenges(ChallengeRuleRow challengeSpec,
 			List<Content> users, Date startDate, Date endDate)
 			throws UndefinedChallengeException, IOException {
 		logger.debug("ChallengesRulesGenerator - started");
@@ -78,6 +78,7 @@ public class ChallengesRulesGenerator {
 		for (Content user : users) {
 			// create a challenge for user only under a specific limit
 			if (getChallenges(user.getPlayerId()) < challengeLimitNumber) {
+				params.put(Constants.NAME, challengeSpec.getName());
 				params.put(Constants.TARGET, challengeSpec.getTarget());
 				params.put(Constants.BONUS_POINT_TYPE,
 						challengeSpec.getPointType());

@@ -116,7 +116,7 @@ public class GenerationTest {
 			logger.debug("found users: " + filteredUsers.size());
 			// generate rule
 			if (!filteredUsers.isEmpty()) {
-				crg.generateRules(challengeSpec, filteredUsers, CalendarUtil
+				crg.generateChallenges(challengeSpec, filteredUsers, CalendarUtil
 						.getStart().getTime(), CalendarUtil.getEnd().getTime());
 			}
 		}
@@ -147,7 +147,7 @@ public class GenerationTest {
 			logger.debug("found users: " + filteredUsers.size());
 			// generate rule
 			if (!filteredUsers.isEmpty()) {
-				crg.generateRules(challengeSpec, filteredUsers, CalendarUtil
+				crg.generateChallenges(challengeSpec, filteredUsers, CalendarUtil
 						.getStart().getTime(), CalendarUtil.getEnd().getTime());
 			}
 		}

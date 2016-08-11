@@ -213,7 +213,7 @@ public class ChallengeGeneratorTool {
 				continue;
 			}
 			try {
-				crg.generateRules(challengeSpec, filteredUsers, CalendarUtil
+				crg.generateChallenges(challengeSpec, filteredUsers, CalendarUtil
 						.getStart().getTime(), CalendarUtil.getEnd().getTime());
 			} catch (UndefinedChallengeException | IOException e) {
 				msg = "Error in challenge generation : " + e.getMessage();
