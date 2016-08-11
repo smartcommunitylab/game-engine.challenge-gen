@@ -25,7 +25,8 @@ public class ChallengeInstanceFactory {
 	private ChallengeDataDTO buildZeroImpact(Map<String, Object> params) {
 		ChallengeDataDTO cdd = new ChallengeDataDTO();
 		cdd.setModelName(Constants.ZEROIMPACT);
-		cdd.setInstanceName(Constants.ZEROIMPACT + "_" + UUID.randomUUID());
+		cdd.setInstanceName(params.get(Constants.NAME) + "_"
+				+ UUID.randomUUID());
 		cdd.setStart((Date) params.get(Constants.START_DATE));
 		cdd.setEnd((Date) params.get(Constants.END_DATE));
 		Map<String, Object> data = new HashMap<String, Object>();

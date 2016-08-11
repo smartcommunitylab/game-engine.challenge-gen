@@ -1,4 +1,4 @@
 NAME;MODEL_NAME;GOAL_TYPE;TARGET;BONUS;POINT_TYPE;DIFFICULTY;BASELINE_VARIABLE;SELECTION_CRITERIA_POINTS;SELECTION_CRITERIA_BADGES
-w1_zero_impact_1;zeroImpact;busDistance;1;150;green leaves;;;green leaves.weekly.previous >= 50;
-w1_zero_impact_2;zeroImpact;busDistance;1;150;green leaves;;;green leaves.weekly.current >= 50;
-w1_zero_impact_2;zeroImpact;busDistance;1;150;green leaves;;;green leaves >= 0;
+w1_zero_impact_4;zeroImpact;busDistance;4;150;green leaves;;;green leaves.weekly.previous > 0;
+w1_zero_impact_2;zeroImpact;busDistance;2;150;green leaves;;;green leaves.weekly.current <= 50;
+w1_zero_impact_1;zeroImpact;busDistance;1;150;green leaves;;;green leaves >= 50;

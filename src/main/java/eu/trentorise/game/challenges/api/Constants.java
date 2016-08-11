@@ -21,6 +21,7 @@ public final class Constants {
 	public static final String RULE_PREFIX = "db://";
 
 	// challenges constants (v2.0.0)
+	public static final String NAME = "name";
 	public static final String BONUS_SCORE = "bonusScore";
 	public static final String BONUS_POINT_TYPE = "bonusPointType";
 	public static final String TARGET = "target";
