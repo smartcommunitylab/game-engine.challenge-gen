@@ -83,6 +83,8 @@ public class ChallengesRulesGenerator {
 				params.put(Constants.BONUS_POINT_TYPE,
 						challengeSpec.getPointType());
 				params.put(Constants.BONUS_SCORE, challengeSpec.getBonus());
+				params.put(Constants.PERIOD_NAME, "weekly");
+				params.put(Constants.COUNTER_NAME, challengeSpec.getGoalType());
 				params.put(Constants.START_DATE, startDate);
 				params.put(Constants.END_DATE, endDate);
 

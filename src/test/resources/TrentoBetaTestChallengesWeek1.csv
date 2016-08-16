@@ -1,0 +1,3 @@
+NAME;TYPE;GOAL_TYPE;TARGET;BONUS;POINT_TYPE;DIFFICULTY;BASELINE_VARIABLE;SELECTION_CRITERIA_POINTS;SELECTION_CRITERIA_BADGES
+w1_zero_impact_1;absoluteIncrement;ZeroImpact_Trips;1.0;150;green leaves;;;ZeroImpact_Trips.weekly.current == 0;
+w1_try_bike;absoluteIncrement;Bike_Trips;1.0;200;green leaves;;;TRUE;

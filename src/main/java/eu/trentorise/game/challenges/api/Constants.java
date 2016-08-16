@@ -29,6 +29,9 @@ public final class Constants {
 	public static final String END_DATE = "endDate";
 	public static final String START_DATE = "startDate";
 	public static final String ZEROIMPACT = "zeroImpact";
+	public static final String ABSOLUTEINCREMENT = "absoluteIncrement";
+	public static final String COUNTER_NAME = "counterName";
+	public static final String PERIOD_NAME = "periodName";
 
 	// counters for rules
 	public static final String[] COUNTERS = { "gp_current",
