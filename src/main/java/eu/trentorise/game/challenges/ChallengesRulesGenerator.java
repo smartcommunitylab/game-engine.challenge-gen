@@ -19,6 +19,7 @@ import eu.trentorise.game.challenges.exception.UndefinedChallengeException;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import eu.trentorise.game.challenges.model.ChallengeDataInternalDto;
 import eu.trentorise.game.challenges.rest.Content;
+import eu.trentorise.game.challenges.rest.PointConcept;
 import eu.trentorise.game.challenges.util.ChallengeRuleRow;
 import eu.trentorise.game.challenges.util.ChallengeRulesLoader;
 
@@ -79,7 +80,6 @@ public class ChallengesRulesGenerator {
 			// create a challenge for user only under a specific limit
 			if (getChallenges(user.getPlayerId()) < challengeLimitNumber) {
 				params.put(Constants.NAME, challengeSpec.getName());
-				params.put(Constants.TARGET, challengeSpec.getTarget());
 				params.put(Constants.BONUS_POINT_TYPE,
 						challengeSpec.getPointType());
 				params.put(Constants.BONUS_SCORE, challengeSpec.getBonus());
@@ -87,6 +87,18 @@ public class ChallengesRulesGenerator {
 				params.put(Constants.COUNTER_NAME, challengeSpec.getGoalType());
 				params.put(Constants.START_DATE, startDate);
 				params.put(Constants.END_DATE, endDate);
+				params.put(Constants.TARGET, challengeSpec.getTarget());
+				if (challengeSpec.getBaselineVar() != null) {
+					// for percentage challenges, calculate current baseline and
+					// correct target
+					Double value = getPointConceptCurrentValue(user,
+							challengeSpec.getBaselineVar(), "weekly");
+					params.put(Constants.BASELINE, value);
+					Double targetValue = value
+							* (1.0d + (Double) challengeSpec.getTarget());
+					targetValue = Double.valueOf(Math.round(targetValue));
+					params.put(Constants.TARGET, targetValue);
+				}
 
 				ChallengeDataDTO cdd = factory.createChallenge(
 						challengeSpec.getModelName(), params);
@@ -114,6 +126,16 @@ public class ChallengesRulesGenerator {
 		}
 		// write report to file
 		IOUtils.write(reportBuffer.toString(), fout);
+	}
+
+	private Double getPointConceptCurrentValue(Content user,
+			String baselineVar, String periodName) {
+		for (PointConcept pc : user.getState().getPointConcept()) {
+			if (pc.getName().equalsIgnoreCase(baselineVar)) {
+				return pc.getPeriodCurrentScore(periodName);
+			}
+		}
+		return 0d;
 	}
 
 	private int getChallenges(String playerId) {
