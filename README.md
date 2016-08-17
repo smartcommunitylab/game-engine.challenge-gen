@@ -1,6 +1,6 @@
 # Gamification Engine Challenge Generator
 
-The Gamification Engine challenge generator challenges for [Gamification Engine](https://github.com/smartcommunitylab/smartcampus.gamification) from [Smart Community Lab](https://github.com/smartcommunitylab)
+The Gamification Engine challenge generator challenges for [Gamification Engine](https://github.com/smartcommunitylab/smartcampus.gamification) from [Smart Community Lab](https://github.com/smartcommunitylab) and from [DAS](https://github.com/das-fbk)
 
 ## Description
 
