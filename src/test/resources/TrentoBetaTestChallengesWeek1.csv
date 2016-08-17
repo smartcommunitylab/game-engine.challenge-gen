@@ -1,4 +1,5 @@
 NAME;TYPE;GOAL_TYPE;TARGET;BONUS;POINT_TYPE;DIFFICULTY;BASELINE_VARIABLE;SELECTION_CRITERIA_POINTS;SELECTION_CRITERIA_BADGES
+w1_survey;survey;;;500;green leaves;;;TRUE;
 w1_complete_badge_collection_gl;completeBadgeCollection;recommendations;4;1000;green leaves;;;TRUE;
 w1_next_badge_gl_1;nextBadge;green leaves;1;200;green leaves;;;TRUE;
 w1_zero_impact_1;absoluteIncrement;ZeroImpact_Trips;1.0;150;green leaves;;;ZeroImpact_Trips.weekly.current == 0;

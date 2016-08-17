@@ -40,6 +40,7 @@ public final class Constants {
 	public static final String BADGECOLLECTIONNAME = "badgeCollectionName";
 	public static final String GOAL_TYPE = "goalType";
 	public static final String INITIAL_BADGE_NUMBER = "initialBadgeNum";
+	public static final String SURVEY = "survey";
 
 	// counters for rules
 	public static final String[] COUNTERS = { "gp_current",

@@ -25,11 +25,30 @@ public class ChallengeInstanceFactory {
 			return buildNextBadge(params, user);
 		case Constants.COMPLETEBADGECOLLECTION:
 			return buildCompleteBadgeCollection(params, user);
+		case Constants.SURVEY:
+			return buildSurvey(params, user);
 
 		default:
-			throw new UndefinedChallengeException("Unknown challenge type!"
+			throw new UndefinedChallengeException("Unknown challenge type! "
 					+ chType.toString());
 		}
+	}
+
+	private ChallengeDataDTO buildSurvey(Map<String, Object> params,
+			Content user) {
+		ChallengeDataDTO cdd = new ChallengeDataDTO();
+		cdd.setModelName(Constants.SURVEY);
+		cdd.setInstanceName(params.get(Constants.NAME) + "_"
+				+ UUID.randomUUID());
+		cdd.setStart((Date) params.get(Constants.START_DATE));
+		cdd.setEnd((Date) params.get(Constants.END_DATE));
+		Map<String, Object> data = new HashMap<String, Object>();
+		data.put(Constants.BONUS_POINT_TYPE,
+				params.get(Constants.BONUS_POINT_TYPE));
+		data.put(Constants.BONUS_SCORE,
+				Double.valueOf(params.get(Constants.BONUS_SCORE).toString()));
+		cdd.setData(data);
+		return cdd;
 	}
 
 	private ChallengeDataDTO buildCompleteBadgeCollection(
