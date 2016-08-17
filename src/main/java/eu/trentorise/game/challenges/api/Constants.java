@@ -24,6 +24,7 @@ public final class Constants {
 	public static final String ABSOLUTEINCREMENT = "absoluteIncrement";
 	public static final String PERCENTAGEINCREMENT = "percentageIncrement";
 	public static final String NEXTBADGE = "nextBadge";
+	public static final String COMPLETEBADGECOLLECTION = "completeBadgeCollection";
 
 	public static final String NAME = "name";
 	public static final String BONUS_SCORE = "bonusScore";
