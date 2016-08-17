@@ -138,7 +138,7 @@ public class UploaderTool {
 
 		int tot = 0;
 		StringBuffer buffer = new StringBuffer();
-		buffer.append("CHALLENGE_NAME;CHALLENGE_UUID;RULE_TEXT\n");
+		buffer.append("CHALLENGE_NAME;CHALLENGE_UUID;RULE_TEXT;PLAYER_ID\n");
 		msg = "Read challenges " + challenges.size();
 		System.out.println(msg);
 		log += msg + "\n";
@@ -168,7 +168,7 @@ public class UploaderTool {
 				buffer.append(ch.getDto().getInstanceName() + ";");
 				buffer.append(ch.getDto().getModelName() + ";");
 				buffer.append(ch.getDto().getInstanceName() + ";");
-				buffer.append(ch.getPlayerId() + ";");
+				buffer.append(ch.getPlayerId() + ";\n");
 			}
 		}
 		try {

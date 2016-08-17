@@ -116,8 +116,9 @@ public class GenerationTest {
 			logger.debug("found users: " + filteredUsers.size());
 			// generate rule
 			if (!filteredUsers.isEmpty()) {
-				crg.generateChallenges(challengeSpec, filteredUsers, CalendarUtil
-						.getStart().getTime(), CalendarUtil.getEnd().getTime());
+				crg.generateChallenges(challengeSpec, filteredUsers,
+						CalendarUtil.getStart().getTime(), CalendarUtil
+								.getEnd().getTime());
 			}
 		}
 		crg.writeChallengesToFile();
@@ -147,8 +148,9 @@ public class GenerationTest {
 			logger.debug("found users: " + filteredUsers.size());
 			// generate rule
 			if (!filteredUsers.isEmpty()) {
-				crg.generateChallenges(challengeSpec, filteredUsers, CalendarUtil
-						.getStart().getTime(), CalendarUtil.getEnd().getTime());
+				crg.generateChallenges(challengeSpec, filteredUsers,
+						CalendarUtil.getStart().getTime(), CalendarUtil
+								.getEnd().getTime());
 			}
 		}
 		crg.writeChallengesToFile();
@@ -185,7 +187,7 @@ public class GenerationTest {
 				buffer.append(ch.getDto().getInstanceName() + ";");
 				buffer.append(ch.getDto().getModelName() + ";");
 				buffer.append(ch.getDto().getInstanceName() + ";");
-				buffer.append(ch.getPlayerId() + ";");
+				buffer.append(ch.getPlayerId() + ";\n");
 			}
 		}
 		try {
