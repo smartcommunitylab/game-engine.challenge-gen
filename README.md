@@ -105,9 +105,9 @@ java -jar challengeUploader.jar -host http://localhost:8080/gamification/ -gameI
 
 In the following sections is a reference for challenge definition, it's possibile to found also a lot of examples in resource folder
 
-|NAME|MODEL_NAME|GOAL_TYPE|TARGET|BONUS|POINT_TYPE|DIFFICULTY|BASELINE_VARIABLE|SELECTION_CRITERIA_CUSTOM_DATA|SELECTION_CRITERIA_POINTS|SELECTION_CRITERIA_BADGES|
-|----|----------|---------|------|-----|----------|----------|-----------------|------------------------------|-------------------------|-------------------------|
-|Name of the challenge, must be unique|Model name of the challenge, used to get right model name defined in gamification engine|Type of the goal|Target value for challenge|Bonus points for completed challenge|Type of the point|Difficulty value ( not used right now )|Baseline variable used for percent challenges|Selection criteria using custom data from player state|Selection criteria using points|Selection criteria for badges|
+|NAME|MODEL_NAME|GOAL_TYPE|TARGET|BONUS|POINT_TYPE|DIFFICULTY|BASELINE_VARIABLE|SELECTION_CRITERIA_POINTS|SELECTION_CRITERIA_BADGES|
+|----|----------|---------|------|-----|----------|----------|-----------------|-------------------------|-------------------------|
+|Name of the challenge, must be unique|Model name of the challenge, used to get right model name defined in gamification engine|Type of the goal|Target value for challenge|Bonus points for completed challenge|Type of the point|Difficulty value ( not used right now )|Baseline variable used for percent challenges|Selection criteria using points|Selection criteria for badges|
 
 ## License
 
