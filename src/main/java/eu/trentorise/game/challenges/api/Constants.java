@@ -23,6 +23,8 @@ public final class Constants {
 	// challenges constants (v2.0.0)
 	public static final String ABSOLUTEINCREMENT = "absoluteIncrement";
 	public static final String PERCENTAGEINCREMENT = "percentageIncrement";
+	public static final String NEXTBADGE = "nextBadge";
+
 	public static final String NAME = "name";
 	public static final String BONUS_SCORE = "bonusScore";
 	public static final String BONUS_POINT_TYPE = "bonusPointType";
@@ -34,6 +36,9 @@ public final class Constants {
 	public static final String COUNTER_NAME = "counterName";
 	public static final String PERIOD_NAME = "periodName";
 	public static final String BASELINE = "baseline";
+	public static final String BADGECOLLECTIONNAME = "badgeCollectionName";
+	public static final String GOAL_TYPE = "goalType";
+	public static final String INITIAL_BADGE_NUMBER = "initialBadgeNum";
 
 	// counters for rules
 	public static final String[] COUNTERS = { "gp_current",

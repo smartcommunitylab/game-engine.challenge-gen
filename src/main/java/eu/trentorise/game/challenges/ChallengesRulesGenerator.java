@@ -84,11 +84,12 @@ public class ChallengesRulesGenerator {
 						challengeSpec.getPointType());
 				params.put(Constants.BONUS_SCORE, challengeSpec.getBonus());
 				params.put(Constants.PERIOD_NAME, "weekly");
-				params.put(Constants.COUNTER_NAME, challengeSpec.getGoalType());
+				params.put(Constants.GOAL_TYPE, challengeSpec.getGoalType());
 				params.put(Constants.START_DATE, startDate);
 				params.put(Constants.END_DATE, endDate);
 				params.put(Constants.TARGET, challengeSpec.getTarget());
-				if (challengeSpec.getBaselineVar() != null) {
+				if (challengeSpec.getBaselineVar() != null
+						&& !challengeSpec.getBaselineVar().isEmpty()) {
 					// for percentage challenges, calculate current baseline and
 					// correct target
 					Double value = getPointConceptCurrentValue(user,
@@ -101,7 +102,7 @@ public class ChallengesRulesGenerator {
 				}
 
 				ChallengeDataDTO cdd = factory.createChallenge(
-						challengeSpec.getModelName(), params);
+						challengeSpec.getModelName(), params, user);
 				ChallengeDataInternalDto cdit = new ChallengeDataInternalDto();
 				cdit.setPlayerId(user.getPlayerId());
 				cdit.setGameId(user.getGameId());
