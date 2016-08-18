@@ -121,7 +121,7 @@ public class Matcher {
 					// evaluate criteria
 					newName = StringUtils.replace(var, " ", "_");
 					engine.put(newName, absolute.getScore());
-					criteria = StringUtils.replaceOnce(criteria, var, newName);
+					criteria = StringUtils.replace(criteria, var, newName);
 				} else {
 					logger.warn("User " + user.getPlayerId()
 							+ " don't have point concept with name " + var);
@@ -138,7 +138,7 @@ public class Matcher {
 				// evaluate criteria
 				newName = StringUtils.replace(values[0], " ", "_");
 				engine.put(newName, score);
-				criteria = StringUtils.replaceOnce(criteria, var, newName);
+				criteria = StringUtils.replace(criteria, var, newName);
 			} else {
 				logger.warn("Criteria not well written : " + criteria);
 				return false;
