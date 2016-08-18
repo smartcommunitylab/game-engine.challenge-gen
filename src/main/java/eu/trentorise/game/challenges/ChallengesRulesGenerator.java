@@ -38,7 +38,7 @@ public class ChallengesRulesGenerator {
 	// private Map<String, Map<String, Object>> playerIdCustomData;
 	private StringBuffer reportBuffer;
 
-	private final String reportHeader = "PLAYER;CHALLENGE_NAME;CHALLENGE_TYPE;TRANSPORT_MODE;BASELINE_VALUE;TARGET_VALUE;PRIZE;POINT_TYPE;CH_ID\n";
+	private final String reportHeader = "PLAYER;CHALLENGE_NAME;CHALLENGE_TYPE;GOAL_TYPE;BASELINE_VALUE;TARGET_VALUE;PRIZE;POINT_TYPE;CH_ID\n";
 	private FileOutputStream fout;
 	private Map<String, Integer> challengeMap;
 	private FileOutputStream oout;
@@ -75,6 +75,8 @@ public class ChallengesRulesGenerator {
 		Map<String, Object> params = new HashMap<String, Object>();
 		reportBuffer = new StringBuffer();
 		// playerIdCustomData.clear();
+		Double targetValue = 0d;
+		Double baseLineValue = 0d;
 		// get right challenge
 		for (Content user : users) {
 			// create a challenge for user only under a specific limit
@@ -88,14 +90,15 @@ public class ChallengesRulesGenerator {
 				params.put(Constants.START_DATE, startDate);
 				params.put(Constants.END_DATE, endDate);
 				params.put(Constants.TARGET, challengeSpec.getTarget());
+				targetValue = (Double) challengeSpec.getTarget();
 				if (challengeSpec.getBaselineVar() != null
 						&& !challengeSpec.getBaselineVar().isEmpty()) {
 					// for percentage challenges, calculate current baseline and
 					// correct target
-					Double value = getPointConceptCurrentValue(user,
+					baseLineValue = getPointConceptCurrentValue(user,
 							challengeSpec.getBaselineVar(), "weekly");
-					params.put(Constants.BASELINE, value);
-					Double targetValue = value
+					params.put(Constants.BASELINE, baseLineValue);
+					targetValue = baseLineValue
 							* (1.0d + (Double) challengeSpec.getTarget());
 					targetValue = Double.valueOf(Math.round(targetValue));
 					params.put(Constants.TARGET, targetValue);
@@ -109,12 +112,16 @@ public class ChallengesRulesGenerator {
 				cdit.setDto(cdd);
 				challenges.add(cdit);
 
-				reportBuffer.append(user.getPlayerId() + ";"
-						+ challengeSpec.getName() + ";"
-						+ challengeSpec.getModelName() + ";"
-						+ challengeSpec.getGoalType() + ";"
-						+ challengeSpec.getBaselineVar() + ";"
-						+ challengeSpec.getTarget() + ";"
+				reportBuffer.append(user.getPlayerId()
+						+ ";"
+						+ challengeSpec.getName()
+						+ ";"
+						+ challengeSpec.getModelName()
+						+ ";"
+						+ challengeSpec.getGoalType()
+						+ ";"
+						+ (Double.compare(baseLineValue, 0d) == 0 ? ""
+								: baseLineValue) + ";" + targetValue + ";"
 						+ challengeSpec.getBonus() + ";"
 						+ challengeSpec.getPointType() + ";"
 						+ cdd.getInstanceName() + "\n");
@@ -167,6 +174,7 @@ public class ChallengesRulesGenerator {
 	public void writeChallengesToFile() throws IOException {
 		// write json file
 		ObjectMapper mapper = new ObjectMapper();
+		//
 		IOUtils.write(mapper.writeValueAsString(challenges), oout);
 		logger.debug("ChallengesRulesGenerator - completed - written challenges "
 				+ challenges.size());
