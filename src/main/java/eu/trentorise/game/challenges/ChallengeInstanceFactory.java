@@ -102,8 +102,8 @@ public class ChallengeInstanceFactory {
 		cdd.setStart((Date) params.get(Constants.START_DATE));
 		cdd.setEnd((Date) params.get(Constants.END_DATE));
 		Map<String, Object> data = new HashMap<String, Object>();
-		data.put(Constants.COUNTER_NAME, params.get(Constants.COUNTER_NAME));
-		data.put(Constants.PERIOD_NAME, params.get(Constants.GOAL_TYPE));
+		data.put(Constants.COUNTER_NAME, params.get(Constants.GOAL_TYPE));
+		data.put(Constants.PERIOD_NAME, params.get(Constants.PERIOD_NAME));
 		data.put(Constants.TARGET, params.get(Constants.TARGET));
 		data.put(Constants.BASELINE, params.get(Constants.BASELINE));
 		data.put(Constants.BONUS_POINT_TYPE,
@@ -122,8 +122,8 @@ public class ChallengeInstanceFactory {
 		cdd.setStart((Date) params.get(Constants.START_DATE));
 		cdd.setEnd((Date) params.get(Constants.END_DATE));
 		Map<String, Object> data = new HashMap<String, Object>();
-		data.put(Constants.COUNTER_NAME, params.get(Constants.COUNTER_NAME));
-		data.put(Constants.PERIOD_NAME, params.get(Constants.GOAL_TYPE));
+		data.put(Constants.COUNTER_NAME, params.get(Constants.GOAL_TYPE));
+		data.put(Constants.PERIOD_NAME, params.get(Constants.PERIOD_NAME));
 		data.put(Constants.TARGET, params.get(Constants.TARGET));
 		data.put(Constants.BONUS_POINT_TYPE,
 				params.get(Constants.BONUS_POINT_TYPE));
