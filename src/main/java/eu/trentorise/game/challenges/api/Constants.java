@@ -41,6 +41,8 @@ public final class Constants {
 	public static final String GOAL_TYPE = "goalType";
 	public static final String INITIAL_BADGE_NUMBER = "initialBadgeNum";
 	public static final String SURVEY = "survey";
+	public static final String COMPLETED = "completed";
+	public static final String DATE_COMPLETED = "dateCompleted";
 
 	// counters for rules
 	public static final String[] COUNTERS = { "gp_current",

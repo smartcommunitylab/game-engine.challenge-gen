@@ -1,5 +1,6 @@
 package eu.trentorise.game.challenges.util;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -13,6 +14,9 @@ public final class CalendarUtil {
 
 	private static Calendar calendar;
 	private static Calendar endCalendar;
+
+	private static final SimpleDateFormat sdf = new SimpleDateFormat(
+			"dd/MM/YYYY HH:mm:ss , zzz ZZ");
 
 	private static void init() {
 		calendar = new GregorianCalendar();
@@ -60,6 +64,14 @@ public final class CalendarUtil {
 		}
 		endCalendar.setTime(date);
 		return endCalendar;
+	}
+
+	public static final String format(Long value) {
+		if (value == null) {
+			return "";
+		}
+		Date d = new Date(value);
+		return sdf.format(d);
 	}
 
 }

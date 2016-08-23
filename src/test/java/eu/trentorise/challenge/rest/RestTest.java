@@ -21,33 +21,33 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.StringTokenizer;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 
+import eu.trentorise.game.challenges.api.Constants;
+import eu.trentorise.game.challenges.rest.ChallengeConcept;
 import eu.trentorise.game.challenges.rest.Content;
 import eu.trentorise.game.challenges.rest.ExecutionDataDTO;
 import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
 import eu.trentorise.game.challenges.rest.InsertedRuleDto;
 import eu.trentorise.game.challenges.rest.PointConcept;
+import eu.trentorise.game.challenges.util.CalendarUtil;
 import eu.trentorise.game.challenges.util.ConverterUtil;
 import eu.trentorise.game.challenges.util.JourneyData;
 
 public class RestTest {
 
+	private static final Logger logger = LogManager.getLogger(RestTest.class);
+
 	private GamificationEngineRestFacade facade;
 	private GamificationEngineRestFacade insertFacade;
 	private SimpleDateFormat sdf = new SimpleDateFormat(
 			"dd/MM/YYYY HH:mm:ss, zzz ZZ");
-
-	private final String[] COLUMNS = new String[] { "success", "startChTs",
-			"point_type", "type", "endChTs", "counter", "target", "bonus",
-			"mode", "recommendations_sent_during_challenges",
-			"Km_traveled_during_challenge" };
 
 	@Before
 	public void setup() {
@@ -97,7 +97,6 @@ public class RestTest {
 		String ref = "178-bus.json";
 
 		// read all lines from file
-		@SuppressWarnings("unchecked")
 		List<String> lines = IOUtils.readLines(Thread.currentThread()
 				.getContextClassLoader().getResourceAsStream(ref));
 
@@ -294,158 +293,36 @@ public class RestTest {
 		StringBuffer toWrite = new StringBuffer();
 
 		// build weeks details
-		toWrite.append("PLAYER_ID;CHALLENGE_UUID;"
-				+ StringUtils.join(COLUMNS, ";") + "\n");
-		List<WeekChallenge> challenges = new ArrayList<WeekChallenge>();
-		for (Content content : result) {
-			if (content.getCustomData() != null
-					&& content.getCustomData().getAdditionalProperties() != null
-					&& !content.getCustomData().getAdditionalProperties()
-							.isEmpty()) {
-				Map<String, Object> data = content.getCustomData()
-						.getAdditionalProperties();
-				Set<String> keys = data.keySet();
-				for (String key : keys) {
-					if (key.startsWith("ch_")) {
-						// try to fix error on data
-						if (key.endsWith("point_type_baseline")) {
-							if (StringUtils.countMatches(key, "_") == 3) {
-								key = StringUtils.replace(key,
-										"point_type_baseline",
-										"_point_type_baseline");
-							}
-						}
-						StringTokenizer stk = new StringTokenizer(key, "_");
-						String k = "";
-						try {
-							k = stk.nextToken();
-							k = stk.nextToken();
-							WeekChallenge c = null;
-							if (!containChallengeWithId(challenges, k)) {
-								c = new WeekChallenge();
-								if (k.endsWith("point")) {
-									k = StringUtils.removeEnd(k, "point");
-								}
+		toWrite.append("PLAYER_ID;CHALLENGE_UUID;MODEL_NAME;TARGET;BONUS_SCORE;BONUS_POINT_TYPE;START;END;COMPLETED;DATE_COMPLETED;BASELINE;PERIOD_NAME;COUNTER_NAME"
+				+ "\n");
+		for (Content user : result) {
+			for (ChallengeConcept cc : user.getState().getChallengeConcept()) {
+				toWrite.append(user.getPlayerId() + ";");
+				toWrite.append(cc.getName() + ";");
+				toWrite.append(cc.getModelName() + ";");
+				toWrite.append(cc.getFields().get(Constants.TARGET) + ";");
+				toWrite.append(cc.getFields().get(Constants.BONUS_SCORE) + ";");
+				toWrite.append(cc.getFields().get(Constants.BONUS_POINT_TYPE)
+						+ ";");
+				toWrite.append(CalendarUtil.format((Long) cc.getStart()) + ";");
+				toWrite.append(CalendarUtil.format((Long) cc.getEnd()) + ";");
+				toWrite.append(cc.getCompleted() + ";");
+				toWrite.append(CalendarUtil.format(cc.getDateCompleted()) + ";");
+				toWrite.append(cc.getFields().get(Constants.BASELINE) + ";");
+				toWrite.append(cc.getFields().get(Constants.PERIOD_NAME) + ";");
+				toWrite.append(cc.getFields().get(Constants.COUNTER_NAME)
+						+ ";\n");
 
-								c.setId(k);
-								c.setData(new HashMap<String, String>());
-								c.getPlayerId().add(content.getPlayerId());
-								challenges.add(c);
-							} else {
-								c = findChallegeWithId(challenges, k);
-							}
-							if (!c.getData().containsKey(key)) {
-								c.getData().put(key,
-										String.valueOf(data.get(key)));
-								if (!c.getPlayerId().contains(
-										content.getPlayerId())) {
-									c.getPlayerId().add(content.getPlayerId());
-								}
-							}
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					}
-				}
 			}
 		}
 
-		for (WeekChallenge wc : challenges) {
-			toWrite.append(wc.getPlayerId().get(0) + ";" + wc.getId() + ";"
-					+ getCustomDataFromColumn(wc, COLUMNS) + ";\n");
-		}
+		String writable = toWrite.toString();
+		writable = StringUtils.replace(writable, "null", "");
 
-		IOUtils.write(toWrite.toString(), new FileOutputStream(
+		IOUtils.write(writable, new FileOutputStream(
 				"challengeReportDetails.csv"));
-
-		assertTrue(!toWrite.toString().isEmpty());
-	}
-
-	private WeekChallenge findChallegeWithId(List<WeekChallenge> challenges,
-			String k) {
-		for (WeekChallenge wc : challenges) {
-			if (wc.getId().equals(k)) {
-				return wc;
-			}
-		}
-		return null;
-	}
-
-	private boolean containChallengeWithId(List<WeekChallenge> challenges,
-			String k) {
-		for (WeekChallenge ch : challenges) {
-			if (ch.getId().equals(k)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private String getCustomDataFromColumn(WeekChallenge wc, String[] cls) {
-		Map<String, Boolean> used = new HashMap<String, Boolean>();
-		StringBuffer sb = new StringBuffer();
-		for (String c : cls) {
-
-			if (!keySetContains(wc.getData().keySet(), c)) {
-				sb.append(";");
-			} else {
-				for (String key : wc.getData().keySet()) {
-					if (key.endsWith(c)
-							&& (used.get(key) == null || used.get(key) != null
-									&& !used.get(key))) {
-						if (c.equals("type") && key.endsWith("point_type")) {
-							sb.append(";");
-							break;
-						}
-						sb.append(wc.getData().get(key)).append(";");
-						used.put(key, true);
-						break;
-					}
-				}
-			}
-		}
-		return sb.toString();
-	}
-
-	private boolean keySetContains(Set<String> keySet, String c) {
-		for (String k : keySet) {
-			if (k.endsWith(c)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private class WeekChallenge {
-
-		private String id;
-		private Map<String, String> data = new HashMap<String, String>();
-		private List<String> playerId = new ArrayList<String>();
-
-		public String getId() {
-			return id;
-		}
-
-		public void setId(String id) {
-			this.id = id;
-		}
-
-		public Map<String, String> getData() {
-			return data;
-		}
-
-		public void setData(Map<String, String> data) {
-			this.data = data;
-		}
-
-		public List<String> getPlayerId() {
-			return playerId;
-		}
-
-		public void setPlayerId(List<String> playerId) {
-			this.playerId = playerId;
-		}
-
+		logger.info("challengeReportDetails.csv written");
+		assertTrue(!writable.isEmpty());
 	}
 
 }
