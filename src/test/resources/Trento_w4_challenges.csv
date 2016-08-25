@@ -1,0 +1,3 @@
+NAME;TYPE;GOAL_TYPE;TARGET;BONUS;POINT_TYPE;DIFFICULTY;BASELINE_VARIABLE;SELECTION_CRITERIA_POINTS;SELECTION_CRITERIA_BADGES
+w4_recommendation_1;absoluteIncrement;Recommendations;1.0;100;green leaves;;;TRUE;
+w4_recommendation_3;absoluteIncrement;Recommendations;3.0;200;green leaves;;;TRUE;

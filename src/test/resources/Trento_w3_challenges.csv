@@ -3,6 +3,6 @@ w3_no_car_2;absoluteIncrement;NoCar_Trips;2.0;50;green leaves;;;green leaves <= 
 w3_no_car_5;absoluteIncrement;NoCar_Trips;5.0;100;green leaves;;;green leaves > 50 && green leaves <= 500;
 w3_no_car_10;absoluteIncrement;NoCar_Trips;10.0;100;green leaves;;;green leaves >= 500;
 w3_green_leaves_100;absoluteIncrement;green leaves;100.0;100;green leaves;;;green leaves <= 50;
-w3_green_leaves_150;absoluteIncrement;green leaves;150.0;100;green leaves;;;green leaves > 50 && green leaves <= 500;
+w3_green_leaves_150;absoluteIncrement;green leaves;150.0;100;green leaves;;;green leaves > 50 && green leaves < 500;
 w3_green_leaves_200;absoluteIncrement;green leaves;200.0;100;green leaves;;;green leaves >= 500;
 w3_next_badge_gl_1;nextBadge;green leaves;1;100;green leaves;;;TRUE;
