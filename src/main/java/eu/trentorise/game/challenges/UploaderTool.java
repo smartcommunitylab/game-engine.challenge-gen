@@ -138,7 +138,7 @@ public class UploaderTool {
 
 		int tot = 0;
 		StringBuffer buffer = new StringBuffer();
-		buffer.append("CHALLENGE_NAME;CHALLENGE_UUID;RULE_TEXT;PLAYER_ID\n");
+		buffer.append("CHALLENGE_NAME;CHALLENGE_TYPE_NAME;PLAYER_ID\n");
 		msg = "Read challenges " + challenges.size();
 		System.out.println(msg);
 		log += msg + "\n";
@@ -167,12 +167,15 @@ public class UploaderTool {
 						+ ch.getDto().getInstanceName());
 				buffer.append(ch.getDto().getInstanceName() + ";");
 				buffer.append(ch.getDto().getModelName() + ";");
-				buffer.append(ch.getDto().getInstanceName() + ";");
 				buffer.append(ch.getPlayerId() + ";\n");
 			}
 		}
 		try {
-			IOUtils.write(buffer, new FileOutputStream("report.csv"));
+			FileOutputStream out = new FileOutputStream("report.csv");
+			IOUtils.write(buffer.toString(), out);
+			if (out != null) {
+				out.close();
+			}
 		} catch (IOException e) {
 			msg = "Error in writing report.csv file";
 			System.out.println(msg);
