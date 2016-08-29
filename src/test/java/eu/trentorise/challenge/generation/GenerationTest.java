@@ -191,7 +191,7 @@ public class GenerationTest {
 			}
 		}
 		try {
-			IOUtils.write(buffer, new FileOutputStream("report.csv"));
+			IOUtils.write(buffer.toString(), new FileOutputStream("report.csv"));
 		} catch (IOException e) {
 			System.err.println("Error in writing report.csv file");
 			return;
