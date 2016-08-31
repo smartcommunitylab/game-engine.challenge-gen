@@ -28,7 +28,8 @@ public class Matcher {
 	public Matcher(ChallengeRuleRow challenge) throws IllegalArgumentException {
 		this.challenge = challenge;
 		this.manager = new ScriptEngineManager();
-		this.engine = manager.getEngineFactories().get(0).getScriptEngine();
+		this.engine = manager.getEngineByName("nashorn");
+		// this.engine = manager.getEngineFactories().get(0).getScriptEngine();
 		// check if at least one type of criteria is defined
 		// TODO: Do we need some sort of validation of criteria before use them
 		// ?
@@ -66,31 +67,6 @@ public class Matcher {
 		}
 		return result;
 	}
-
-	// private boolean customDataMatch(Content user) {
-	// String criteria = challenge.getSelectionCriteriaCustomData();
-	// logger.debug("criteria to evaluate: " + criteria);
-	// if (criteria.equalsIgnoreCase("true")) {
-	// return true;
-	// }
-	// if (isUserValidCustomData(user, criteria)) {
-	// List<String> vars = getVariablesFromCriteria(criteria);
-	// for (String var : vars) {
-	// engine.put(var, user.getCustomData().getAdditionalProperties()
-	// .get(var));
-	// }
-	// try {
-	// Object result = engine.eval(criteria);
-	// if (result instanceof Boolean) {
-	// return (Boolean) result;
-	// }
-	// return false;
-	// } catch (ScriptException e) {
-	// logger.error(e.getMessage(), e);
-	// }
-	// }
-	// return false;
-	// }
 
 	private boolean pointsMatch(Content user) {
 		String criteria = challenge.getSelectionCriteriaPoints();
