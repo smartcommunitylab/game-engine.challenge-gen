@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
-@JsonPropertyOrder({ "score", "start", "end" })
+@JsonPropertyOrder({ "score", "start", "end", "index" })
 public class PeriodInstance {
 
 	@JsonProperty("score")
@@ -22,6 +22,8 @@ public class PeriodInstance {
 	private long start;
 	@JsonProperty("end")
 	private long end;
+	@JsonProperty("index")
+	private long index;
 
 	public PeriodInstance() {
 	}
@@ -108,5 +110,15 @@ public class PeriodInstance {
 		return String.format("[start: %s, end: %s, score: %s",
 				formatter.format(new Date(start)),
 				formatter.format(new Date(end)), score);
+	}
+
+	@JsonProperty("index")
+	public long getIndex() {
+		return index;
+	}
+
+	@JsonProperty("index")
+	public void setIndex(long index) {
+		this.index = index;
 	}
 }
