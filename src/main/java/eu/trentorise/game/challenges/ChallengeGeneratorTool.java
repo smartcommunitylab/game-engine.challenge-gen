@@ -170,7 +170,7 @@ public class ChallengeGeneratorTool {
 			users = facade.readGameState(gameId);
 		} catch (Exception e) {
 			msg = "Error in reading game state from host " + host
-					+ " for gameId " + gameId;
+					+ " for gameId " + gameId + " error: " + e.getMessage();
 			System.err.println(msg);
 			log += msg + "\n";
 			return log;
@@ -213,8 +213,9 @@ public class ChallengeGeneratorTool {
 				continue;
 			}
 			try {
-				crg.generateChallenges(challengeSpec, filteredUsers, CalendarUtil
-						.getStart().getTime(), CalendarUtil.getEnd().getTime());
+				crg.generateChallenges(challengeSpec, filteredUsers,
+						CalendarUtil.getStart().getTime(), CalendarUtil
+								.getEnd().getTime());
 			} catch (UndefinedChallengeException | IOException e) {
 				msg = "Error in challenge generation : " + e.getMessage();
 				System.err.println(msg);
