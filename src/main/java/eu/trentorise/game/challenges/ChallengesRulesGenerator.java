@@ -90,7 +90,12 @@ public class ChallengesRulesGenerator {
 				params.put(Constants.START_DATE, startDate);
 				params.put(Constants.END_DATE, endDate);
 				params.put(Constants.TARGET, challengeSpec.getTarget());
-				targetValue = (Double) challengeSpec.getTarget();
+				if (challengeSpec.getTarget() instanceof Double) {
+					targetValue = (Double) challengeSpec.getTarget();
+				} else {
+					targetValue = Double.valueOf((String) challengeSpec
+							.getTarget());
+				}
 				if (challengeSpec.getBaselineVar() != null
 						&& !challengeSpec.getBaselineVar().isEmpty()) {
 					// for percentage challenges, calculate current baseline and
