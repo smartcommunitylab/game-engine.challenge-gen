@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -146,8 +147,26 @@ public class ChallengesRulesGenerator {
 
 	private Double getPointConceptCurrentValue(Content user,
 			String baselineVar, String periodName) {
+		if (StringUtils.isEmpty(baselineVar)) {
+			throw new IllegalArgumentException(
+					"baselineVar must be a not null and not empty string");
+		}
+		String names[] = new String[3];
+		if (baselineVar.contains(".")) {
+			names = baselineVar.split("\\.");
+		}
+
 		for (PointConcept pc : user.getState().getPointConcept()) {
-			if (pc.getName().equalsIgnoreCase(baselineVar)) {
+			if (baselineVar.contains(".")) {
+				if (pc.getName().equalsIgnoreCase(names[0])) {
+					if (names[2].equalsIgnoreCase("current")) {
+						return pc.getPeriodCurrentScore(names[1]);
+					} else if (names[2].equalsIgnoreCase("previous")) {
+						return pc.getPeriodPreviousScore(names[1]);
+					}
+				}
+
+			} else if (pc.getName().equalsIgnoreCase(baselineVar)) {
 				return pc.getPeriodCurrentScore(periodName);
 			}
 		}
