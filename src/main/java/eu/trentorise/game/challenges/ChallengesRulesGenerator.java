@@ -104,8 +104,7 @@ public class ChallengesRulesGenerator {
 					baseLineValue = getPointConceptCurrentValue(user,
 							challengeSpec.getBaselineVar(), "weekly");
 					params.put(Constants.BASELINE, baseLineValue);
-					targetValue = baseLineValue
-							* (1.0d + (Double) challengeSpec.getTarget());
+					targetValue = baseLineValue * (1.0d + targetValue);
 					targetValue = Double.valueOf(Math.round(targetValue));
 					if (targetValue < 1) {
 						targetValue = 1.0d;
