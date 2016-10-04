@@ -157,29 +157,6 @@ public class RestTest {
 		return result;
 	}
 
-	// private String getChalengesStatus(Content content) {
-	// int s = 0;
-	// int t = 0;
-	// if (content.getCustomData() != null
-	// && content.getCustomData().getAdditionalProperties() != null) {
-	// for (String k : content.getCustomData().getAdditionalProperties()
-	// .keySet()) {
-	// Object v = content.getCustomData().getAdditionalProperties()
-	// .get(k);
-	// if (v != null) {
-	// if (((String) k).endsWith("_success")) {
-	// boolean c = Boolean.valueOf(v.toString());
-	// t++;
-	// if (c) {
-	// s++;
-	// }
-	// }
-	// }
-	// }
-	// }
-	// return s + ";" + t;
-	// }
-
 	private Double getScore(Content content, String points) {
 		for (PointConcept pc : content.getState().getPointConcept()) {
 			if (pc.getName().equalsIgnoreCase(points)) {
