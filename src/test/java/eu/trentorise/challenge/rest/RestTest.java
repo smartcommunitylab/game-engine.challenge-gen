@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -118,20 +120,17 @@ public class RestTest {
 		List<Content> result = facade.readGameState(get(GAMEID));
 		assertTrue(!result.isEmpty());
 
-		String[] customNames = get(RELEVANT_CUSTOM_DATA).split(",");
+		String customNames = get(RELEVANT_CUSTOM_DATA);
 		assertTrue(customNames != null);
 
-		List<String> listNames = Arrays.asList(customNames);
 		StringBuffer toWrite = new StringBuffer();
 
-		toWrite.append("PLAYER_ID;SCORE_GREEN_LEAVES;"
-				+ StringUtils.join(customNames, ";")
-				+ ";CHALLENGES_SUCCESS;CHALLENGES_TOTAL\n");
+		toWrite.append("PLAYER_ID;SCORE_GREEN_LEAVES;" + customNames + "\n");
 		for (Content content : result) {
 			toWrite.append(content.getPlayerId() + ";"
 					+ getScore(content, "green leaves") + ";"
-					+ getCustomData(content, listNames)
-					+ getChalengesStatus(content) + "\n");
+					+ getCustomData(content)// + getChalengesStatus(content)
+					+ "\n");
 
 		}
 		IOUtils.write(toWrite.toString(),
@@ -140,42 +139,46 @@ public class RestTest {
 		assertTrue(!toWrite.toString().isEmpty());
 	}
 
-	private String getCustomData(Content content, List<String> listNames) {
+	private String getCustomData(Content content) {
 		String result = "";
-		Iterator<String> iter = listNames.iterator();
-		while (iter.hasNext()) {
-			String name = iter.next();
-			result += content.getCustomData().getAdditionalProperties()
-					.get(name);
-			if (listNames.iterator().hasNext()) {
-				result += ";";
+		List<PointConcept> concepts = content.getState().getPointConcept();
+		Collections.sort(concepts, new Comparator<PointConcept>() {
+			@Override
+			public int compare(PointConcept o1, PointConcept o2) {
+				return o1.getName().compareTo(o2.getName());
 			}
+		});
+
+		Iterator<PointConcept> iter = concepts.iterator();
+		while (iter.hasNext()) {
+			PointConcept pc = iter.next();
+			result += pc.getPeriodPreviousScore("weekly") + ";";
 		}
 		return result;
 	}
 
-	private String getChalengesStatus(Content content) {
-		int s = 0;
-		int t = 0;
-		if (content.getCustomData() != null
-				&& content.getCustomData().getAdditionalProperties() != null) {
-			for (String k : content.getCustomData().getAdditionalProperties()
-					.keySet()) {
-				Object v = content.getCustomData().getAdditionalProperties()
-						.get(k);
-				if (v != null) {
-					if (((String) k).endsWith("_success")) {
-						boolean c = Boolean.valueOf(v.toString());
-						t++;
-						if (c) {
-							s++;
-						}
-					}
-				}
-			}
-		}
-		return s + ";" + t;
-	}
+	// private String getChalengesStatus(Content content) {
+	// int s = 0;
+	// int t = 0;
+	// if (content.getCustomData() != null
+	// && content.getCustomData().getAdditionalProperties() != null) {
+	// for (String k : content.getCustomData().getAdditionalProperties()
+	// .keySet()) {
+	// Object v = content.getCustomData().getAdditionalProperties()
+	// .get(k);
+	// if (v != null) {
+	// if (((String) k).endsWith("_success")) {
+	// boolean c = Boolean.valueOf(v.toString());
+	// t++;
+	// if (c) {
+	// s++;
+	// }
+	// }
+	// }
+	// }
+	// }
+	// return s + ";" + t;
+	// }
 
 	private Double getScore(Content content, String points) {
 		for (PointConcept pc : content.getState().getPointConcept()) {
