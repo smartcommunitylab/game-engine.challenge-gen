@@ -127,6 +127,7 @@ public final class ChallengeRulesLoader {
 			logger.error(e);
 		} finally {
 			if (fos != null) {
+				fos.flush();
 				fos.close();
 			}
 		}
