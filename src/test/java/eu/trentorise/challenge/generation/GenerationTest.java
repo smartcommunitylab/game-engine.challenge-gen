@@ -275,6 +275,31 @@ public class GenerationTest {
 	}
 
 	@Test
+	public void createLeaderboardPositionChallengeInstance() {
+		// Test related to rule
+		// https://github.com/smartcommunitylab/smartcampus.gamification/blob/r2.0.0/game-engine.test/src/test/resources/rules/challengeTest/zeroimpactChallenge.drl
+
+		LocalDate now = new LocalDate();
+
+		ChallengeDataDTO cdd = new ChallengeDataDTO();
+		cdd.setModelName("leaderboarPosition");
+		cdd.setInstanceName("InstanceName" + UUID.randomUUID());
+		cdd.setStart(now.dayOfMonth().addToCopy(-10).toDate());
+		cdd.setEnd(now.dayOfMonth().addToCopy(5).toDate());
+		Map<String, Object> data = new HashMap<String, Object>();
+		data.put("posMax", 90);
+		data.put("posMin", 80);
+		data.put("bonusPointType", "green leaves");
+		data.put("bonusScore", 500d);
+		data.put("weekClassificationName", "week classification test");
+
+		cdd.setData(data);
+		assertTrue(challengeAssignFacade.assignChallengeToPlayer(cdd,
+				get(GAMEID), "23515"));
+
+	}
+
+	@Test
 	public void readAllChallengeModelTest() {
 		HashSet result = (HashSet) challengeModelReadFacade
 				.readChallengesModel(get(GAMEID));
@@ -294,6 +319,7 @@ public class GenerationTest {
 			model.setVariables(Sets.newHashSet(variables));
 			model.setGameId(gameId);
 			models.add(model);
+			System.out.println(name);
 		}
 		System.out.println("read models " + models.size());
 		assertTrue(!models.isEmpty());
