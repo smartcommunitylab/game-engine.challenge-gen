@@ -1,0 +1,9 @@
+NAME;TYPE;GOAL_TYPE;TARGET;BONUS;POINT_TYPE;DIFFICULTY;BASELINE_VARIABLE;SELECTION_CRITERIA_POINTS;SELECTION_CRITERIA_BADGES
+w6_recommendation_1;absoluteIncrement;Recommendations;1.0;100;green leaves;;;Recommendations == 0 && green leaves > 10;
+w6_recommendation_2;absoluteIncrement;Recommendations;2.0;100;green leaves;;;Recommendations > 0 && Recommendations <= 10;
+w6_next_badge_pr_1;nextBadge;park and ride pioneer;1.0;100;green leaves;;;PandR_Trips >= 1;
+w6_walk_percent_100;percentageIncrement;Walk_Km;0.99;200;green leaves;;Walk_Km.weekly.current;Walk_Km.weekly.current >= 0 && Walk_Km.weekly.current <= 2;
+w6_walk_percent_80;percentageIncrement;Walk_Km;0.8;250;green leaves;;Walk_Km.weekly.current;Walk_Km.weekly.current > 2 && Walk_Km.weekly.current <= 5;
+w6_walk_percent_50;percentageIncrement;Walk_Km;0.5;250;green leaves;;Walk_Km.weekly.current;Walk_Km.weekly.current > 5 && Walk_Km.weekly.current <= 10;
+w6_walk_percent_30;percentageIncrement;Walk_Km;0.3;150;green leaves;;Walk_Km.weekly.current;Walk_Km.weekly.current > 10;
+w6_next_badge_gl_1;nextBadge;green leaves;1.0;150;green leaves;;;TRUE;
