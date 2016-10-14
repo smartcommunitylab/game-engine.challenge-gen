@@ -129,7 +129,8 @@ public class RestTest {
 		for (Content content : result) {
 			toWrite.append(content.getPlayerId() + ";"
 					+ getScore(content, "green leaves") + ";"
-					+ getCustomData(content)// + getChalengesStatus(content)
+					+ getCustomData(content, false)// +
+													// getChalengesStatus(content)
 					+ "\n");
 
 		}
@@ -139,7 +140,7 @@ public class RestTest {
 		assertTrue(!toWrite.toString().isEmpty());
 	}
 
-	private String getCustomData(Content content) {
+	private String getCustomData(Content content, boolean weekly) {
 		String result = "";
 		List<PointConcept> concepts = content.getState().getPointConcept();
 		Collections.sort(concepts, new Comparator<PointConcept>() {
@@ -152,7 +153,11 @@ public class RestTest {
 		Iterator<PointConcept> iter = concepts.iterator();
 		while (iter.hasNext()) {
 			PointConcept pc = iter.next();
-			result += pc.getPeriodPreviousScore("weekly") + ";";
+			if (weekly) {
+				result += pc.getPeriodPreviousScore("weekly") + ";";
+			} else {
+				result += pc.getScore() + ";";
+			}
 		}
 		return result;
 	}
@@ -161,6 +166,19 @@ public class RestTest {
 		for (PointConcept pc : content.getState().getPointConcept()) {
 			if (pc.getName().equalsIgnoreCase(points)) {
 				return pc.getScore();
+			}
+		}
+		return null;
+	}
+
+	private Double getScore(Content content, String points, Long moment) {
+		if (content.getPlayerId().equals("23897")) {
+			System.out.println();
+
+		}
+		for (PointConcept pc : content.getState().getPointConcept()) {
+			if (pc.getName().equalsIgnoreCase(points)) {
+				return pc.getPeriodScore("weekly", moment);
 			}
 		}
 		return null;
@@ -273,26 +291,40 @@ public class RestTest {
 		StringBuffer toWrite = new StringBuffer();
 
 		// build weeks details
-		toWrite.append("PLAYER_ID;CHALLENGE_UUID;MODEL_NAME;TARGET;BONUS_SCORE;BONUS_POINT_TYPE;START;END;COMPLETED;DATE_COMPLETED;BASELINE;PERIOD_NAME;COUNTER_NAME"
+		toWrite.append("PLAYER_ID;CHALLENGE_UUID;MODEL_NAME;TARGET;BONUS_SCORE;BONUS_POINT_TYPE;START;END;COMPLETED;DATE_COMPLETED;BASELINE;PERIOD_NAME;COUNTER_NAME;COUNTER_VALUE"
 				+ "\n");
 		for (Content user : result) {
-			for (ChallengeConcept cc : user.getState().getChallengeConcept()) {
-				toWrite.append(user.getPlayerId() + ";");
-				toWrite.append(cc.getName() + ";");
-				toWrite.append(cc.getModelName() + ";");
-				toWrite.append(cc.getFields().get(Constants.TARGET) + ";");
-				toWrite.append(cc.getFields().get(Constants.BONUS_SCORE) + ";");
-				toWrite.append(cc.getFields().get(Constants.BONUS_POINT_TYPE)
-						+ ";");
-				toWrite.append(CalendarUtil.format((Long) cc.getStart()) + ";");
-				toWrite.append(CalendarUtil.format((Long) cc.getEnd()) + ";");
-				toWrite.append(cc.getCompleted() + ";");
-				toWrite.append(CalendarUtil.format(cc.getDateCompleted()) + ";");
-				toWrite.append(cc.getFields().get(Constants.BASELINE) + ";");
-				toWrite.append(cc.getFields().get(Constants.PERIOD_NAME) + ";");
-				toWrite.append(cc.getFields().get(Constants.COUNTER_NAME)
-						+ ";\n");
+			if (getScore(user, "green leaves") > 0) {
+				for (ChallengeConcept cc : user.getState()
+						.getChallengeConcept()) {
+					toWrite.append(user.getPlayerId() + ";");
+					toWrite.append(cc.getName() + ";");
+					toWrite.append(cc.getModelName() + ";");
+					toWrite.append(cc.getFields().get(Constants.TARGET) + ";");
+					toWrite.append(cc.getFields().get(Constants.BONUS_SCORE)
+							+ ";");
+					toWrite.append(cc.getFields().get(
+							Constants.BONUS_POINT_TYPE)
+							+ ";");
+					toWrite.append(CalendarUtil.format((Long) cc.getStart())
+							+ ";");
+					toWrite.append(CalendarUtil.format((Long) cc.getEnd())
+							+ ";");
+					toWrite.append(cc.getCompleted() + ";");
+					toWrite.append(CalendarUtil.format(cc.getDateCompleted())
+							+ ";");
+					toWrite.append(cc.getFields().get(Constants.BASELINE) + ";");
+					toWrite.append(cc.getFields().get(Constants.PERIOD_NAME)
+							+ ";");
+					toWrite.append(cc.getFields().get(Constants.COUNTER_NAME)
+							+ ";");
+					toWrite.append(getScore(
+							user,
+							(String) cc.getFields().get(Constants.COUNTER_NAME),
+							cc.getStart())
+							+ ";\n");
 
+				}
 			}
 		}
 
