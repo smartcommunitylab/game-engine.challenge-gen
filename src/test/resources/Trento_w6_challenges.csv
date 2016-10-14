@@ -1,5 +1,5 @@
 NAME;TYPE;GOAL_TYPE;TARGET;BONUS;POINT_TYPE;DIFFICULTY;BASELINE_VARIABLE;SELECTION_CRITERIA_POINTS;SELECTION_CRITERIA_BADGES
-w6_recommendation_1;absoluteIncrement;Recommendations;1.0;250;green leaves;;;Recommendations < 3 && green leaves > 10;;
+w6_recommendation_1;absoluteIncrement;Recommendations;1.0;250;green leaves;;;Recommendations < 3;;
 w6_recommendation_2;absoluteIncrement;Recommendations;2.0;300;green leaves;;;Recommendations >= 3 && Recommendations <= 10;;
 w6_next_badge_pr_1;nextBadge;park and ride pioneer;1.0;200;green leaves;;;PandR_Trips >= 1;;
 w6_bus_trips_6;absoluteIncrement;Bus_Trips;6.0;200;green leaves;;;Bus_Trips.weekly.current >= 2 && Bus_Trips.weekly.current <= 14 && green leaves < 3000;;
