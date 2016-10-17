@@ -201,31 +201,6 @@ public class GenerationTest {
 		assertTrue(tot != 0);
 	}
 
-	// @Test
-	// public void uploadTestChallenge() {
-	// // save a new challenge model inside gamification engine
-	// ChallengeModel cm = new ChallengeModel();
-	// cm.setName("ChallengeModel" + UUID.randomUUID());
-	// cm.setGameId(get(GAMEID));
-	// cm.setId(cm.getName());
-	// Set<String> variables = new HashSet<String>();
-	// variables.add("variable1");
-	// variables.add("variable2");
-	// cm.setVariables(variables);
-	// // insert model in gamification engine
-	// assertTrue(challengeModelFacade.insertChallengeModel(get(GAMEID), cm));
-	//
-	// // create a new challenge instance and give it to a player
-	// ChallengeDataDTO cdd = new ChallengeDataDTO();
-	// cdd.setModelName(cm.getName());
-	// cdd.setInstanceName("InstanceName" + UUID.randomUUID());
-	// cdd.setStart(new Date());
-	//
-	// assertTrue(challengeAssignFacade.assignChallengeToPlayer(cdd,
-	// get(GAMEID), "1"));
-	// // TODO: cancellare istanza e modello
-	// }
-
 	@Test
 	public void createZeoImpactChallengeInstance() {
 		// Test related to rule
@@ -282,21 +257,20 @@ public class GenerationTest {
 		LocalDate now = new LocalDate();
 
 		ChallengeDataDTO cdd = new ChallengeDataDTO();
-		cdd.setModelName("leaderboarPosition");
+		cdd.setModelName("leaderboardPosition");
 		cdd.setInstanceName("InstanceName" + UUID.randomUUID());
-		cdd.setStart(now.dayOfMonth().addToCopy(-10).toDate());
-		cdd.setEnd(now.dayOfMonth().addToCopy(5).toDate());
+		cdd.setStart(now.dayOfMonth().addToCopy(-2).toDate());
+		cdd.setEnd(now.dayOfMonth().addToCopy(6).toDate());
 		Map<String, Object> data = new HashMap<String, Object>();
-		data.put("posMax", 90);
-		data.put("posMin", 80);
+		data.put("posMax", 3);
+		data.put("posMin", 2);
 		data.put("bonusPointType", "green leaves");
 		data.put("bonusScore", 500d);
-		data.put("weekClassificationName", "week classification test");
+		data.put("weekClassificationName", "week classification green");
 
 		cdd.setData(data);
 		assertTrue(challengeAssignFacade.assignChallengeToPlayer(cdd,
-				get(GAMEID), "23515"));
-
+				get(GAMEID), "4"));
 	}
 
 	@Test
