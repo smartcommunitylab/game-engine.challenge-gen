@@ -358,7 +358,7 @@ public class PointConcept {
 		}
 	}
 
-	private class PeriodInstanceImpl implements PeriodInstance {
+	public class PeriodInstanceImpl implements PeriodInstance {
 		private Double score = 0d;
 		private long start;
 		private long end;
