@@ -17,6 +17,7 @@ public class RecommendationSystemChallengeValuator {
 	// defining a table for points/prize
 	private int points[][] = { { 100, 106, 111, 122, 150 }, { 133, 139, 144, 155, 183 }, { 166, 172, 177, 189, 217 },
 			{ 197, 205, 211, 222, 250 } };
+	private final Integer tryOnceprize = 183;
 
 	public Map<String, List<ChallengeDataDTO>> valuate(Map<String, List<ChallengeDataDTO>> combinations,
 			List<Content> input) {
@@ -74,6 +75,9 @@ public class RecommendationSystemChallengeValuator {
 					Integer prize = calculatePrize(difficulty,
 							Math.round(Math.abs(baseline - target) * 100.0 / baseline) / 100.0);
 					challenge.getData().put("bonusScore", prize);
+				} else if (challenge.getModelName() == "absoluteIncrement") {
+					challenge.getData().put("difficulty", DifficultyCalculator.MEDIUM);
+					challenge.getData().put("bonusScore", tryOnceprize);
 				}
 			}
 		}
@@ -96,57 +100,6 @@ public class RecommendationSystemChallengeValuator {
 		}
 		Integer prize = points[difficulty - 1][y];
 
-		// if (difficulty == 1) {
-		// if (percent == 0.1) {
-		//
-		// } else if (percent == 0.2) {
-		//
-		// } else if (percent == 0.3) {
-		//
-		// } else if (percent == 0.5) {
-		//
-		// } else if (percent == 1) {
-		//
-		// }
-		// } else if (difficulty == 2) {
-		// if (percent == 0.1) {
-		//
-		// } else if (percent == 0.2) {
-		//
-		// } else if (percent == 0.3) {
-		//
-		// } else if (percent == 0.5) {
-		//
-		// } else if (percent == 1) {
-		//
-		// }
-		// } else if (difficulty == 3) {
-		// if (percent == 0.1) {
-		//
-		// } else if (percent == 0.2) {
-		//
-		// } else if (percent == 0.3) {
-		//
-		// } else if (percent == 0.5) {
-		//
-		// } else if (percent == 1) {
-		//
-		// }
-		//
-		// } else if (difficulty == 4) {
-		// if (percent == 0.1) {
-		//
-		// } else if (percent == 0.2) {
-		//
-		// } else if (percent == 0.3) {
-		//
-		// } else if (percent == 0.5) {
-		//
-		// } else if (percent == 1) {
-		//
-		// }
-		//
-		// }
 		return prize;
 	}
 
