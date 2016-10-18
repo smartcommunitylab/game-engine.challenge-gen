@@ -35,7 +35,7 @@ public class RecommendationSystemChallengeGeneration {
 
 			for (PointConcept pc : content.getState().getPointConcept()) {
 				if (pc.getName().equals(defaultMode)) {
-					Double score = pc.getPeriodPreviousScore("weekly");
+					Double score = pc.getPeriodCurrentScore("weekly");
 					playerScore.put(content.getPlayerId(), score);
 
 				}

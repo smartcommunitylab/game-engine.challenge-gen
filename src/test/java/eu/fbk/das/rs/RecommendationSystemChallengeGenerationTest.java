@@ -8,6 +8,7 @@ import static eu.trentorise.challenge.PropertiesUtil.USERNAME;
 import static eu.trentorise.challenge.PropertiesUtil.get;
 import static org.junit.Assert.assertTrue;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +17,7 @@ import org.junit.Test;
 
 import eu.fbk.das.rs.challengeGeneration.RecommendationSystemChallengeGeneration;
 import eu.fbk.das.rs.sortfilter.RecommendationSystemChallengeFilteringAndSorting;
+import eu.fbk.das.rs.valuator.DifficultyCalculator;
 import eu.fbk.das.rs.valuator.RecommendationSystemChallengeValuator;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import eu.trentorise.game.challenges.rest.Content;
@@ -27,8 +29,7 @@ public class RecommendationSystemChallengeGenerationTest {
 
 	@Before
 	public void setup() {
-		facade = new GamificationEngineRestFacade(get(HOST) + get(CONTEXT),
-				get(USERNAME), get(PASSWORD));
+		facade = new GamificationEngineRestFacade(get(HOST) + get(CONTEXT), get(USERNAME), get(PASSWORD));
 	}
 
 	@Test
@@ -45,15 +46,15 @@ public class RecommendationSystemChallengeGenerationTest {
 
 	@Test
 	/**
-	 * Generate all possible combinations of challenge for every player in the game
+	 * Generate all possible combinations of challenge for every player in the
+	 * game
 	 */
 	public void challengeGeneration() {
 		assertTrue(facade != null);
 		List<Content> gameData = facade.readGameState(get(GAMEID));
 		// create all challenges combinations
 		RecommendationSystemChallengeGeneration rs = new RecommendationSystemChallengeGeneration();
-		Map<String, List<ChallengeDataDTO>> challengeCombinations = rs
-				.generate(gameData);
+		Map<String, List<ChallengeDataDTO>> challengeCombinations = rs.generate(gameData);
 
 		assertTrue(challengeCombinations != null);
 	}
@@ -65,13 +66,11 @@ public class RecommendationSystemChallengeGenerationTest {
 	public void challengeValuator() {
 		List<Content> gameData = facade.readGameState(get(GAMEID));
 		RecommendationSystemChallengeGeneration rs = new RecommendationSystemChallengeGeneration();
-		Map<String, List<ChallengeDataDTO>> challengeCombinations = rs
-				.generate(gameData);
+		Map<String, List<ChallengeDataDTO>> challengeCombinations = rs.generate(gameData);
 		// evaluate all challenges
 		RecommendationSystemChallengeValuator valuator = new RecommendationSystemChallengeValuator();
 
-		Map<String, List<ChallengeDataDTO>> evaluatedChallenges = valuator
-				.valuate(challengeCombinations, gameData);
+		Map<String, List<ChallengeDataDTO>> evaluatedChallenges = valuator.valuate(challengeCombinations, gameData);
 
 		assertTrue(evaluatedChallenges != null);
 	}
@@ -83,16 +82,30 @@ public class RecommendationSystemChallengeGenerationTest {
 	public void challengeSortAndFiltering() {
 		List<Content> gameData = facade.readGameState(get(GAMEID));
 		RecommendationSystemChallengeGeneration rs = new RecommendationSystemChallengeGeneration();
-		Map<String, List<ChallengeDataDTO>> challengeCombinations = rs
-				.generate(gameData);
+		Map<String, List<ChallengeDataDTO>> challengeCombinations = rs.generate(gameData);
 		RecommendationSystemChallengeValuator valuator = new RecommendationSystemChallengeValuator();
-		Map<String, List<ChallengeDataDTO>> evaluatedChallenges = valuator
-				.valuate(challengeCombinations, gameData);
+		Map<String, List<ChallengeDataDTO>> evaluatedChallenges = valuator.valuate(challengeCombinations, gameData);
 
 		RecommendationSystemChallengeFilteringAndSorting filtering = new RecommendationSystemChallengeFilteringAndSorting();
-		List<ChallengeDataDTO> filteredChallenges = filtering
-				.filterAndSort(evaluatedChallenges);
+		List<ChallengeDataDTO> filteredChallenges = filtering.filterAndSort(evaluatedChallenges);
 
 		assertTrue(filteredChallenges != null);
 	}
+
+	@Test
+	public void testDifficulty() {
+		Map<Integer, Double> quartiles = new HashMap<Integer, Double>();
+		quartiles.put(4, 3.99);
+		quartiles.put(7, 12.516551);
+		quartiles.put(9, 30.51);
+		Integer zone = 1;
+		Double baseline = 1.2;
+		Double target = 2.43;
+		Integer difficulty = DifficultyCalculator.computeDifficulty(quartiles, zone, baseline, target);
+
+		assert (difficulty == DifficultyCalculator.EASY);
+
+		// .... we can check more cases..
+	}
+
 }
