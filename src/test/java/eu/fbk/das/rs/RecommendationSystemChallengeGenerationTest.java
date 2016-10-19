@@ -8,20 +8,31 @@ import static eu.trentorise.challenge.PropertiesUtil.USERNAME;
 import static eu.trentorise.challenge.PropertiesUtil.get;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import eu.fbk.das.rs.challengeGeneration.RecommendationSystemChallengeGeneration;
+import eu.fbk.das.rs.sortfilter.LeaderboardPosition;
 import eu.fbk.das.rs.sortfilter.RecommendationSystemChallengeFilteringAndSorting;
 import eu.fbk.das.rs.valuator.DifficultyCalculator;
 import eu.fbk.das.rs.valuator.RecommendationSystemChallengeValuator;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import eu.trentorise.game.challenges.rest.Content;
 import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
+import eu.trentorise.game.challenges.rest.PointConcept;
 
 public class RecommendationSystemChallengeGenerationTest {
 
@@ -86,10 +97,48 @@ public class RecommendationSystemChallengeGenerationTest {
 		RecommendationSystemChallengeValuator valuator = new RecommendationSystemChallengeValuator();
 		Map<String, List<ChallengeDataDTO>> evaluatedChallenges = valuator.valuate(challengeCombinations, gameData);
 
+		// build a leaderboard, for now is the current, to be parameterized for
+		// weekly or general leaderboard
+		List<LeaderboardPosition> leaderboard = buildLeaderBoard(gameData);
+		Collections.sort(leaderboard);
+		int index = 0;
+		for (LeaderboardPosition pos : leaderboard) {
+			pos.setIndex(index);
+			index++;
+		}
+
 		RecommendationSystemChallengeFilteringAndSorting filtering = new RecommendationSystemChallengeFilteringAndSorting();
-		List<ChallengeDataDTO> filteredChallenges = filtering.filterAndSort(evaluatedChallenges);
+		Map<String, List<ChallengeDataDTO>> filteredChallenges = filtering.filterAndSort(evaluatedChallenges,
+				leaderboard);
 
 		assertTrue(filteredChallenges != null);
+
+		ObjectMapper mapper = new ObjectMapper();
+		FileOutputStream oout;
+		try {
+			oout = new FileOutputStream(new File("/Users/rezakhoshkangini/Documents/generatedChallengesRs.json"));
+			IOUtils.write(mapper.writeValueAsString(filteredChallenges), oout);
+			oout.flush();
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private List<LeaderboardPosition> buildLeaderBoard(List<Content> gameData) {
+		List<LeaderboardPosition> result = new ArrayList<LeaderboardPosition>();
+		for (Content content : gameData) {
+			for (PointConcept pc : content.getState().getPointConcept()) {
+				if (pc.getName().equals("green leaves")) {
+					Integer score = (int) Math.round(pc.getPeriodCurrentScore("weekly"));
+					result.add(new LeaderboardPosition(score, content.getPlayerId()));
+				}
+			}
+		}
+		return result;
 	}
 
 	@Test
