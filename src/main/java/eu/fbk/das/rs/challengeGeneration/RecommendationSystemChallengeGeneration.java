@@ -25,30 +25,30 @@ public class RecommendationSystemChallengeGeneration {
 
 	public Map<String, List<ChallengeDataDTO>> generate(List<Content> input) {
 		Map<String, List<ChallengeDataDTO>> output = new HashMap<String, List<ChallengeDataDTO>>();
-		// we need to put all the configuration in different modes
-		String defaultMode = "Walk_Km";
-		String defaultModetrip = "Walk_Trips";
 
 		HashMap<String, HashMap<String, Double>> modeValues = new HashMap<String, HashMap<String, Double>>();
 		HashMap<String, Double> playerScore = new HashMap<>();
 		for (Content content : input) {
+			for (int i = 0; i < RecommendationSystemConfig.defaultMode.length; i++) {
+				String mode = RecommendationSystemConfig.defaultMode[i];
+				for (PointConcept pc : content.getState().getPointConcept()) {
+					if (pc.getName().equals(mode)) {
+						Double score = pc.getPeriodCurrentScore("weekly");
+						playerScore.put(content.getPlayerId(), score);
 
-			for (PointConcept pc : content.getState().getPointConcept()) {
-				if (pc.getName().equals(defaultMode)) {
-					Double score = pc.getPeriodCurrentScore("weekly");
-					playerScore.put(content.getPlayerId(), score);
-
+					}
 				}
+				modeValues.put(mode, playerScore);
 			}
-			modeValues.put(defaultMode, playerScore);
-
 		}
 
 		LocalDate now = new LocalDate();
 
 		for (String mode : modeValues.keySet()) {
 			for (String playerId : modeValues.get(mode).keySet()) {
-				List<ChallengeDataDTO> challenges = new ArrayList<ChallengeDataDTO>();
+				if (output.get(playerId) == null) {
+					output.put(playerId, new ArrayList<ChallengeDataDTO>());
+				}
 				Double modeCounter = modeValues.get(mode).get(playerId);
 				if (modeCounter > 0) {
 
@@ -73,32 +73,37 @@ public class RecommendationSystemChallengeGeneration {
 						data.put("counterName", mode);
 						data.put("periodName", "weekly");
 						cdd.setData(data);
-						challenges.add(cdd);
+						output.get(playerId).add(cdd);
 					}
 				} else {
-					if (mode == defaultMode) {
-
-						// build a try once
-						ChallengeDataDTO cdd = new ChallengeDataDTO();
-						cdd.setModelName("absoluteIncrement");
-						cdd.setInstanceName("InstanceName" + UUID.randomUUID());
-						cdd.setStart(now.dayOfMonth().addToCopy(1).toDate());
-						cdd.setEnd(now.dayOfMonth().addToCopy(7).toDate());
-						Map<String, Object> data = new HashMap<String, Object>();
-						data.put("target", 1);
-						data.put("bonusPointType", "green leaves");
-						data.put("bonusScore", 100d);
-						data.put("counterName", defaultModetrip);
-						data.put("periodName", "weekly");
-						cdd.setData(data);
-						challenges.add(cdd);
-					}
-
+					// build a try once
+					ChallengeDataDTO cdd = new ChallengeDataDTO();
+					cdd.setModelName("absoluteIncrement");
+					cdd.setInstanceName("InstanceName" + UUID.randomUUID());
+					cdd.setStart(now.dayOfMonth().addToCopy(1).toDate());
+					cdd.setEnd(now.dayOfMonth().addToCopy(7).toDate());
+					Map<String, Object> data = new HashMap<String, Object>();
+					data.put("target", 1);
+					data.put("bonusPointType", "green leaves");
+					data.put("bonusScore", 100d);
+					data.put("counterName", getDefaultMode(mode));
+					data.put("periodName", "weekly");
+					cdd.setData(data);
+					output.get(playerId).add(cdd);
 				}
-				output.put(playerId, challenges);
 			}
 		}
 		return output;
+	}
+
+	private String getDefaultMode(String mode) {
+		for (int i = 0; i < RecommendationSystemConfig.defaultMode.length; i++) {
+			String m = RecommendationSystemConfig.defaultMode[i];
+			if (m == mode) {
+				return RecommendationSystemConfig.defaultModetrip[i];
+			}
+		}
+		return null;
 	}
 
 }

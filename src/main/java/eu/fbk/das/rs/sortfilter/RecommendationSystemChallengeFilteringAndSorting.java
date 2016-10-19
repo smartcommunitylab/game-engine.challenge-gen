@@ -6,16 +6,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import eu.fbk.das.rs.challengeGeneration.RecommendationSystemConfig;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 
 public class RecommendationSystemChallengeFilteringAndSorting {
 
-	private HashMap<String, Integer> modeWeights;
-
 	public RecommendationSystemChallengeFilteringAndSorting() {
-		this.modeWeights = new HashMap<String, Integer>();
-		// just for test
-		modeWeights.put("Walk", 10);
+
 	}
 
 	public Map<String, List<ChallengeDataDTO>> filterAndSort(Map<String, List<ChallengeDataDTO>> evaluatedChallenges,
@@ -115,10 +112,10 @@ public class RecommendationSystemChallengeFilteringAndSorting {
 	}
 
 	private Integer getWeight(String counterName) {
-		for (String mode : modeWeights.keySet()) {
+		for (String mode : RecommendationSystemConfig.getWeightKeySet()) {
 			if (counterName.startsWith(mode)) {
 				// in our example this means we are into walk challenge
-				return modeWeights.get(mode);
+				return RecommendationSystemConfig.getWeight(mode);
 			}
 
 		}
