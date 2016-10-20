@@ -1,0 +1,14 @@
+NAME;TYPE;GOAL_TYPE;TARGET;BONUS;POINT_TYPE;DIFFICULTY;BASELINE_VARIABLE;SELECTION_CRITERIA_POINTS;SELECTION_CRITERIA_BADGES
+w7_bike_sharing_4;absoluteIncrement;BikeSharing_Trips;4.0;200;green leaves;;;BikeSharing_Trips.weekly.current > 1 && green leaves <= 4000;
+w7_bike_sharing_8;absoluteIncrement;BikeSharing_Trips;8.0;200;green leaves;;;green leaves > 4000;
+w7_next_badge_sustainable_2;nextBadge;sustainable life ;2.0;200;green leaves;;;ZeroImpact_Trips >= 0 && ZeroImpact_Trips < 5;
+w7_next_badge_sustainable_1;nextBadge;sustainable life ;1.0;200;green leaves;;;ZeroImpact_Trips >= 5 && ZeroImpact_Trips < 20;
+w7_green_leaves_100;absoluteIncrement;green leaves;100.0;200;green leaves;;;green leaves >= 0 && green leaves <= 200;
+w7_green_leaves_150;absoluteIncrement;green leaves;150.0;300;green leaves;;;green leaves > 200 && green leaves <= 600;
+w7_green_leaves_300;absoluteIncrement;green leaves;250.0;300;green leaves;;;green leaves > 600 && green leaves <= 1200;
+w7_green_leaves_400;absoluteIncrement;green leaves;400.0;300;green leaves;;;green leaves > 1200 && green leaves <= 4000;
+w7_no_car_3;absoluteIncrement;NoCar_Trips;3.0;150;green leaves;;;green leaves <= 50;
+w7_no_car_6;absoluteIncrement;NoCar_Trips;6.0;150;green leaves;;;green leaves > 50 && green leaves <= 500;
+w7_no_car_10;absoluteIncrement;NoCar_Trips;10.0;200;green leaves;;;green leaves > 500 && green leaves <= 1000;
+w7_no_car_25;absoluteIncrement;NoCar_Trips;25.0;200;green leaves;;;green leaves > 1000 && green leaves <= 3000;
+w7_next_badge_gl_1;nextBadge;green leaves;1.0;500;green leaves;;;TRUE;
