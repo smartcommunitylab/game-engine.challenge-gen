@@ -22,24 +22,38 @@ public class RecommendationSystemChallengeGeneration {
 	private double improvementValue = 0;
 	// define a temporary variable to save the improvement
 	private double tmpValueimprovment = 0;
+	//
 
 	public Map<String, List<ChallengeDataDTO>> generate(List<Content> input) {
 		Map<String, List<ChallengeDataDTO>> output = new HashMap<String, List<ChallengeDataDTO>>();
-
 		HashMap<String, HashMap<String, Double>> modeValues = new HashMap<String, HashMap<String, Double>>();
 		HashMap<String, Double> playerScore = new HashMap<>();
 		for (Content content : input) {
+			// if (content.getPlayerId().equals("23897")) {
+
 			for (int i = 0; i < RecommendationSystemConfig.defaultMode.length; i++) {
 				String mode = RecommendationSystemConfig.defaultMode[i];
+				// System.out.println(mode);
 				for (PointConcept pc : content.getState().getPointConcept()) {
+
 					if (pc.getName().equals(mode)) {
 						Double score = pc.getPeriodCurrentScore("weekly");
 						playerScore.put(content.getPlayerId(), score);
 
+						// just to monitor the result
+						System.out.println("mode=" + mode + "--> " + "score=" + playerScore);
+						System.out.println();
 					}
+
 				}
-				modeValues.put(mode, playerScore);
+				if (modeValues.get(mode) == null) {
+					modeValues.put(mode, new HashMap<String, Double>());
+				}
+				modeValues.get(mode).putAll(playerScore);
+
 			}
+			playerScore.clear();
+			// }
 		}
 
 		LocalDate now = new LocalDate();
@@ -59,7 +73,6 @@ public class RecommendationSystemChallengeGeneration {
 						// Adding to the last week activity as the improvement
 						// activity for next week
 						improvementValue = tmpValueimprovment + modeCounter;
-
 						ChallengeDataDTO cdd = new ChallengeDataDTO();
 						cdd.setModelName("percentageIncrement");
 						cdd.setInstanceName("InstanceName" + UUID.randomUUID());

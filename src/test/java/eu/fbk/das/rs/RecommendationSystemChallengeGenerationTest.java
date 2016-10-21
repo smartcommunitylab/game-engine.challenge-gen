@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -92,6 +93,7 @@ public class RecommendationSystemChallengeGenerationTest {
 	 */
 	public void challengeSortAndFiltering() {
 		List<Content> gameData = facade.readGameState(get(GAMEID));
+
 		RecommendationSystemChallengeGeneration rs = new RecommendationSystemChallengeGeneration();
 		Map<String, List<ChallengeDataDTO>> challengeCombinations = rs.generate(gameData);
 		RecommendationSystemChallengeValuator valuator = new RecommendationSystemChallengeValuator();
@@ -113,6 +115,14 @@ public class RecommendationSystemChallengeGenerationTest {
 
 		assertTrue(filteredChallenges != null);
 
+		// just for test for user 23897 (Alberto)
+		Iterator<Content> iter = gameData.iterator();
+		while (iter.hasNext()) {
+			Content p = iter.next();
+			if (p.getPlayerId().equals("23897")) {
+				System.out.println();
+			}
+		}
 		ObjectMapper mapper = new ObjectMapper();
 		FileOutputStream oout;
 		try {
