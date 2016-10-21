@@ -266,11 +266,35 @@ public class GenerationTest {
 		data.put("posMin", 2);
 		data.put("bonusPointType", "green leaves");
 		data.put("bonusScore", 500d);
-		data.put("weekClassificationName", "week classification green");
+		data.put("weekClassificationName", "week classification test");
 
 		cdd.setData(data);
 		assertTrue(challengeAssignFacade.assignChallengeToPlayer(cdd,
 				get(GAMEID), "4"));
+	}
+
+	@Test
+	public void createEventChallengeTest() {
+		// Test related to rule
+		// https://github.com/smartcommunitylab/smartcampus.gamification/blob/r2.0.0/game-engine.test/src/test/resources/rules/challengeTest/zeroimpactChallenge.drl
+
+		LocalDate now = new LocalDate();
+
+		ChallengeDataDTO cdd = new ChallengeDataDTO();
+		cdd.setModelName("leaderboardPosition");
+		cdd.setInstanceName("InstanceName" + UUID.randomUUID());
+		cdd.setStart(now.dayOfMonth().addToCopy(-2).toDate());
+		cdd.setEnd(now.dayOfMonth().addToCopy(6).toDate());
+		Map<String, Object> data = new HashMap<String, Object>();
+		data.put("posMax", 3);
+		data.put("posMin", 2);
+		data.put("bonusPointType", "green leaves");
+		data.put("bonusScore", 500d);
+		data.put("weekClassificationName", "week classification test");
+
+		cdd.setData(data);
+		assertTrue(challengeAssignFacade.assignChallengeToPlayer(cdd,
+				get(GAMEID), "23897"));
 	}
 
 	@Test

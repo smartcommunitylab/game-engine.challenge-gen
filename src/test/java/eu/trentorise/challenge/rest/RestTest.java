@@ -172,10 +172,6 @@ public class RestTest {
 	}
 
 	private Double getScore(Content content, String points, Long moment) {
-		if (content.getPlayerId().equals("23897")) {
-			System.out.println();
-
-		}
 		for (PointConcept pc : content.getState().getPointConcept()) {
 			if (pc.getName().equalsIgnoreCase(points)) {
 				return pc.getPeriodScore("weekly", moment);
@@ -293,8 +289,13 @@ public class RestTest {
 		// build weeks details
 		toWrite.append("PLAYER_ID;CHALLENGE_UUID;MODEL_NAME;TARGET;BONUS_SCORE;BONUS_POINT_TYPE;START;END;COMPLETED;DATE_COMPLETED;BASELINE;PERIOD_NAME;COUNTER_NAME;COUNTER_VALUE"
 				+ "\n");
+
+		// 1476482400 => 15/10/2016 00:00:00
+
 		for (Content user : result) {
-			if (getScore(user, "green leaves") > 0) {
+			Double thisWeekScore = getPreviousScore(user, "green leaves");
+			// if (getScore(user, "green leaves") > 0) {
+			if (thisWeekScore > 0) {
 				for (ChallengeConcept cc : user.getState()
 						.getChallengeConcept()) {
 					toWrite.append(user.getPlayerId() + ";");
@@ -337,4 +338,12 @@ public class RestTest {
 		assertTrue(!writable.isEmpty());
 	}
 
+	private Double getPreviousScore(Content content, String periodName) {
+		for (PointConcept pc : content.getState().getPointConcept()) {
+			if (pc.getName().equalsIgnoreCase(periodName)) {
+				return pc.getPeriodCurrentScore("weekly");
+			}
+		}
+		return null;
+	}
 }
