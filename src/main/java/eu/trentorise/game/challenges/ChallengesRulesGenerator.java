@@ -82,12 +82,14 @@ public class ChallengesRulesGenerator {
 		for (Content user : users) {
 			// create a challenge for user only under a specific limit
 			if (getChallenges(user.getPlayerId()) < challengeLimitNumber) {
-				params.put(Constants.NAME, challengeSpec.getName());
+				params.put(Constants.NAME,
+						StringUtils.trim(challengeSpec.getName()));
 				params.put(Constants.BONUS_POINT_TYPE,
-						challengeSpec.getPointType());
+						StringUtils.trim(challengeSpec.getPointType()));
 				params.put(Constants.BONUS_SCORE, challengeSpec.getBonus());
 				params.put(Constants.PERIOD_NAME, "weekly");
-				params.put(Constants.GOAL_TYPE, challengeSpec.getGoalType());
+				params.put(Constants.GOAL_TYPE,
+						StringUtils.trim(challengeSpec.getGoalType()));
 				params.put(Constants.START_DATE, startDate);
 				params.put(Constants.END_DATE, endDate);
 				params.put(Constants.TARGET, challengeSpec.getTarget());
