@@ -20,12 +20,14 @@ public final class Constants {
 	public static final String CH_POINT_TYPE = "ch_point_type";
 	public static final String RULE_PREFIX = "db://";
 
-	// challenges constants (v2.0.0)
+	// challenges type constants (v2.1.0)
 	public static final String ABSOLUTEINCREMENT = "absoluteIncrement";
 	public static final String PERCENTAGEINCREMENT = "percentageIncrement";
 	public static final String NEXTBADGE = "nextBadge";
 	public static final String COMPLETEBADGECOLLECTION = "completeBadgeCollection";
+	public static final String POICHECKIN = "poiCheckin";
 
+	// challenges various constants
 	public static final String NAME = "name";
 	public static final String BONUS_SCORE = "bonusScore";
 	public static final String BONUS_POINT_TYPE = "bonusPointType";
@@ -43,6 +45,10 @@ public final class Constants {
 	public static final String SURVEY = "survey";
 	public static final String COMPLETED = "completed";
 	public static final String DATE_COMPLETED = "dateCompleted";
+	public static final String POI_NAME = "poiName";
+	public static final String EVENT_NAME = "eventName";
+	public static final String POI_STATE = "poiState";
+	public static final String EVENT_STATE = "eventState";
 
 	// counters for rules
 	public static final String[] COUNTERS = { "gp_current",
