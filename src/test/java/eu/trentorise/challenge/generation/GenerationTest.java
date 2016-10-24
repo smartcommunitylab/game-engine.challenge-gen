@@ -323,4 +323,26 @@ public class GenerationTest {
 		assertTrue(!models.isEmpty());
 	}
 
+	@Test
+	public void createPoiCheckinChallengeTest() {
+		LocalDate now = new LocalDate();
+
+		ChallengeDataDTO cdd = new ChallengeDataDTO();
+		cdd.setModelName("poiCheckin");
+		cdd.setInstanceName("InstanceName" + UUID.randomUUID());
+		cdd.setStart(now.dayOfMonth().addToCopy(-2).toDate());
+		cdd.setEnd(now.dayOfMonth().addToCopy(6).toDate());
+		Map<String, Object> data = new HashMap<String, Object>();
+		data.put("poiName", "Trento Fiera");
+		data.put("eventName", "Fai la cosa giusta");
+		data.put("poiState", Boolean.FALSE);
+		data.put("eventState", Boolean.FALSE);
+		data.put("bonusScore", 200d);
+		data.put("bonusPointType", "green leaves");
+
+		cdd.setData(data);
+		assertTrue(challengeAssignFacade.assignChallengeToPlayer(cdd,
+				get(GAMEID), "24607"));
+	}
+
 }
