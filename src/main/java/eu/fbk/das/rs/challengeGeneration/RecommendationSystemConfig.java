@@ -1,6 +1,7 @@
 package eu.fbk.das.rs.challengeGeneration;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -8,8 +9,9 @@ import java.util.Set;
 public class RecommendationSystemConfig {
 
 	// we need to put all the configuration in different modes
-	public static final String[] defaultMode = { "Walk_Km", "Bike_Km", "BikeSharing_Km", "ZeroImpact_Trips", "Bus_Km",
-			"Train_Km", "Walk_Trips", "Bike_Trips", "BikeSharing_Trips", "Bus_Trips", "NoCar_Trips" };
+	public static final String[] defaultMode = { "Walk_Km", "Bike_Km", "BikeSharing_Km", "Bus_Km", "Train_Km",
+			"ZeroImpact_Trips", "Walk_Trips", "Bike_Trips", "BikeSharing_Trips", "Bus_Trips", "NoCar_Trips" };
+
 	public static final String[] defaultModetrip = { "Walk_Trips", "Bike_Trips", "BikeSharing_Trips", "Bus_Trips",
 			"Train_Trips" };
 
@@ -36,10 +38,8 @@ public class RecommendationSystemConfig {
 		RecommendationSystemConfig.playerIds = new ArrayList<String>();
 		// Collections.addAll(RecommendationSystemConfig.playerIds, "24502");
 
-		// Collections.addAll(RecommendationSystemConfig.playerIds, "7", "1835",
-		// "17741", "2535", "17953", "291", "4458",
-		// "11125", "23501", "1658", "23692", "23897", "23515", "19092", "2795",
-		// "24502", "23513");
+		Collections.addAll(RecommendationSystemConfig.playerIds, "7", "1835", "17741", "2535", "17953", "291", "4458",
+				"11125", "23501", "1658", "23692", "23897", "23515", "19092", "2795", "24502", "23513");
 
 	}
 
