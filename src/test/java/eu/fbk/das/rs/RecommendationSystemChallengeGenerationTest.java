@@ -26,6 +26,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import eu.fbk.das.rs.challengeGeneration.RecommendationSystemChallengeGeneration;
+import eu.fbk.das.rs.challengeGeneration.RecommendationSystemConfig;
 import eu.fbk.das.rs.sortfilter.LeaderboardPosition;
 import eu.fbk.das.rs.sortfilter.RecommendationSystemChallengeFilteringAndSorting;
 import eu.fbk.das.rs.valuator.DifficultyCalculator;
@@ -37,6 +38,7 @@ import eu.trentorise.game.challenges.rest.PointConcept;
 
 public class RecommendationSystemChallengeGenerationTest {
 
+	private static final boolean String = false;
 	private GamificationEngineRestFacade facade;
 
 	@Before
@@ -91,6 +93,7 @@ public class RecommendationSystemChallengeGenerationTest {
 	/**
 	 * Sort and filter challenges using difficulty and prize
 	 */
+
 	public void challengeSortAndFiltering() {
 		List<Content> gameData = facade.readGameState(get(GAMEID));
 
@@ -116,18 +119,86 @@ public class RecommendationSystemChallengeGenerationTest {
 		assertTrue(filteredChallenges != null);
 
 		// just for test for user 23897 (Alberto)
-		Iterator<Content> iter = gameData.iterator();
-		while (iter.hasNext()) {
-			Content p = iter.next();
-			if (p.getPlayerId().equals("23897")) {
-				System.out.println();
+		// Iterator<Content> iter = gameData.iterator();
+		// while (iter.hasNext()) {
+		// Content p = iter.next();
+		// if (p.getPlayerId().equals("23897")) {
+		// System.out.println();
+		// }
+		// }
+
+		// filtering
+
+		// remove duplicates
+
+		List<ChallengeDataDTO> challengeIdToRemove = new ArrayList<ChallengeDataDTO>();
+		for (String key : filteredChallenges.keySet()) { // upload and assign
+															// challenge
+			Iterator<ChallengeDataDTO> iter = filteredChallenges.get(key).iterator();
+			while (iter.hasNext()) {
+				ChallengeDataDTO dto = iter.next();
+				Iterator<ChallengeDataDTO> innerIter = filteredChallenges.get(key).iterator();
+				int count = 0;
+				System.out.println("current counter: " + dto.getData().get("counterName"));
+				if (dto.getData().get("counterName").equals("Walk_Trips")) {
+					System.out.println();
+				}
+				while (innerIter.hasNext()) {
+					ChallengeDataDTO idto = innerIter.next();
+
+					if (dto.getModelName().equals(idto.getModelName())
+							&& dto.getData().get("counterName").equals(idto.getData().get("counterName"))) {
+						double t = 0;
+						double ti = 0;
+						if (dto.getData().get("target") instanceof Double) {
+							t = (Double) dto.getData().get("target");
+						} else {
+							t = (Integer) dto.getData().get("target");
+						}
+						if (idto.getData().get("target") instanceof Double) {
+							ti = (Double) idto.getData().get("target");
+						} else {
+							ti = (Integer) idto.getData().get("target");
+						}
+						if (t == ti) {
+							count++;
+						}
+					}
+					if (count > 1) {
+						System.out.println();
+
+						challengeIdToRemove.add(idto);
+						count = 1;
+					}
+				}
+
 			}
+			filteredChallenges.get(key).removeAll(challengeIdToRemove);
+			challengeIdToRemove.clear();
 		}
+
+		// remove duplicates ^
+
+		// select K-top challenges
+
+		// List<ChallengeDataDTO> KTopChallenge = new
+		// ArrayList<ChallengeDataDTO>();
+
+		// for (String key : filteredChallenges.keySet()) {
+
+		// }
+
+		// select K-top challenges
+
+		// printing out stuff, just for debug
+
 		ObjectMapper mapper = new ObjectMapper();
 		FileOutputStream oout;
+
 		try {
 			oout = new FileOutputStream(new File("/Users/rezakhoshkangini/Documents/generatedChallengesRs.json"));
 			IOUtils.write(mapper.writeValueAsString(filteredChallenges), oout);
+
 			oout.flush();
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
@@ -136,6 +207,59 @@ public class RecommendationSystemChallengeGenerationTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+		// Converting to CSV file
+		String log = "";
+		String msg = "";
+
+		// StringWriter OutputCsv=new StringWriter
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("PLAYER_ID;" + "CHALLENGE_TYPE_NAME;" + "CHALLENGE_NAME;"
+				+ "MODE;MODE_WEIGHT;DIFFICULTY;WI;BONUS_SCORE;BASELINE;TARGET;\n");
+
+		for (String key : filteredChallenges.keySet()) {
+			// upload and assign challenge
+			for (ChallengeDataDTO dto : filteredChallenges.get(key)) {
+
+				System.out.println("Inserted challenge with Id " + dto.getInstanceName());
+				buffer.append(key + ";");
+				buffer.append(dto.getModelName() + ";");
+				buffer.append(dto.getInstanceName() + ";");
+				buffer.append(dto.getData().get("counterName") + ";");
+				buffer.append(
+						RecommendationSystemConfig.getWeight(getMode((String) dto.getData().get("counterName"))) + ";");
+				buffer.append(dto.getData().get("difficulty") + ";");
+				buffer.append(dto.getData().get("wi") + ";");
+				buffer.append(dto.getData().get("bonusScore") + ";");
+				buffer.append(dto.getData().get("baseline") + ";");
+				buffer.append(dto.getData().get("target") + ";\n");
+
+			}
+		}
+
+		try {
+			FileOutputStream out = new FileOutputStream("/Users/rezakhoshkangini/Documents/reportCSV.csv");
+			IOUtils.write(buffer.toString(), out);
+			if (out != null) {
+				out.close();
+			}
+		} catch (IOException e) {
+			System.err.println("Error in writing the report");
+		}
+		System.out.println(msg);
+
+		// Converting to CSV file
+	}
+
+	private String getMode(String mode) {
+		if (mode == null) {
+			return "";
+		}
+		String[] t = mode.split("_");
+		if (t == null) {
+			return "";
+		}
+		return t[0];
 	}
 
 	private List<LeaderboardPosition> buildLeaderBoard(List<Content> gameData) {

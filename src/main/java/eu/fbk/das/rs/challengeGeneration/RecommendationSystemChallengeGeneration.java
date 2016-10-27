@@ -29,20 +29,21 @@ public class RecommendationSystemChallengeGeneration {
 		HashMap<String, HashMap<String, Double>> modeValues = new HashMap<String, HashMap<String, Double>>();
 		HashMap<String, Double> playerScore = new HashMap<>();
 		for (Content content : input) {
-			// if (content.getPlayerId().equals("23897")) {
+			// filter users
+			// if
+			// (RecommendationSystemConfig.getPlayerIds().contains(content.getPlayerId()))
+			// {
 
+			// retrieving the players' last week data "weekly"
 			for (int i = 0; i < RecommendationSystemConfig.defaultMode.length; i++) {
+
 				String mode = RecommendationSystemConfig.defaultMode[i];
 				// System.out.println(mode);
 				for (PointConcept pc : content.getState().getPointConcept()) {
-
 					if (pc.getName().equals(mode)) {
 						Double score = pc.getPeriodCurrentScore("weekly");
 						playerScore.put(content.getPlayerId(), score);
-
-						// just to monitor the result
-						System.out.println("mode=" + mode + "--> " + "score=" + playerScore);
-						System.out.println();
+						System.out.println(mode + ":" + score);
 					}
 
 				}
@@ -52,13 +53,17 @@ public class RecommendationSystemChallengeGeneration {
 				modeValues.get(mode).putAll(playerScore);
 
 			}
+
 			playerScore.clear();
+
 			// }
 		}
 
 		LocalDate now = new LocalDate();
 
 		for (String mode : modeValues.keySet()) {
+
+			System.out.println("mode=" + "" + mode);
 			for (String playerId : modeValues.get(mode).keySet()) {
 				if (output.get(playerId) == null) {
 					output.put(playerId, new ArrayList<ChallengeDataDTO>());
@@ -70,9 +75,14 @@ public class RecommendationSystemChallengeGeneration {
 					for (int i = 0; i < percentageNumber; i++) {
 						// calculating the improvement of last week activity
 						tmpValueimprovment = percentage[i] * modeCounter;
-						// Adding to the last week activity as the improvement
-						// activity for next week
-						improvementValue = tmpValueimprovment + modeCounter;
+						if (mode.endsWith("_Trips")) {
+
+							improvementValue = tmpValueimprovment + modeCounter;
+							improvementValue = round(improvementValue);
+						} else {
+							improvementValue = tmpValueimprovment + modeCounter;
+						}
+
 						ChallengeDataDTO cdd = new ChallengeDataDTO();
 						cdd.setModelName("percentageIncrement");
 						cdd.setInstanceName("InstanceName" + UUID.randomUUID());
@@ -109,7 +119,16 @@ public class RecommendationSystemChallengeGeneration {
 		return output;
 	}
 
+	// round the improvement trip number
+	private double round(double improvementValue2) {
+		// TODO Auto-generated method stub
+		return Math.round(improvementValue2);
+	}
+
 	private String getDefaultMode(String mode) {
+		if (!mode.endsWith("_trips")) {
+			return mode;
+		}
 		for (int i = 0; i < RecommendationSystemConfig.defaultMode.length; i++) {
 			String m = RecommendationSystemConfig.defaultMode[i];
 			if (m == mode) {

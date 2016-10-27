@@ -22,11 +22,14 @@ public class RecommendationSystemChallengeValuator {
 
 	public Map<String, List<ChallengeDataDTO>> valuate(Map<String, List<ChallengeDataDTO>> combinations,
 			List<Content> input) {
+
 		for (int i = 0; i < RecommendationSystemConfig.defaultMode.length; i++) {
+
 			String mode = RecommendationSystemConfig.defaultMode[i];
+
+			// String mode = RecommendationSystemConfig.defaultMode[i];
 			List<Double> activePlayersvalues = new ArrayList<Double>();
 			for (Content content : input) {
-
 				for (PointConcept pc : content.getState().getPointConcept()) {
 					if (pc.getName().equals(mode)) {
 						for (String period : pc.getPeriods().keySet()) {
@@ -41,9 +44,11 @@ public class RecommendationSystemChallengeValuator {
 						}
 
 					}
+
 				}
 
 			}
+
 			Collections.sort(activePlayersvalues);
 			// ObjectMapper mapper = new ObjectMapper();
 			// FileOutputStream oout;
@@ -60,8 +65,13 @@ public class RecommendationSystemChallengeValuator {
 			// // TODO Auto-generated catch block
 			// e.printStackTrace();
 			// }
-			// finding the percentiles of mode walk "weekly" from start to now
+
+			// finding the percentiles of mode walk "weekly" from start to
+			// now
 			Map<Integer, Double> quartiles = Quantiles.scale(10).indexes(4, 7, 9).compute(activePlayersvalues);
+
+			// System.out.println(mode);
+			// System.out.println(activePlayersvalues);
 
 			for (String playerId : combinations.keySet()) {
 				for (ChallengeDataDTO challenge : combinations.get(playerId)) {
@@ -88,7 +98,12 @@ public class RecommendationSystemChallengeValuator {
 			}
 		}
 
+		// Add number of trips
+
+		// Add number of trips
+
 		return combinations;
+
 	}
 
 	private boolean isSameOf(String v, String mode) {

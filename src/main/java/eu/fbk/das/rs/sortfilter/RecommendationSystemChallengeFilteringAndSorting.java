@@ -24,7 +24,7 @@ public class RecommendationSystemChallengeFilteringAndSorting {
 			// in the leader board and not improving
 			List<ChallengeDataDTO> improvingLeaderboard = new ArrayList<ChallengeDataDTO>();
 			List<ChallengeDataDTO> notImprovingLeaderboard = new ArrayList<ChallengeDataDTO>();
-
+			int counternotImp = 0;
 			for (ChallengeDataDTO challenge : evaluatedChallenges.get(playerId)) {
 				Double baseline = (Double) challenge.getData().get("baseline");
 				Double target = 0.0;
@@ -60,6 +60,7 @@ public class RecommendationSystemChallengeFilteringAndSorting {
 						improvingLeaderboard.add(challenge);
 					} else {
 						notImprovingLeaderboard.add(challenge);
+
 					}
 				}
 			}
@@ -81,9 +82,22 @@ public class RecommendationSystemChallengeFilteringAndSorting {
 			}
 			if (!notImprovingLeaderboard.isEmpty()) {
 				result.get(playerId).addAll(notImprovingLeaderboard);
+
+				// System.out.println(playerId + "" + "Not Improvement" +
+				// counternotImp + 1);
+
+			}
+			// to find and monitor the list of notImprovement challenges
+			if (!notImprovingLeaderboard.isEmpty()) {
+
+				System.out.println(playerId + " " + "NotIm:" + notImprovingLeaderboard.size() + "--" + "Improv:"
+						+ improvingLeaderboard.size());
+
 			}
 		}
+
 		// TODO; add the filter
+
 		return result;
 	}
 
