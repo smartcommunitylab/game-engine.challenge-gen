@@ -33,13 +33,13 @@ public class RecommendationSystemConfig {
 	private static void init() {
 		RecommendationSystemConfig.modeWeights = new HashMap<String, Integer>();
 		// just for test
-		modeWeights.put("Walk", 1);
-		modeWeights.put("Bike", 1);
-		modeWeights.put("BikeSharing", 5);
-		modeWeights.put("Bus", 10);
-		modeWeights.put("Train", 7);
-		modeWeights.put("ZeroImpact", 0);
-		modeWeights.put("NoCar", 3);
+		modeWeights.put("Walk", 10);
+		modeWeights.put("Bike", 10);
+		modeWeights.put("BikeSharing", 10);
+		modeWeights.put("Bus", 1);
+		modeWeights.put("Train", 1);
+		modeWeights.put("ZeroImpact", 10);
+		modeWeights.put("NoCar", 1);
 
 		// list of default player ids
 		RecommendationSystemConfig.playerIds = new ArrayList<String>();

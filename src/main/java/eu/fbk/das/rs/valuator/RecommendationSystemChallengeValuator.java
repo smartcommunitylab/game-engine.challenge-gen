@@ -106,11 +106,12 @@ public class RecommendationSystemChallengeValuator {
 						if (challenge.getModelName() == "percentageIncrement") {
 							Double baseline = (Double) challenge.getData().get("baseline");
 							Double target = (Double) challenge.getData().get("target");
-							Integer zone = DifficultyCalculator.computeZone(quartiles, baseline);
-							Integer difficulty = DifficultyCalculator.computeDifficulty(quartiles, zone, baseline,
-									target);
-							System.out.println("Challenge baseline=" + baseline + ", target=" + target + ", zone= "
-									+ zone + ", difficulty=" + difficulty);
+							// Integer zone =
+							// DifficultyCalculator.computeZone(quartiles,
+							// baseline);
+							Integer difficulty = DifficultyCalculator.computeDifficulty(quartiles, baseline, target);
+							System.out.println("Challenge baseline=" + baseline + ", target=" + target + " difficulty="
+									+ difficulty);
 							challenge.getData().put("difficulty", difficulty);
 
 							Integer prize = calculatePrize(difficulty,

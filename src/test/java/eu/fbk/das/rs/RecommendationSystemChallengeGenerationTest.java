@@ -221,26 +221,36 @@ public class RecommendationSystemChallengeGenerationTest {
 		// StringWriter OutputCsv=new StringWriter
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("PLAYER_ID;" + "CHALLENGE_TYPE_NAME;" + "CHALLENGE_NAME;"
-				+ "MODE;MODE_WEIGHT;DIFFICULTY;WI;BONUS_SCORE;BASELINE;TARGET;\n");
+				+ "MODE;MODE_WEIGHT;DIFFICULTY;WI;BONUS_SCORE;BASELINE;TARGET;TOP_TEN;\n");
+
+		// get only top 10 challenges for user
+		Map<String, Integer> count = new HashMap<String, Integer>();
 
 		for (String key : filteredChallenges.keySet()) {
 			// upload and assign challenge
+			if (count.get(key) == null) {
+				count.put(key, 0);
+			}
 			for (ChallengeDataDTO dto : filteredChallenges.get(key)) {
 
 				System.out.println("Inserted challenge with Id " + dto.getInstanceName());
-				buffer.append(key + ";");
-				buffer.append(dto.getModelName() + ";");
-				buffer.append(dto.getInstanceName() + ";");
-				buffer.append(dto.getData().get("counterName") + ";");
-				buffer.append(
-						RecommendationSystemConfig.getWeight(getMode((String) dto.getData().get("counterName"))) + ";");
-				buffer.append(dto.getData().get("difficulty") + ";");
-				buffer.append(dto.getData().get("wi") + ";");
-				buffer.append(dto.getData().get("bonusScore") + ";");
-				buffer.append(dto.getData().get("baseline") + ";");
-				buffer.append(dto.getData().get("target") + ";\n");
 
+				if (count.get(key) < 10) {
+					count.put(key, count.get(key) + 1);
+					buffer = buildBuffer(buffer, key, dto, true);
+
+				} else {
+					buffer = buildBuffer(buffer, key, dto, false);
+
+				}
 			}
+			// buffer = buildBuffer(buffer, key,
+			// filteredChallenges.get(key).get(filteredChallenges.get(key).size()
+			// - 2));
+			// buffer = buildBuffer(buffer, key,
+			// filteredChallenges.get(key).get(filteredChallenges.get(key).size()
+			// - 1));
+
 		}
 
 		try {
@@ -255,6 +265,22 @@ public class RecommendationSystemChallengeGenerationTest {
 		System.out.println(msg);
 
 		// Converting to CSV file
+	}
+
+	private StringBuffer buildBuffer(StringBuffer buffer, String key, ChallengeDataDTO dto, boolean flag) {
+		buffer.append(key + ";");
+		buffer.append(dto.getModelName() + ";");
+		buffer.append(dto.getInstanceName() + ";");
+		buffer.append(dto.getData().get("counterName") + ";");
+		buffer.append(RecommendationSystemConfig.getWeight(getMode((String) dto.getData().get("counterName"))) + ";");
+		buffer.append(dto.getData().get("difficulty") + ";");
+		buffer.append(dto.getData().get("wi") + ";");
+		buffer.append(dto.getData().get("bonusScore") + ";");
+		buffer.append(dto.getData().get("baseline") + ";");
+		buffer.append(dto.getData().get("target") + ";");
+		buffer.append(flag + ";\n");
+
+		return buffer;
 	}
 
 	private String getMode(String mode) {
@@ -287,12 +313,11 @@ public class RecommendationSystemChallengeGenerationTest {
 		quartiles.put(4, 3.99);
 		quartiles.put(7, 12.516551);
 		quartiles.put(9, 30.51);
-		Integer zone = 1;
 		Double baseline = 1.2;
-		Double target = 2.43;
-		Integer difficulty = DifficultyCalculator.computeDifficulty(quartiles, zone, baseline, target);
-
-		assert (difficulty == DifficultyCalculator.EASY);
+		Double target = 60.43;
+		Integer difficulty = DifficultyCalculator.computeDifficulty(quartiles, baseline, target);
+		System.out.println("Difficulty: " + difficulty);
+		assertTrue(difficulty == DifficultyCalculator.MEDIUM);
 
 		// .... we can check more cases..
 	}
