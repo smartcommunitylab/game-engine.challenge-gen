@@ -1,11 +1,12 @@
 NAME;TYPE;GOAL_TYPE;TARGET;BONUS;POINT_TYPE;DIFFICULTY;BASELINE_VARIABLE;SELECTION_CRITERIA_POINTS;SELECTION_CRITERIA_BADGES
-w8_poi_check_in_trento_fiera;poiCheckin;;;200;green leaves;;;TRUE;
+w8_poi_check_in_trento_fiera;poiCheckin;;;250;green leaves;;;TRUE;
 w8_walk_trip_2;absoluteIncrement;Walk_Trips;2.0;200;green leaves;;;green leaves < 10;
 w8_bike_percent_50;percentageIncrement;Bike_Km;0.5;250;green leaves;;Bike_Km.weekly.current;Bike_Km.weekly.current > 0 && Bike_Km.weekly.current <= 10;
 w8_bike_percent_20;percentageIncrement;Bike_Km;0.2;250;green leaves;;Bike_Km.weekly.current;Bike_Km.weekly.current > 10 && Bike_Km.weekly.current <= 50;
 w8_walk_trip_4;absoluteIncrement;Walk_Trips;4.0;200;green leaves;;;Walk_Km.weekly.current == 0 && Bike_km.weekly.current ==0;
 w8_walk_percent_100;percentageIncrement;Walk_Km;0.99;200;green leaves;;Walk_Km.weekly.current;Walk_Km.weekly.current > 0 && Walk_Km.weekly.current <= 2;
-w8_walk_percent_80;percentageIncrement;Walk_Km;0.8;250;green leaves;;Walk_Km.weekly.current;Walk_Km.weekly.current > 2 && Walk_Km.weekly.current <= 5;
-w8_walk_percent_50;percentageIncrement;Walk_Km;0.5;250;green leaves;;Walk_Km.weekly.current;Walk_Km.weekly.current > 5 && Walk_Km.weekly.current <= 10;
-w8_walk_percent_30;percentageIncrement;Walk_Km;0.3;150;green leaves;;Walk_Km.weekly.current;Walk_Km.weekly.current > 10;
-w8_next_badge_gl_1;nextBadge;green leaves;1.0;150;green leaves;;;TRUE;
+w8_walk_percent_70;percentageIncrement;Walk_Km;0.7;250;green leaves;;Walk_Km.weekly.current;Walk_Km.weekly.current > 2 && Walk_Km.weekly.current <= 5;
+w8_walk_percent_40;percentageIncrement;Walk_Km;0.4;250;green leaves;;Walk_Km.weekly.current;Walk_Km.weekly.current > 5 && Walk_Km.weekly.current <= 10;
+w8_walk_percent_20;percentageIncrement;Walk_Km;0.2;250;green leaves;;Walk_Km.weekly.current;Walk_Km.weekly.current > 10 && Walk_Km.weekly.current <= 30;
+w8_walk_percent_10;percentageIncrement;Walk_Km;0.1;200;green leaves;;Walk_Km.weekly.current;Walk_Km.weekly.current > 30;
+w8_next_badge_gl_1;nextBadge;green leaves;1.0;100;green leaves;;;TRUE;
