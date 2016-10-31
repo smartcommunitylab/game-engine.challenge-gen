@@ -30,31 +30,35 @@ public class RecommendationSystemChallengeGeneration {
 		HashMap<String, Double> playerScore = new HashMap<>();
 		for (Content content : input) {
 			// filter users
-			if (RecommendationSystemConfig.getPlayerIds().contains(content.getPlayerId())) {
+			// if
+			// (RecommendationSystemConfig.getPlayerIds().contains(content.getPlayerId()))
+			// {
 
-				// retrieving the players' last week data "weekly"
-				for (int i = 0; i < RecommendationSystemConfig.defaultMode.length; i++) {
+			// retrieving the players' last week data "weekly"
+			for (int i = 0; i < RecommendationSystemConfig.defaultMode.length; i++) {
 
-					String mode = RecommendationSystemConfig.defaultMode[i];
-					// System.out.println(mode);
-					for (PointConcept pc : content.getState().getPointConcept()) {
-						if (pc.getName().equals(mode)) {
-							Double score = pc.getPeriodCurrentScore("weekly");
-							playerScore.put(content.getPlayerId(), score);
-							System.out.println(mode + ":" + score);
-						}
-
+				String mode = RecommendationSystemConfig.defaultMode[i];
+				if (mode == "Bus_Km") {
+					System.out.println(mode);
+				}
+				for (PointConcept pc : content.getState().getPointConcept()) {
+					if (pc.getName().equals(mode)) {
+						Double score = pc.getPeriodCurrentScore("weekly");
+						playerScore.put(content.getPlayerId(), score);
+						System.out.println(mode + ":" + score);
 					}
-					if (modeValues.get(mode) == null) {
-						modeValues.put(mode, new HashMap<String, Double>());
-					}
-					modeValues.get(mode).putAll(playerScore);
 
 				}
-
-				playerScore.clear();
+				if (modeValues.get(mode) == null) {
+					modeValues.put(mode, new HashMap<String, Double>());
+				}
+				modeValues.get(mode).putAll(playerScore);
 
 			}
+
+			playerScore.clear();
+
+			// }
 		}
 
 		LocalDate now = new LocalDate();

@@ -29,9 +29,17 @@ public class RecommendationSystemChallengeValuator {
 
 			// String mode = RecommendationSystemConfig.defaultMode[i];
 			List<Double> activePlayersvalues = new ArrayList<Double>();
+			//
 			for (Content content : input) {
 				for (PointConcept pc : content.getState().getPointConcept()) {
+					// Adding filter for users
+					// if
+					// (RecommendationSystemConfig.getPlayerIds().contains(content.getPlayerId()))
+					// {
 					if (pc.getName().equals(mode)) {
+						if (mode == "Bus_Km") {
+							// System.out.println(mode);
+						}
 						for (String period : pc.getPeriods().keySet()) {
 							PeriodInternal periodInstance = pc.getPeriods().get(period);
 							for (PeriodInstanceImpl p : periodInstance.getInstances()) {
@@ -44,8 +52,8 @@ public class RecommendationSystemChallengeValuator {
 						}
 
 					}
-
 				}
+				// }
 
 			}
 
@@ -70,12 +78,31 @@ public class RecommendationSystemChallengeValuator {
 			// now
 			Map<Integer, Double> quartiles = Quantiles.scale(10).indexes(4, 7, 9).compute(activePlayersvalues);
 
+			System.out.println(mode);
+
+			// if (mode == "Bus_Km") {
 			// System.out.println(mode);
+			// }
 			// System.out.println(activePlayersvalues);
 
 			for (String playerId : combinations.keySet()) {
-				for (ChallengeDataDTO challenge : combinations.get(playerId)) {
+
+				// List<ChallengeDataDTO> toSave = new
+				// ArrayList<ChallengeDataDTO>();
+				List<ChallengeDataDTO> challenges = combinations.get(playerId);
+
+				for (ChallengeDataDTO challenge : challenges) {
+					if (mode == "Walk_Km" && playerId.equals("24502")) {
+						System.out.println(mode);
+					}
+					// System.out.println(challenge.getData().get("counterName"));
+					// if (challenge.getData().get("counterName").equals(mode)
+					// && playerId.equals("24502")) {
+					// System.out.println(mode);
+					// }
+
 					if (isSameOf((String) challenge.getData().get("counterName"), mode)) {
+
 						if (challenge.getModelName() == "percentageIncrement") {
 							Double baseline = (Double) challenge.getData().get("baseline");
 							Double target = (Double) challenge.getData().get("target");
@@ -93,14 +120,17 @@ public class RecommendationSystemChallengeValuator {
 							challenge.getData().put("difficulty", DifficultyCalculator.MEDIUM);
 							challenge.getData().put("bonusScore", tryOnceprize);
 						}
+
 					}
+
 				}
+				combinations.put(playerId, challenges);
+
 			}
+
 		}
 
-		// Add number of trips
-
-		// Add number of trips
+		combinations.get("24502");
 
 		return combinations;
 
@@ -110,11 +140,11 @@ public class RecommendationSystemChallengeValuator {
 		if (v.equals(mode)) {
 			return true;
 		}
-		if (v.contains("_") && mode.contains("_")) {
-			String[] s = v.split("_");
-			String[] m = mode.split("_");
-			return s[0].equals(m[0]);
-		}
+		// if (v.contains("_") && mode.contains("_")) {
+		// String[] s = v.split("_");
+		// String[] m = mode.split("_");
+		// return s[0].equals(m[0]);
+		// }
 		return false;
 	}
 

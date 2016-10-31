@@ -108,8 +108,9 @@ public class RecommendationSystemChallengeFilteringAndSorting {
 				return leaderboard.get(i);
 			}
 		}
-		// in a game with no score, we'll get a null pointer exception
-		return null;
+		// in a game with no score or where all have the same value, we'll get a
+		// null pointer exception
+		return leaderboard.get(index);
 	}
 
 	private LeaderboardPosition findPosition(List<LeaderboardPosition> leaderboard, String playerId) {
