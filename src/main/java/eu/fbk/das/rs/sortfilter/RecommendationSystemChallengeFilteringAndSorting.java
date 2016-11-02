@@ -15,7 +15,8 @@ public class RecommendationSystemChallengeFilteringAndSorting {
 
 	}
 
-	public Map<String, List<ChallengeDataDTO>> filterAndSort(Map<String, List<ChallengeDataDTO>> evaluatedChallenges,
+	public Map<String, List<ChallengeDataDTO>> filterAndSort(
+			Map<String, List<ChallengeDataDTO>> evaluatedChallenges,
 			List<LeaderboardPosition> leaderboard) {
 		Map<String, List<ChallengeDataDTO>> result = new HashMap<String, List<ChallengeDataDTO>>();
 		Double wi = 0.0;
@@ -29,14 +30,24 @@ public class RecommendationSystemChallengeFilteringAndSorting {
 				Double baseline = (Double) challenge.getData().get("baseline");
 				Double target = 0.0;
 				if (challenge.getData().get("target") instanceof Integer) {
-					target = new Double((Integer) challenge.getData().get("target"));
+					target = new Double((Integer) challenge.getData().get(
+							"target"));
 				} else {
 					target = (Double) challenge.getData().get("target");
 				}
-				Integer weight = getWeight((String) challenge.getData().get("counterName"));
+				Integer weight = getWeight((String) challenge.getData().get(
+						"counterName"));
 				Double percentageImprovment = 0.0;
 				if (baseline != null) {
-					percentageImprovment = Math.round(Math.abs(baseline - target) * 100.0 / baseline) / 100.0;
+					if (challenge.getModelName().equals("percentageIncrement")) {
+						Double p = (Double) challenge.getData().get(
+								"percentage");
+						percentageImprovment = p;
+					} else {
+						percentageImprovment = Math.round(Math.abs(baseline
+								- target)
+								* 100.0 / baseline) / 100.0;
+					}
 				} else {
 					percentageImprovment = 1.0;
 				}
@@ -47,13 +58,14 @@ public class RecommendationSystemChallengeFilteringAndSorting {
 				wi = percentageImprovment * weight;
 				challenge.getData().put("wi", wi);
 				// finding the position of the player in the leader board
-				LeaderboardPosition position = findPosition(leaderboard, playerId);
+				LeaderboardPosition position = findPosition(leaderboard,
+						playerId);
 				if (position.getIndex() == 0) {
 					// all the challenges;
 					improvingLeaderboard.add(challenge);
 				} else {
-					LeaderboardPosition pos = findScoreMoreThanMe(leaderboard, position.getIndex(),
-							position.getScore());
+					LeaderboardPosition pos = findScoreMoreThanMe(leaderboard,
+							position.getIndex(), position.getScore());
 					if (prize + position.getScore() > pos.getScore()) {
 						// I like this challenge, because improve my position
 						// into the leader board
@@ -69,9 +81,11 @@ public class RecommendationSystemChallengeFilteringAndSorting {
 				result.put(playerId, new ArrayList<ChallengeDataDTO>());
 			}
 			// sorting both lists
-			Collections.sort(improvingLeaderboard, new DifficultyWiComparator());
+			Collections
+					.sort(improvingLeaderboard, new DifficultyWiComparator());
 			// TODO : we have to test the sorting
-			Collections.sort(notImprovingLeaderboard, new DifficultyPrizeComparator());
+			Collections.sort(notImprovingLeaderboard,
+					new DifficultyPrizeComparator());
 
 			if (notImprovingLeaderboard.size() == 1) {
 				System.out.println();
@@ -90,7 +104,8 @@ public class RecommendationSystemChallengeFilteringAndSorting {
 			// to find and monitor the list of notImprovement challenges
 			if (!notImprovingLeaderboard.isEmpty()) {
 
-				System.out.println(playerId + " " + "NotIm:" + notImprovingLeaderboard.size() + "--" + "Improv:"
+				System.out.println(playerId + " " + "NotIm:"
+						+ notImprovingLeaderboard.size() + "--" + "Improv:"
 						+ improvingLeaderboard.size());
 
 			}
@@ -101,8 +116,8 @@ public class RecommendationSystemChallengeFilteringAndSorting {
 		return result;
 	}
 
-	private LeaderboardPosition findScoreMoreThanMe(List<LeaderboardPosition> leaderboard, Integer index,
-			Integer score) {
+	private LeaderboardPosition findScoreMoreThanMe(
+			List<LeaderboardPosition> leaderboard, Integer index, Integer score) {
 		for (int i = index; i >= 0; i--) {
 			if (leaderboard.get(i).getScore() > score) {
 				return leaderboard.get(i);
@@ -113,7 +128,8 @@ public class RecommendationSystemChallengeFilteringAndSorting {
 		return leaderboard.get(index);
 	}
 
-	private LeaderboardPosition findPosition(List<LeaderboardPosition> leaderboard, String playerId) {
+	private LeaderboardPosition findPosition(
+			List<LeaderboardPosition> leaderboard, String playerId) {
 		Integer currentIndex = 0;
 		for (LeaderboardPosition pos : leaderboard) {
 			if (playerId == pos.getPlayerId()) {
