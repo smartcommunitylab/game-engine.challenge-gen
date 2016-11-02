@@ -22,6 +22,7 @@ public class RecommendationSystemChallengeGeneration {
 	private double improvementValue = 0;
 	// define a temporary variable to save the improvement
 	private double tmpValueimprovment = 0;
+
 	//
 
 	public Map<String, List<ChallengeDataDTO>> generate(List<Content> input) {
@@ -97,6 +98,7 @@ public class RecommendationSystemChallengeGeneration {
 						data.put("baseline", modeCounter);
 						data.put("counterName", mode);
 						data.put("periodName", "weekly");
+						data.put("percentage", percentage[i]);
 						cdd.setData(data);
 						output.get(playerId).add(cdd);
 					}
