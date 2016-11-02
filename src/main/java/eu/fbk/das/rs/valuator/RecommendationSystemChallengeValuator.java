@@ -92,7 +92,7 @@ public class RecommendationSystemChallengeValuator {
 				List<ChallengeDataDTO> challenges = combinations.get(playerId);
 
 				for (ChallengeDataDTO challenge : challenges) {
-					if (mode == "Walk_Km" && playerId.equals("24502")) {
+					if (mode == "ZeroImpact_Trips" && playerId.equals("23515")) {
 						System.out.println(mode);
 					}
 					// System.out.println(challenge.getData().get("counterName"));
@@ -114,8 +114,9 @@ public class RecommendationSystemChallengeValuator {
 									+ difficulty);
 							challenge.getData().put("difficulty", difficulty);
 
-							Integer prize = calculatePrize(difficulty,
-									Math.round(Math.abs(baseline - target) * 100.0 / baseline) / 100.0);
+							double d = (double) challenge.getData().get("percentage");
+
+							Integer prize = calculatePrize(difficulty, d);
 							challenge.getData().put("bonusScore", prize);
 						} else if (challenge.getModelName() == "absoluteIncrement") {
 							challenge.getData().put("difficulty", DifficultyCalculator.MEDIUM);
