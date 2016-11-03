@@ -72,7 +72,12 @@ public final class ChallengeRulesLoader {
 				crr.setModelName(elements[1]);
 				crr.setGoalType(elements[2]);
 				if (elements[3] != null && !elements[3].isEmpty()) {
-					crr.setTarget(Double.valueOf(elements[3]));
+					try {
+						crr.setTarget(Double.valueOf(elements[3]));
+					} catch (NumberFormatException nfe) {
+						logger.debug("Target value is not a number, current challenge is a LeaderboardPosition?");
+						crr.setTarget(elements[3]);
+					}
 				}
 				crr.setBonus(Integer.valueOf(elements[4]));
 				crr.setPointType(elements[5]);

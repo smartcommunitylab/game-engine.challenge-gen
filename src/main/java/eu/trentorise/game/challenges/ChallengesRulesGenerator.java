@@ -93,13 +93,21 @@ public class ChallengesRulesGenerator {
 				params.put(Constants.START_DATE, startDate);
 				params.put(Constants.END_DATE, endDate);
 				if (challengeSpec.getTarget() != null) {
-					params.put(Constants.TARGET, challengeSpec.getTarget());
-					if (challengeSpec.getTarget() instanceof Double) {
-						targetValue = (Double) challengeSpec.getTarget();
+					if (challengeSpec.getTarget() instanceof String) {
+						// speecial case for leaderboardPosition challenge
+						if (((String) challengeSpec.getTarget()).contains("<")) {
+							params.put(Constants.TARGET,
+									challengeSpec.getTarget());
+						}
 					} else {
-						String v = (String) challengeSpec.getTarget();
-						if (!v.isEmpty()) {
-							targetValue = Double.valueOf(v);
+						params.put(Constants.TARGET, challengeSpec.getTarget());
+						if (challengeSpec.getTarget() instanceof Double) {
+							targetValue = (Double) challengeSpec.getTarget();
+						} else {
+							String v = (String) challengeSpec.getTarget();
+							if (!v.isEmpty()) {
+								targetValue = Double.valueOf(v);
+							}
 						}
 					}
 				}

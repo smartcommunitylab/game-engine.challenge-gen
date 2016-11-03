@@ -29,6 +29,8 @@ public class ChallengeInstanceFactory {
 			return buildSurvey(params, user);
 		case Constants.POICHECKIN:
 			return buildPoiCheckIn(params, user);
+		case Constants.LEADERBOARDPOSITION:
+			return buildLeaderBoardPosition(params, user);
 
 		default:
 			throw new UndefinedChallengeException("Unknown challenge type! "
@@ -166,6 +168,27 @@ public class ChallengeInstanceFactory {
 			}
 		}
 		return 0;
+	}
+
+	private ChallengeDataDTO buildLeaderBoardPosition(
+			Map<String, Object> params, Content user) {
+		ChallengeDataDTO cdd = new ChallengeDataDTO();
+		cdd.setModelName(Constants.LEADERBOARDPOSITION);
+		cdd.setInstanceName(params.get(Constants.NAME) + "_"
+				+ UUID.randomUUID());
+		cdd.setStart((Date) params.get(Constants.START_DATE));
+		cdd.setEnd((Date) params.get(Constants.END_DATE));
+		Map<String, Object> data = new HashMap<String, Object>();
+		String[] values = ((String) params.get(Constants.TARGET)).split("<");
+		data.put("posMin", Double.valueOf(values[0]));
+		data.put("posMax", Double.valueOf(values[1]));
+		data.put("bonusPointType", params.get(Constants.BONUS_POINT_TYPE));
+		data.put("bonusScore",
+				Double.valueOf(params.get(Constants.BONUS_SCORE).toString()));
+		data.put("weekClassificationName", params.get(Constants.GOAL_TYPE));
+
+		cdd.setData(data);
+		return cdd;
 	}
 
 }

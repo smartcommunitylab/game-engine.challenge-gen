@@ -26,6 +26,7 @@ public final class Constants {
 	public static final String NEXTBADGE = "nextBadge";
 	public static final String COMPLETEBADGECOLLECTION = "completeBadgeCollection";
 	public static final String POICHECKIN = "poiCheckin";
+	public static final String LEADERBOARDPOSITION = "leaderboardPosition";
 
 	// challenges various constants
 	public static final String NAME = "name";
