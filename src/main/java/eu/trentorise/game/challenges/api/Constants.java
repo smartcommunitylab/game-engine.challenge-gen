@@ -50,6 +50,7 @@ public final class Constants {
 	public static final String EVENT_NAME = "eventName";
 	public static final String POI_STATE = "poiState";
 	public static final String EVENT_STATE = "eventState";
+	public static final String MIN_MAX_SEPARATOR = "<";
 
 	// counters for rules
 	public static final String[] COUNTERS = { "gp_current",

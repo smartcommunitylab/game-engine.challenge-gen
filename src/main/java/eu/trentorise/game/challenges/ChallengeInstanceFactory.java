@@ -179,7 +179,8 @@ public class ChallengeInstanceFactory {
 		cdd.setStart((Date) params.get(Constants.START_DATE));
 		cdd.setEnd((Date) params.get(Constants.END_DATE));
 		Map<String, Object> data = new HashMap<String, Object>();
-		String[] values = ((String) params.get(Constants.TARGET)).split("<");
+		String[] values = ((String) params.get(Constants.TARGET))
+				.split(Constants.MIN_MAX_SEPARATOR);
 		data.put("posMin", Double.valueOf(values[0]));
 		data.put("posMax", Double.valueOf(values[1]));
 		data.put("bonusPointType", params.get(Constants.BONUS_POINT_TYPE));

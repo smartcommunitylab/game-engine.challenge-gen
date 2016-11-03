@@ -95,7 +95,8 @@ public class ChallengesRulesGenerator {
 				if (challengeSpec.getTarget() != null) {
 					if (challengeSpec.getTarget() instanceof String) {
 						// speecial case for leaderboardPosition challenge
-						if (((String) challengeSpec.getTarget()).contains("<")) {
+						if (((String) challengeSpec.getTarget())
+								.contains(Constants.MIN_MAX_SEPARATOR)) {
 							params.put(Constants.TARGET,
 									challengeSpec.getTarget());
 						}
