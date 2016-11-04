@@ -101,10 +101,10 @@ public class RecommendationSystemChallengeGenerationTest {
 		List<Content> gameData = facade.readGameState(get(GAMEID));
 		List<Content> listofContent = new ArrayList<Content>();
 		for (Content c : gameData) {
-			if (RecommendationSystemConfig.getPlayerIds().contains(
-					c.getPlayerId())) {
-				listofContent.add(c);
-			}
+			// if (RecommendationSystemConfig.getPlayerIds().contains(
+			// c.getPlayerId())) {
+			listofContent.add(c);
+			// }
 		}
 
 		RecommendationSystemChallengeGeneration rs = new RecommendationSystemChallengeGeneration();
@@ -235,7 +235,6 @@ public class RecommendationSystemChallengeGenerationTest {
 				+ "CHALLENGE_NAME;"
 				+ "MODE;MODE_WEIGHT;DIFFICULTY;WI;BONUS_SCORE;BASELINE;TARGET;PERCENTAGE;TOP_TEN;\n");
 
-		// get only top 10 challenges for user
 		Map<String, Integer> count = new HashMap<String, Integer>();
 
 		for (String key : filteredChallenges.keySet()) {
@@ -243,26 +242,25 @@ public class RecommendationSystemChallengeGenerationTest {
 			if (count.get(key) == null) {
 				count.put(key, 0);
 			}
+
+			// filter used modes
+			List<String> usedModes = new ArrayList<String>();
+
 			for (ChallengeDataDTO dto : filteredChallenges.get(key)) {
 
 				System.out.println("Inserted challenge with Id "
 						+ dto.getInstanceName());
 
-				if (count.get(key) < 10) {
-					count.put(key, count.get(key) + 1);
-					buffer = buildBuffer(buffer, key, dto, true);
+				// String counter = (String) dto.getData().get("counterName");
+				// if (counter != null && !usedModes.contains(counter)) {
+				// usedModes.add(counter);
+				// if (count.get(key) < 2) {
+				// count.put(key, count.get(key) + 1);
+				buffer = buildBuffer(buffer, key, dto, true);
+				// }
+				// }
 
-				} else {
-					buffer = buildBuffer(buffer, key, dto, false);
-
-				}
 			}
-			// buffer = buildBuffer(buffer, key,
-			// filteredChallenges.get(key).get(filteredChallenges.get(key).size()
-			// - 2));
-			// buffer = buildBuffer(buffer, key,
-			// filteredChallenges.get(key).get(filteredChallenges.get(key).size()
-			// - 1));
 
 		}
 
