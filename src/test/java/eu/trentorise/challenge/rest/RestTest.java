@@ -290,42 +290,28 @@ public class RestTest {
 		toWrite.append("PLAYER_ID;CHALLENGE_UUID;MODEL_NAME;TARGET;BONUS_SCORE;BONUS_POINT_TYPE;START;END;COMPLETED;DATE_COMPLETED;BASELINE;PERIOD_NAME;COUNTER_NAME;COUNTER_VALUE"
 				+ "\n");
 
-		// 1476482400 => 15/10/2016 00:00:00
-
 		for (Content user : result) {
-			Double thisWeekScore = getPreviousScore(user, "green leaves");
-			// if (getScore(user, "green leaves") > 0) {
-			if (thisWeekScore > 0) {
-				for (ChallengeConcept cc : user.getState()
-						.getChallengeConcept()) {
-					toWrite.append(user.getPlayerId() + ";");
-					toWrite.append(cc.getName() + ";");
-					toWrite.append(cc.getModelName() + ";");
-					toWrite.append(cc.getFields().get(Constants.TARGET) + ";");
-					toWrite.append(cc.getFields().get(Constants.BONUS_SCORE)
-							+ ";");
-					toWrite.append(cc.getFields().get(
-							Constants.BONUS_POINT_TYPE)
-							+ ";");
-					toWrite.append(CalendarUtil.format((Long) cc.getStart())
-							+ ";");
-					toWrite.append(CalendarUtil.format((Long) cc.getEnd())
-							+ ";");
-					toWrite.append(cc.getCompleted() + ";");
-					toWrite.append(CalendarUtil.format(cc.getDateCompleted())
-							+ ";");
-					toWrite.append(cc.getFields().get(Constants.BASELINE) + ";");
-					toWrite.append(cc.getFields().get(Constants.PERIOD_NAME)
-							+ ";");
-					toWrite.append(cc.getFields().get(Constants.COUNTER_NAME)
-							+ ";");
-					toWrite.append(getScore(
-							user,
-							(String) cc.getFields().get(Constants.COUNTER_NAME),
-							cc.getStart())
-							+ ";\n");
-
-				}
+			for (ChallengeConcept cc : user.getState().getChallengeConcept()) {
+				toWrite.append(user.getPlayerId() + ";");
+				toWrite.append(cc.getName() + ";");
+				toWrite.append(cc.getModelName() + ";");
+				toWrite.append(cc.getFields().get(Constants.TARGET) + ";");
+				toWrite.append(cc.getFields().get(Constants.BONUS_SCORE) + ";");
+				toWrite.append(cc.getFields().get(Constants.BONUS_POINT_TYPE)
+						+ ";");
+				toWrite.append(CalendarUtil.format((Long) cc.getStart()) + ";");
+				toWrite.append(CalendarUtil.format((Long) cc.getEnd()) + ";");
+				toWrite.append(cc.getCompleted() + ";");
+				toWrite.append(CalendarUtil.format(cc.getDateCompleted()) + ";");
+				toWrite.append(cc.getFields().get(Constants.BASELINE) + ";");
+				toWrite.append(cc.getFields().get(Constants.PERIOD_NAME) + ";");
+				toWrite.append(cc.getFields().get(Constants.COUNTER_NAME) + ";");
+				toWrite.append(getScore(user,
+						(String) cc.getFields().get(Constants.COUNTER_NAME),
+						cc.getStart())
+						+ ";\n");
+				//
+				// }
 			}
 		}
 
@@ -338,12 +324,4 @@ public class RestTest {
 		assertTrue(!writable.isEmpty());
 	}
 
-	private Double getPreviousScore(Content content, String periodName) {
-		for (PointConcept pc : content.getState().getPointConcept()) {
-			if (pc.getName().equalsIgnoreCase(periodName)) {
-				return pc.getPeriodCurrentScore("weekly");
-			}
-		}
-		return null;
-	}
 }
