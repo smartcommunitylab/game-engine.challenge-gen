@@ -52,7 +52,7 @@ public class RecommendationSystemChallengeFilteringAndSorting {
 				} else {
 					percentageImprovment = 1.0;
 				}
-				Integer prize = (Integer) challenge.getData().get("bonusScore");
+				Long prize = (Long) challenge.getData().get("bonusScore");
 				// System.out.println();
 				// calculating the WI for each mode based on weight of Mode and
 				// improvement percentage

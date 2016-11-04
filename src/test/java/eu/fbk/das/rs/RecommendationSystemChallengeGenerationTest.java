@@ -72,7 +72,7 @@ public class RecommendationSystemChallengeGenerationTest {
 		Map<String, List<ChallengeDataDTO>> challengeCombinations = rs
 				.generate(gameData);
 
-		assertTrue(challengeCombinations != null);
+		assertTrue(!challengeCombinations.isEmpty());
 	}
 
 	@Test
@@ -90,7 +90,7 @@ public class RecommendationSystemChallengeGenerationTest {
 		Map<String, List<ChallengeDataDTO>> evaluatedChallenges = valuator
 				.valuate(challengeCombinations, gameData);
 
-		assertTrue(evaluatedChallenges != null);
+		assertTrue(!evaluatedChallenges.isEmpty());
 	}
 
 	@Test
@@ -101,10 +101,14 @@ public class RecommendationSystemChallengeGenerationTest {
 		List<Content> gameData = facade.readGameState(get(GAMEID));
 		List<Content> listofContent = new ArrayList<Content>();
 		for (Content c : gameData) {
-			// if (RecommendationSystemConfig.getPlayerIds().contains(
-			// c.getPlayerId())) {
-			listofContent.add(c);
-			// }
+			if (RecommendationSystemConfig.userFiltering) {
+				if (RecommendationSystemConfig.getPlayerIds().contains(
+						c.getPlayerId())) {
+					listofContent.add(c);
+				}
+			} else {
+				listofContent.add(c);
+			}
 		}
 
 		RecommendationSystemChallengeGeneration rs = new RecommendationSystemChallengeGeneration();
@@ -129,15 +133,6 @@ public class RecommendationSystemChallengeGenerationTest {
 				.filterAndSort(evaluatedChallenges, leaderboard);
 
 		assertTrue(filteredChallenges != null);
-
-		// just for test for user 23897 (Alberto)
-		// Iterator<Content> iter = gameData.iterator();
-		// while (iter.hasNext()) {
-		// Content p = iter.next();
-		// if (p.getPlayerId().equals("23897")) {
-		// System.out.println();
-		// }
-		// }
 
 		// filtering
 
@@ -254,10 +249,12 @@ public class RecommendationSystemChallengeGenerationTest {
 				// String counter = (String) dto.getData().get("counterName");
 				// if (counter != null && !usedModes.contains(counter)) {
 				// usedModes.add(counter);
-				// if (count.get(key) < 2) {
-				// count.put(key, count.get(key) + 1);
-				buffer = buildBuffer(buffer, key, dto, true);
-				// }
+				if (count.get(key) < 10) {
+					count.put(key, count.get(key) + 1);
+					buffer = buildBuffer(buffer, key, dto, true);
+				} else {
+					buffer = buildBuffer(buffer, key, dto, false);
+				}
 				// }
 
 			}
@@ -285,8 +282,8 @@ public class RecommendationSystemChallengeGenerationTest {
 		buffer.append(dto.getModelName() + ";");
 		buffer.append(dto.getInstanceName() + ";");
 		buffer.append(dto.getData().get("counterName") + ";");
-		buffer.append(RecommendationSystemConfig.getWeight(getMode((String) dto
-				.getData().get("counterName"))) + ";");
+		buffer.append(RecommendationSystemConfig.getWeight((String) dto
+				.getData().get("counterName")) + ";");
 		buffer.append(dto.getData().get("difficulty") + ";");
 		buffer.append(dto.getData().get("wi") + ";");
 		buffer.append(dto.getData().get("bonusScore") + ";");
@@ -298,16 +295,16 @@ public class RecommendationSystemChallengeGenerationTest {
 		return buffer;
 	}
 
-	private String getMode(String mode) {
-		if (mode == null) {
-			return "";
-		}
-		String[] t = mode.split("_");
-		if (t == null) {
-			return "";
-		}
-		return t[0];
-	}
+	// private String getMode(String mode) {
+	// if (mode == null) {
+	// return "";
+	// }
+	// String[] t = mode.split("_");
+	// if (t == null) {
+	// return "";
+	// }
+	// return t[0];
+	// }
 
 	private List<LeaderboardPosition> buildLeaderBoard(List<Content> gameData) {
 		List<LeaderboardPosition> result = new ArrayList<LeaderboardPosition>();

@@ -31,35 +31,16 @@ public class RecommendationSystemChallengeGeneration {
 		HashMap<String, Double> playerScore = new HashMap<>();
 		for (Content content : input) {
 			// filter users
-			// if
-			// (RecommendationSystemConfig.getPlayerIds().contains(content.getPlayerId()))
-			// {
-
-			// retrieving the players' last week data "weekly"
-			for (int i = 0; i < RecommendationSystemConfig.defaultMode.length; i++) {
-
-				String mode = RecommendationSystemConfig.defaultMode[i];
-				if (mode == "Bus_Km") {
-					System.out.println(mode);
+			if (RecommendationSystemConfig.userFiltering) {
+				if (RecommendationSystemConfig.getPlayerIds().contains(
+						content.getPlayerId())) {
+					modeValues = buildModeValues(modeValues, playerScore,
+							content);
 				}
-				for (PointConcept pc : content.getState().getPointConcept()) {
-					if (pc.getName().equals(mode)) {
-						Double score = pc.getPeriodCurrentScore("weekly");
-						playerScore.put(content.getPlayerId(), score);
-						System.out.println(mode + ":" + score);
-					}
-
-				}
-				if (modeValues.get(mode) == null) {
-					modeValues.put(mode, new HashMap<String, Double>());
-				}
-				modeValues.get(mode).putAll(playerScore);
-
+			} else {
+				modeValues = buildModeValues(modeValues, playerScore, content);
 			}
-
 			playerScore.clear();
-
-			// }
 		}
 
 		LocalDate now = new LocalDate();
@@ -71,6 +52,10 @@ public class RecommendationSystemChallengeGeneration {
 				if (output.get(playerId) == null) {
 					output.put(playerId, new ArrayList<ChallengeDataDTO>());
 				}
+				if (playerId.equals("23897")) {
+					System.out.println();
+				}
+
 				Double modeCounter = modeValues.get(mode).get(playerId);
 				if (modeCounter > 0) {
 
@@ -103,24 +88,48 @@ public class RecommendationSystemChallengeGeneration {
 						output.get(playerId).add(cdd);
 					}
 				} else {
-					// build a try once
-					ChallengeDataDTO cdd = new ChallengeDataDTO();
-					cdd.setModelName("absoluteIncrement");
-					cdd.setInstanceName("InstanceName" + UUID.randomUUID());
-					cdd.setStart(now.dayOfMonth().addToCopy(1).toDate());
-					cdd.setEnd(now.dayOfMonth().addToCopy(7).toDate());
-					Map<String, Object> data = new HashMap<String, Object>();
-					data.put("target", 1);
-					data.put("bonusPointType", "green leaves");
-					data.put("bonusScore", 100d);
-					data.put("counterName", getDefaultMode(mode));
-					data.put("periodName", "weekly");
-					cdd.setData(data);
-					output.get(playerId).add(cdd);
+					if (isDefaultMode(mode)) {
+						// build a try once
+						ChallengeDataDTO cdd = new ChallengeDataDTO();
+						cdd.setModelName("absoluteIncrement");
+						cdd.setInstanceName("InstanceName" + UUID.randomUUID());
+						cdd.setStart(now.dayOfMonth().addToCopy(1).toDate());
+						cdd.setEnd(now.dayOfMonth().addToCopy(7).toDate());
+						Map<String, Object> data = new HashMap<String, Object>();
+						data.put("target", 1);
+						data.put("bonusPointType", "green leaves");
+						data.put("bonusScore", 100d);
+						data.put("counterName", mode);
+						data.put("periodName", "weekly");
+						cdd.setData(data);
+						output.get(playerId).add(cdd);
+					}
 				}
 			}
 		}
 		return output;
+	}
+
+	private HashMap<String, HashMap<String, Double>> buildModeValues(
+			HashMap<String, HashMap<String, Double>> modeValues,
+			HashMap<String, Double> playerScore, Content content) {
+		// retrieving the players' last week data "weekly"
+		for (int i = 0; i < RecommendationSystemConfig.defaultMode.length; i++) {
+
+			String mode = RecommendationSystemConfig.defaultMode[i];
+			for (PointConcept pc : content.getState().getPointConcept()) {
+				if (pc.getName().equals(mode)) {
+					Double score = pc.getPeriodCurrentScore("weekly");
+					playerScore.put(content.getPlayerId(), score);
+					// System.out.println(mode + ":" + score);
+				}
+			}
+			if (modeValues.get(mode) == null) {
+				modeValues.put(mode, new HashMap<String, Double>());
+			}
+			modeValues.get(mode).putAll(playerScore);
+		}
+		return modeValues;
 	}
 
 	// round the improvement trip number
@@ -129,17 +138,14 @@ public class RecommendationSystemChallengeGeneration {
 		return Math.round(improvementValue2);
 	}
 
-	private String getDefaultMode(String mode) {
-		if (!mode.endsWith("_trips")) {
-			return mode;
-		}
-		for (int i = 0; i < RecommendationSystemConfig.defaultMode.length; i++) {
-			String m = RecommendationSystemConfig.defaultMode[i];
+	private boolean isDefaultMode(String mode) {
+		for (int i = 0; i < RecommendationSystemConfig.defaultModetrip.length; i++) {
+			String m = RecommendationSystemConfig.defaultModetrip[i];
 			if (m == mode) {
-				return RecommendationSystemConfig.defaultModetrip[i];
+				return true;
 			}
 		}
-		return null;
+		return false;
 	}
 
 }

@@ -10,8 +10,8 @@ public class DifficultyPrizeComparator implements Comparator<ChallengeDataDTO> {
 	public int compare(ChallengeDataDTO o1, ChallengeDataDTO o2) {
 		int difficulty1 = (int) o1.getData().get("difficulty");
 		int difficulty2 = (int) o2.getData().get("difficulty");
-		int bonusScore1 = (int) o1.getData().get("bonusScore");
-		int bonusScore2 = (int) o2.getData().get("bonusScore");
+		long bonusScore1 = (long) o1.getData().get("bonusScore");
+		long bonusScore2 = (long) o2.getData().get("bonusScore");
 		double wi1 = (double) o1.getData().get("wi");
 		double wi2 = (double) o2.getData().get("wi");
 
