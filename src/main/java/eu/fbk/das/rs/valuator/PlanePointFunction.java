@@ -1,0 +1,69 @@
+package eu.fbk.das.rs.valuator;
+
+public class PlanePointFunction {
+
+	private int nrow;
+	private int ncol;
+	private long min;
+	private long max;
+	private long intermediate;
+	private long matrix[][];
+
+	/**
+	 * Compute a plane point function (aka a matrix) of values with given size
+	 * (nrow and ncol) using min, max and intermediate for values
+	 */
+	public PlanePointFunction(int nrow, int ncol, long min, long max,
+			long intermediate) {
+		this.nrow = nrow;
+		this.ncol = ncol;
+		this.min = min;
+		this.max = max;
+		this.intermediate = intermediate;
+		// init
+		this.matrix = new long[nrow][ncol];
+		for (int i = 0; i < nrow; i++) {
+			for (int j = 0; j < ncol; j++) {
+				matrix[i][j] = 0;
+			}
+		}
+		// build matrix
+		calculate();
+	}
+
+	private void calculate() {
+		double dh = (double) ((intermediate - min)) / (double) (ncol - 1);
+		double dv = (double) (max - intermediate) / (double) (nrow - 1);
+
+		for (int i = 0; i < nrow; i++) {
+			for (int j = 0; j < ncol; j++) {
+				matrix[i][j] = Math.round(min + dh * j + i * dv);
+			}
+		}
+		System.out.println();
+	}
+
+	public long get(int x, int y) {
+		return matrix[x][y];
+	}
+
+	public long getMin() {
+		return min;
+	}
+
+	public int getNrow() {
+		return nrow;
+	}
+
+	public int getNcol() {
+		return ncol;
+	}
+
+	public long getMax() {
+		return max;
+	}
+
+	public long getIntermediate() {
+		return intermediate;
+	}
+}
