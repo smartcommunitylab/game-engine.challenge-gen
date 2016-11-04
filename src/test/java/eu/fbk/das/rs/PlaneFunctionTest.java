@@ -15,6 +15,7 @@ public class PlaneFunctionTest {
 	private int max;
 	private int intermediate;
 	private PlanePointFunction ppf;
+	private long approximator;
 
 	@Before
 	public void setup() {
@@ -23,9 +24,10 @@ public class PlaneFunctionTest {
 		this.min = 100;
 		this.max = 250;
 		this.intermediate = 150;
+		this.approximator = 5;
 
-		this.ppf = new PlanePointFunction(nrow, ncol, min, max, intermediate);
-
+		this.ppf = new PlanePointFunction(nrow, ncol, min, max, intermediate,
+				approximator);
 	}
 
 	@Test
@@ -42,6 +44,36 @@ public class PlaneFunctionTest {
 	@Test
 	public void intermediatePlaneFunctionTest() {
 		assertTrue(ppf.get(0, ppf.getNcol() - 1) == ppf.getIntermediate());
+	}
+
+	@Test
+	public void approximatorPlaneFunctionTest() {
+		assertTrue(ppf.get(1, ppf.getNcol() - 1) == 185);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void approximatorMustBeGreaterThanZeroTest() {
+		new PlanePointFunction(nrow, ncol, min, max, intermediate, -1);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void approximatorMustBeLessThanMinPlaneFunctionTest() {
+		new PlanePointFunction(nrow, ncol, min, max, intermediate, min + 1);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void minMustBeLessthanMaxPlaneFunctionTest() {
+		new PlanePointFunction(nrow, ncol, max, min, intermediate, min + 1);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void minAndMaxMustBeDifferentFromZeroFunctionTest() {
+		new PlanePointFunction(nrow, ncol, 0, 0, intermediate, min + 1);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void maxMustBeMorethanMinPlaneFunctionTest() {
+		new PlanePointFunction(nrow, ncol, min, min + 1, intermediate, min + 1);
 	}
 
 }

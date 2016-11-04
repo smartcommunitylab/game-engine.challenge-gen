@@ -8,18 +8,34 @@ public class PlanePointFunction {
 	private long max;
 	private long intermediate;
 	private long matrix[][];
+	private long approximator;
 
 	/**
 	 * Compute a plane point function (aka a matrix) of values with given size
-	 * (nrow and ncol) using min, max and intermediate for values
+	 * (nrow and ncol) using min, max and intermediate for values. Uses
+	 * approximator to round matrix values to the closest value (i.e 183 => 180,
+	 * 199 => 200)
 	 */
 	public PlanePointFunction(int nrow, int ncol, long min, long max,
-			long intermediate) {
+			long intermediate, long approximator) {
+		if (min == 0 || max == 0 || min > max || max < min) {
+			throw new IllegalArgumentException(
+					"Min and max must be not null and min more than max");
+		}
+		if (approximator <= 0) {
+			throw new IllegalArgumentException(
+					"Approximator must be greater than zero");
+		}
+		if (approximator > min) {
+			throw new IllegalArgumentException(
+					"Approximator must be greater than minimum: " + min);
+		}
 		this.nrow = nrow;
 		this.ncol = ncol;
 		this.min = min;
 		this.max = max;
 		this.intermediate = intermediate;
+		this.approximator = approximator;
 		// init
 		this.matrix = new long[nrow][ncol];
 		for (int i = 0; i < nrow; i++) {
@@ -37,7 +53,9 @@ public class PlanePointFunction {
 
 		for (int i = 0; i < nrow; i++) {
 			for (int j = 0; j < ncol; j++) {
-				matrix[i][j] = Math.round(min + dh * j + i * dv);
+				matrix[i][j] = Math.round(Math.round(min + dh * j + i * dv)
+						/ (double) approximator)
+						* approximator;
 			}
 		}
 		System.out.println();
@@ -65,5 +83,9 @@ public class PlanePointFunction {
 
 	public long getIntermediate() {
 		return intermediate;
+	}
+
+	public long getTryOncePrize(int x, int y) {
+		return matrix[x][y];
 	}
 }

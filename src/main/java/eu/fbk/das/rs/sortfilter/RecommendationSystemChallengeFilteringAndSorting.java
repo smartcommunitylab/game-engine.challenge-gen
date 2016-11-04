@@ -35,8 +35,9 @@ public class RecommendationSystemChallengeFilteringAndSorting {
 				} else {
 					target = (Double) challenge.getData().get("target");
 				}
-				Integer weight = getWeight((String) challenge.getData().get(
-						"counterName"));
+				Integer weight = RecommendationSystemConfig
+						.getWeight((String) challenge.getData().get(
+								"counterName"));
 				Double percentageImprovment = 0.0;
 				if (baseline != null) {
 					if (challenge.getModelName().equals("percentageIncrement")) {
@@ -140,17 +141,6 @@ public class RecommendationSystemChallengeFilteringAndSorting {
 			}
 		}
 		return null;
-	}
-
-	private Integer getWeight(String counterName) {
-		for (String mode : RecommendationSystemConfig.getWeightKeySet()) {
-			if (counterName.startsWith(mode)) {
-				// in our example this means we are into walk challenge
-				return RecommendationSystemConfig.getWeight(mode);
-			}
-
-		}
-		return 1;
 	}
 
 }

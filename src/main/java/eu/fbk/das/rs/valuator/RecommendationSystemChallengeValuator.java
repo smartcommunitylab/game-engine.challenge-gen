@@ -2,12 +2,14 @@ package eu.fbk.das.rs.valuator;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.google.common.math.Quantiles;
 
 import eu.fbk.das.rs.challengeGeneration.RecommendationSystemConfig;
+import eu.fbk.das.rs.challengeGeneration.SingleModeConfig;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import eu.trentorise.game.challenges.rest.Content;
 import eu.trentorise.game.challenges.rest.PointConcept;
@@ -15,12 +17,25 @@ import eu.trentorise.game.challenges.rest.PointConcept.PeriodInstanceImpl;
 import eu.trentorise.game.challenges.rest.PointConcept.PeriodInternal;
 
 public class RecommendationSystemChallengeValuator {
-	// defining a table for points/prize
-	private int points[][] = { { 100, 106, 111, 122, 150 }, { 133, 139, 144, 155, 183 }, { 166, 172, 177, 189, 217 },
-			{ 197, 205, 211, 222, 250 } };
-	private final Integer tryOnceprize = 183;
 
-	public Map<String, List<ChallengeDataDTO>> valuate(Map<String, List<ChallengeDataDTO>> combinations,
+	private Map<String, PlanePointFunction> prizeMatrixMap = new HashMap<String, PlanePointFunction>();
+
+	public RecommendationSystemChallengeValuator() {
+		for (String mode : RecommendationSystemConfig.getModeKeySet()) {
+			SingleModeConfig config = RecommendationSystemConfig
+					.getModeConfig(mode);
+			PlanePointFunction matrix = new PlanePointFunction(
+					RecommendationSystemConfig.PRIZE_MATRIX_NROW,
+					RecommendationSystemConfig.PRIZE_MATRIX_NCOL,
+					config.getPrizeMatrixMin(), config.getPrizeMatrixMax(),
+					config.getPrizeMatrixIntermediate(),
+					RecommendationSystemConfig.PRIZE_MATRIX_APPROXIMATOR);
+			prizeMatrixMap.put(mode, matrix);
+		}
+	}
+
+	public Map<String, List<ChallengeDataDTO>> valuate(
+			Map<String, List<ChallengeDataDTO>> combinations,
 			List<Content> input) {
 
 		for (int i = 0; i < RecommendationSystemConfig.defaultMode.length; i++) {
@@ -41,8 +56,10 @@ public class RecommendationSystemChallengeValuator {
 							// System.out.println(mode);
 						}
 						for (String period : pc.getPeriods().keySet()) {
-							PeriodInternal periodInstance = pc.getPeriods().get(period);
-							for (PeriodInstanceImpl p : periodInstance.getInstances()) {
+							PeriodInternal periodInstance = pc.getPeriods()
+									.get(period);
+							for (PeriodInstanceImpl p : periodInstance
+									.getInstances()) {
 								if (p.getScore() > 0) {
 									activePlayersvalues.add(p.getScore());
 								}
@@ -76,7 +93,8 @@ public class RecommendationSystemChallengeValuator {
 
 			// finding the percentiles of mode walk "weekly" from start to
 			// now
-			Map<Integer, Double> quartiles = Quantiles.scale(10).indexes(4, 7, 9).compute(activePlayersvalues);
+			Map<Integer, Double> quartiles = Quantiles.scale(10)
+					.indexes(4, 7, 9).compute(activePlayersvalues);
 
 			System.out.println(mode);
 
@@ -100,27 +118,41 @@ public class RecommendationSystemChallengeValuator {
 					// && playerId.equals("24502")) {
 					// System.out.println(mode);
 					// }
-
-					if (isSameOf((String) challenge.getData().get("counterName"), mode)) {
+					String counterName = (String) challenge.getData().get(
+							"counterName");
+					if (isSameOf(counterName, mode)) {
 
 						if (challenge.getModelName() == "percentageIncrement") {
-							Double baseline = (Double) challenge.getData().get("baseline");
-							Double target = (Double) challenge.getData().get("target");
+							Double baseline = (Double) challenge.getData().get(
+									"baseline");
+							Double target = (Double) challenge.getData().get(
+									"target");
 							// Integer zone =
 							// DifficultyCalculator.computeZone(quartiles,
 							// baseline);
-							Integer difficulty = DifficultyCalculator.computeDifficulty(quartiles, baseline, target);
-							System.out.println("Challenge baseline=" + baseline + ", target=" + target + " difficulty="
+							Integer difficulty = DifficultyCalculator
+									.computeDifficulty(quartiles, baseline,
+											target);
+							System.out.println("Challenge baseline=" + baseline
+									+ ", target=" + target + " difficulty="
 									+ difficulty);
 							challenge.getData().put("difficulty", difficulty);
 
-							double d = (double) challenge.getData().get("percentage");
+							double d = (double) challenge.getData().get(
+									"percentage");
 
-							Integer prize = calculatePrize(difficulty, d);
+							Long prize = calculatePrize(difficulty, d,
+									counterName);
 							challenge.getData().put("bonusScore", prize);
 						} else if (challenge.getModelName() == "absoluteIncrement") {
-							challenge.getData().put("difficulty", DifficultyCalculator.MEDIUM);
-							challenge.getData().put("bonusScore", tryOnceprize);
+							challenge.getData().put("difficulty",
+									DifficultyCalculator.MEDIUM);
+							long tryOnceBonus = prizeMatrixMap
+									.get(counterName)
+									.getTryOncePrize(
+											RecommendationSystemConfig.PRIZE_MATRIX_TRY_ONCE_ROW_INDEX,
+											RecommendationSystemConfig.PRIZE_MATRIX_TRY_ONCE_COL_INDEX);
+							challenge.getData().put("bonusScore", tryOnceBonus);
 						}
 
 					}
@@ -150,7 +182,9 @@ public class RecommendationSystemChallengeValuator {
 		return false;
 	}
 
-	private Integer calculatePrize(Integer difficulty, double percent) {
+	private long calculatePrize(Integer difficulty, double percent,
+			String modeName) {
+		// TODO: config!
 		int y = 0;
 		if (percent == 0.1) {
 			y = 0;
@@ -159,11 +193,12 @@ public class RecommendationSystemChallengeValuator {
 		} else if (percent == 0.3) {
 			y = 2;
 		} else if (percent == 0.5) {
-			y = 3;
-		} else if (percent == 1) {
 			y = 4;
+		} else if (percent == 1) {
+			y = 9;
 		}
-		Integer prize = points[difficulty - 1][y];
+
+		long prize = prizeMatrixMap.get(modeName).get(difficulty - 1, y);
 
 		return prize;
 	}
