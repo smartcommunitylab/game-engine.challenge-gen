@@ -249,14 +249,21 @@ public class RecommendationSystemChallengeGenerationTest {
 				// String counter = (String) dto.getData().get("counterName");
 				// if (counter != null && !usedModes.contains(counter)) {
 				// usedModes.add(counter);
-				if (count.get(key) < 10) {
-					count.put(key, count.get(key) + 1);
-					buffer = buildBuffer(buffer, key, dto, true);
+				if (RecommendationSystemConfig.selectTopTwo) {
+					if (count.get(key) < 2) {
+						String counter = (String) dto.getData().get(
+								"counterName");
+						if (counter != null && !usedModes.contains(counter)) {
+							usedModes.add(counter);
+							count.put(key, count.get(key) + 1);
+							buffer = buildBuffer(buffer, key, dto, true);
+						}
+					} else {
+						break;
+					}
 				} else {
-					buffer = buildBuffer(buffer, key, dto, false);
+					buffer = buildBuffer(buffer, key, dto, true);
 				}
-				// }
-
 			}
 
 		}

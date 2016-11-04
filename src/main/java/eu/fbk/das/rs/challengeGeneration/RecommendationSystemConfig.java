@@ -14,13 +14,16 @@ public class RecommendationSystemConfig {
 	public static final int PRIZE_MATRIX_TRY_ONCE_COL_INDEX = 9;
 
 	// we need to put all the configuration in different modes
-	public static final String[] defaultMode = { "Walk_Km", "Bike_Km",
-			"BikeSharing_Km", "Walk_Trips", "Bike_Trips", "BikeSharing_Trips",
-			"ZeroImpact_Trips" };
-	public static final String[] defaultModetrip = { "Walk_Trips",
-			"Bike_Trips", "BikeSharing_Trips", "ZeroImpact_Trips" };
+	public static final String[] defaultMode = { "Bike_Km", "BikeSharing_Km",
+			"Bike_Trips", "BikeSharing_Trips" };
+	public static final String[] defaultModetrip = { "Bike_Trips",
+			"BikeSharing_Trips" };
 
 	public static final long PRIZE_MATRIX_APPROXIMATOR = 5;
+
+	// public static final String[] defaultMode = { "Walk_Km", "Bike_Km",
+	// "BikeSharing_Km", "Walk_Trips", "Bike_Trips", "BikeSharing_Trips",
+	// "ZeroImpact_Trips" };
 
 	// , "Bike_Trips", "BikeSharing_Trips", "Bus_Trips",
 	// "Train_Trips" };
@@ -33,7 +36,8 @@ public class RecommendationSystemConfig {
 	private static boolean init = false;
 	private static RecommendationSystemModeConfiguration modeConfiguration;
 
-	public static final boolean userFiltering = true;
+	public static final boolean userFiltering = false;
+	public static final boolean selectTopTwo = false;
 
 	public RecommendationSystemConfig() {
 		init();
@@ -43,20 +47,20 @@ public class RecommendationSystemConfig {
 		init = true;
 		// init recommendation system configuration
 		modeConfiguration = new RecommendationSystemModeConfiguration();
-		modeConfiguration.put("Walk_Km", new SingleModeConfig("Walk_Km", 10,
+		modeConfiguration.put("Walk_Km", new SingleModeConfig("Walk_Km", 1,
 				200, 300, 250));
 		modeConfiguration.put("Walk_Trips", new SingleModeConfig("Walk_Trips",
-				10, 150, 250, 200));
-		modeConfiguration.put("Bike_Km", new SingleModeConfig("Bike_Km", 10,
-				200, 300, 250));
+				1, 150, 250, 200));
 		modeConfiguration.put("Bike_Trips", new SingleModeConfig("Bike_Trips",
 				10, 200, 300, 250));
-		modeConfiguration.put("BikeSharing_Km", new SingleModeConfig(
-				"BikeSharing_Km", 10, 200, 300, 250));
+		modeConfiguration.put("Bike_Km", new SingleModeConfig("Bike_Km", 9,
+				200, 300, 250));
 		modeConfiguration.put("BikeSharing_Trips", new SingleModeConfig(
-				"BikeSharing_Trips", 10, 200, 300, 250));
+				"BikeSharing_Trips", 8, 200, 300, 250));
+		modeConfiguration.put("BikeSharing_Km", new SingleModeConfig(
+				"BikeSharing_Km", 7, 200, 300, 250));
 		modeConfiguration.put("ZeroImpact_Trips", new SingleModeConfig(
-				"ZeroImpact_Trips", 10, 100, 250, 150));
+				"ZeroImpact_Trips", 1, 100, 250, 150));
 
 		modeConfiguration.put("Bus_Km", new SingleModeConfig("Bus_Km", 1, 100,
 				250, 150));
