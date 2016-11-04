@@ -1,7 +1,7 @@
 NAME;TYPE;GOAL_TYPE;TARGET;BONUS;POINT_TYPE;DIFFICULTY;BASELINE_VARIABLE;SELECTION_CRITERIA_POINTS;SELECTION_CRITERIA_BADGES
-w9_leaderboard_top_20;leaderboardPosition;week classification test;1.0<20.0;400;green leaves;;;green leaves.weekly.current > 300 && green leaves.weekly.current < 600;
-w9_leaderboard_top_30;leaderboardPosition;week classification test;1.0<30.0;350;green leaves;;;green leaves.weekly.current > 100 && green leaves.weekly.current <= 300;
-w9_leaderboard_top_50;leaderboardPosition;week classification test;1.0<50.0;300;green leaves;;;green leaves.weekly.current <= 100;
+w9_leaderboard_top_20;leaderboardPosition;week 9 challenge classification;1.0<20.0;400;green leaves;;;green leaves.weekly.current > 300 && green leaves.weekly.current < 600;
+w9_leaderboard_top_30;leaderboardPosition;week 9 challenge classification;1.0<30.0;350;green leaves;;;green leaves.weekly.current > 100 && green leaves.weekly.current <= 300;
+w9_leaderboard_top_50;leaderboardPosition;week 9 challenge classification;1.0<50.0;300;green leaves;;;green leaves.weekly.current <= 100;
 w9_next_park_and_ride_pioneer_1;nextBadge;park and ride pioneer;1.0;200;green leaves;;;Car_Trips > 0;
 w9_next_bike_sharing_pioneer_2;nextBadge;bike sharing pioneer;2.0;200;green leaves;;;BikeSharing_Trips > 0 && BikeSharing_Trips < 5;
 w9_next_bike_sharing_pioneer_1;nextBadge;bike sharing pioneer;1.0;200;green leaves;;;BikeSharing_Trips >= 5 && BikeSharing_Trips < 20;
