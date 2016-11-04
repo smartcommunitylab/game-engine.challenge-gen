@@ -1,6 +1,6 @@
 NAME;TYPE;GOAL_TYPE;TARGET;BONUS;POINT_TYPE;DIFFICULTY;BASELINE_VARIABLE;SELECTION_CRITERIA_POINTS;SELECTION_CRITERIA_BADGES
-w9_leaderboard_top_20;leaderboardPosition;week 9 challenge classification;1.0<20.0;400;green leaves;;;green leaves.weekly.current > 400 && green leaves.weekly.current < 600;
-w9_leaderboard_top_30;leaderboardPosition;week 9 challenge classification;1.0<30.0;350;green leaves;;;green leaves.weekly.current > 200 && green leaves.weekly.current <= 400;
+w9_leaderboard_top_20;leaderboardPosition;week 9 challenge classification;1.0<20.0;350;green leaves;;;green leaves.weekly.current > 450 && green leaves.weekly.current < 700;
+w9_leaderboard_top_30;leaderboardPosition;week 9 challenge classification;1.0<30.0;350;green leaves;;;green leaves.weekly.current > 200 && green leaves.weekly.current <= 450;
 w9_leaderboard_top_50;leaderboardPosition;week 9 challenge classification;1.0<50.0;300;green leaves;;;green leaves.weekly.current <= 200;
 w9_next_park_and_ride_pioneer_1;nextBadge;park and ride pioneer;1.0;200;green leaves;;;Car_Trips > 0;
 w9_next_bike_sharing_pioneer_2;nextBadge;bike sharing pioneer;2.0;200;green leaves;;;BikeSharing_Trips > 0 && BikeSharing_Trips < 5;
@@ -12,4 +12,4 @@ w9_next_badge_sustainable_1;nextBadge;sustainable life;1.0;200;green leaves;;;Ze
 w9_recommendation_1;absoluteIncrement;Recommendations;1.0;300;green leaves;;;green leaves.weekly.current < 800;
 w9_recommendation_2;absoluteIncrement;Recommendations;2.0;300;green leaves;;;TRUE;
 w9_green_leaves_800;absoluteIncrement;green leaves;800.0;150;green leaves;;;green leaves.weekly.current < 800;
-w9_green_leaves_1000;absoluteIncrement;green leaves;1000.0;150;green leaves;;;TRUE;
+w9_green_leaves_1200;absoluteIncrement;green leaves;1200.0;150;green leaves;;;TRUE;
