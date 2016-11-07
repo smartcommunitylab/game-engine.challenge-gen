@@ -38,7 +38,6 @@ import eu.trentorise.game.challenges.rest.PointConcept;
 
 public class RecommendationSystemChallengeGenerationTest {
 
-	private static final boolean test = false;
 	private GamificationEngineRestFacade facade;
 
 	@Before
@@ -188,19 +187,6 @@ public class RecommendationSystemChallengeGenerationTest {
 			challengeIdToRemove.clear();
 		}
 
-		// remove duplicates ^
-
-		// select K-top challenges
-
-		// List<ChallengeDataDTO> KTopChallenge = new
-		// ArrayList<ChallengeDataDTO>();
-
-		// for (String key : filteredChallenges.keySet()) {
-
-		// }
-
-		// select K-top challenges
-
 		// printing out stuff, just for debug
 
 		ObjectMapper mapper = new ObjectMapper();
@@ -220,7 +206,6 @@ public class RecommendationSystemChallengeGenerationTest {
 		}
 
 		// Converting to CSV file
-		String log = "";
 		String msg = "";
 
 		// StringWriter OutputCsv=new StringWriter
@@ -246,9 +231,6 @@ public class RecommendationSystemChallengeGenerationTest {
 				System.out.println("Inserted challenge with Id "
 						+ dto.getInstanceName());
 
-				// String counter = (String) dto.getData().get("counterName");
-				// if (counter != null && !usedModes.contains(counter)) {
-				// usedModes.add(counter);
 				if (RecommendationSystemConfig.selectTopTwo) {
 					if (count.get(key) < 2) {
 						String counter = (String) dto.getData().get(
@@ -301,17 +283,6 @@ public class RecommendationSystemChallengeGenerationTest {
 
 		return buffer;
 	}
-
-	// private String getMode(String mode) {
-	// if (mode == null) {
-	// return "";
-	// }
-	// String[] t = mode.split("_");
-	// if (t == null) {
-	// return "";
-	// }
-	// return t[0];
-	// }
 
 	private List<LeaderboardPosition> buildLeaderBoard(List<Content> gameData) {
 		List<LeaderboardPosition> result = new ArrayList<LeaderboardPosition>();
