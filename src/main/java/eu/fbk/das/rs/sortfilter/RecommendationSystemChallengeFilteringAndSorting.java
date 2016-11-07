@@ -66,7 +66,6 @@ public class RecommendationSystemChallengeFilteringAndSorting {
 					percentageImprovment = 1.0;
 				}
 				Long prize = (Long) challenge.getData().get("bonusScore");
-				// System.out.println();
 				// calculating the WI for each mode based on weight of Mode and
 				// improvement percentage
 				wi = percentageImprovment * weight;
@@ -173,8 +172,6 @@ public class RecommendationSystemChallengeFilteringAndSorting {
 						}
 					}
 					if (count > 1) {
-						System.out.println();
-
 						challengeIdToRemove.add(idto);
 						count = 1;
 					}
