@@ -22,4 +22,9 @@ public class RecommendationSystemModeConfiguration {
 	public Set<String> getModeKeySet() {
 		return configuration.keySet();
 	}
+
+	@Override
+	public String toString() {
+		return configuration.toString();
+	}
 }

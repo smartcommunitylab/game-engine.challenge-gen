@@ -3,6 +3,7 @@ package eu.fbk.das.rs.sortfilter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -11,8 +12,22 @@ import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 
 public class RecommendationSystemChallengeFilteringAndSorting {
 
-	public RecommendationSystemChallengeFilteringAndSorting() {
+	private RecommendationSystemConfig configuration;
 
+	/**
+	 * Create a new recommandation system challenge filtering and sorting
+	 * 
+	 * @param configuration
+	 * @throws IllegalArgumentException
+	 *             if configuration is null
+	 */
+	public RecommendationSystemChallengeFilteringAndSorting(
+			RecommendationSystemConfig configuration) {
+		if (configuration == null) {
+			throw new IllegalArgumentException(
+					"Recommandation system configuration must be not null");
+		}
+		this.configuration = configuration;
 	}
 
 	public Map<String, List<ChallengeDataDTO>> filterAndSort(
@@ -25,7 +40,6 @@ public class RecommendationSystemChallengeFilteringAndSorting {
 			// in the leader board and not improving
 			List<ChallengeDataDTO> improvingLeaderboard = new ArrayList<ChallengeDataDTO>();
 			List<ChallengeDataDTO> notImprovingLeaderboard = new ArrayList<ChallengeDataDTO>();
-			int counternotImp = 0;
 			for (ChallengeDataDTO challenge : evaluatedChallenges.get(playerId)) {
 				Double baseline = (Double) challenge.getData().get("baseline");
 				Double target = 0.0;
@@ -35,9 +49,8 @@ public class RecommendationSystemChallengeFilteringAndSorting {
 				} else {
 					target = (Double) challenge.getData().get("target");
 				}
-				Integer weight = RecommendationSystemConfig
-						.getWeight((String) challenge.getData().get(
-								"counterName"));
+				Integer weight = configuration.getWeight((String) challenge
+						.getData().get("counterName"));
 				Double percentageImprovment = 0.0;
 				if (baseline != null) {
 					if (challenge.getModelName().equals("percentageIncrement")) {
@@ -84,13 +97,9 @@ public class RecommendationSystemChallengeFilteringAndSorting {
 			// sorting both lists
 			Collections
 					.sort(improvingLeaderboard, new DifficultyWiComparator());
-			// TODO : we have to test the sorting
 			Collections.sort(notImprovingLeaderboard,
 					new DifficultyPrizeComparator());
 
-			if (notImprovingLeaderboard.size() == 1) {
-				System.out.println();
-			}
 			// add for first the improving leaderboard challenges
 			if (!improvingLeaderboard.isEmpty()) {
 				result.get(playerId).addAll(improvingLeaderboard);
@@ -98,22 +107,8 @@ public class RecommendationSystemChallengeFilteringAndSorting {
 			if (!notImprovingLeaderboard.isEmpty()) {
 				result.get(playerId).addAll(notImprovingLeaderboard);
 
-				// System.out.println(playerId + "" + "Not Improvement" +
-				// counternotImp + 1);
-
-			}
-			// to find and monitor the list of notImprovement challenges
-			if (!notImprovingLeaderboard.isEmpty()) {
-
-				System.out.println(playerId + " " + "NotIm:"
-						+ notImprovingLeaderboard.size() + "--" + "Improv:"
-						+ improvingLeaderboard.size());
-
 			}
 		}
-
-		// TODO; add the filter
-
 		return result;
 	}
 
@@ -141,6 +136,55 @@ public class RecommendationSystemChallengeFilteringAndSorting {
 			}
 		}
 		return null;
+	}
+
+	public Map<String, List<ChallengeDataDTO>> removeDuplicates(
+			Map<String, List<ChallengeDataDTO>> filteredChallenges) {
+		List<ChallengeDataDTO> challengeIdToRemove = new ArrayList<ChallengeDataDTO>();
+		for (String key : filteredChallenges.keySet()) {
+
+			Iterator<ChallengeDataDTO> iter = filteredChallenges.get(key)
+					.iterator();
+			while (iter.hasNext()) {
+				ChallengeDataDTO dto = iter.next();
+				Iterator<ChallengeDataDTO> innerIter = filteredChallenges.get(
+						key).iterator();
+				int count = 0;
+				while (innerIter.hasNext()) {
+					ChallengeDataDTO idto = innerIter.next();
+
+					if (dto.getModelName().equals(idto.getModelName())
+							&& dto.getData().get("counterName")
+									.equals(idto.getData().get("counterName"))) {
+						double t = 0;
+						double ti = 0;
+						if (dto.getData().get("target") instanceof Double) {
+							t = (Double) dto.getData().get("target");
+						} else {
+							t = (Integer) dto.getData().get("target");
+						}
+						if (idto.getData().get("target") instanceof Double) {
+							ti = (Double) idto.getData().get("target");
+						} else {
+							ti = (Integer) idto.getData().get("target");
+						}
+						if (t == ti) {
+							count++;
+						}
+					}
+					if (count > 1) {
+						System.out.println();
+
+						challengeIdToRemove.add(idto);
+						count = 1;
+					}
+				}
+
+			}
+			filteredChallenges.get(key).removeAll(challengeIdToRemove);
+			challengeIdToRemove.clear();
+		}
+		return filteredChallenges;
 	}
 
 }

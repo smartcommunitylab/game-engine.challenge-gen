@@ -8,42 +8,33 @@ import static eu.trentorise.challenge.PropertiesUtil.USERNAME;
 import static eu.trentorise.challenge.PropertiesUtil.get;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import eu.fbk.das.rs.challengeGeneration.RecommendationSystem;
 import eu.fbk.das.rs.challengeGeneration.RecommendationSystemChallengeGeneration;
 import eu.fbk.das.rs.challengeGeneration.RecommendationSystemConfig;
-import eu.fbk.das.rs.sortfilter.LeaderboardPosition;
 import eu.fbk.das.rs.sortfilter.RecommendationSystemChallengeFilteringAndSorting;
-import eu.fbk.das.rs.valuator.DifficultyCalculator;
 import eu.fbk.das.rs.valuator.RecommendationSystemChallengeValuator;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import eu.trentorise.game.challenges.rest.Content;
 import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
-import eu.trentorise.game.challenges.rest.PointConcept;
 
 public class RecommendationSystemChallengeGenerationTest {
 
 	private GamificationEngineRestFacade facade;
+	private RecommendationSystemConfig configuration;
 
 	@Before
 	public void setup() {
 		facade = new GamificationEngineRestFacade(get(HOST) + get(CONTEXT),
 				get(USERNAME), get(PASSWORD));
+		configuration = new RecommendationSystemConfig();
 	}
 
 	@Test
@@ -67,7 +58,8 @@ public class RecommendationSystemChallengeGenerationTest {
 		assertTrue(facade != null);
 		List<Content> gameData = facade.readGameState(get(GAMEID));
 		// create all challenges combinations
-		RecommendationSystemChallengeGeneration rs = new RecommendationSystemChallengeGeneration();
+		RecommendationSystemChallengeGeneration rs = new RecommendationSystemChallengeGeneration(
+				configuration);
 		Map<String, List<ChallengeDataDTO>> challengeCombinations = rs
 				.generate(gameData);
 
@@ -80,11 +72,13 @@ public class RecommendationSystemChallengeGenerationTest {
 	 */
 	public void challengeValuator() {
 		List<Content> gameData = facade.readGameState(get(GAMEID));
-		RecommendationSystemChallengeGeneration rs = new RecommendationSystemChallengeGeneration();
+		RecommendationSystemChallengeGeneration rs = new RecommendationSystemChallengeGeneration(
+				configuration);
 		Map<String, List<ChallengeDataDTO>> challengeCombinations = rs
 				.generate(gameData);
 		// evaluate all challenges
-		RecommendationSystemChallengeValuator valuator = new RecommendationSystemChallengeValuator();
+		RecommendationSystemChallengeValuator valuator = new RecommendationSystemChallengeValuator(
+				configuration);
 
 		Map<String, List<ChallengeDataDTO>> evaluatedChallenges = valuator
 				.valuate(challengeCombinations, gameData);
@@ -93,226 +87,53 @@ public class RecommendationSystemChallengeGenerationTest {
 	}
 
 	@Test
-	/**
-	 * Sort and filter challenges using difficulty and prize
-	 */
-	public void challengeSortAndFiltering() {
-		List<Content> gameData = facade.readGameState(get(GAMEID));
-		List<Content> listofContent = new ArrayList<Content>();
-		for (Content c : gameData) {
-			if (RecommendationSystemConfig.userFiltering) {
-				if (RecommendationSystemConfig.getPlayerIds().contains(
-						c.getPlayerId())) {
-					listofContent.add(c);
-				}
-			} else {
-				listofContent.add(c);
-			}
-		}
-
-		RecommendationSystemChallengeGeneration rs = new RecommendationSystemChallengeGeneration();
-		Map<String, List<ChallengeDataDTO>> challengeCombinations = rs
-				.generate(listofContent);
-		RecommendationSystemChallengeValuator valuator = new RecommendationSystemChallengeValuator();
-		Map<String, List<ChallengeDataDTO>> evaluatedChallenges = valuator
-				.valuate(challengeCombinations, listofContent);
-
-		// build a leaderboard, for now is the current, to be parameterized for
-		// weekly or general leaderboard
-		List<LeaderboardPosition> leaderboard = buildLeaderBoard(listofContent);
-		Collections.sort(leaderboard);
-		int index = 0;
-		for (LeaderboardPosition pos : leaderboard) {
-			pos.setIndex(index);
-			index++;
-		}
-
-		RecommendationSystemChallengeFilteringAndSorting filtering = new RecommendationSystemChallengeFilteringAndSorting();
-		Map<String, List<ChallengeDataDTO>> filteredChallenges = filtering
-				.filterAndSort(evaluatedChallenges, leaderboard);
-
-		assertTrue(filteredChallenges != null);
-
-		// filtering
-
-		// remove duplicates
-
-		List<ChallengeDataDTO> challengeIdToRemove = new ArrayList<ChallengeDataDTO>();
-		for (String key : filteredChallenges.keySet()) { // upload and assign
-															// challenge
-			Iterator<ChallengeDataDTO> iter = filteredChallenges.get(key)
-					.iterator();
-			while (iter.hasNext()) {
-				ChallengeDataDTO dto = iter.next();
-				Iterator<ChallengeDataDTO> innerIter = filteredChallenges.get(
-						key).iterator();
-				int count = 0;
-				System.out.println("current counter: "
-						+ dto.getData().get("counterName"));
-				if (dto.getData().get("counterName").equals("Walk_Trips")) {
-					System.out.println();
-				}
-				while (innerIter.hasNext()) {
-					ChallengeDataDTO idto = innerIter.next();
-
-					if (dto.getModelName().equals(idto.getModelName())
-							&& dto.getData().get("counterName")
-									.equals(idto.getData().get("counterName"))) {
-						double t = 0;
-						double ti = 0;
-						if (dto.getData().get("target") instanceof Double) {
-							t = (Double) dto.getData().get("target");
-						} else {
-							t = (Integer) dto.getData().get("target");
-						}
-						if (idto.getData().get("target") instanceof Double) {
-							ti = (Double) idto.getData().get("target");
-						} else {
-							ti = (Integer) idto.getData().get("target");
-						}
-						if (t == ti) {
-							count++;
-						}
-					}
-					if (count > 1) {
-						System.out.println();
-
-						challengeIdToRemove.add(idto);
-						count = 1;
-					}
-				}
-
-			}
-			filteredChallenges.get(key).removeAll(challengeIdToRemove);
-			challengeIdToRemove.clear();
-		}
-
-		// printing out stuff, just for debug
-
-		ObjectMapper mapper = new ObjectMapper();
-		FileOutputStream oout;
-
-		try {
-			oout = new FileOutputStream(new File("generatedChallenges.json"));
-			IOUtils.write(mapper.writeValueAsString(filteredChallenges), oout);
-
-			oout.flush();
-		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		// Converting to CSV file
-		String msg = "";
-
-		// StringWriter OutputCsv=new StringWriter
-		StringBuffer buffer = new StringBuffer();
-		buffer.append("PLAYER_ID;"
-				+ "CHALLENGE_TYPE_NAME;"
-				+ "CHALLENGE_NAME;"
-				+ "MODE;MODE_WEIGHT;DIFFICULTY;WI;BONUS_SCORE;BASELINE;TARGET;PERCENTAGE;TOP_TEN;\n");
-
-		Map<String, Integer> count = new HashMap<String, Integer>();
-
-		for (String key : filteredChallenges.keySet()) {
-			// upload and assign challenge
-			if (count.get(key) == null) {
-				count.put(key, 0);
-			}
-
-			// filter used modes
-			List<String> usedModes = new ArrayList<String>();
-
-			for (ChallengeDataDTO dto : filteredChallenges.get(key)) {
-
-				System.out.println("Inserted challenge with Id "
-						+ dto.getInstanceName());
-
-				if (RecommendationSystemConfig.selectTopTwo) {
-					if (count.get(key) < 2) {
-						String counter = (String) dto.getData().get(
-								"counterName");
-						if (counter != null && !usedModes.contains(counter)) {
-							usedModes.add(counter);
-							count.put(key, count.get(key) + 1);
-							buffer = buildBuffer(buffer, key, dto, true);
-						}
-					} else {
-						break;
-					}
-				} else {
-					buffer = buildBuffer(buffer, key, dto, true);
-				}
-			}
-
-		}
-
-		try {
-			FileOutputStream out = new FileOutputStream(
-					"reportGeneratedChallenges.csv");
-			IOUtils.write(buffer.toString(), out);
-			if (out != null) {
-				out.close();
-			}
-		} catch (IOException e) {
-			System.err.println("Error in writing the report");
-		}
-		System.out.println(msg);
-
-		// Converting to CSV file
-	}
-
-	private StringBuffer buildBuffer(StringBuffer buffer, String key,
-			ChallengeDataDTO dto, boolean flag) {
-		buffer.append(key + ";");
-		buffer.append(dto.getModelName() + ";");
-		buffer.append(dto.getInstanceName() + ";");
-		buffer.append(dto.getData().get("counterName") + ";");
-		buffer.append(RecommendationSystemConfig.getWeight((String) dto
-				.getData().get("counterName")) + ";");
-		buffer.append(dto.getData().get("difficulty") + ";");
-		buffer.append(dto.getData().get("wi") + ";");
-		buffer.append(dto.getData().get("bonusScore") + ";");
-		buffer.append(dto.getData().get("baseline") + ";");
-		buffer.append(dto.getData().get("target") + ";");
-		buffer.append(dto.getData().get("percentage") + ";");
-		buffer.append(flag + ";\n");
-
-		return buffer;
-	}
-
-	private List<LeaderboardPosition> buildLeaderBoard(List<Content> gameData) {
-		List<LeaderboardPosition> result = new ArrayList<LeaderboardPosition>();
-		for (Content content : gameData) {
-			for (PointConcept pc : content.getState().getPointConcept()) {
-				if (pc.getName().equals("green leaves")) {
-					Integer score = (int) Math.round(pc
-							.getPeriodCurrentScore("weekly"));
-					result.add(new LeaderboardPosition(score, content
-							.getPlayerId()));
-				}
-			}
-		}
-		return result;
+	public void configurationFilteringTest() {
+		// at least two users for filtering
+		RecommendationSystemConfig rc = new RecommendationSystemConfig();
+		assertTrue(rc.isUserfiltering() && rc.getPlayerIds().size() > 2);
 	}
 
 	@Test
-	public void testDifficulty() {
-		Map<Integer, Double> quartiles = new HashMap<Integer, Double>();
-		quartiles.put(4, 3.99);
-		quartiles.put(7, 12.516551);
-		quartiles.put(9, 30.51);
-		Double baseline = 1.2;
-		Double target = 60.43;
-		Integer difficulty = DifficultyCalculator.computeDifficulty(quartiles,
-				baseline, target);
-		System.out.println("Difficulty: " + difficulty);
-		assertTrue(difficulty == DifficultyCalculator.MEDIUM);
+	/**
+	 * Sort and filter challenges using difficulty and prize
+	 */
+	public void recommendationSystemTest() throws IOException {
+		RecommendationSystem rs = new RecommendationSystem();
+		Map<String, List<ChallengeDataDTO>> result = rs.recommendation();
+		rs.writeToFile(result);
+		assertTrue(!result.isEmpty());
+	}
 
-		// .... we can check more cases..
+	@Test(expected = IllegalArgumentException.class)
+	public void generatorNullConfigTest() throws IOException {
+		@SuppressWarnings("unused")
+		RecommendationSystemChallengeGeneration rg = new RecommendationSystemChallengeGeneration(
+				null);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void valuatorNullConfigTest() throws IOException {
+		@SuppressWarnings("unused")
+		RecommendationSystemChallengeValuator rv = new RecommendationSystemChallengeValuator(
+				null);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void valuatorSortConfigTest() throws IOException {
+		@SuppressWarnings("unused")
+		RecommendationSystemChallengeFilteringAndSorting rs = new RecommendationSystemChallengeFilteringAndSorting(
+				null);
+	}
+
+	@Test
+	public void generatorContentEmptyTest() throws IOException {
+		RecommendationSystemConfig configuration = new RecommendationSystemConfig();
+		RecommendationSystemChallengeGeneration rg = new RecommendationSystemChallengeGeneration(
+				configuration);
+		List<Content> input = new ArrayList<Content>();
+		Map<String, List<ChallengeDataDTO>> result = rg.generate(input);
+
+		assertTrue(result.isEmpty());
 	}
 
 }

@@ -19,11 +19,24 @@ import eu.trentorise.game.challenges.rest.PointConcept.PeriodInternal;
 public class RecommendationSystemChallengeValuator {
 
 	private Map<String, PlanePointFunction> prizeMatrixMap = new HashMap<String, PlanePointFunction>();
+	private RecommendationSystemConfig configuration;
 
-	public RecommendationSystemChallengeValuator() {
-		for (String mode : RecommendationSystemConfig.getModeKeySet()) {
-			SingleModeConfig config = RecommendationSystemConfig
-					.getModeConfig(mode);
+	/**
+	 * Create a new recommandation system challenge valuator
+	 * 
+	 * @param configuration
+	 * @throws IllegalArgumentException
+	 *             if configuration is null
+	 */
+	public RecommendationSystemChallengeValuator(
+			RecommendationSystemConfig configuration) {
+		if (configuration == null) {
+			throw new IllegalArgumentException(
+					"Recommandation system configuration must be not null");
+		}
+		this.configuration = configuration;
+		for (String mode : configuration.getModeKeySet()) {
+			SingleModeConfig config = configuration.getModeConfig(mode);
 			PlanePointFunction matrix = new PlanePointFunction(
 					RecommendationSystemConfig.PRIZE_MATRIX_NROW,
 					RecommendationSystemConfig.PRIZE_MATRIX_NCOL,
@@ -38,9 +51,9 @@ public class RecommendationSystemChallengeValuator {
 			Map<String, List<ChallengeDataDTO>> combinations,
 			List<Content> input) {
 
-		for (int i = 0; i < RecommendationSystemConfig.defaultMode.length; i++) {
+		for (int i = 0; i < configuration.getDefaultMode().length; i++) {
 
-			String mode = RecommendationSystemConfig.defaultMode[i];
+			String mode = configuration.getDefaultMode()[i];
 
 			// String mode = RecommendationSystemConfig.defaultMode[i];
 			List<Double> activePlayersvalues = new ArrayList<Double>();
@@ -52,9 +65,6 @@ public class RecommendationSystemChallengeValuator {
 					// (RecommendationSystemConfig.getPlayerIds().contains(content.getPlayerId()))
 					// {
 					if (pc.getName().equals(mode)) {
-						if (mode == "Bus_Km") {
-							// System.out.println(mode);
-						}
 						for (String period : pc.getPeriods().keySet()) {
 							PeriodInternal periodInstance = pc.getPeriods()
 									.get(period);
@@ -73,23 +83,7 @@ public class RecommendationSystemChallengeValuator {
 				// }
 
 			}
-
 			Collections.sort(activePlayersvalues);
-			// ObjectMapper mapper = new ObjectMapper();
-			// FileOutputStream oout;
-			// try {
-			// oout = new FileOutputStream(new
-			// File("/Users/rezakhoshkangini/Documents/data.json"));
-			// IOUtils.write(mapper.writeValueAsString(activePlayersvalues),
-			// oout);
-			// oout.flush();
-			// } catch (JsonProcessingException e) {
-			// // TODO Auto-generated catch block
-			// e.printStackTrace();
-			// } catch (IOException e) {
-			// // TODO Auto-generated catch block
-			// e.printStackTrace();
-			// }
 
 			// finding the percentiles of mode walk "weekly" from start to
 			// now
@@ -98,38 +92,19 @@ public class RecommendationSystemChallengeValuator {
 
 			System.out.println(mode);
 
-			// if (mode == "Bus_Km") {
-			// System.out.println(mode);
-			// }
-			// System.out.println(activePlayersvalues);
-
 			for (String playerId : combinations.keySet()) {
 
-				// List<ChallengeDataDTO> toSave = new
-				// ArrayList<ChallengeDataDTO>();
 				List<ChallengeDataDTO> challenges = combinations.get(playerId);
 
 				for (ChallengeDataDTO challenge : challenges) {
-					if (mode == "ZeroImpact_Trips" && playerId.equals("23515")) {
-						System.out.println(mode);
-					}
-					// System.out.println(challenge.getData().get("counterName"));
-					// if (challenge.getData().get("counterName").equals(mode)
-					// && playerId.equals("24502")) {
-					// System.out.println(mode);
-					// }
 					String counterName = (String) challenge.getData().get(
 							"counterName");
-					if (isSameOf(counterName, mode)) {
-
+					if (counterName.equals(mode)) {
 						if (challenge.getModelName() == "percentageIncrement") {
 							Double baseline = (Double) challenge.getData().get(
 									"baseline");
 							Double target = (Double) challenge.getData().get(
 									"target");
-							// Integer zone =
-							// DifficultyCalculator.computeZone(quartiles,
-							// baseline);
 							Integer difficulty = DifficultyCalculator
 									.computeDifficulty(quartiles, baseline,
 											target);
@@ -159,27 +134,10 @@ public class RecommendationSystemChallengeValuator {
 
 				}
 				combinations.put(playerId, challenges);
-
 			}
-
 		}
-
-		combinations.get("24502");
-
 		return combinations;
 
-	}
-
-	private boolean isSameOf(String v, String mode) {
-		if (v.equals(mode)) {
-			return true;
-		}
-		// if (v.contains("_") && mode.contains("_")) {
-		// String[] s = v.split("_");
-		// String[] m = mode.split("_");
-		// return s[0].equals(m[0]);
-		// }
-		return false;
 	}
 
 	private long calculatePrize(Integer difficulty, double percent,

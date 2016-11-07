@@ -1,5 +1,8 @@
 package eu.fbk.das.rs.challengeGeneration;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Convenience class for mode configuration for
  * {@link RecommendationSystemConfig}
@@ -62,4 +65,15 @@ public class SingleModeConfig {
 		this.modeName = modeName;
 	}
 
+	@Override
+	public String toString() {
+		// return this class fields as a map
+		Map<String, Object> result = new HashMap<String, Object>();
+		result.put("modeName", modeName);
+		result.put("weight", weight);
+		result.put("prizeMatrixMin", prizeMatrixMin);
+		result.put("prizeMatrixMax", prizeMatrixMax);
+		result.put("prizeMatrixIntermediate", prizeMatrixIntermediate);
+		return result.toString();
+	}
 }

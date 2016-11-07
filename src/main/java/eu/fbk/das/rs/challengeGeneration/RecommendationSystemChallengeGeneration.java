@@ -12,18 +12,34 @@ import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import eu.trentorise.game.challenges.rest.Content;
 import eu.trentorise.game.challenges.rest.PointConcept;
 
+/**
+ * RecommendationSystem challenge generation module: generate all possible
+ * challenges using provided {@link RecommendationSystemConfig}
+ */
 public class RecommendationSystemChallengeGeneration {
 
-	// defining different improvement percentage 10%,20%, etc.
-	private Double[] percentage = { 0.1, 0.2, 0.3, 0.5, 1.0 };
-	// the number of percentages
-	private int percentageNumber = 5;
 	// define a variable that the player should improve its mode
 	private double improvementValue = 0;
 	// define a temporary variable to save the improvement
 	private double tmpValueimprovment = 0;
+	// configuration
+	private RecommendationSystemConfig configuration;
 
-	//
+	/**
+	 * Create a new recommandation system challenge generator
+	 * 
+	 * @param configuration
+	 * @throws IllegalArgumentException
+	 *             if configuration is null
+	 */
+	public RecommendationSystemChallengeGeneration(
+			RecommendationSystemConfig configuration) {
+		if (configuration == null) {
+			throw new IllegalArgumentException(
+					"Recommandation system configuration must be not null");
+		}
+		this.configuration = configuration;
+	}
 
 	public Map<String, List<ChallengeDataDTO>> generate(List<Content> input) {
 		Map<String, List<ChallengeDataDTO>> output = new HashMap<String, List<ChallengeDataDTO>>();
@@ -31,9 +47,9 @@ public class RecommendationSystemChallengeGeneration {
 		HashMap<String, Double> playerScore = new HashMap<>();
 		for (Content content : input) {
 			// filter users
-			if (RecommendationSystemConfig.userFiltering) {
-				if (RecommendationSystemConfig.getPlayerIds().contains(
-						content.getPlayerId())) {
+			if (configuration.isUserfiltering()) {
+				if (configuration.getPlayerIds()
+						.contains(content.getPlayerId())) {
 					modeValues = buildModeValues(modeValues, playerScore,
 							content);
 				}
@@ -46,25 +62,19 @@ public class RecommendationSystemChallengeGeneration {
 		LocalDate now = new LocalDate();
 
 		for (String mode : modeValues.keySet()) {
-
-			System.out.println("mode=" + "" + mode);
 			for (String playerId : modeValues.get(mode).keySet()) {
 				if (output.get(playerId) == null) {
 					output.put(playerId, new ArrayList<ChallengeDataDTO>());
 				}
-				if (playerId.equals("23897")) {
-					System.out.println();
-				}
-
 				Double modeCounter = modeValues.get(mode).get(playerId);
 				if (modeCounter > 0) {
 
 					// generate different types of challenges by percentage
-					for (int i = 0; i < percentageNumber; i++) {
+					for (int i = 0; i < configuration.getPercentage().length; i++) {
 						// calculating the improvement of last week activity
-						tmpValueimprovment = percentage[i] * modeCounter;
+						tmpValueimprovment = configuration.getPercentage()[i]
+								* modeCounter;
 						if (mode.endsWith("_Trips")) {
-
 							improvementValue = tmpValueimprovment + modeCounter;
 							improvementValue = round(improvementValue);
 						} else {
@@ -83,7 +93,7 @@ public class RecommendationSystemChallengeGeneration {
 						data.put("baseline", modeCounter);
 						data.put("counterName", mode);
 						data.put("periodName", "weekly");
-						data.put("percentage", percentage[i]);
+						data.put("percentage", configuration.getPercentage()[i]);
 						cdd.setData(data);
 						output.get(playerId).add(cdd);
 					}
@@ -114,14 +124,13 @@ public class RecommendationSystemChallengeGeneration {
 			HashMap<String, HashMap<String, Double>> modeValues,
 			HashMap<String, Double> playerScore, Content content) {
 		// retrieving the players' last week data "weekly"
-		for (int i = 0; i < RecommendationSystemConfig.defaultMode.length; i++) {
+		for (int i = 0; i < configuration.getDefaultMode().length; i++) {
 
-			String mode = RecommendationSystemConfig.defaultMode[i];
+			String mode = configuration.getDefaultMode()[i];
 			for (PointConcept pc : content.getState().getPointConcept()) {
 				if (pc.getName().equals(mode)) {
 					Double score = pc.getPeriodCurrentScore("weekly");
 					playerScore.put(content.getPlayerId(), score);
-					// System.out.println(mode + ":" + score);
 				}
 			}
 			if (modeValues.get(mode) == null) {
@@ -139,8 +148,8 @@ public class RecommendationSystemChallengeGeneration {
 	}
 
 	private boolean isDefaultMode(String mode) {
-		for (int i = 0; i < RecommendationSystemConfig.defaultModetrip.length; i++) {
-			String m = RecommendationSystemConfig.defaultModetrip[i];
+		for (int i = 0; i < configuration.getDefaultModetrip().length; i++) {
+			String m = configuration.getDefaultModetrip()[i];
 			if (m == mode) {
 				return true;
 			}

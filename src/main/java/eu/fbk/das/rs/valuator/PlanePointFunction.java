@@ -1,5 +1,8 @@
 package eu.fbk.das.rs.valuator;
 
+/**
+ * Plane point function
+ */
 public class PlanePointFunction {
 
 	private int nrow;
