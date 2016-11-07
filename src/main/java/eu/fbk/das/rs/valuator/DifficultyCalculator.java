@@ -9,7 +9,24 @@ public class DifficultyCalculator {
 	public final static Integer HARD = 3;
 	public final static Integer VERY_HARD = 4;
 
-	public static Integer computeDifficulty(Map<Integer, Double> quartiles, Double baseline, Double target) {
+	/**
+	 * @param quartiles
+	 * @param baseline
+	 * @param target
+	 * @return computed difficulty valye for given input
+	 * @throws if
+	 *             inputs are null
+	 */
+	public static Integer computeDifficulty(Map<Integer, Double> quartiles,
+			Double baseline, Double target) {
+		if (quartiles == null || baseline == null || target == null) {
+			throw new IllegalArgumentException("All input must be not null");
+		}
+		if (quartiles.get(4) == null || quartiles.get(7) == null
+				|| quartiles.get(9) == null) {
+			throw new IllegalArgumentException(
+					"Quartiles that must be defined: 4,7,9");
+		}
 		double virtualValue = quartiles.get(9) - quartiles.get(7);
 
 		double values[] = new double[6];
@@ -22,7 +39,6 @@ public class DifficultyCalculator {
 
 		Integer zone = computeZone(values, baseline);
 		Integer targetZone = computeZone(values, target);
-		System.out.println("targetZone=" + targetZone);
 
 		Integer diffZone = targetZone - zone;
 		if (diffZone == 0) {
@@ -35,60 +51,6 @@ public class DifficultyCalculator {
 			return HARD;
 		}
 		return VERY_HARD;
-
-		// if (zone == 1) {
-		// if (targetZone == zone) {
-		// return EASY;
-		// } else if (targetZone - zone == 1) {
-		// return MEDIUM;
-		// } else if (targetZone - zone == 2) {
-		// return HARD;
-		// } else if (targetZone - zone == 3) {
-		// return VERY_HARD;
-		// }
-		// } else if (zone == 2) {
-		// if (targetZone == zone) {
-		// return EASY;
-		// } else if (targetZone - zone == 1) {
-		// return MEDIUM;
-		// } else if (targetZone - zone == 2) {
-		// return HARD;
-		// } else if (target >= virtualValue * 2) {
-		// return VERY_HARD;
-		// } else {
-		// System.out.println("error during compute diffficulty! for 2");
-		// }
-		// }
-		//
-		// else if (zone == 3) {
-		// if (targetZone == zone) {
-		// return EASY;
-		// } else if (targetZone - zone == 1) {
-		// return MEDIUM;
-		// } else if (target >= virtualValue * 2 && target < virtualValue * 3) {
-		// return HARD;
-		// } else if (target >= virtualValue * 3) {
-		// return VERY_HARD;
-		// }
-		//
-		// else {
-		// System.out.println("error during compute diffficulty! for 3");
-		// }
-		//
-		// } else if (zone == 4) {
-		// if (target < virtualValue) {
-		// return EASY;
-		// } else if (target >= virtualValue * 2 && target < virtualValue * 3) {
-		// return MEDIUM;
-		// } else if (target >= virtualValue * 3 && target < virtualValue * 4) {
-		// return HARD;
-		// } else if (target >= virtualValue * 4) {
-		// return VERY_HARD;
-		// } else {
-		// System.out.println("error during compute diffficulty! for 4");
-		// }
-		// }
-		// return EASY;
 	}
 
 	private static Integer computeZone(double[] values, Double baseline) {
