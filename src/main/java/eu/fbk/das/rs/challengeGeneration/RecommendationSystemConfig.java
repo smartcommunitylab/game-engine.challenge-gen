@@ -82,7 +82,6 @@ public class RecommendationSystemConfig {
 	}
 
 	public Integer getWeight(String key) {
-		System.out.println("key>" + key);
 		return modeConfiguration.get(key).getWeight();
 	}
 
