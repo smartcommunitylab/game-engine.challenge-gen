@@ -90,8 +90,6 @@ public class RecommendationSystemChallengeValuator {
 			Map<Integer, Double> quartiles = Quantiles.scale(10)
 					.indexes(4, 7, 9).compute(activePlayersvalues);
 
-			System.out.println(mode);
-
 			for (String playerId : combinations.keySet()) {
 
 				List<ChallengeDataDTO> challenges = combinations.get(playerId);
@@ -108,9 +106,10 @@ public class RecommendationSystemChallengeValuator {
 							Integer difficulty = DifficultyCalculator
 									.computeDifficulty(quartiles, baseline,
 											target);
-							System.out.println("Challenge baseline=" + baseline
-									+ ", target=" + target + " difficulty="
-									+ difficulty);
+							// System.out.println("Challenge baseline=" +
+							// baseline
+							// + ", target=" + target + " difficulty="
+							// + difficulty);
 							challenge.getData().put("difficulty", difficulty);
 
 							double d = (double) challenge.getData().get(
