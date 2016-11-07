@@ -61,7 +61,6 @@ public class PlanePointFunction {
 						* approximator;
 			}
 		}
-		System.out.println();
 	}
 
 	public long get(int x, int y) {
