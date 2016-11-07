@@ -47,11 +47,19 @@ public class RecommendationSystem {
 	private GamificationEngineRestFacade facade;
 	private RecommendationSystemConfig configuration;
 	private Map<String, List<ChallengeDataDTO>> toWriteChallenge = new HashMap<String, List<ChallengeDataDTO>>();
+	private RecommendationSystemChallengeGeneration generator;
+	private RecommendationSystemChallengeValuator valuator;
+	private RecommendationSystemChallengeFilteringAndSorting filtering;
 
 	public RecommendationSystem() {
 		facade = new GamificationEngineRestFacade(get(HOST) + get(CONTEXT),
 				get(USERNAME), get(PASSWORD));
 		configuration = new RecommendationSystemConfig();
+		generator = new RecommendationSystemChallengeGeneration(configuration);
+		valuator = new RecommendationSystemChallengeValuator(configuration);
+		filtering = new RecommendationSystemChallengeFilteringAndSorting(
+				configuration);
+
 	}
 
 	/**
@@ -66,6 +74,7 @@ public class RecommendationSystem {
 	 */
 	public Map<String, List<ChallengeDataDTO>> recommendation()
 			throws NullPointerException {
+		System.out.println("Reading game data from gamification engine");
 		List<Content> gameData = facade.readGameState(get(GAMEID));
 		if (gameData == null) {
 			throw new NullPointerException(
@@ -81,12 +90,9 @@ public class RecommendationSystem {
 				listofContent.add(c);
 			}
 		}
-		RecommendationSystemChallengeGeneration rs = new RecommendationSystemChallengeGeneration(
-				configuration);
-		Map<String, List<ChallengeDataDTO>> challengeCombinations = rs
+		System.out.println("Generating challenges");
+		Map<String, List<ChallengeDataDTO>> challengeCombinations = generator
 				.generate(listofContent);
-		RecommendationSystemChallengeValuator valuator = new RecommendationSystemChallengeValuator(
-				configuration);
 		Map<String, List<ChallengeDataDTO>> evaluatedChallenges = valuator
 				.valuate(challengeCombinations, listofContent);
 
@@ -101,8 +107,7 @@ public class RecommendationSystem {
 		}
 
 		// filtering
-		RecommendationSystemChallengeFilteringAndSorting filtering = new RecommendationSystemChallengeFilteringAndSorting(
-				configuration);
+		System.out.println("Filtering challenges");
 		Map<String, List<ChallengeDataDTO>> filteredChallenges = filtering
 				.filterAndSort(evaluatedChallenges, leaderboard);
 
@@ -125,9 +130,6 @@ public class RecommendationSystem {
 
 			for (ChallengeDataDTO dto : filteredChallenges.get(key)) {
 
-				System.out.println("Inserted challenge with Id "
-						+ dto.getInstanceName());
-
 				if (configuration.isSelecttoptwo()) {
 					if (count.get(key) < 2) {
 						String counter = (String) dto.getData().get(
@@ -145,6 +147,7 @@ public class RecommendationSystem {
 				}
 			}
 		}
+		System.out.println("Generated challenges " + toWriteChallenge.size());
 		return toWriteChallenge;
 	}
 
@@ -206,6 +209,7 @@ public class RecommendationSystem {
 		workbook.write(new FileOutputStream(new File(
 				"reportGeneratedChallenges.xlsx")));
 		workbook.close();
+		System.out.println("written reportGeneratedChallenges.xlsx");
 
 		// print configuration
 		ObjectMapper mapper = new ObjectMapper();
@@ -220,6 +224,8 @@ public class RecommendationSystem {
 			IOUtils.write(mapper.writeValueAsString(configuration), oout);
 
 			oout.flush();
+			System.out
+					.println("written recommendationSystemConfiguration.json");
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
