@@ -1,5 +1,8 @@
 package eu.fbk.das.rs.sortfilter;
 
+/**
+ * LeaderboardPosition class used for leaderboard creation
+ */
 public class LeaderboardPosition implements Comparable<LeaderboardPosition> {
 
 	private Integer score;

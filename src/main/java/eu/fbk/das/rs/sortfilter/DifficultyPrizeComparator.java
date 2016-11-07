@@ -34,21 +34,6 @@ public class DifficultyPrizeComparator implements Comparator<ChallengeDataDTO> {
 			return -1;
 		}
 		return 0;
-
-		//
-		// if (difficulty1 == difficulty2 && bonusScore1 == bonusScore2 && wi1
-		// == wi2) {
-		// return 0;
-		// } else if (difficulty1 == difficulty2 && bonusScore1 > bonusScore2) {
-		// return -1;
-		// } else if (difficulty1 == difficulty2 && bonusScore1 < bonusScore2) {
-		// return 1;
-		// } else if (difficulty1 > difficulty2) {
-		// return 1;
-		// } else if (difficulty1 < difficulty2) {
-		// return -1;
-		// }
-		// return 0;
 	}
 
 }
