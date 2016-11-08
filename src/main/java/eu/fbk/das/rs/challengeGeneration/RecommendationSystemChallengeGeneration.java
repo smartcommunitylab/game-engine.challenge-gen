@@ -90,7 +90,13 @@ public class RecommendationSystemChallengeGeneration {
 						challengeNum++;
 						ChallengeDataDTO cdd = new ChallengeDataDTO();
 						cdd.setModelName("percentageIncrement");
-						cdd.setInstanceName("InstanceName" + UUID.randomUUID());
+						cdd.setInstanceName(configuration
+								.getChallengeNamePrefix()
+								+ mode
+								+ "_"
+								+ configuration.getPercentage()[i]
+								+ "_"
+								+ UUID.randomUUID());
 						cdd.setStart(now.dayOfMonth().addToCopy(1).toDate());
 						cdd.setEnd(now.dayOfMonth().addToCopy(7).toDate());
 						Map<String, Object> data = new HashMap<String, Object>();
@@ -110,7 +116,11 @@ public class RecommendationSystemChallengeGeneration {
 						// build a try once
 						ChallengeDataDTO cdd = new ChallengeDataDTO();
 						cdd.setModelName("absoluteIncrement");
-						cdd.setInstanceName("InstanceName" + UUID.randomUUID());
+						cdd.setInstanceName(configuration
+								.getChallengeNamePrefix()
+								+ mode
+								+ "_try_"
+								+ UUID.randomUUID());
 						cdd.setStart(now.dayOfMonth().addToCopy(1).toDate());
 						cdd.setEnd(now.dayOfMonth().addToCopy(7).toDate());
 						Map<String, Object> data = new HashMap<String, Object>();
