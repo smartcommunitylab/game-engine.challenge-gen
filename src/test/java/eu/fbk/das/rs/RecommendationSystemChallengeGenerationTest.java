@@ -90,7 +90,8 @@ public class RecommendationSystemChallengeGenerationTest {
 	public void configurationFilteringTest() {
 		// at least two users for filtering
 		RecommendationSystemConfig rc = new RecommendationSystemConfig();
-		assertTrue(rc.isUserfiltering() && rc.getPlayerIds().size() > 2);
+		assertTrue(!rc.isUserfiltering()
+				|| (rc.isUserfiltering() && rc.getPlayerIds().size() > 2));
 	}
 
 	@Test
