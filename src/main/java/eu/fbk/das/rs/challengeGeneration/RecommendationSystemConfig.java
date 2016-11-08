@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import eu.trentorise.challenge.PropertiesUtil;
+
 /**
  * RecommendationSystem configuration main class
  */
@@ -20,7 +22,7 @@ public class RecommendationSystemConfig {
 	public static final long PRIZE_MATRIX_APPROXIMATOR = 5;
 
 	// Enable default users filtering
-	private static final boolean userFiltering = true;
+	private static final boolean userFiltering = false;
 	// Enable select top 2 challenges
 	private static final boolean selectTopTwo = true;
 
@@ -42,6 +44,7 @@ public class RecommendationSystemConfig {
 
 	// recommendation system configuration
 	private RecommendationSystemModeConfiguration modeConfiguration;
+	private String challengeNamePrefix = "w10_rs_";
 
 	public RecommendationSystemConfig() {
 		init();
@@ -77,8 +80,11 @@ public class RecommendationSystemConfig {
 
 		// list of default player ids
 		playerIds = new ArrayList<String>();
-		Collections.addAll(playerIds, "7", "17741", "11125", "23897", "23515",
-				"19092", "2795", "24502", "23513");
+		String filteringIds = PropertiesUtil.get(PropertiesUtil.FILTERING);
+		if (filteringIds != null && !filteringIds.isEmpty()
+				&& filteringIds.contains(",")) {
+			Collections.addAll(playerIds, filteringIds.split(","));
+		}
 	}
 
 	public Integer getWeight(String key) {
@@ -136,6 +142,10 @@ public class RecommendationSystemConfig {
 			}
 		}
 		return false;
+	}
+
+	public String getChallengeNamePrefix() {
+		return challengeNamePrefix;
 	}
 
 }
