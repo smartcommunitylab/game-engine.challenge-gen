@@ -7,10 +7,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import eu.fbk.das.rs.challengeGeneration.RecommendationSystemConfig;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 
 public class RecommendationSystemChallengeFilteringAndSorting {
+
+	private static final Logger logger = LogManager
+			.getLogger(RecommendationSystemChallengeFilteringAndSorting.class);
 
 	private RecommendationSystemConfig configuration;
 
@@ -28,6 +34,7 @@ public class RecommendationSystemChallengeFilteringAndSorting {
 					"Recommandation system configuration must be not null");
 		}
 		this.configuration = configuration;
+		logger.debug("RecommendationSystemChallengeFilteringAndSorting init complete");
 	}
 
 	public Map<String, List<ChallengeDataDTO>> filterAndSort(
@@ -108,6 +115,8 @@ public class RecommendationSystemChallengeFilteringAndSorting {
 
 			}
 		}
+		logger.debug("Filtering and sorting complete for "
+				+ result.keySet().size() + " players");
 		return result;
 	}
 

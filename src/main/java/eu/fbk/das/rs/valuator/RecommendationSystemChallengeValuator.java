@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.google.common.math.Quantiles;
 
 import eu.fbk.das.rs.challengeGeneration.RecommendationSystemConfig;
@@ -18,6 +21,12 @@ import eu.trentorise.game.challenges.rest.PointConcept.PeriodInternal;
 
 public class RecommendationSystemChallengeValuator {
 
+	private static final Logger logger = LogManager
+			.getLogger(RecommendationSystemChallengeValuator.class);
+
+	/**
+	 * Prize Matrix for each mode
+	 */
 	private Map<String, PlanePointFunction> prizeMatrixMap = new HashMap<String, PlanePointFunction>();
 	private RecommendationSystemConfig configuration;
 
@@ -45,17 +54,18 @@ public class RecommendationSystemChallengeValuator {
 					RecommendationSystemConfig.PRIZE_MATRIX_APPROXIMATOR);
 			prizeMatrixMap.put(mode, matrix);
 		}
+		logger.debug("RecommendationSystemChallengeValuator init complete");
 	}
 
 	public Map<String, List<ChallengeDataDTO>> valuate(
 			Map<String, List<ChallengeDataDTO>> combinations,
 			List<Content> input) {
 
+		int challengeNum = 0;
 		for (int i = 0; i < configuration.getDefaultMode().length; i++) {
 
 			String mode = configuration.getDefaultMode()[i];
 
-			// String mode = RecommendationSystemConfig.defaultMode[i];
 			List<Double> activePlayersvalues = new ArrayList<Double>();
 			//
 			for (Content content : input) {
@@ -106,8 +116,6 @@ public class RecommendationSystemChallengeValuator {
 							Integer difficulty = DifficultyCalculator
 									.computeDifficulty(quartiles, baseline,
 											target);
-							// System.out.println("Challenge baseline=" +
-							// baseline
 							// + ", target=" + target + " difficulty="
 							// + difficulty);
 							challenge.getData().put("difficulty", difficulty);
@@ -128,13 +136,12 @@ public class RecommendationSystemChallengeValuator {
 											RecommendationSystemConfig.PRIZE_MATRIX_TRY_ONCE_COL_INDEX);
 							challenge.getData().put("bonusScore", tryOnceBonus);
 						}
-
 					}
-
 				}
 				combinations.put(playerId, challenges);
 			}
 		}
+		logger.info("Challenge valuation completed ");
 		return combinations;
 
 	}

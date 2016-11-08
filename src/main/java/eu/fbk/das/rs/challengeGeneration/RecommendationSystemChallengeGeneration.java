@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.LocalDate;
 
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
@@ -17,6 +19,9 @@ import eu.trentorise.game.challenges.rest.PointConcept;
  * challenges using provided {@link RecommendationSystemConfig}
  */
 public class RecommendationSystemChallengeGeneration {
+
+	private static final Logger logger = LogManager
+			.getLogger(RecommendationSystem.class);
 
 	// define a variable that the player should improve its mode
 	private double improvementValue = 0;
@@ -39,6 +44,7 @@ public class RecommendationSystemChallengeGeneration {
 					"Recommandation system configuration must be not null");
 		}
 		this.configuration = configuration;
+		logger.debug("RecommendationSystemChallengeGeneration init complete");
 	}
 
 	public Map<String, List<ChallengeDataDTO>> generate(List<Content> input) {
@@ -61,6 +67,7 @@ public class RecommendationSystemChallengeGeneration {
 
 		LocalDate now = new LocalDate();
 
+		int challengeNum = 0;
 		for (String mode : modeValues.keySet()) {
 			for (String playerId : modeValues.get(mode).keySet()) {
 				if (output.get(playerId) == null) {
@@ -76,11 +83,11 @@ public class RecommendationSystemChallengeGeneration {
 								* modeCounter;
 						if (mode.endsWith("_Trips")) {
 							improvementValue = tmpValueimprovment + modeCounter;
-							improvementValue = round(improvementValue);
+							improvementValue = Math.round(improvementValue);
 						} else {
 							improvementValue = tmpValueimprovment + modeCounter;
 						}
-
+						challengeNum++;
 						ChallengeDataDTO cdd = new ChallengeDataDTO();
 						cdd.setModelName("percentageIncrement");
 						cdd.setInstanceName("InstanceName" + UUID.randomUUID());
@@ -98,7 +105,8 @@ public class RecommendationSystemChallengeGeneration {
 						output.get(playerId).add(cdd);
 					}
 				} else {
-					if (isDefaultMode(mode)) {
+					if (configuration.isDefaultMode(mode)) {
+						challengeNum++;
 						// build a try once
 						ChallengeDataDTO cdd = new ChallengeDataDTO();
 						cdd.setModelName("absoluteIncrement");
@@ -117,6 +125,7 @@ public class RecommendationSystemChallengeGeneration {
 				}
 			}
 		}
+		logger.debug("generated challenges : " + challengeNum);
 		return output;
 	}
 
@@ -139,22 +148,6 @@ public class RecommendationSystemChallengeGeneration {
 			modeValues.get(mode).putAll(playerScore);
 		}
 		return modeValues;
-	}
-
-	// round the improvement trip number
-	private double round(double improvementValue2) {
-		// TODO Auto-generated method stub
-		return Math.round(improvementValue2);
-	}
-
-	private boolean isDefaultMode(String mode) {
-		for (int i = 0; i < configuration.getDefaultModetrip().length; i++) {
-			String m = configuration.getDefaultModetrip()[i];
-			if (m == mode) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 }

@@ -121,4 +121,21 @@ public class RecommendationSystemConfig {
 		return percentage;
 	}
 
+	/**
+	 * @param mode
+	 * @return true if input mode is a default mode trip
+	 */
+	public boolean isDefaultMode(String mode) {
+		if (mode == null) {
+			return false;
+		}
+		for (int i = 0; i < getDefaultModetrip().length; i++) {
+			String m = getDefaultModetrip()[i];
+			if (m == mode) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 }

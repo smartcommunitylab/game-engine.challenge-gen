@@ -105,6 +105,12 @@ public class RecommendationSystemChallengeGenerationTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
+	public void recommendationSystemWriteNullChallenges() throws IOException {
+		RecommendationSystem rs = new RecommendationSystem();
+		rs.writeToFile(null);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
 	public void generatorNullConfigTest() throws IOException {
 		@SuppressWarnings("unused")
 		RecommendationSystemChallengeGeneration rg = new RecommendationSystemChallengeGeneration(
@@ -134,6 +140,12 @@ public class RecommendationSystemChallengeGenerationTest {
 		Map<String, List<ChallengeDataDTO>> result = rg.generate(input);
 
 		assertTrue(result.isEmpty());
+	}
+
+	@Test
+	public void testConfigIsModeNull() throws IOException {
+		RecommendationSystemConfig rc = new RecommendationSystemConfig();
+		assertTrue(!rc.isDefaultMode(null));
 	}
 
 }

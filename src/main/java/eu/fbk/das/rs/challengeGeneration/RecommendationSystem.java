@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -44,6 +46,9 @@ import eu.trentorise.game.challenges.util.ExcelUtil;
  */
 public class RecommendationSystem {
 
+	private static final Logger logger = LogManager
+			.getLogger(RecommendationSystem.class);
+
 	private GamificationEngineRestFacade facade;
 	private RecommendationSystemConfig configuration;
 	private Map<String, List<ChallengeDataDTO>> toWriteChallenge = new HashMap<String, List<ChallengeDataDTO>>();
@@ -59,7 +64,7 @@ public class RecommendationSystem {
 		valuator = new RecommendationSystemChallengeValuator(configuration);
 		filtering = new RecommendationSystemChallengeFilteringAndSorting(
 				configuration);
-
+		logger.debug("Recommendation System init complete");
 	}
 
 	/**
@@ -74,7 +79,7 @@ public class RecommendationSystem {
 	 */
 	public Map<String, List<ChallengeDataDTO>> recommendation()
 			throws NullPointerException {
-		System.out.println("Reading game data from gamification engine");
+		logger.debug("Reading game data from gamification engine");
 		List<Content> gameData = facade.readGameState(get(GAMEID));
 		if (gameData == null) {
 			throw new NullPointerException(
@@ -90,7 +95,7 @@ public class RecommendationSystem {
 				listofContent.add(c);
 			}
 		}
-		System.out.println("Generating challenges");
+		logger.debug("Generating challenges");
 		Map<String, List<ChallengeDataDTO>> challengeCombinations = generator
 				.generate(listofContent);
 		Map<String, List<ChallengeDataDTO>> evaluatedChallenges = valuator
@@ -107,7 +112,7 @@ public class RecommendationSystem {
 		}
 
 		// filtering
-		System.out.println("Filtering challenges");
+		logger.debug("Filtering challenges");
 		Map<String, List<ChallengeDataDTO>> filteredChallenges = filtering
 				.filterAndSort(evaluatedChallenges, leaderboard);
 
@@ -147,7 +152,7 @@ public class RecommendationSystem {
 				}
 			}
 		}
-		System.out.println("Generated challenges " + toWriteChallenge.size());
+		logger.debug("Generated challenges " + toWriteChallenge.size());
 		return toWriteChallenge;
 	}
 
@@ -181,6 +186,10 @@ public class RecommendationSystem {
 	 */
 	public void writeToFile(Map<String, List<ChallengeDataDTO>> toWriteChallenge)
 			throws FileNotFoundException, IOException {
+		if (toWriteChallenge == null) {
+			throw new IllegalArgumentException(
+					"Impossible to write null or empty challenges");
+		}
 		// Get the workbook instance for XLS file
 		Workbook workbook = new XSSFWorkbook();
 
@@ -209,7 +218,7 @@ public class RecommendationSystem {
 		workbook.write(new FileOutputStream(new File(
 				"reportGeneratedChallenges.xlsx")));
 		workbook.close();
-		System.out.println("written reportGeneratedChallenges.xlsx");
+		logger.info("written reportGeneratedChallenges.xlsx");
 
 		// print configuration
 		ObjectMapper mapper = new ObjectMapper();
@@ -224,8 +233,7 @@ public class RecommendationSystem {
 			IOUtils.write(mapper.writeValueAsString(configuration), oout);
 
 			oout.flush();
-			System.out
-					.println("written recommendationSystemConfiguration.json");
+			logger.info("written recommendationSystemConfiguration.json");
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
