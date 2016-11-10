@@ -126,8 +126,8 @@ public class RestTest {
 		toWrite.append("PLAYER_ID;SCORE_GREEN_LEAVES;" + customNames + "\n");
 		for (Content content : result) {
 			toWrite.append(content.getPlayerId() + ";"
-					+ getScore(content, "green leaves") + ";"
-					+ getCustomData(content, false)// +
+					+ getScore(content, "green leaves", true) + ";"
+					+ getCustomData(content, true)// +
 													// getChalengesStatus(content)
 					+ "\n");
 
@@ -148,11 +148,16 @@ public class RestTest {
 			}
 		});
 
+		if (content.getPlayerId().equals("2795")) {
+			System.out.println();
+		}
+
 		Iterator<PointConcept> iter = concepts.iterator();
 		while (iter.hasNext()) {
 			PointConcept pc = iter.next();
 			if (weekly) {
 				result += pc.getPeriodPreviousScore("weekly") + ";";
+				// result += pc.getPeriodCurrentScore("weekly") + ";";
 			} else {
 				result += pc.getScore() + ";";
 			}
@@ -160,10 +165,13 @@ public class RestTest {
 		return result;
 	}
 
-	private Double getScore(Content content, String points) {
+	private Double getScore(Content content, String points, boolean previous) {
 		for (PointConcept pc : content.getState().getPointConcept()) {
 			if (pc.getName().equalsIgnoreCase(points)) {
-				return pc.getScore();
+				if (previous) {
+					return pc.getPeriodPreviousScore("weekly");
+				}
+				return pc.getPeriodCurrentScore("weekly");
 			}
 		}
 		return null;
@@ -193,7 +201,7 @@ public class RestTest {
 				+ "\n");
 
 		for (Content user : result) {
-			if (getScore(user, "green leaves") > 0) {
+			if (getScore(user, "green leaves", false) > 0) {
 				for (ChallengeConcept cc : user.getState()
 						.getChallengeConcept()) {
 					toWrite.append(user.getPlayerId() + ";");
