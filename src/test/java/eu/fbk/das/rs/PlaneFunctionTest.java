@@ -21,13 +21,12 @@ public class PlaneFunctionTest {
 	public void setup() {
 		this.nrow = 4;
 		this.ncol = 10;
-		this.min = 100;
-		this.max = 250;
-		this.intermediate = 150;
-		this.approximator = 5;
+		this.min = 150;
+		this.max = 300;
+		this.intermediate = 200;
+		this.approximator = 10;
 
-		this.ppf = new PlanePointFunction(nrow, ncol, min, max, intermediate,
-				approximator);
+		this.ppf = new PlanePointFunction(nrow, ncol, min, max, intermediate, approximator);
 	}
 
 	@Test
@@ -37,8 +36,7 @@ public class PlaneFunctionTest {
 
 	@Test
 	public void maxPlaneFunctionTest() {
-		assertTrue(ppf.get(ppf.getNrow() - 1, ppf.getNcol() - 1) == ppf
-				.getMax());
+		assertTrue(ppf.get(ppf.getNrow() - 1, ppf.getNcol() - 1) == ppf.getMax());
 	}
 
 	@Test
