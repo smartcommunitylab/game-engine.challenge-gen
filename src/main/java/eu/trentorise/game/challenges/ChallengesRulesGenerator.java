@@ -82,20 +82,35 @@ public class ChallengesRulesGenerator {
 		for (Content user : users) {
 			// create a challenge for user only under a specific limit
 			if (getChallenges(user.getPlayerId()) < challengeLimitNumber) {
-				params.put(Constants.NAME, challengeSpec.getName());
+				params.put(Constants.NAME,
+						StringUtils.trim(challengeSpec.getName()));
 				params.put(Constants.BONUS_POINT_TYPE,
-						challengeSpec.getPointType());
+						StringUtils.trim(challengeSpec.getPointType()));
 				params.put(Constants.BONUS_SCORE, challengeSpec.getBonus());
 				params.put(Constants.PERIOD_NAME, "weekly");
-				params.put(Constants.GOAL_TYPE, challengeSpec.getGoalType());
+				params.put(Constants.GOAL_TYPE,
+						StringUtils.trim(challengeSpec.getGoalType()));
 				params.put(Constants.START_DATE, startDate);
 				params.put(Constants.END_DATE, endDate);
-				params.put(Constants.TARGET, challengeSpec.getTarget());
-				if (challengeSpec.getTarget() instanceof Double) {
-					targetValue = (Double) challengeSpec.getTarget();
-				} else {
-					targetValue = Double.valueOf((String) challengeSpec
-							.getTarget());
+				if (challengeSpec.getTarget() != null) {
+					if (challengeSpec.getTarget() instanceof String) {
+						// speecial case for leaderboardPosition challenge
+						if (((String) challengeSpec.getTarget())
+								.contains(Constants.MIN_MAX_SEPARATOR)) {
+							params.put(Constants.TARGET,
+									challengeSpec.getTarget());
+						}
+					} else {
+						params.put(Constants.TARGET, challengeSpec.getTarget());
+						if (challengeSpec.getTarget() instanceof Double) {
+							targetValue = (Double) challengeSpec.getTarget();
+						} else {
+							String v = (String) challengeSpec.getTarget();
+							if (!v.isEmpty()) {
+								targetValue = Double.valueOf(v);
+							}
+						}
+					}
 				}
 				if (challengeSpec.getBaselineVar() != null
 						&& !challengeSpec.getBaselineVar().isEmpty()) {

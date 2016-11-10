@@ -143,6 +143,7 @@ public class UploaderTool {
 		System.out.println(msg);
 		log += msg + "\n";
 		boolean r = false;
+		// upload every challenge
 		for (ChallengeDataInternalDto ch : challenges) {
 			// upload and assign challenge
 			tot++;
@@ -154,14 +155,14 @@ public class UploaderTool {
 						+ e.getMessage();
 				System.out.println(msg);
 				log += msg + "\n";
-				return null;
+				return log;
 			}
 			if (!r) {
 				msg = "Error in uploading challenge instance "
 						+ ch.getDto().getInstanceName();
 				System.out.println(msg);
 				log += msg + "\n";
-				return null;
+				return log;
 			} else {
 				System.out.println("Inserted challenge with Id "
 						+ ch.getDto().getInstanceName());
@@ -180,7 +181,7 @@ public class UploaderTool {
 			msg = "Error in writing report.csv file";
 			System.out.println(msg);
 			log += msg + "\n";
-			return null;
+			return log;
 		}
 		msg = "Inserted challenges " + tot + "\n"
 				+ "Challenges upload completed";

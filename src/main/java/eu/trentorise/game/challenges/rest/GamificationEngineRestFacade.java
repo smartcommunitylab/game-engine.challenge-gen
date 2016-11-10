@@ -188,7 +188,8 @@ public class GamificationEngineRestFacade {
 			logger.debug("response code: " + response.getStatus());
 			return true;
 		}
-		logger.error("response code: " + response.getStatus());
+		logger.error("response code: " + response.getStatus() + " , reason="
+				+ response.getStatusInfo().getReasonPhrase());
 		return false;
 	}
 
@@ -202,7 +203,8 @@ public class GamificationEngineRestFacade {
 			logger.debug("response code: " + response.getStatus());
 			return true;
 		}
-		logger.error("response code: " + response.getStatus());
+		logger.error("response code: " + response.getStatus() + " , reason="
+				+ response.getStatusInfo().getReasonPhrase());
 		return false;
 	}
 
@@ -233,7 +235,8 @@ public class GamificationEngineRestFacade {
 			logger.debug("response code: " + response.getStatus());
 			return true;
 		}
-		logger.error("response code: " + response.getStatus());
+		logger.error("response code: " + response.getStatus() + " , reason="
+				+ response.getStatusInfo().getReasonPhrase());
 		return false;
 	}
 
@@ -247,7 +250,8 @@ public class GamificationEngineRestFacade {
 			logger.debug("response code: " + response.getStatus());
 			return true;
 		}
-		logger.error("response code: " + response.getStatus());
+		logger.error("response code: " + response.getStatus() + " , reason="
+				+ response.getStatusInfo().getReasonPhrase());
 		return false;
 	}
 
@@ -262,7 +266,8 @@ public class GamificationEngineRestFacade {
 			logger.debug("response code: " + response.getStatus());
 			return true;
 		}
-		logger.error("response code: " + response.getStatus());
+		logger.error("response code: " + response.getStatus() + " , reason="
+				+ response.getStatusInfo().getReasonPhrase());
 		return false;
 	}
 
@@ -279,7 +284,8 @@ public class GamificationEngineRestFacade {
 			logger.debug("response code: " + response.getStatus());
 			return true;
 		}
-		logger.error("response code: " + response.getStatus());
+		logger.error("response code: " + response.getStatus() + " , reason="
+				+ response.getStatusInfo().getReasonPhrase());
 		return false;
 	}
 
@@ -295,7 +301,8 @@ public class GamificationEngineRestFacade {
 					.readEntity(Set.class);
 			return result;
 		}
-		logger.error("response code: " + response.getStatus());
+		logger.error("response code: " + response.getStatus() + " , reason="
+				+ response.getStatusInfo().getReasonPhrase());
 		return new HashSet<ChallengeModel>();
 	}
 }
