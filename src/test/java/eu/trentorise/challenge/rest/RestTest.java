@@ -148,10 +148,6 @@ public class RestTest {
 			}
 		});
 
-		if (content.getPlayerId().equals("2795")) {
-			System.out.println();
-		}
-
 		Iterator<PointConcept> iter = concepts.iterator();
 		while (iter.hasNext()) {
 			PointConcept pc = iter.next();

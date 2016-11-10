@@ -79,9 +79,6 @@ public class ChallengesRulesGenerator {
 		Double baseLineValue = 0d;
 		// get right challenge
 		for (Content user : users) {
-			if (user.getPlayerId().equals("3")) {
-				System.out.println();
-			}
 			// create a challenge for user only under a specific limit
 			if (getChallenges(user.getPlayerId()) < challengeLimitNumber) {
 				params.put(Constants.NAME,
