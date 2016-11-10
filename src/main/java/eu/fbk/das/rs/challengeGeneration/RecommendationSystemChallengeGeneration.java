@@ -67,7 +67,7 @@ public class RecommendationSystemChallengeGeneration {
 
 		LocalDate now = new LocalDate();
 
-		int challengeNum = 0;
+		int playersNum = 0;
 		for (String mode : modeValues.keySet()) {
 			for (String playerId : modeValues.get(mode).keySet()) {
 				if (output.get(playerId) == null) {
@@ -87,7 +87,7 @@ public class RecommendationSystemChallengeGeneration {
 						} else {
 							improvementValue = tmpValueimprovment + modeCounter;
 						}
-						challengeNum++;
+						playersNum++;
 						ChallengeDataDTO cdd = new ChallengeDataDTO();
 						cdd.setModelName("percentageIncrement");
 						cdd.setInstanceName(configuration
@@ -112,7 +112,7 @@ public class RecommendationSystemChallengeGeneration {
 					}
 				} else {
 					if (configuration.isDefaultMode(mode)) {
-						challengeNum++;
+						playersNum++;
 						// build a try once
 						ChallengeDataDTO cdd = new ChallengeDataDTO();
 						cdd.setModelName("absoluteIncrement");
@@ -135,7 +135,7 @@ public class RecommendationSystemChallengeGeneration {
 				}
 			}
 		}
-		logger.debug("generated challenges : " + challengeNum);
+		logger.debug("players used from challenge generation : " + playersNum);
 		return output;
 	}
 
