@@ -47,7 +47,6 @@ public class ChallengesRulesGenerator {
 
 	public ChallengesRulesGenerator(ChallengeInstanceFactory factory,
 			String reportName, String outputName) throws IOException {
-		// this.playerIdCustomData = new HashMap<String, Map<String, Object>>();
 		this.factory = factory;
 		this.challenges = new ArrayList<ChallengeDataInternalDto>();
 		// prepare report output
@@ -73,13 +72,16 @@ public class ChallengesRulesGenerator {
 			List<Content> users, Date startDate, Date endDate)
 			throws UndefinedChallengeException, IOException {
 		logger.debug("ChallengesRulesGenerator - started");
+		this.reportBuffer = new StringBuffer();
+
 		Map<String, Object> params = new HashMap<String, Object>();
-		reportBuffer = new StringBuffer();
-		// playerIdCustomData.clear();
 		Double targetValue = 0d;
 		Double baseLineValue = 0d;
 		// get right challenge
 		for (Content user : users) {
+			if (user.getPlayerId().equals("3")) {
+				System.out.println();
+			}
 			// create a challenge for user only under a specific limit
 			if (getChallenges(user.getPlayerId()) < challengeLimitNumber) {
 				params.put(Constants.NAME,
@@ -148,8 +150,6 @@ public class ChallengesRulesGenerator {
 						+ challengeSpec.getBonus() + ";"
 						+ challengeSpec.getPointType() + ";"
 						+ cdd.getInstanceName() + "\n");
-				// save custom data for user for later use
-				// playerIdCustomData.put(user.getPlayerId(), cdd.getData());
 
 				// increase challenge number for user
 				increaseChallenge(user.getPlayerId());
@@ -222,4 +222,68 @@ public class ChallengesRulesGenerator {
 		closeStream();
 	}
 
+	/**
+	 * Before challenge generation, add a set of challenges and use them before
+	 * actual challenge generation
+	 * 
+	 * @param rsChallenges
+	 * @param gameId
+	 * @throws IOException
+	 */
+	public void setChallenges(Map<String, List<ChallengeDataDTO>> rsChallenges,
+			String gameId) throws IOException {
+		if (reportBuffer == null) {
+			reportBuffer = new StringBuffer();
+		}
+		// update generated challenges list
+		for (String playerId : rsChallenges.keySet()) {
+			if (rsChallenges.get(playerId) != null) {
+				for (ChallengeDataDTO challenge : rsChallenges.get(playerId)) {
+					ChallengeDataInternalDto cdit = new ChallengeDataInternalDto();
+					cdit.setPlayerId(playerId);
+					cdit.setGameId(gameId);
+					cdit.setDto(challenge);
+					increaseChallenge(playerId);
+					// buffer
+					reportBuffer
+							.append(playerId
+									+ ";"
+									+ challenge.getData().get("challengeName")
+									+ ";"
+									+ challenge.getModelName()
+									+ ";"
+									+ "goalType"
+									+ ";"
+									+ (challenge.getData().containsKey(
+											"baseline") ? challenge.getData()
+											.get("baseline") : 0)
+									+ ";"
+									+ (challenge.getData().containsKey(
+											"baseline") ? challenge.getData()
+											.get("baseline") : challenge
+											.getData().get("target")) + ";"
+									+ challenge.getData().get("bonusScore")
+									+ ";"
+									+ challenge.getData().get("bonusPointType")
+									+ ";" + challenge.getInstanceName() + "\n");
+					removeUnusedData(cdit);
+					challenges.add(cdit);
+				}
+			}
+		}
+		// write to the file
+		IOUtils.write(reportBuffer.toString(), fout);
+	}
+
+	private void removeUnusedData(ChallengeDataInternalDto cdit) {
+		// during recommandation system challenge generation we save some data
+		// into challenge data structure, we need to remove it (ie. for now
+		// challengeName
+		if (cdit.getDto() != null && cdit.getDto().getData() != null) {
+			if (cdit.getDto().getData().containsKey("challengeName")) {
+				cdit.getDto().getData().remove("challengeName");
+			}
+		}
+
+	}
 }

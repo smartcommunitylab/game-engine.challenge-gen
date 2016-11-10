@@ -1,12 +1,5 @@
 package eu.fbk.das.rs.challengeGeneration;
 
-import static eu.trentorise.challenge.PropertiesUtil.CONTEXT;
-import static eu.trentorise.challenge.PropertiesUtil.GAMEID;
-import static eu.trentorise.challenge.PropertiesUtil.HOST;
-import static eu.trentorise.challenge.PropertiesUtil.PASSWORD;
-import static eu.trentorise.challenge.PropertiesUtil.USERNAME;
-import static eu.trentorise.challenge.PropertiesUtil.get;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -56,10 +49,8 @@ public class RecommendationSystem {
 	private RecommendationSystemChallengeValuator valuator;
 	private RecommendationSystemChallengeFilteringAndSorting filtering;
 
-	public RecommendationSystem() {
-		facade = new GamificationEngineRestFacade(get(HOST) + get(CONTEXT),
-				get(USERNAME), get(PASSWORD));
-		configuration = new RecommendationSystemConfig();
+	public RecommendationSystem(RecommendationSystemConfig configuration) {
+		this.configuration = configuration;
 		generator = new RecommendationSystemChallengeGeneration(configuration);
 		valuator = new RecommendationSystemChallengeValuator(configuration);
 		filtering = new RecommendationSystemChallengeFilteringAndSorting(
@@ -77,13 +68,36 @@ public class RecommendationSystem {
 	 * @throws NullPointerException
 	 *             when data from gamification engine is null
 	 */
-	public Map<String, List<ChallengeDataDTO>> recommendation()
-			throws NullPointerException {
+	public Map<String, List<ChallengeDataDTO>> recommendation(String host,
+			String context, String username, String password, String gameId) {
+		facade = new GamificationEngineRestFacade(host + context, username,
+				password);
 		logger.debug("Reading game data from gamification engine");
-		List<Content> gameData = facade.readGameState(get(GAMEID));
+		List<Content> gameData = facade.readGameState(gameId);
 		if (gameData == null) {
 			throw new NullPointerException(
 					"No game data from Gamification Engine");
+		}
+		return recommendation(gameData);
+	}
+
+	/**
+	 * Generate challenges using {@link RecommendationSystemChallengeGeneration}
+	 * then {@link RecommendationSystemChallengeValuator} and
+	 * {@link RecommendationSystemChallengeFilteringAndSorting} modules
+	 * 
+	 * @param gameData
+	 *            game data from gamification engine
+	 * @return a {@link Map} of generated challenges, where key is playerId and
+	 *         value is a {@link List} of {@link ChallengeDataDTO}
+	 * @throws NullPointerException
+	 *             when data from gamification engine is null
+	 */
+	public Map<String, List<ChallengeDataDTO>> recommendation(
+			List<Content> gameData) throws NullPointerException {
+		logger.info("Recommendation system challenge generation start");
+		if (gameData == null) {
+			throw new IllegalArgumentException("gameData must be not null");
 		}
 		List<Content> listofContent = new ArrayList<Content>();
 		for (Content c : gameData) {
@@ -152,7 +166,7 @@ public class RecommendationSystem {
 				}
 			}
 		}
-		logger.debug("Generated challenges " + toWriteChallenge.size());
+		logger.info("Generated challenges " + toWriteChallenge.size());
 		return toWriteChallenge;
 	}
 

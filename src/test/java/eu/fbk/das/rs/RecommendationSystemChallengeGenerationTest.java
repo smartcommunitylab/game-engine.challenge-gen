@@ -21,6 +21,7 @@ import eu.fbk.das.rs.challengeGeneration.RecommendationSystemChallengeGeneration
 import eu.fbk.das.rs.challengeGeneration.RecommendationSystemConfig;
 import eu.fbk.das.rs.sortfilter.RecommendationSystemChallengeFilteringAndSorting;
 import eu.fbk.das.rs.valuator.RecommendationSystemChallengeValuator;
+import eu.trentorise.challenge.PropertiesUtil;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import eu.trentorise.game.challenges.rest.Content;
 import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
@@ -34,7 +35,8 @@ public class RecommendationSystemChallengeGenerationTest {
 	public void setup() {
 		facade = new GamificationEngineRestFacade(get(HOST) + get(CONTEXT),
 				get(USERNAME), get(PASSWORD));
-		configuration = new RecommendationSystemConfig();
+		configuration = new RecommendationSystemConfig(
+				get(PropertiesUtil.FILTERING));
 	}
 
 	@Test
@@ -89,7 +91,8 @@ public class RecommendationSystemChallengeGenerationTest {
 	@Test
 	public void configurationFilteringTest() {
 		// at least two users for filtering
-		RecommendationSystemConfig rc = new RecommendationSystemConfig();
+		RecommendationSystemConfig rc = new RecommendationSystemConfig(
+				get(PropertiesUtil.FILTERING));
 		assertTrue(!rc.isUserfiltering()
 				|| (rc.isUserfiltering() && rc.getPlayerIds().size() > 2));
 	}
@@ -99,15 +102,23 @@ public class RecommendationSystemChallengeGenerationTest {
 	 * Sort and filter challenges using difficulty and prize
 	 */
 	public void recommendationSystemTest() throws IOException {
-		RecommendationSystem rs = new RecommendationSystem();
-		Map<String, List<ChallengeDataDTO>> result = rs.recommendation();
+		RecommendationSystem rs = new RecommendationSystem(configuration);
+		Map<String, List<ChallengeDataDTO>> result = rs.recommendation(
+				get(HOST), get(CONTEXT), get(USERNAME), get(PASSWORD),
+				get(GAMEID));
 		rs.writeToFile(result);
 		assertTrue(!result.isEmpty());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
+	public void recommendationSystemNullGameData() throws IOException {
+		RecommendationSystem rs = new RecommendationSystem(configuration);
+		rs.recommendation(null);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
 	public void recommendationSystemWriteNullChallenges() throws IOException {
-		RecommendationSystem rs = new RecommendationSystem();
+		RecommendationSystem rs = new RecommendationSystem(configuration);
 		rs.writeToFile(null);
 	}
 
@@ -134,7 +145,6 @@ public class RecommendationSystemChallengeGenerationTest {
 
 	@Test
 	public void generatorContentEmptyTest() throws IOException {
-		RecommendationSystemConfig configuration = new RecommendationSystemConfig();
 		RecommendationSystemChallengeGeneration rg = new RecommendationSystemChallengeGeneration(
 				configuration);
 		List<Content> input = new ArrayList<Content>();
@@ -145,8 +155,13 @@ public class RecommendationSystemChallengeGenerationTest {
 
 	@Test
 	public void testConfigIsModeNull() throws IOException {
-		RecommendationSystemConfig rc = new RecommendationSystemConfig();
-		assertTrue(!rc.isDefaultMode(null));
+		assertTrue(!configuration.isDefaultMode(null));
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testConfigFilteringIdsNull() {
+		@SuppressWarnings("unused")
+		RecommendationSystemConfig config = new RecommendationSystemConfig(null);
 	}
 
 }

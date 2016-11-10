@@ -94,8 +94,6 @@ public class RecommendationSystemChallengeGeneration {
 								.getChallengeNamePrefix()
 								+ mode
 								+ "_"
-								+ configuration.getPercentage()[i]
-								+ "_"
 								+ UUID.randomUUID());
 						cdd.setStart(now.dayOfMonth().addToCopy(1).toDate());
 						cdd.setEnd(now.dayOfMonth().addToCopy(7).toDate());
@@ -107,6 +105,10 @@ public class RecommendationSystemChallengeGeneration {
 						data.put("counterName", mode);
 						data.put("periodName", "weekly");
 						data.put("percentage", configuration.getPercentage()[i]);
+						data.put("challengeName",
+								configuration.getChallengeNamePrefix() + mode
+										+ "_"
+										+ configuration.getPercentage()[i]);
 						cdd.setData(data);
 						output.get(playerId).add(cdd);
 					}
@@ -129,6 +131,9 @@ public class RecommendationSystemChallengeGeneration {
 						data.put("bonusScore", 100d);
 						data.put("counterName", mode);
 						data.put("periodName", "weekly");
+						data.put("challengeName",
+								configuration.getChallengeNamePrefix() + mode
+										+ "_try");
 						cdd.setData(data);
 						output.get(playerId).add(cdd);
 					}
