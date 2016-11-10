@@ -276,6 +276,10 @@ public class ChallengesRulesGenerator {
 			if (cdit.getDto().getData().containsKey("challengeName")) {
 				cdit.getDto().getData().remove("challengeName");
 			}
+			if (cdit.getDto().getData().containsKey("percentage")) {
+				cdit.getDto().getData().remove("percentage");
+			}
+
 		}
 
 	}
