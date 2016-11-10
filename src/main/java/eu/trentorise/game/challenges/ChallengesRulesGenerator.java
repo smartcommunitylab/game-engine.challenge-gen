@@ -253,12 +253,8 @@ public class ChallengesRulesGenerator {
 									+ ";"
 									+ (challenge.getData().containsKey(
 											"baseline") ? challenge.getData()
-											.get("baseline") : 0)
-									+ ";"
-									+ (challenge.getData().containsKey(
-											"baseline") ? challenge.getData()
-											.get("baseline") : challenge
-											.getData().get("target")) + ";"
+											.get("baseline") : 0) + ";"
+									+ (challenge.getData().get("target")) + ";"
 									+ challenge.getData().get("bonusScore")
 									+ ";"
 									+ challenge.getData().get("bonusPointType")
