@@ -126,10 +126,8 @@ public class RestTest {
 		toWrite.append("PLAYER_ID;SCORE_GREEN_LEAVES;" + customNames + "\n");
 		for (Content content : result) {
 			toWrite.append(content.getPlayerId() + ";"
-					+ getScore(content, "green leaves", true) + ";"
-					+ getCustomData(content, true)// +
-													// getChalengesStatus(content)
-					+ "\n");
+					+ getScore(content, "green leaves", false) + ";"
+					+ getCustomData(content, true) + "\n");
 
 		}
 		IOUtils.write(toWrite.toString(),
@@ -152,8 +150,8 @@ public class RestTest {
 		while (iter.hasNext()) {
 			PointConcept pc = iter.next();
 			if (weekly) {
-				result += pc.getPeriodPreviousScore("weekly") + ";";
-				// result += pc.getPeriodCurrentScore("weekly") + ";";
+				// result += pc.getPeriodPreviousScore("weekly") + ";";
+				result += pc.getPeriodCurrentScore("weekly") + ";";
 			} else {
 				result += pc.getScore() + ";";
 			}
