@@ -2,12 +2,17 @@ package eu.fbk.das.rs;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
 
+import eu.fbk.das.rs.sortfilter.DifficultyPrizeComparator;
 import eu.fbk.das.rs.valuator.DifficultyCalculator;
+import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 
 public class DifficultyCalculatorTest {
 
@@ -101,6 +106,30 @@ public class DifficultyCalculatorTest {
 				baseline, target);
 		System.out.println("Difficulty: " + difficulty);
 		assertTrue(difficulty == DifficultyCalculator.VERY_HARD);
+	}
+
+	@Test
+	public void difficultyPrizeComparatorTest() {
+		List<ChallengeDataDTO> test = new ArrayList<ChallengeDataDTO>();
+		ChallengeDataDTO first = new ChallengeDataDTO();
+		first.setData(new HashMap<String, Object>());
+		first.setInstanceName("Instance1");
+		first.getData().put("difficulty", 3);
+		first.getData().put("bonusScore", 100l);
+		first.getData().put("wi", 100d);
+		test.add(first);
+
+		ChallengeDataDTO second = new ChallengeDataDTO();
+		second.setData(new HashMap<String, Object>());
+		second.setInstanceName("Instance2");
+		second.getData().put("difficulty", 1);
+		second.getData().put("bonusScore", 200l);
+		second.getData().put("wi", 200d);
+		test.add(second);
+
+		Collections.sort(test, new DifficultyPrizeComparator());
+
+		assertTrue(test.get(0).getInstanceName().equals("Instance2"));
 	}
 
 }

@@ -32,12 +32,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.collect.Sets;
 
+import eu.trentorise.game.challenges.ChallengeFactory;
 import eu.trentorise.game.challenges.ChallengeInstanceFactory;
 import eu.trentorise.game.challenges.ChallengesRulesGenerator;
 import eu.trentorise.game.challenges.exception.UndefinedChallengeException;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import eu.trentorise.game.challenges.model.ChallengeDataInternalDto;
 import eu.trentorise.game.challenges.model.ChallengeModel;
+import eu.trentorise.game.challenges.model.ChallengeType;
 import eu.trentorise.game.challenges.rest.Content;
 import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
 import eu.trentorise.game.challenges.util.CalendarUtil;
@@ -316,6 +318,12 @@ public class GenerationTest {
 		cdd.setData(data);
 		assertTrue(challengeAssignFacade.assignChallengeToPlayer(cdd,
 				get(GAMEID), "24607"));
+	}
+
+	@Test(expected = UndefinedChallengeException.class)
+	public void challengeFactoryTest() throws UndefinedChallengeException {
+		ChallengeFactory cf = new ChallengeFactory();
+		cf.createChallenge(ChallengeType.NOOP, "");
 	}
 
 }

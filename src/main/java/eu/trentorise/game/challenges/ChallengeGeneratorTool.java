@@ -305,6 +305,12 @@ public class ChallengeGeneratorTool {
 			ChallengeRules challenges, String username, String password,
 			String output, Date startDate, Date endDate, String filterIds,
 			Boolean useRecommendationSystem) {
+		if (host == null || gameId == null || challenges == null
+				|| username == null || password == null || output == null
+				|| startDate == null || endDate == null || filterIds == null
+				|| useRecommendationSystem == null) {
+			throw new IllegalArgumentException("inputs must be not null");
+		}
 		CalendarUtil.setStart(startDate);
 		CalendarUtil.setEnd(endDate);
 		return generate(host, gameId, challenges, username, password, output,
