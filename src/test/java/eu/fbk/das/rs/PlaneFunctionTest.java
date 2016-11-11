@@ -26,7 +26,8 @@ public class PlaneFunctionTest {
 		this.intermediate = 200;
 		this.approximator = 10;
 
-		this.ppf = new PlanePointFunction(nrow, ncol, min, max, intermediate, approximator);
+		this.ppf = new PlanePointFunction(nrow, ncol, min, max, intermediate,
+				approximator);
 	}
 
 	@Test
@@ -36,7 +37,8 @@ public class PlaneFunctionTest {
 
 	@Test
 	public void maxPlaneFunctionTest() {
-		assertTrue(ppf.get(ppf.getNrow() - 1, ppf.getNcol() - 1) == ppf.getMax());
+		assertTrue(ppf.get(ppf.getNrow() - 1, ppf.getNcol() - 1) == ppf
+				.getMax());
 	}
 
 	@Test
@@ -46,7 +48,7 @@ public class PlaneFunctionTest {
 
 	@Test
 	public void approximatorPlaneFunctionTest() {
-		assertTrue(ppf.get(1, ppf.getNcol() - 1) == 185);
+		assertTrue(ppf.get(1, ppf.getNcol() - 1) == 230);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
