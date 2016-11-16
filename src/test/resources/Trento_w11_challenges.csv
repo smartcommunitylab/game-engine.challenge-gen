@@ -1,0 +1,17 @@
+NAME;TYPE;GOAL_TYPE;TARGET;BONUS;POINT_TYPE;DIFFICULTY;BASELINE_VARIABLE;SELECTION_CRITERIA_POINTS;SELECTION_CRITERIA_BADGES
+w11_recommendation_3;absoluteIncrement;Recommendations;3.0;250.0;green leaves;;;Recommendations >= 3;
+w11_recommendation_1;absoluteIncrement;Recommendations;1.0;250.0;green leaves;;;Recommendations > 0 && Recommendations < 3;
+w11_bikesharing_percent_50;percentageIncrement;BikeSharing_Km;0.5;250.0;green leaves;;Bike_Km.weekly.current;BikeSharing_Km.weekly.current > 0 && BikeSharing_Km.weekly.current <= 10;
+w11_bikesharing_percent_20;percentageIncrement;BikeSharing_Km;0.2;250.0;green leaves;;Bike_Km.weekly.current;BikeSharing_Km.weekly.current > 10 && BikeSharing_Km.weekly.current <= 50;
+w11_bike_percent_50;percentageIncrement;Bike_Km;0.5;250.0;green leaves;;Bike_Km.weekly.current;BikeSharing_Km.weekly.current == 0 && Bike_Km.weekly.current > 0 && Bike_Km.weekly.current <= 10;
+w11_bike_percent_20;percentageIncrement;Bike_Km;0.2;250.0;green leaves;;Bike_Km.weekly.current;BikeSharing_Km.weekly.current == 0 &&  Bike_Km.weekly.current > 10 && Bike_Km.weekly.current <= 50;
+w11_bike_percent_10;percentageIncrement;Bike_Km;0.1;250.0;green leaves;;Bike_Km.weekly.current;BikeSharing_Km.weekly.current == 0 &&  Bike_Km.weekly.current > 50 && Bike_Km.weekly.current <= 75;
+w11_bike_km_3;absoluteIncrement;Bike_Km;3.0;250.0;green leaves;;;BikeSharingKm.weekly.current == 0 &&  Bike_km.weekly.current == 0;
+w11_No_Car_Trips_4;absoluteIncrement;NoCar_Trips;4.0;250.0;green leaves;;;green leaves.weekly.current <= 50;
+w11_No_Car_Trips_8;absoluteIncrement;NoCar_Trips;8.0;250.0;green leaves;;;green leaves.weekly.current > 50 && green leaves.weekly.current <= 100;
+w11_walk_percent_100;percentageIncrement;Walk_Km;0.99;200.0;green leaves;;Walk_Km.weekly.current;Walk_Km.weekly.current > 0 && Walk_Km.weekly.current <= 2;
+w11_walk_percent_70;percentageIncrement;Walk_Km;0.7;250.0;green leaves;;Walk_Km.weekly.current;Walk_Km.weekly.current > 2 && Walk_Km.weekly.current <= 5;
+w11_walk_percent_40;percentageIncrement;Walk_Km;0.4;250.0;green leaves;;Walk_Km.weekly.current;Walk_Km.weekly.current > 5 && Walk_Km.weekly.current <= 10;
+w11_walk_percent_20;percentageIncrement;Walk_Km;0.2;250.0;green leaves;;Walk_Km.weekly.current;Walk_Km.weekly.current > 10 && Walk_Km.weekly.current <= 30;
+w11_walk_percent_10;percentageIncrement;Walk_Km;0.1;200.0;green leaves;;Walk_Km.weekly.current;Walk_Km.weekly.current > 30;
+w11_walk_km_2;absoluteIncrement;Walk_Km;2.0;200.0;green leaves;;;Walk_Km.weekly.current == 0;
