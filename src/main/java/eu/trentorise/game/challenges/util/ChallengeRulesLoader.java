@@ -79,7 +79,7 @@ public final class ChallengeRulesLoader {
 						crr.setTarget(elements[3]);
 					}
 				}
-				crr.setBonus(Integer.valueOf(elements[4]));
+				crr.setBonus(Double.valueOf(elements[4]));
 				crr.setPointType(elements[5]);
 				crr.setBaselineVar(elements[7]);
 				if (elements.length > 8) {

@@ -6,7 +6,7 @@ public class ChallengeRuleRow {
 	private String goalType;
 	private Object target;
 	private String pointType;
-	private Integer bonus;
+	private Double bonus;
 	private String name;
 	private String baselineVar;
 	private String selectionCriteriaPoints;
@@ -36,11 +36,11 @@ public class ChallengeRuleRow {
 		this.pointType = pointType;
 	}
 
-	public void setBonus(Integer bonus) {
+	public void setBonus(Double bonus) {
 		this.bonus = bonus;
 	}
 
-	public Integer getBonus() {
+	public Double getBonus() {
 		return bonus;
 	}
 
