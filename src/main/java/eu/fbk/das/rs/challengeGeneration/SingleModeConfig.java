@@ -11,19 +11,18 @@ public class SingleModeConfig {
 
 	private String modeName;
 	private int weight;
+	private Double prizeMatrixMin;
+	private Double prizeMatrixMax;
+	private Double prizeMatrixIntermediate;
 
-	public SingleModeConfig(String modeName, int weight, long prizeMatrixMin,
-			long prizeMatrixMax, long prizeMatrixIntermediate) {
+	public SingleModeConfig(String modeName, int weight, Double prizeMatrixMin,
+			Double prizeMatrixMax, Double prizeMatrixIntermediate) {
 		this.modeName = modeName;
 		this.weight = weight;
 		this.prizeMatrixMin = prizeMatrixMin;
 		this.prizeMatrixMax = prizeMatrixMax;
 		this.prizeMatrixIntermediate = prizeMatrixIntermediate;
 	}
-
-	private long prizeMatrixMin;
-	private long prizeMatrixMax;
-	private long prizeMatrixIntermediate;
 
 	public int getWeight() {
 		return weight;
@@ -33,27 +32,27 @@ public class SingleModeConfig {
 		this.weight = weight;
 	}
 
-	public long getPrizeMatrixMin() {
+	public Double getPrizeMatrixMin() {
 		return prizeMatrixMin;
 	}
 
-	public void setPrizeMatrixMin(long prizeMatrixMin) {
+	public void setPrizeMatrixMin(Double prizeMatrixMin) {
 		this.prizeMatrixMin = prizeMatrixMin;
 	}
 
-	public long getPrizeMatrixMax() {
+	public Double getPrizeMatrixMax() {
 		return prizeMatrixMax;
 	}
 
-	public void setPrizeMatrixMax(long prizeMatrixMax) {
+	public void setPrizeMatrixMax(Double prizeMatrixMax) {
 		this.prizeMatrixMax = prizeMatrixMax;
 	}
 
-	public long getPrizeMatrixIntermediate() {
+	public Double getPrizeMatrixIntermediate() {
 		return prizeMatrixIntermediate;
 	}
 
-	public void setPrizeMatrixIntermediate(long prizeMatrixIntermediate) {
+	public void setPrizeMatrixIntermediate(Double prizeMatrixIntermediate) {
 		this.prizeMatrixIntermediate = prizeMatrixIntermediate;
 	}
 

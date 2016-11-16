@@ -61,13 +61,9 @@ public class RecommendationSystemChallengeValuator {
 			Map<String, List<ChallengeDataDTO>> combinations,
 			List<Content> input) {
 
-		int challengeNum = 0;
 		for (int i = 0; i < configuration.getDefaultMode().length; i++) {
-
 			String mode = configuration.getDefaultMode()[i];
-
 			List<Double> activePlayersvalues = new ArrayList<Double>();
-			//
 			for (Content content : input) {
 				for (PointConcept pc : content.getState().getPointConcept()) {
 					// Adding filter for users
@@ -83,15 +79,10 @@ public class RecommendationSystemChallengeValuator {
 								if (p.getScore() > 0) {
 									activePlayersvalues.add(p.getScore());
 								}
-
 							}
-
 						}
-
 					}
 				}
-				// }
-
 			}
 			Collections.sort(activePlayersvalues);
 
@@ -123,13 +114,13 @@ public class RecommendationSystemChallengeValuator {
 							double d = (double) challenge.getData().get(
 									"percentage");
 
-							Long prize = calculatePrize(difficulty, d,
+							Double prize = calculatePrize(difficulty, d,
 									counterName);
 							challenge.getData().put("bonusScore", prize);
 						} else if (challenge.getModelName() == "absoluteIncrement") {
 							challenge.getData().put("difficulty",
 									DifficultyCalculator.MEDIUM);
-							long tryOnceBonus = prizeMatrixMap
+							Double tryOnceBonus = prizeMatrixMap
 									.get(counterName)
 									.getTryOncePrize(
 											RecommendationSystemConfig.PRIZE_MATRIX_TRY_ONCE_ROW_INDEX,
@@ -146,7 +137,7 @@ public class RecommendationSystemChallengeValuator {
 
 	}
 
-	private long calculatePrize(Integer difficulty, double percent,
+	private Double calculatePrize(Integer difficulty, double percent,
 			String modeName) {
 		// TODO: config!
 		int y = 0;
@@ -162,7 +153,7 @@ public class RecommendationSystemChallengeValuator {
 			y = 9;
 		}
 
-		long prize = prizeMatrixMap.get(modeName).get(difficulty - 1, y);
+		Double prize = prizeMatrixMap.get(modeName).get(difficulty - 1, y);
 
 		return prize;
 	}

@@ -5,33 +5,71 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import eu.fbk.das.rs.valuator.PlanePointFunction;
+
 /**
  * RecommendationSystem configuration main class
  */
 public class RecommendationSystemConfig {
 
-	// public constants
+	// --------------------------------------
+	// default configuration
+	// --------------------------------------
+
+	// default modes
+	private static final String NO_CAR_TRIPS = "NoCar_Trips";
+	private static final String BIKE_KM = "Bike_Km";
+	private static final String BUS_KM = "Bus_Km";
+	private static final String BIKE_SHARING_TRIPS = "BikeSharing_Trips";
+	private static final String WALK_TRIPS = "Walk_Trips";
+	private static final String BIKE_TRIPS = "Bike_Trips";
+	private static final String TRAIN_KM = "Train_Km";
+	private static final String BUS_TRIPS = "Bus_Trips";
+	private static final String TRAIN_TRIPS = "Train_Trips";
+	private static final String ZERO_IMPACT_TRIPS = "ZeroImpact_Trips";
+	private static final String BIKE_SHARING_KM = "BikeSharing_Km";
+	private static final String WALK_KM = "Walk_Km";
+	/**
+	 * Default prize matrix dimension, number of rows
+	 */
 	public static final int PRIZE_MATRIX_NROW = 4;
+	/**
+	 * Default prize matrix dimension, number of columns
+	 */
 	public static final int PRIZE_MATRIX_NCOL = 10;
-
+	/**
+	 * Default prize matrix coordinate for try once, number of row
+	 */
 	public static final int PRIZE_MATRIX_TRY_ONCE_ROW_INDEX = 1;
+	/**
+	 * Default prize matrix coordinate for try once, number of column
+	 */
 	public static final int PRIZE_MATRIX_TRY_ONCE_COL_INDEX = 9;
+	/**
+	 * Prize matrix approximator value, @see {@link PlanePointFunction}
+	 */
+	public static final Double PRIZE_MATRIX_APPROXIMATOR = 10.0;
 
-	public static final long PRIZE_MATRIX_APPROXIMATOR = 10;
-
-	// Enable default users filtering
+	// --------------------------------------
+	// dynamic configuration
+	// --------------------------------------
+	/**
+	 * Enable default users filtering
+	 */
 	private static final boolean userFiltering = true;
-	// Enable select top 2 challenges
+	/**
+	 * Enable select top 2 challenges
+	 */
 	private static final boolean selectTopTwo = true;
 
 	// Transportation mode configuration
 	// First, declare call supported modes. Order matters!
-	private final String[] defaultMode = { "ZeroImpact_Trips", "Bus_Trips",
-			"Train_Trips" };
+	private final String[] defaultMode = { ZERO_IMPACT_TRIPS, BUS_TRIPS,
+			TRAIN_TRIPS };
 	// Second, declare corresponding *_Trips of *_Km modes (i.e. Walk_km =>
 	// Walk_Trips), used for try once challenges
-	private final String[] defaultModetrip = { "ZeroImpact_Trips", "Bus_Trips",
-			"Train_Trips" };
+	private final String[] defaultModetrip = { ZERO_IMPACT_TRIPS, BUS_TRIPS,
+			TRAIN_TRIPS };
 	// "Walk_Trips", "Bike_Trips", "BikeSharing_Trips"
 	// defining different improvement percentage 10%,20%, etc.
 	private final Double[] percentage = { 0.1, 0.2, 0.3, 0.5, 1.0 };
@@ -56,30 +94,30 @@ public class RecommendationSystemConfig {
 	// init recommendation system configuration
 	private void init() {
 		modeConfiguration = new RecommendationSystemModeConfiguration();
-		modeConfiguration.put("Walk_Km", new SingleModeConfig("Walk_Km", 0,
-				200, 300, 250));
-		modeConfiguration.put("BikeSharing_Km", new SingleModeConfig(
-				"BikeSharing_Km", 0, 200, 300, 250));
-		modeConfiguration.put("ZeroImpact_Trips", new SingleModeConfig(
-				"ZeroImpact_Trips", 10, 150, 300, 200));
-		modeConfiguration.put("Train_Trips", new SingleModeConfig(
-				"Train_Trips", 8, 150, 350, 220));
-		modeConfiguration.put("Bus_Trips", new SingleModeConfig("Bus_Trips",
-				10, 150, 350, 220));
-		modeConfiguration.put("Train_Km", new SingleModeConfig("Train_Km", 0,
-				150, 350, 240));
-		modeConfiguration.put("Bike_Trips", new SingleModeConfig("Bike_Trips",
-				0, 200, 300, 250));
-		modeConfiguration.put("Walk_Trips", new SingleModeConfig("Walk_Trips",
-				0, 150, 250, 200));
-		modeConfiguration.put("BikeSharing_Trips", new SingleModeConfig(
-				"BikeSharing_Trips", 0, 200, 300, 250));
-		modeConfiguration.put("Bus_Km", new SingleModeConfig("Bus_Km", 0, 150,
-				350, 240));
-		modeConfiguration.put("Bike_Km", new SingleModeConfig("Bike_Km", 0,
-				200, 300, 250));
-		modeConfiguration.put("NoCar_Trips", new SingleModeConfig(
-				"NoCar_Trips", 0, 100, 250, 150));
+		modeConfiguration.put(WALK_KM, new SingleModeConfig(WALK_KM, 0, 200.0,
+				300.0, 250.0));
+		modeConfiguration.put(BIKE_SHARING_KM, new SingleModeConfig(
+				BIKE_SHARING_KM, 0, 200.0, 300.0, 250.0));
+		modeConfiguration.put(ZERO_IMPACT_TRIPS, new SingleModeConfig(
+				ZERO_IMPACT_TRIPS, 10, 150.0, 300.0, 200.0));
+		modeConfiguration.put(TRAIN_TRIPS, new SingleModeConfig(TRAIN_TRIPS, 8,
+				150.0, 350.0, 220.0));
+		modeConfiguration.put(BUS_TRIPS, new SingleModeConfig(BUS_TRIPS, 10,
+				150.0, 350.0, 220.0));
+		modeConfiguration.put(TRAIN_KM, new SingleModeConfig(TRAIN_KM, 0,
+				150.0, 350.0, 240.0));
+		modeConfiguration.put(BIKE_TRIPS, new SingleModeConfig(BIKE_TRIPS, 0,
+				200.0, 300.0, 250.0));
+		modeConfiguration.put(WALK_TRIPS, new SingleModeConfig(WALK_TRIPS, 0,
+				150.0, 250.0, 200.0));
+		modeConfiguration.put(BIKE_SHARING_TRIPS, new SingleModeConfig(
+				BIKE_SHARING_TRIPS, 0, 200.0, 300.0, 250.0));
+		modeConfiguration.put(BUS_KM, new SingleModeConfig(BUS_KM, 0, 150.0,
+				350.0, 240.0));
+		modeConfiguration.put(BIKE_KM, new SingleModeConfig(BIKE_KM, 0, 200.0,
+				300.0, 250.0));
+		modeConfiguration.put(NO_CAR_TRIPS, new SingleModeConfig(NO_CAR_TRIPS,
+				0, 100.0, 250.0, 150.0));
 
 		// list of default player ids
 		playerIds = new ArrayList<String>();

@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,6 +22,7 @@ import eu.fbk.das.rs.challengeGeneration.RecommendationSystem;
 import eu.fbk.das.rs.challengeGeneration.RecommendationSystemChallengeGeneration;
 import eu.fbk.das.rs.challengeGeneration.RecommendationSystemConfig;
 import eu.fbk.das.rs.sortfilter.RecommendationSystemChallengeFilteringAndSorting;
+import eu.fbk.das.rs.valuator.DifficultyCalculator;
 import eu.fbk.das.rs.valuator.RecommendationSystemChallengeValuator;
 import eu.trentorise.challenge.PropertiesUtil;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
@@ -65,7 +68,57 @@ public class RecommendationSystemChallengeGenerationTest {
 		Map<String, List<ChallengeDataDTO>> challengeCombinations = rs
 				.generate(gameData);
 
-		assertTrue(!challengeCombinations.isEmpty());
+		for (String playerId : challengeCombinations.keySet()) {
+			// generate at least two challenge for player
+			assertTrue(challengeCombinations.get(playerId).size() > 2);
+			for (ChallengeDataDTO challenge : challengeCombinations
+					.get(playerId)) {
+				assertTrue(checkChallenge(challenge));
+			}
+		}
+
+	}
+
+	private boolean checkChallenge(ChallengeDataDTO cdd) {
+		if (StringUtils.isBlank(cdd.getModelName())) {
+			return false;
+		}
+		if (StringUtils.isBlank(cdd.getInstanceName())) {
+			return false;
+		}
+		if (cdd.getStart() == null) {
+			return false;
+		}
+		if (cdd.getEnd() == null) {
+			return false;
+		}
+		if (MapUtils.isEmpty(cdd.getData())) {
+			return false;
+		}
+		Map<String, Object> data = cdd.getData();
+		if (data.get("target") == null) {
+			return false;
+		}
+		if (StringUtils.isEmpty((String) data.get("bonusPointType"))) {
+			return false;
+		}
+		if (data.get("bonusScore") == null) {
+			return false;
+		}
+		if (cdd.getModelName().equals("percentageIncrement")
+				&& data.get("baseline") == null) {
+			return false;
+		}
+		if (StringUtils.isEmpty((String) data.get("counterName"))) {
+			return false;
+		}
+		if (StringUtils.isEmpty((String) data.get("periodName"))) {
+			return false;
+		}
+		if (StringUtils.isEmpty((String) data.get("challengeName"))) {
+			return false;
+		}
+		return true;
 	}
 
 	@Test
@@ -84,8 +137,37 @@ public class RecommendationSystemChallengeGenerationTest {
 
 		Map<String, List<ChallengeDataDTO>> evaluatedChallenges = valuator
 				.valuate(challengeCombinations, gameData);
+		for (String playerId : evaluatedChallenges.keySet()) {
+			// generate at least two challenge
+			for (ChallengeDataDTO challenge : evaluatedChallenges.get(playerId)) {
+				assertTrue(checkValuatedChallenge(challenge));
+			}
+		}
+	}
 
-		assertTrue(!evaluatedChallenges.isEmpty());
+	private boolean checkValuatedChallenge(ChallengeDataDTO cdd) {
+		Map<String, Object> data = cdd.getData();
+		if (!(data.get("bonusScore") instanceof Double)) {
+			return false;
+		}
+		Double bonus = (Double) data.get("bonusScore");
+		if (bonus <= 0.0) {
+			return false;
+		}
+		if (data.get("difficulty") == null) {
+			return false;
+		}
+		if (!(data.get("difficulty") instanceof Integer)) {
+			return false;
+		}
+		Integer difficulty = (Integer) data.get("difficulty");
+		if (difficulty == DifficultyCalculator.EASY
+				|| difficulty == DifficultyCalculator.MEDIUM
+				|| difficulty == DifficultyCalculator.HARD
+				|| difficulty == DifficultyCalculator.VERY_HARD) {
+			return true;
+		}
+		return false;
 	}
 
 	@Test

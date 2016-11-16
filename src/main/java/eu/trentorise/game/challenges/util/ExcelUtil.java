@@ -42,7 +42,7 @@ public final class ExcelUtil {
 				(Integer) challenge.getData().get(DIFFICULTY));
 		row.createCell(6).setCellValue((Double) challenge.getData().get(WI));
 		row.createCell(7).setCellValue(
-				(Long) challenge.getData().get(BONUS_SCORE));
+				(Double) challenge.getData().get(BONUS_SCORE));
 		if (challenge.getData().get(BASELINE) != null) {
 			row.createCell(8).setCellValue(
 					(Double) challenge.getData().get(BASELINE));
