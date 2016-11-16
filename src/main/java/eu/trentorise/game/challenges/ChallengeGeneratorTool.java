@@ -132,22 +132,22 @@ public class ChallengeGeneratorTool {
 			String output, String username, String password, String filterIds,
 			Boolean useRecommendationSystem) {
 		// load
-		ChallengeRules result;
+		ChallengeRules challengeDefinition;
 		try {
-			result = ChallengeRulesLoader.load(input);
+			challengeDefinition = ChallengeRulesLoader.load(input);
 		} catch (NullPointerException | IllegalArgumentException | IOException e1) {
 			String msg = "Error in challenge definition loading for " + input
 					+ ": " + e1.getMessage();
 			System.err.println(msg);
 			return;
 		}
-		if (result == null) {
+		if (challengeDefinition == null) {
 			String msg = "Error in loading : " + input;
 			System.out.println(msg);
 			return;
 		}
 		System.out.println("Challenge definition file: " + input);
-		generate(host, gameId, result, username, password, output, filterIds,
+		generate(host, gameId, challengeDefinition, username, password, output, filterIds,
 				useRecommendationSystem);
 	}
 
@@ -156,7 +156,7 @@ public class ChallengeGeneratorTool {
 	 * 
 	 * @param host
 	 * @param gameId
-	 * @param result
+	 * @param challengeDefinitions
 	 * @param templateDir
 	 * @param output
 	 * @param username
@@ -165,7 +165,7 @@ public class ChallengeGeneratorTool {
 	 * @see ChallengeRulesLoader
 	 */
 	public static String generate(String host, String gameId,
-			ChallengeRules result, String username, String password,
+			ChallengeRules challengeDefinitions, String username, String password,
 			String output, String filterIds, Boolean useRecommendationSystem) {
 		String log = "";
 		// get users from gamification engine
@@ -245,7 +245,7 @@ public class ChallengeGeneratorTool {
 			}
 		}
 		// generate challenges
-		for (ChallengeRuleRow challengeSpec : result.getChallenges()) {
+		for (ChallengeRuleRow challengeSpec : challengeDefinitions.getChallenges()) {
 			Matcher matcher = new Matcher(challengeSpec);
 			List<Content> filteredUsers = matcher.match(users);
 			if (filteredUsers.isEmpty()) {
