@@ -1,6 +1,4 @@
 NAME;TYPE;GOAL_TYPE;TARGET;BONUS;POINT_TYPE;DIFFICULTY;BASELINE_VARIABLE;SELECTION_CRITERIA_POINTS;SELECTION_CRITERIA_BADGES
-w11_recommendation_3;absoluteIncrement;Recommendations;3.0;250.0;green leaves;;;Recommendations >= 3;
-w11_recommendation_1;absoluteIncrement;Recommendations;1.0;250.0;green leaves;;;Recommendations > 0 && Recommendations < 3;
 w11_bikesharing_percent_50;percentageIncrement;BikeSharing_Km;0.5;250.0;green leaves;;Bike_Km.weekly.current;BikeSharing_Km.weekly.current > 0 && BikeSharing_Km.weekly.current <= 10;
 w11_bikesharing_percent_20;percentageIncrement;BikeSharing_Km;0.2;250.0;green leaves;;Bike_Km.weekly.current;BikeSharing_Km.weekly.current > 10 && BikeSharing_Km.weekly.current <= 50;
 w11_bike_percent_50;percentageIncrement;Bike_Km;0.5;250.0;green leaves;;Bike_Km.weekly.current;BikeSharing_Km.weekly.current == 0 && Bike_Km.weekly.current > 0 && Bike_Km.weekly.current <= 10;
