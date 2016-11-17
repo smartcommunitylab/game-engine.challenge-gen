@@ -1,6 +1,7 @@
 package eu.fbk.das.rs.challengeGeneration;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,7 +9,6 @@ import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.joda.time.LocalDate;
 
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import eu.trentorise.game.challenges.rest.Content;
@@ -47,7 +47,23 @@ public class RecommendationSystemChallengeGeneration {
 		logger.debug("RecommendationSystemChallengeGeneration init complete");
 	}
 
-	public Map<String, List<ChallengeDataDTO>> generate(List<Content> input) {
+	public Map<String, List<ChallengeDataDTO>> generate(List<Content> input,
+			Date start, Date end) {
+		if (input == null) {
+			throw new IllegalArgumentException("Input must be not null");
+		}
+		if (start == null || end == null) {
+			throw new IllegalArgumentException(
+					"Start and end date for challenges must be not null");
+		}
+		if (start.compareTo(end) == 0) {
+			throw new IllegalArgumentException(
+					"Start and end date for challenges must be different");
+		}
+		if (start.compareTo(end) > 0) {
+			throw new IllegalArgumentException(
+					"Start date for challenges must be before end of challenges");
+		}
 		Map<String, List<ChallengeDataDTO>> output = new HashMap<String, List<ChallengeDataDTO>>();
 		HashMap<String, HashMap<String, Double>> modeValues = new HashMap<String, HashMap<String, Double>>();
 		HashMap<String, Double> playerScore = new HashMap<>();
@@ -64,8 +80,6 @@ public class RecommendationSystemChallengeGeneration {
 			}
 			playerScore.clear();
 		}
-
-		LocalDate now = new LocalDate();
 
 		int playersNum = 0;
 		for (String mode : modeValues.keySet()) {
@@ -95,8 +109,8 @@ public class RecommendationSystemChallengeGeneration {
 								+ mode
 								+ "_"
 								+ UUID.randomUUID());
-						cdd.setStart(now.dayOfMonth().addToCopy(1).toDate());
-						cdd.setEnd(now.dayOfMonth().addToCopy(7).toDate());
+						cdd.setStart(start);
+						cdd.setEnd(end);
 						Map<String, Object> data = new HashMap<String, Object>();
 						data.put("target", improvementValue);
 						data.put("bonusPointType", "green leaves");
@@ -123,8 +137,8 @@ public class RecommendationSystemChallengeGeneration {
 								+ mode
 								+ "_try_"
 								+ UUID.randomUUID());
-						cdd.setStart(now.dayOfMonth().addToCopy(1).toDate());
-						cdd.setEnd(now.dayOfMonth().addToCopy(7).toDate());
+						cdd.setStart(start);
+						cdd.setEnd(end);
 						Map<String, Object> data = new HashMap<String, Object>();
 						data.put("target", 1);
 						data.put("bonusPointType", "green leaves");

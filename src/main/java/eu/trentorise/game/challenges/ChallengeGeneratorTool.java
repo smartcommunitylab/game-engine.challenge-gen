@@ -147,8 +147,8 @@ public class ChallengeGeneratorTool {
 			return;
 		}
 		System.out.println("Challenge definition file: " + input);
-		generate(host, gameId, challengeDefinition, username, password, output, filterIds,
-				useRecommendationSystem);
+		generate(host, gameId, challengeDefinition, username, password, output,
+				filterIds, useRecommendationSystem);
 	}
 
 	/**
@@ -165,8 +165,9 @@ public class ChallengeGeneratorTool {
 	 * @see ChallengeRulesLoader
 	 */
 	public static String generate(String host, String gameId,
-			ChallengeRules challengeDefinitions, String username, String password,
-			String output, String filterIds, Boolean useRecommendationSystem) {
+			ChallengeRules challengeDefinitions, String username,
+			String password, String output, String filterIds,
+			Boolean useRecommendationSystem) {
 		String log = "";
 		// get users from gamification engine
 		GamificationEngineRestFacade facade;
@@ -223,7 +224,8 @@ public class ChallengeGeneratorTool {
 			RecommendationSystem rs = new RecommendationSystem(
 					new RecommendationSystemConfig(filterIds));
 			Map<String, List<ChallengeDataDTO>> rsChallenges = rs
-					.recommendation(users);
+					.recommendation(users, CalendarUtil.getStart().getTime(),
+							CalendarUtil.getEnd().getTime());
 			if (rsChallenges == null
 					|| (rsChallenges != null && rsChallenges.isEmpty())) {
 				msg = "Warning: no challenges generated using recommendation system, even if is enabled";
@@ -245,7 +247,8 @@ public class ChallengeGeneratorTool {
 			}
 		}
 		// generate challenges
-		for (ChallengeRuleRow challengeSpec : challengeDefinitions.getChallenges()) {
+		for (ChallengeRuleRow challengeSpec : challengeDefinitions
+				.getChallenges()) {
 			Matcher matcher = new Matcher(challengeSpec);
 			List<Content> filteredUsers = matcher.match(users);
 			if (filteredUsers.isEmpty()) {

@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,13 +64,17 @@ public class RecommendationSystem {
 	 * then {@link RecommendationSystemChallengeValuator} and
 	 * {@link RecommendationSystemChallengeFilteringAndSorting} modules
 	 * 
+	 * @param start
+	 * @param end
+	 * 
 	 * @return a {@link Map} of generated challenges, where key is playerId and
 	 *         value is a {@link List} of {@link ChallengeDataDTO}
 	 * @throws NullPointerException
 	 *             when data from gamification engine is null
 	 */
 	public Map<String, List<ChallengeDataDTO>> recommendation(String host,
-			String context, String username, String password, String gameId) {
+			String context, String username, String password, String gameId,
+			Date start, Date end) {
 		facade = new GamificationEngineRestFacade(host + context, username,
 				password);
 		logger.debug("Reading game data from gamification engine");
@@ -78,7 +83,7 @@ public class RecommendationSystem {
 			throw new NullPointerException(
 					"No game data from Gamification Engine");
 		}
-		return recommendation(gameData);
+		return recommendation(gameData, start, end);
 	}
 
 	/**
@@ -88,13 +93,16 @@ public class RecommendationSystem {
 	 * 
 	 * @param gameData
 	 *            game data from gamification engine
+	 * @param start
+	 * @param end
 	 * @return a {@link Map} of generated challenges, where key is playerId and
 	 *         value is a {@link List} of {@link ChallengeDataDTO}
 	 * @throws NullPointerException
 	 *             when data from gamification engine is null
 	 */
 	public Map<String, List<ChallengeDataDTO>> recommendation(
-			List<Content> gameData) throws NullPointerException {
+			List<Content> gameData, Date start, Date end)
+			throws NullPointerException {
 		logger.info("Recommendation system challenge generation start");
 		if (gameData == null) {
 			throw new IllegalArgumentException("gameData must be not null");
@@ -111,7 +119,7 @@ public class RecommendationSystem {
 		}
 		logger.debug("Generating challenges");
 		Map<String, List<ChallengeDataDTO>> challengeCombinations = generator
-				.generate(listofContent);
+				.generate(listofContent, start, end);
 		Map<String, List<ChallengeDataDTO>> evaluatedChallenges = valuator
 				.valuate(challengeCombinations, listofContent);
 
