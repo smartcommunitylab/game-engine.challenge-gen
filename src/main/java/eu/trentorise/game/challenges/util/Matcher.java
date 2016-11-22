@@ -80,19 +80,14 @@ public class Matcher {
 			logger.warn("Point type criteria malformed, empty point type found");
 			return false;
 		}
-		// for (String var : vars) {
-		// if (getPointConcept(user, var) == null) {
-		// logger.warn("User " + user.getPlayerId()
-		// + " don't have point concept with name " + var);
-		// return false;
-		// }
-		// }
+
 		String newName = "";
 		// gather data
 		for (String var : vars) {
 			// absolute point concept value
 			if (!var.contains(".")) {
-				PointConcept absolute = getPointConcept(user, var);
+				PointConcept absolute = PointConceptUtil.getPointConcept(user,
+						var);
 				if (absolute != null) {
 					// evaluate criteria
 					newName = StringUtils.replace(var, " ", "_");
@@ -107,9 +102,14 @@ public class Matcher {
 				String[] values = StringUtils.split(var, ".");
 				Double score = 0d;
 				if (values[2].equals("previous")) {
-					score = getScorePrevious(user, values[0], values[1]);
+					score = PointConceptUtil.getScorePrevious(user, values[0],
+							values[1]);
 				} else if (values[2].equals("current")) {
-					score = getScoreCurrent(user, values[0], values[1]);
+					score = PointConceptUtil.getScoreCurrent(user, values[0],
+							values[1]);
+				} else if (values[2].equals("max")) {
+					score = PointConceptUtil.getScoreMax(user, values[0],
+							values[1]);
 				}
 				// evaluate criteria
 				newName = StringUtils.replace(values[0], " ", "_");
@@ -132,24 +132,6 @@ public class Matcher {
 		}
 
 		return false;
-	}
-
-	private Double getScorePrevious(Content user, String pointType,
-			String periodIdentifier) {
-		PointConcept pc = getPointConcept(user, pointType);
-		if (pc != null) {
-			return pc.getPeriodPreviousScore(periodIdentifier);
-		}
-		return 0d;
-	}
-
-	private Double getScoreCurrent(Content user, String pointType,
-			String periodIdentifier) {
-		PointConcept pc = getPointConcept(user, pointType);
-		if (pc != null) {
-			return pc.getPeriodCurrentScore(periodIdentifier);
-		}
-		return 0d;
 	}
 
 	private boolean badgeMatch(Content user) {
@@ -194,29 +176,6 @@ public class Matcher {
 			}
 		}
 		return "";
-	}
-
-	private double getScoreFromConcept(Content user, String var) {
-		for (PointConcept pc : user.getState().getPointConcept()) {
-			if (pc.getName().equalsIgnoreCase(var)) {
-				return pc.getScore();
-			}
-		}
-		return 0;
-	}
-
-	private PointConcept getPointConcept(Content user, String pointType) {
-		if (user.getState() != null
-				&& user.getState().getPointConcept() != null) {
-			boolean found = false;
-			for (PointConcept pc : user.getState().getPointConcept()) {
-				if (pc.getName().equalsIgnoreCase(pointType)) {
-					return pc;
-				}
-			}
-			return null;
-		}
-		return null;
 	}
 
 	private List<String> getVariableFromPointCriteria(String criteria) {

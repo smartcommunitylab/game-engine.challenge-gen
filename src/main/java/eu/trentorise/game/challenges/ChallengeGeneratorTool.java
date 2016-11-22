@@ -17,6 +17,7 @@ import org.apache.commons.cli.ParseException;
 
 import eu.fbk.das.rs.challengeGeneration.RecommendationSystem;
 import eu.fbk.das.rs.challengeGeneration.RecommendationSystemConfig;
+import eu.trentorise.game.challenges.api.Constants;
 import eu.trentorise.game.challenges.exception.UndefinedChallengeException;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import eu.trentorise.game.challenges.rest.Content;
@@ -181,7 +182,7 @@ public class ChallengeGeneratorTool {
 		}
 		String msg = "Contacting gamification engine on host " + host;
 		System.out.println(msg);
-		log += msg + "\n";
+		log += msg + Constants.LINE_SEPARATOR;
 		List<Content> users = null;
 
 		try {
@@ -190,25 +191,26 @@ public class ChallengeGeneratorTool {
 			msg = "Error in reading game state from host " + host
 					+ " for gameId " + gameId + " error: " + e.getMessage();
 			System.err.println(msg);
-			log += msg + "\n";
+			log += msg + Constants.LINE_SEPARATOR;
 			return log;
 		}
 		if (users == null || users.isEmpty()) {
 			msg = "Warning: no users for game " + gameId;
 			System.err.println(msg);
-			log += msg + "\n";
+			log += msg + Constants.LINE_SEPARATOR;
 			return log;
 		}
 		msg = "Start date "
 				+ sdf.format(CalendarUtil.getStart().getTime())
-				+ "\n"
+				+ Constants.LINE_SEPARATOR
 				+ "End date "
 				+ sdf.format(CalendarUtil.getEnd().getTime())
-				+ "\n"
+				+ Constants.LINE_SEPARATOR
 				+ "Reading game from gamification engine game state for gameId: "
-				+ gameId + "\n" + "Users in game: " + users.size();
+				+ gameId + Constants.LINE_SEPARATOR + "Users in game: "
+				+ users.size();
 		System.out.println(msg);
-		log += msg + "\n";
+		log += msg + Constants.LINE_SEPARATOR;
 		ChallengesRulesGenerator crg;
 		try {
 			crg = new ChallengesRulesGenerator(new ChallengeInstanceFactory(),
@@ -216,7 +218,7 @@ public class ChallengeGeneratorTool {
 		} catch (IOException e2) {
 			msg = "Error in creating " + "generated-rules-report.csv";
 			System.err.println(msg);
-			log += msg + "\n";
+			log += msg + Constants.LINE_SEPARATOR;
 			return log;
 		}
 		// recommandationsystem integration
@@ -230,7 +232,7 @@ public class ChallengeGeneratorTool {
 					|| (rsChallenges != null && rsChallenges.isEmpty())) {
 				msg = "Warning: no challenges generated using recommendation system, even if is enabled";
 				System.out.println(msg);
-				log += msg + "\n";
+				log += msg + Constants.LINE_SEPARATOR;
 				return log;
 			}
 			try {
@@ -238,11 +240,11 @@ public class ChallengeGeneratorTool {
 				msg = "Generated challenges using recommandation system for "
 						+ rsChallenges.size() + " players";
 				System.out.println(msg);
-				log += msg + "\n";
+				log += msg + Constants.LINE_SEPARATOR;
 			} catch (IOException e) {
 				msg = "Error in challenge generation : " + e.getMessage();
 				System.err.println(msg);
-				log += msg + "\n";
+				log += msg + Constants.LINE_SEPARATOR;
 				return log;
 			}
 		}
@@ -255,7 +257,7 @@ public class ChallengeGeneratorTool {
 				msg = "Warning: no users for challenge : "
 						+ challengeSpec.getName();
 				System.out.println(msg);
-				log += msg + "\n";
+				log += msg + Constants.LINE_SEPARATOR;
 				continue;
 			}
 			try {
@@ -265,7 +267,7 @@ public class ChallengeGeneratorTool {
 			} catch (UndefinedChallengeException | IOException e) {
 				msg = "Error in challenge generation : " + e.getMessage();
 				System.err.println(msg);
-				log += msg + "\n";
+				log += msg + Constants.LINE_SEPARATOR;
 				return log;
 			}
 		}
@@ -274,11 +276,11 @@ public class ChallengeGeneratorTool {
 			msg = "Challenges generated and written report file generated-rules-report.csv , "
 					+ output + " ready to be uploaded";
 			System.out.println(msg);
-			log += msg + "\n";
+			log += msg + Constants.LINE_SEPARATOR;
 			return log;
 		} catch (IOException e) {
 			msg = "Error in writing challenges to file";
-			log += msg + "\n";
+			log += msg + Constants.LINE_SEPARATOR;
 			return log;
 		}
 	}

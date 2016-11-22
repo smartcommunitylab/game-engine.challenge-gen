@@ -126,8 +126,8 @@ public class RestTest {
 		toWrite.append("PLAYER_ID;SCORE_GREEN_LEAVES;" + customNames + "\n");
 		for (Content content : result) {
 			toWrite.append(content.getPlayerId() + ";"
-					+ getScore(content, "green leaves", false, false) + ";"
-					+ getCustomData(content, true) + "\n");
+					+ getScore(content, "green leaves", false, true) + ";"
+					+ getCustomData(content, false) + "\n");
 
 		}
 		IOUtils.write(toWrite.toString(),

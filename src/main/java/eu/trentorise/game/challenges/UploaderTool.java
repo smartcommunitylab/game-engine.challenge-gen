@@ -20,6 +20,7 @@ import org.apache.commons.io.IOUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
+import eu.trentorise.game.challenges.api.Constants;
 import eu.trentorise.game.challenges.model.ChallengeDataInternalDto;
 import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
 
@@ -101,7 +102,7 @@ public class UploaderTool {
 		String msg = "";
 		if (input == null) {
 			msg = "Input file cannot be null";
-			log += msg + "\n";
+			log += msg + Constants.LINE_SEPARATOR;
 			System.err.println(msg);
 			return log;
 		}
@@ -117,7 +118,7 @@ public class UploaderTool {
 		msg = "Uploading on host " + host + " for gameId " + gameId
 				+ " for file " + input;
 		System.out.println(msg);
-		log += msg + "\n";
+		log += msg + Constants.LINE_SEPARATOR;
 		// read input file
 		ObjectMapper mapper = new ObjectMapper();
 		TypeFactory typeFactory = mapper.getTypeFactory();
@@ -131,17 +132,18 @@ public class UploaderTool {
 
 		} catch (IOException e1) {
 			msg = "Error in reading input file for uploader " + input;
-			log += msg + "\n";
+			log += msg + Constants.LINE_SEPARATOR;
 			return log;
 		}
 		msg = "Read challenges " + challenges.size();
 
 		int tot = 0;
 		StringBuffer buffer = new StringBuffer();
-		buffer.append("CHALLENGE_NAME;CHALLENGE_TYPE_NAME;PLAYER_ID\n");
+		buffer.append("CHALLENGE_NAME;CHALLENGE_TYPE_NAME;PLAYER_ID"
+				+ Constants.LINE_SEPARATOR);
 		msg = "Read challenges " + challenges.size();
 		System.out.println(msg);
-		log += msg + "\n";
+		log += msg + Constants.LINE_SEPARATOR;
 		boolean r = false;
 		// upload every challenge
 		for (ChallengeDataInternalDto ch : challenges) {
@@ -154,21 +156,21 @@ public class UploaderTool {
 				msg = "Error on uploading challenge on gamification engine "
 						+ e.getMessage();
 				System.out.println(msg);
-				log += msg + "\n";
+				log += msg + Constants.LINE_SEPARATOR;
 				return log;
 			}
 			if (!r) {
 				msg = "Error in uploading challenge instance "
 						+ ch.getDto().getInstanceName();
 				System.out.println(msg);
-				log += msg + "\n";
+				log += msg + Constants.LINE_SEPARATOR;
 				return log;
 			} else {
 				System.out.println("Inserted challenge with Id "
 						+ ch.getDto().getInstanceName());
 				buffer.append(ch.getDto().getInstanceName() + ";");
 				buffer.append(ch.getDto().getModelName() + ";");
-				buffer.append(ch.getPlayerId() + ";\n");
+				buffer.append(ch.getPlayerId() + ";" + Constants.LINE_SEPARATOR);
 			}
 		}
 		try {
@@ -180,13 +182,13 @@ public class UploaderTool {
 		} catch (IOException e) {
 			msg = "Error in writing report.csv file";
 			System.out.println(msg);
-			log += msg + "\n";
+			log += msg + Constants.LINE_SEPARATOR;
 			return log;
 		}
-		msg = "Inserted challenges " + tot + "\n"
+		msg = "Inserted challenges " + tot + Constants.LINE_SEPARATOR
 				+ "Challenges upload completed";
 		System.out.println(msg);
-		log += msg + "\n";
+		log += msg + Constants.LINE_SEPARATOR;
 		return log;
 	}
 

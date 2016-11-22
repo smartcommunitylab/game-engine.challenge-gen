@@ -12,6 +12,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import eu.trentorise.game.challenges.api.Constants;
+
 /**
  * Load challenges rule from and csv file
  *
@@ -112,7 +114,8 @@ public final class ChallengeRulesLoader {
 		FileOutputStream fos = null;
 		try {
 			StringBuffer toWrite = new StringBuffer();
-			toWrite.append(StringUtils.join(COLUMNS, ";") + "\n");
+			toWrite.append(StringUtils.join(COLUMNS, ";")
+					+ Constants.LINE_SEPARATOR);
 			for (ChallengeRuleRow row : rules.getChallenges()) {
 				toWrite.append(row.getName() + ";");
 				toWrite.append(row.getModelName() + ";");
@@ -124,7 +127,7 @@ public final class ChallengeRulesLoader {
 				toWrite.append(row.getBaselineVar() + ";");
 				toWrite.append(row.getSelectionCriteriaPoints() + ";");
 				toWrite.append(row.getSelectionCriteriaBadges() + ";");
-				toWrite.append("\n");
+				toWrite.append(Constants.LINE_SEPARATOR);
 			}
 			fos = new FileOutputStream(f);
 			IOUtils.write(toWrite.toString(), fos);

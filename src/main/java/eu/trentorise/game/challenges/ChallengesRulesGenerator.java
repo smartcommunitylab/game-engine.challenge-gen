@@ -23,14 +23,13 @@ import eu.trentorise.game.challenges.rest.Content;
 import eu.trentorise.game.challenges.rest.PointConcept;
 import eu.trentorise.game.challenges.util.ChallengeRuleRow;
 import eu.trentorise.game.challenges.util.ChallengeRulesLoader;
+import eu.trentorise.game.challenges.util.PointConceptUtil;
 
 /**
  * Generate rules for challenges
  */
 public class ChallengesRulesGenerator {
 
-	private static final String LINE_SEPARATOR = System
-			.getProperty("line.separator");
 	private static final Logger logger = LogManager
 			.getLogger(ChallengeRulesLoader.class);
 	private static final int challengeLimitNumber = 2;
@@ -39,7 +38,8 @@ public class ChallengesRulesGenerator {
 	// private Map<String, Map<String, Object>> playerIdCustomData;
 	private StringBuffer reportBuffer;
 
-	private final String reportHeader = "PLAYER;CHALLENGE_NAME;CHALLENGE_TYPE;GOAL_TYPE;BASELINE_VALUE;TARGET_VALUE;PRIZE;POINT_TYPE;CH_ID\n";
+	private final String reportHeader = "PLAYER;CHALLENGE_NAME;CHALLENGE_TYPE;GOAL_TYPE;BASELINE_VALUE;TARGET_VALUE;PRIZE;POINT_TYPE;CH_ID"
+			+ Constants.LINE_SEPARATOR;
 	private FileOutputStream fout;
 	private Map<String, Integer> challengeMap;
 	private FileOutputStream oout;
@@ -114,9 +114,14 @@ public class ChallengesRulesGenerator {
 				if (challengeSpec.getBaselineVar() != null
 						&& !challengeSpec.getBaselineVar().isEmpty()) {
 					// for percentage challenges, calculate current baseline and
-					// correct target
-					baseLineValue = getPointConceptCurrentValue(user,
-							challengeSpec.getBaselineVar(), "weekly");
+					// correct target or use the max value
+					if (!challengeSpec.getBaselineVar().endsWith(".max")) {
+						baseLineValue = getPointConceptCurrentValue(user,
+								challengeSpec.getBaselineVar(), "weekly");
+					} else {
+						baseLineValue = getPointConceptCurrentValue(user,
+								challengeSpec.getBaselineVar(), "weekly");
+					}
 					params.put(Constants.BASELINE, baseLineValue);
 					targetValue = baseLineValue * (1.0d + targetValue);
 					targetValue = Double.valueOf(Math.round(targetValue));
@@ -146,7 +151,7 @@ public class ChallengesRulesGenerator {
 								: baseLineValue) + ";" + targetValue + ";"
 						+ challengeSpec.getBonus() + ";"
 						+ challengeSpec.getPointType() + ";"
-						+ cdd.getInstanceName() + "\n");
+						+ cdd.getInstanceName() + Constants.LINE_SEPARATOR);
 
 				// increase challenge number for user
 				increaseChallenge(user.getPlayerId());
@@ -174,6 +179,9 @@ public class ChallengesRulesGenerator {
 						return pc.getPeriodCurrentScore(names[1]);
 					} else if (names[2].equalsIgnoreCase("previous")) {
 						return pc.getPeriodPreviousScore(names[1]);
+					} else if (names[2].equalsIgnoreCase("max")) {
+						return PointConceptUtil.getScoreMax(user, names[0],
+								names[1]);
 					}
 				}
 
@@ -258,7 +266,8 @@ public class ChallengesRulesGenerator {
 									+ challenge.getData().get("bonusScore")
 									+ ";"
 									+ challenge.getData().get("bonusPointType")
-									+ ";" + challenge.getInstanceName() + "\n");
+									+ ";" + challenge.getInstanceName()
+									+ Constants.LINE_SEPARATOR);
 					removeUnusedData(cdit);
 					challenges.add(cdit);
 				}
@@ -279,8 +288,6 @@ public class ChallengesRulesGenerator {
 			if (cdit.getDto().getData().containsKey("percentage")) {
 				cdit.getDto().getData().remove("percentage");
 			}
-
 		}
-
 	}
 }
