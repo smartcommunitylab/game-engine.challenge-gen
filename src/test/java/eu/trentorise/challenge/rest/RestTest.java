@@ -15,6 +15,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -127,7 +128,7 @@ public class RestTest {
 		for (Content content : result) {
 			toWrite.append(content.getPlayerId() + ";"
 					+ getScore(content, "green leaves", false, true) + ";"
-					+ getCustomData(content, false) + "\n");
+					+ getCustomData(content, true) + "\n");
 
 		}
 		IOUtils.write(toWrite.toString(),
@@ -199,37 +200,28 @@ public class RestTest {
 				+ "\n");
 
 		for (Content user : result) {
-			if (getScore(user, "green leaves", false, true) > 0) {
-				for (ChallengeConcept cc : user.getState()
-						.getChallengeConcept()) {
-					toWrite.append(user.getPlayerId() + ";");
-					toWrite.append(cc.getName() + ";");
-					toWrite.append(cc.getModelName() + ";");
-					toWrite.append(cc.getFields().get(Constants.TARGET) + ";");
-					toWrite.append(cc.getFields().get(Constants.BONUS_SCORE)
-							+ ";");
-					toWrite.append(cc.getFields().get(
-							Constants.BONUS_POINT_TYPE)
-							+ ";");
-					toWrite.append(CalendarUtil.format((Long) cc.getStart())
-							+ ";");
-					toWrite.append(CalendarUtil.format((Long) cc.getEnd())
-							+ ";");
-					toWrite.append(cc.getCompleted() + ";");
-					toWrite.append(CalendarUtil.format(cc.getDateCompleted())
-							+ ";");
-					toWrite.append(cc.getFields().get(Constants.BASELINE) + ";");
-					toWrite.append(cc.getFields().get(Constants.PERIOD_NAME)
-							+ ";");
-					toWrite.append(cc.getFields().get(Constants.COUNTER_NAME)
-							+ ";");
-					toWrite.append(getScore(
-							user,
-							(String) cc.getFields().get(Constants.COUNTER_NAME),
-							cc.getStart())
-							+ ";\n");
-				}
+			// if (getScore(user, "green leaves", false, true) > 0) {
+			for (ChallengeConcept cc : user.getState().getChallengeConcept()) {
+				toWrite.append(user.getPlayerId() + ";");
+				toWrite.append(cc.getName() + ";");
+				toWrite.append(cc.getModelName() + ";");
+				toWrite.append(cc.getFields().get(Constants.TARGET) + ";");
+				toWrite.append(cc.getFields().get(Constants.BONUS_SCORE) + ";");
+				toWrite.append(cc.getFields().get(Constants.BONUS_POINT_TYPE)
+						+ ";");
+				toWrite.append(CalendarUtil.format((Long) cc.getStart()) + ";");
+				toWrite.append(CalendarUtil.format((Long) cc.getEnd()) + ";");
+				toWrite.append(cc.getCompleted() + ";");
+				toWrite.append(CalendarUtil.format(cc.getDateCompleted()) + ";");
+				toWrite.append(cc.getFields().get(Constants.BASELINE) + ";");
+				toWrite.append(cc.getFields().get(Constants.PERIOD_NAME) + ";");
+				toWrite.append(cc.getFields().get(Constants.COUNTER_NAME) + ";");
+				toWrite.append(getScore(user,
+						(String) cc.getFields().get(Constants.COUNTER_NAME),
+						cc.getStart())
+						+ ";\n");
 			}
+			// }
 		}
 
 		String writable = toWrite.toString();
@@ -239,6 +231,31 @@ public class RestTest {
 				"challengeReportDetails.csv"));
 		logger.info("challengeReportDetails.csv written");
 		assertTrue(!writable.isEmpty());
+	}
+
+	@Test
+	public void printPoints() throws FileNotFoundException, IOException {
+		// a small utility to get a list of all users with a given challenge in
+		// a period and its status
+		List<Content> result = facade.readGameState(get(GAMEID));
+		assertTrue(!result.isEmpty());
+
+		// week11 playerIds
+		String playerIds = "24813,24538,17741,24816,24498,24871,24279,24612,24853,24339,24391,24150,24650,11125,24092,24869,24329,24826,24828,24762,24883,24288,24486,24566,24224,24741,24367,19092,24864,24347,24823,23513,24526,24327,1667,24120,24482,24320,24122,24440";
+		List<String> ids = new ArrayList<String>();
+		Collections.addAll(ids, playerIds.split(","));
+
+		System.out.println("PLAYER_ID;TOTAL_SCORE");
+		for (Content user : result) {
+			if (ids.contains(user.getPlayerId())) {
+				for (PointConcept pc : user.getState().getPointConcept()) {
+					if (pc.getName().equals("green leaves")) {
+						System.out.println(user.getPlayerId() + ";"
+								+ pc.getScore());
+					}
+				}
+			}
+		}
 	}
 
 }
