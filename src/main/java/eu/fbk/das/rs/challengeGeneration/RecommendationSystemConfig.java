@@ -79,7 +79,7 @@ public class RecommendationSystemConfig {
 
 	// recommendation system configuration
 	private RecommendationSystemModeConfiguration modeConfiguration;
-	private String challengeNamePrefix = "w11_rs_";
+	private String challengeNamePrefix = "w12_rs_";
 	private String filteringIds;
 
 	public RecommendationSystemConfig(String filteringIds) {
