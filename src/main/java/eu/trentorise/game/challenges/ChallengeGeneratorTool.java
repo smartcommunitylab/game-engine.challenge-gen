@@ -241,6 +241,8 @@ public class ChallengeGeneratorTool {
 						+ rsChallenges.size() + " players";
 				System.out.println(msg);
 				log += msg + Constants.LINE_SEPARATOR;
+				// write configuration file to filesystem
+				rs.writeToFile(rsChallenges);
 			} catch (IOException e) {
 				msg = "Error in challenge generation : " + e.getMessage();
 				System.err.println(msg);
