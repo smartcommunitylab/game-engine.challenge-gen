@@ -127,7 +127,7 @@ public class RestTest {
 		toWrite.append("PLAYER_ID;SCORE_GREEN_LEAVES;" + customNames + "\n");
 		for (Content content : result) {
 			toWrite.append(content.getPlayerId() + ";"
-					+ getScore(content, "green leaves", false, true) + ";"
+					+ getScore(content, "green leaves", false, false) + ";" // false, false = current week counter
 					+ getCustomData(content, true) + "\n");
 
 		}
