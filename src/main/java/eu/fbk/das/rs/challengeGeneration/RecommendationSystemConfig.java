@@ -64,12 +64,12 @@ public class RecommendationSystemConfig {
 
 	// Transportation mode configuration
 	// First, declare call supported modes. Order matters!
-	private final String[] defaultMode = { BUS_TRIPS, TRAIN_TRIPS,
-			BIKE_SHARING_KM, BIKE_KM, WALK_KM, BIKE_SHARING_TRIPS };
+	private final String[] defaultMode = { BIKE_KM, WALK_KM, BUS_TRIPS, TRAIN_TRIPS,
+		 BIKE_SHARING_TRIPS,};
 	// Second, declare corresponding *_Trips of *_Km modes (i.e. Walk_km =>
 	// Walk_Trips), used for try once challenges
-	private final String[] defaultModetrip = { BUS_TRIPS, TRAIN_TRIPS,
-			BIKE_SHARING_TRIPS, BIKE_TRIPS, WALK_TRIPS };
+	private final String[] defaultModetrip = { BIKE_TRIPS, WALK_TRIPS, BUS_TRIPS, TRAIN_TRIPS,
+			 BIKE_SHARING_TRIPS };
 	// "Walk_Trips", "Bike_Trips", "BikeSharing_Trips"
 	// defining different improvement percentage 10%,20%, etc.
 	private final Double[] percentage = { 0.1, 0.2, 0.3, 0.5, 1.0 };
@@ -95,34 +95,35 @@ public class RecommendationSystemConfig {
 	private void init() {
 		modeConfiguration = new RecommendationSystemModeConfiguration();
 
-		modeConfiguration.put(BIKE_KM, new SingleModeConfig(BIKE_KM, 10, 200.0,
-				380.0, 250.0));
+		modeConfiguration.put(BIKE_KM, new SingleModeConfig(BIKE_KM, 8, 220.0,
+				380.0, 300.0));
 		modeConfiguration.put(WALK_KM, new SingleModeConfig(WALK_KM, 10, 200.0,
-				380.0, 250.0));
-		modeConfiguration.put(WALK_TRIPS, new SingleModeConfig(WALK_TRIPS, 10,
-				150.0, 250.0, 200.0));
-		modeConfiguration.put(BIKE_TRIPS, new SingleModeConfig(BIKE_TRIPS, 10,
-				200.0, 300.0, 250.0));
-
-		modeConfiguration.put(BIKE_SHARING_KM, new SingleModeConfig(
-				BIKE_SHARING_KM, 7, 200.0, 300.0, 250.0));
-
-		modeConfiguration.put(BUS_TRIPS, new SingleModeConfig(BUS_TRIPS, 5,
-				200.0, 350.0, 250.0));
-		modeConfiguration.put(TRAIN_TRIPS, new SingleModeConfig(TRAIN_TRIPS, 5,
-				200.0, 350.0, 250.0));
+				380.0, 280.0));
+	
+		modeConfiguration.put(BUS_TRIPS, new SingleModeConfig(BUS_TRIPS, 10,
+				200.0, 380.0, 280.0));
+		modeConfiguration.put(TRAIN_TRIPS, new SingleModeConfig(TRAIN_TRIPS, 10,
+				200.0, 380.0, 280.0));
 
 		modeConfiguration.put(BIKE_SHARING_TRIPS, new SingleModeConfig(
-				BIKE_SHARING_TRIPS, 0, 150.0, 300.0, 200.0));
+				BIKE_SHARING_TRIPS, 10, 220.0, 380.0, 300.0));
 
-		modeConfiguration.put(ZERO_IMPACT_TRIPS, new SingleModeConfig(
-				ZERO_IMPACT_TRIPS, 0, 150.0, 300.0, 200.0));
+		
 		modeConfiguration.put(TRAIN_KM, new SingleModeConfig(TRAIN_KM, 0,
 				150.0, 350.0, 240.0));
 		modeConfiguration.put(BUS_KM, new SingleModeConfig(BUS_KM, 0, 150.0,
 				350.0, 240.0));
 		modeConfiguration.put(NO_CAR_TRIPS, new SingleModeConfig(NO_CAR_TRIPS,
 				0, 100.0, 250.0, 150.0));
+		modeConfiguration.put(BIKE_SHARING_KM, new SingleModeConfig(
+				BIKE_SHARING_KM, 0, 200.0, 300.0, 250.0));
+		modeConfiguration.put(WALK_TRIPS, new SingleModeConfig(WALK_TRIPS, 0,
+				150.0, 250.0, 200.0));
+		modeConfiguration.put(BIKE_TRIPS, new SingleModeConfig(BIKE_TRIPS, 0,
+				220.0, 380.0, 300.0));
+		modeConfiguration.put(ZERO_IMPACT_TRIPS, new SingleModeConfig(
+				ZERO_IMPACT_TRIPS, 0, 200.0, 380.0, 280.0));
+
 
 		// list of default player ids
 		playerIds = new ArrayList<String>();
