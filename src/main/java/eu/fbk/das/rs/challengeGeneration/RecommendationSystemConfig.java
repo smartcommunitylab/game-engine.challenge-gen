@@ -56,7 +56,7 @@ public class RecommendationSystemConfig {
 	/**
 	 * Enable default users filtering
 	 */
-	private static final boolean userFiltering = true;
+	private boolean userFiltering = false;
 	/**
 	 * Enable select top 2 challenges
 	 */
@@ -64,12 +64,12 @@ public class RecommendationSystemConfig {
 
 	// Transportation mode configuration
 	// First, declare call supported modes. Order matters!
-	private final String[] defaultMode = { BIKE_KM, WALK_KM, BUS_TRIPS, TRAIN_TRIPS,
-		 BIKE_SHARING_TRIPS,};
+	private final String[] defaultMode = { BIKE_KM, WALK_KM, BUS_TRIPS,
+			TRAIN_TRIPS, BIKE_SHARING_TRIPS, };
 	// Second, declare corresponding *_Trips of *_Km modes (i.e. Walk_km =>
 	// Walk_Trips), used for try once challenges
-	private final String[] defaultModetrip = { BIKE_TRIPS, WALK_TRIPS, BUS_TRIPS, TRAIN_TRIPS,
-			 BIKE_SHARING_TRIPS };
+	private final String[] defaultModetrip = { BIKE_TRIPS, WALK_TRIPS,
+			BUS_TRIPS, TRAIN_TRIPS, BIKE_SHARING_TRIPS };
 	// "Walk_Trips", "Bike_Trips", "BikeSharing_Trips"
 	// defining different improvement percentage 10%,20%, etc.
 	private final Double[] percentage = { 0.1, 0.2, 0.3, 0.5, 1.0 };
@@ -82,11 +82,13 @@ public class RecommendationSystemConfig {
 	private String challengeNamePrefix = "w12_rs_";
 	private String filteringIds;
 
-	public RecommendationSystemConfig(String filteringIds) {
+	public RecommendationSystemConfig(Boolean filteringEnabled,
+			String filteringIds) {
 		if (filteringIds == null) {
 			throw new IllegalArgumentException(
 					"provided input must be not null");
 		}
+		this.userFiltering = filteringEnabled;
 		this.filteringIds = filteringIds;
 		init();
 	}
@@ -99,16 +101,15 @@ public class RecommendationSystemConfig {
 				380.0, 300.0));
 		modeConfiguration.put(WALK_KM, new SingleModeConfig(WALK_KM, 10, 200.0,
 				380.0, 280.0));
-	
+
 		modeConfiguration.put(BUS_TRIPS, new SingleModeConfig(BUS_TRIPS, 10,
 				200.0, 380.0, 280.0));
-		modeConfiguration.put(TRAIN_TRIPS, new SingleModeConfig(TRAIN_TRIPS, 10,
-				200.0, 380.0, 280.0));
+		modeConfiguration.put(TRAIN_TRIPS, new SingleModeConfig(TRAIN_TRIPS,
+				10, 200.0, 380.0, 280.0));
 
 		modeConfiguration.put(BIKE_SHARING_TRIPS, new SingleModeConfig(
 				BIKE_SHARING_TRIPS, 10, 220.0, 380.0, 300.0));
 
-		
 		modeConfiguration.put(TRAIN_KM, new SingleModeConfig(TRAIN_KM, 0,
 				150.0, 350.0, 240.0));
 		modeConfiguration.put(BUS_KM, new SingleModeConfig(BUS_KM, 0, 150.0,
@@ -123,7 +124,6 @@ public class RecommendationSystemConfig {
 				220.0, 380.0, 300.0));
 		modeConfiguration.put(ZERO_IMPACT_TRIPS, new SingleModeConfig(
 				ZERO_IMPACT_TRIPS, 0, 200.0, 380.0, 280.0));
-
 
 		// list of default player ids
 		playerIds = new ArrayList<String>();

@@ -70,6 +70,7 @@ public class ChallengeGeneratorTool {
 		String password = "";
 		String filterIds = "";
 		Boolean useRecommendationSystem = Boolean.FALSE;
+		Boolean useFiltering = Boolean.FALSE;
 		if (cmd.hasOption("host")) {
 			host = cmd.getArgList().get(0);
 		} else {
@@ -100,12 +101,15 @@ public class ChallengeGeneratorTool {
 		if (cmd.hasOption("useRecommendationSystem")) {
 			useRecommendationSystem = Boolean.valueOf(cmd.getArgList().get(6));
 		}
+		if (cmd.hasOption("enableFiltering")) {
+			useFiltering = Boolean.valueOf(cmd.getArgList().get(7));
+		}
 		if (cmd.hasOption("filterIds")) {
-			filterIds = cmd.getArgList().get(7);
+			filterIds = cmd.getArgList().get(8);
 		}
 		// call generation
 		generate(host, gameId, input, output, username, password, filterIds,
-				useRecommendationSystem);
+				useRecommendationSystem, useFiltering);
 	}
 
 	private static void printHelp() {
@@ -131,7 +135,7 @@ public class ChallengeGeneratorTool {
 	 */
 	public static void generate(String host, String gameId, String input,
 			String output, String username, String password, String filterIds,
-			Boolean useRecommendationSystem) {
+			Boolean useRecommendationSystem, Boolean useFiltering) {
 		// load
 		ChallengeRules challengeDefinition;
 		try {
@@ -149,7 +153,7 @@ public class ChallengeGeneratorTool {
 		}
 		System.out.println("Challenge definition file: " + input);
 		generate(host, gameId, challengeDefinition, username, password, output,
-				filterIds, useRecommendationSystem);
+				filterIds, useRecommendationSystem, useFiltering);
 	}
 
 	/**
@@ -168,7 +172,7 @@ public class ChallengeGeneratorTool {
 	public static String generate(String host, String gameId,
 			ChallengeRules challengeDefinitions, String username,
 			String password, String output, String filterIds,
-			Boolean useRecommendationSystem) {
+			Boolean useRecommendationSystem, Boolean useFiltering) {
 		String log = "";
 		// get users from gamification engine
 		GamificationEngineRestFacade facade;
@@ -224,7 +228,7 @@ public class ChallengeGeneratorTool {
 		// recommandationsystem integration
 		if (useRecommendationSystem) {
 			RecommendationSystem rs = new RecommendationSystem(
-					new RecommendationSystemConfig(filterIds));
+					new RecommendationSystemConfig(useFiltering, filterIds));
 			Map<String, List<ChallengeDataDTO>> rsChallenges = rs
 					.recommendation(users, CalendarUtil.getStart().getTime(),
 							CalendarUtil.getEnd().getTime());
@@ -311,7 +315,7 @@ public class ChallengeGeneratorTool {
 	public static String generate(String host, String gameId,
 			ChallengeRules challenges, String username, String password,
 			String output, Date startDate, Date endDate, String filterIds,
-			Boolean useRecommendationSystem) {
+			Boolean useRecommendationSystem, Boolean useFiltering) {
 		if (host == null || gameId == null || challenges == null
 				|| username == null || password == null || output == null
 				|| startDate == null || endDate == null || filterIds == null
@@ -321,6 +325,6 @@ public class ChallengeGeneratorTool {
 		CalendarUtil.setStart(startDate);
 		CalendarUtil.setEnd(endDate);
 		return generate(host, gameId, challenges, username, password, output,
-				filterIds, useRecommendationSystem);
+				filterIds, useRecommendationSystem, useFiltering);
 	}
 }

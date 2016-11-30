@@ -41,6 +41,7 @@ public class RecommendationSystemChallengeGenerationTest {
 		facade = new GamificationEngineRestFacade(get(HOST) + get(CONTEXT),
 				get(USERNAME), get(PASSWORD));
 		configuration = new RecommendationSystemConfig(
+				Boolean.valueOf(get(PropertiesUtil.FILTERING_ENABLED)),
 				get(PropertiesUtil.FILTERING));
 		now = new LocalDate();
 
@@ -180,6 +181,7 @@ public class RecommendationSystemChallengeGenerationTest {
 	public void configurationFilteringTest() {
 		// at least two users for filtering
 		RecommendationSystemConfig rc = new RecommendationSystemConfig(
+				Boolean.valueOf(get(PropertiesUtil.FILTERING_ENABLED)),
 				get(PropertiesUtil.FILTERING));
 		assertTrue(!rc.isUserfiltering()
 				|| (rc.isUserfiltering() && rc.getPlayerIds().size() > 2));
@@ -253,7 +255,8 @@ public class RecommendationSystemChallengeGenerationTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void testConfigFilteringIdsNull() {
 		@SuppressWarnings("unused")
-		RecommendationSystemConfig config = new RecommendationSystemConfig(null);
+		RecommendationSystemConfig config = new RecommendationSystemConfig(
+				null, null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -279,6 +282,12 @@ public class RecommendationSystemChallengeGenerationTest {
 				configuration);
 		rcg.generate(gameData, now.dayOfMonth().addToCopy(1).toDate(),
 				now.toDate());
+	}
+
+	@Test
+	public void testUseFilteringAndFilterIds() {
+		assertTrue(configuration.isUserfiltering()
+				&& !configuration.getPlayerIds().isEmpty());
 	}
 
 }
