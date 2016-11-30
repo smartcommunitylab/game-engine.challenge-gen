@@ -248,10 +248,18 @@ public class RestTest {
 		System.out.println("PLAYER_ID;TOTAL_SCORE");
 		for (Content user : result) {
 			if (ids.contains(user.getPlayerId())) {
+				if (user.getPlayerId().equals("24823")) {
+					System.out.println();
+				}
 				for (PointConcept pc : user.getState().getPointConcept()) {
 					if (pc.getName().equals("green leaves")) {
-						System.out.println(user.getPlayerId() + ";"
-								+ pc.getScore());
+						if (pc.getPeriods().get("weekly").getInstances().size() > 0) {
+							Double score = pc.getPeriods().get("weekly")
+									.getInstances().get(10).getScore();
+							System.out
+									.println(user.getPlayerId() + ";" + score);
+
+						}
 					}
 				}
 			}
