@@ -30,6 +30,10 @@ public final class ExcelUtil {
 	 */
 	public static Sheet buildRow(RecommendationSystemConfig configuration,
 			Sheet sheet, Row row, String playerId, ChallengeDataDTO challenge) {
+		if (configuration == null || sheet == null || row == null
+				|| playerId == null || challenge == null) {
+			throw new IllegalArgumentException("Illegal arguments: null");
+		}
 		row.createCell(0).setCellValue(playerId);
 		row.createCell(1).setCellValue(challenge.getModelName());
 		row.createCell(2).setCellValue(challenge.getInstanceName());
@@ -61,6 +65,22 @@ public final class ExcelUtil {
 					(Double) challenge.getData().get(PERCENTAGE));
 		} else {
 			row.createCell(10).setCellValue(0);
+		}
+		return sheet;
+	}
+
+	public static Sheet buildRow(String playerId, String customData,
+			Sheet sheet, Row row) {
+		if (playerId == null || customData == null || sheet == null
+				|| row == null) {
+			throw new IllegalArgumentException("Illegal arguments: null");
+		}
+		row.createCell(0).setCellValue(playerId);
+		String[] values = customData.split(";");
+		int index = 1;
+		for (int i = 0; i < values.length; i++) {
+			row.createCell(index).setCellValue(values[i]);
+			index++;
 		}
 		return sheet;
 	}

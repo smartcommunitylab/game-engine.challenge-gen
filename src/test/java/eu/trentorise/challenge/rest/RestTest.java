@@ -11,6 +11,7 @@ import static eu.trentorise.challenge.PropertiesUtil.USERNAME;
 import static eu.trentorise.challenge.PropertiesUtil.get;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -26,6 +27,10 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,8 +41,10 @@ import eu.trentorise.game.challenges.rest.ExecutionDataDTO;
 import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
 import eu.trentorise.game.challenges.rest.InsertedRuleDto;
 import eu.trentorise.game.challenges.rest.PointConcept;
+import eu.trentorise.game.challenges.rest.PointConcept.PeriodInstanceImpl;
 import eu.trentorise.game.challenges.util.CalendarUtil;
 import eu.trentorise.game.challenges.util.ConverterUtil;
+import eu.trentorise.game.challenges.util.ExcelUtil;
 import eu.trentorise.game.challenges.util.JourneyData;
 
 public class RestTest {
@@ -164,6 +171,30 @@ public class RestTest {
 		return result;
 	}
 
+	private String getCustomDataForWeek(Content content, int w) {
+		String result = "";
+		List<PointConcept> concepts = content.getState().getPointConcept();
+		Collections.sort(concepts, new Comparator<PointConcept>() {
+			@Override
+			public int compare(PointConcept o1, PointConcept o2) {
+				return o1.getName().compareTo(o2.getName());
+			}
+		});
+
+		Iterator<PointConcept> iter = concepts.iterator();
+		while (iter.hasNext()) {
+			PointConcept pc = iter.next();
+			try {
+				PeriodInstanceImpl v = pc.getPeriods().get("weekly")
+						.getInstances().get(w);
+				result += v.getScore() + ";";
+			} catch (Exception e) {
+				result += "0;";
+			}
+		}
+		return result;
+	}
+
 	private Double getScore(Content content, String points, boolean previous,
 			boolean total) {
 		for (PointConcept pc : content.getState().getPointConcept()) {
@@ -279,6 +310,67 @@ public class RestTest {
 			}
 			// }
 		}
+	}
+
+	@Test
+	/**
+	 * Print an excel file, for every week, the status for all players
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	public void finalGameStatus() throws FileNotFoundException, IOException {
+		List<Content> result = facade.readGameState(get(GAMEID));
+
+		// Get the workbook instance for XLS file
+		Workbook workbook = new XSSFWorkbook();
+
+		String customNames = get(RELEVANT_CUSTOM_DATA);
+		customNames = "PLAYER_ID;" + customNames;
+		String[] labels = customNames.split(";");
+
+		for (int w = 1; w <= 12; w++) {
+			// Get first sheet from the workbook
+			Sheet sheet = workbook.createSheet("Week" + w);
+
+			Row header = sheet.createRow(0);
+			int i = 0;
+			for (String label : labels) {
+				header.createCell(i).setCellValue(label);
+				i++;
+			}
+			int rowIndex = 1;
+
+			for (Content user : result) {
+				if (existInWeek(user, w)) {
+					Row row = sheet.createRow(rowIndex);
+					sheet = ExcelUtil.buildRow(user.getPlayerId(),
+							getCustomDataForWeek(user, w), sheet, row);
+					rowIndex++;
+				}
+			}
+
+		}
+
+		workbook.write(new FileOutputStream(new File("finalGameStatus.xlsx")));
+		workbook.close();
+		logger.info("written finalGameStatus.xlsx");
+	}
+
+	private boolean existInWeek(Content user, int w) {
+		for (PointConcept pc : user.getState().getPointConcept()) {
+			if (pc.getName().equals("green leaves")) {
+				try {
+					PeriodInstanceImpl v = pc.getPeriods().get("weekly")
+							.getInstances().get(w);
+					if (v.getScore() > 0) {
+						return true;
+					}
+				} catch (IndexOutOfBoundsException e) {
+					// continue
+				}
+			}
+		}
+		return false;
 	}
 
 }

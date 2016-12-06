@@ -12,6 +12,7 @@ import org.junit.Test;
 import eu.trentorise.game.challenges.util.ChallengeRules;
 import eu.trentorise.game.challenges.util.ChallengeRulesLoader;
 import eu.trentorise.game.challenges.util.ConverterUtil;
+import eu.trentorise.game.challenges.util.ExcelUtil;
 import eu.trentorise.game.challenges.util.JourneyData;
 import eu.trentorise.game.challenges.util.PointConceptUtil;
 
@@ -61,6 +62,16 @@ public class UtilTest {
 	@Test
 	public void pointConceptUtilNull() {
 		assertNull(PointConceptUtil.getPointConcept(null, null));
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void buildRowChallengeNull() {
+		ExcelUtil.buildRow(null, null, null, null, null);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void buildRowFinalGameStatusNull() {
+		ExcelUtil.buildRow(null, null, null, null);
 	}
 
 }
