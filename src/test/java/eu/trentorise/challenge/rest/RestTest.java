@@ -235,37 +235,28 @@ public class RestTest {
 				+ "\n");
 
 		for (Content user : result) {
-			if (getScore(user, "green leaves", false, true) > 0) {
-				for (ChallengeConcept cc : user.getState()
-						.getChallengeConcept()) {
-					toWrite.append(user.getPlayerId() + ";");
-					toWrite.append(cc.getName() + ";");
-					toWrite.append(cc.getModelName() + ";");
-					toWrite.append(cc.getFields().get(Constants.TARGET) + ";");
-					toWrite.append(cc.getFields().get(Constants.BONUS_SCORE)
-							+ ";");
-					toWrite.append(cc.getFields().get(
-							Constants.BONUS_POINT_TYPE)
-							+ ";");
-					toWrite.append(CalendarUtil.format((Long) cc.getStart())
-							+ ";");
-					toWrite.append(CalendarUtil.format((Long) cc.getEnd())
-							+ ";");
-					toWrite.append(cc.getCompleted() + ";");
-					toWrite.append(CalendarUtil.format(cc.getDateCompleted())
-							+ ";");
-					toWrite.append(cc.getFields().get(Constants.BASELINE) + ";");
-					toWrite.append(cc.getFields().get(Constants.PERIOD_NAME)
-							+ ";");
-					toWrite.append(cc.getFields().get(Constants.COUNTER_NAME)
-							+ ";");
-					toWrite.append(getScore(
-							user,
-							(String) cc.getFields().get(Constants.COUNTER_NAME),
-							cc.getStart())
-							+ ";\n");
-				}
+			// if (getScore(user, "green leaves", false, true) > 0) {
+			for (ChallengeConcept cc : user.getState().getChallengeConcept()) {
+				toWrite.append(user.getPlayerId() + ";");
+				toWrite.append(cc.getName() + ";");
+				toWrite.append(cc.getModelName() + ";");
+				toWrite.append(cc.getFields().get(Constants.TARGET) + ";");
+				toWrite.append(cc.getFields().get(Constants.BONUS_SCORE) + ";");
+				toWrite.append(cc.getFields().get(Constants.BONUS_POINT_TYPE)
+						+ ";");
+				toWrite.append(CalendarUtil.format((Long) cc.getStart()) + ";");
+				toWrite.append(CalendarUtil.format((Long) cc.getEnd()) + ";");
+				toWrite.append(cc.getCompleted() + ";");
+				toWrite.append(CalendarUtil.format(cc.getDateCompleted()) + ";");
+				toWrite.append(cc.getFields().get(Constants.BASELINE) + ";");
+				toWrite.append(cc.getFields().get(Constants.PERIOD_NAME) + ";");
+				toWrite.append(cc.getFields().get(Constants.COUNTER_NAME) + ";");
+				toWrite.append(getScore(user,
+						(String) cc.getFields().get(Constants.COUNTER_NAME),
+						cc.getStart())
+						+ ";\n");
 			}
+			// }
 		}
 
 		String writable = toWrite.toString();
