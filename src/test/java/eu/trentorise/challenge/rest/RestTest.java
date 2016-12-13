@@ -11,12 +11,11 @@ import static eu.trentorise.challenge.PropertiesUtil.USERNAME;
 import static eu.trentorise.challenge.PropertiesUtil.get;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -28,6 +27,10 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,8 +41,10 @@ import eu.trentorise.game.challenges.rest.ExecutionDataDTO;
 import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
 import eu.trentorise.game.challenges.rest.InsertedRuleDto;
 import eu.trentorise.game.challenges.rest.PointConcept;
+import eu.trentorise.game.challenges.rest.PointConcept.PeriodInstanceImpl;
 import eu.trentorise.game.challenges.util.CalendarUtil;
 import eu.trentorise.game.challenges.util.ConverterUtil;
+import eu.trentorise.game.challenges.util.ExcelUtil;
 import eu.trentorise.game.challenges.util.JourneyData;
 
 public class RestTest {
@@ -128,10 +133,13 @@ public class RestTest {
 		toWrite.append("PLAYER_ID;SCORE_GREEN_LEAVES;" + customNames + "\n");
 		for (Content content : result) {
 			toWrite.append(content.getPlayerId() + ";"
-					+ getScore(content, "green leaves") + ";"
-					+ getCustomData(content, false)// +
-													// getChalengesStatus(content)
-					+ "\n");
+					+ getScore(content, "green leaves", true, false) + ";" // false,
+																			// false
+																			// =
+																			// current
+																			// week
+																			// counter
+					+ getCustomData(content, true) + "\n");
 
 		}
 		IOUtils.write(toWrite.toString(),
@@ -154,7 +162,8 @@ public class RestTest {
 		while (iter.hasNext()) {
 			PointConcept pc = iter.next();
 			if (weekly) {
-				result += pc.getPeriodPreviousScore("weekly") + ";";
+				// result += pc.getPeriodPreviousScore("weekly") + ";";
+				result += pc.getPeriodCurrentScore("weekly") + ";";
 			} else {
 				result += pc.getScore() + ";";
 			}
@@ -162,10 +171,41 @@ public class RestTest {
 		return result;
 	}
 
-	private Double getScore(Content content, String points) {
+	private String getCustomDataForWeek(Content content, int w) {
+		String result = "";
+		List<PointConcept> concepts = content.getState().getPointConcept();
+		Collections.sort(concepts, new Comparator<PointConcept>() {
+			@Override
+			public int compare(PointConcept o1, PointConcept o2) {
+				return o1.getName().compareTo(o2.getName());
+			}
+		});
+
+		Iterator<PointConcept> iter = concepts.iterator();
+		while (iter.hasNext()) {
+			PointConcept pc = iter.next();
+			try {
+				PeriodInstanceImpl v = pc.getPeriods().get("weekly")
+						.getInstances().get(w);
+				result += v.getScore() + ";";
+			} catch (Exception e) {
+				result += "0;";
+			}
+		}
+		return result;
+	}
+
+	private Double getScore(Content content, String points, boolean previous,
+			boolean total) {
 		for (PointConcept pc : content.getState().getPointConcept()) {
 			if (pc.getName().equalsIgnoreCase(points)) {
-				return pc.getScore();
+				if (total) {
+					return pc.getScore();
+				}
+				if (previous) {
+					return pc.getPeriodPreviousScore("weekly");
+				}
+				return pc.getPeriodCurrentScore("weekly");
 			}
 		}
 		return null;
@@ -178,102 +218,6 @@ public class RestTest {
 			}
 		}
 		return null;
-	}
-
-	@Test
-	public void challengeStatus() throws FileNotFoundException, IOException {
-		// a small utility to get a list of all users with a given challenge in
-		// a period and its status
-		List<Content> result = facade.readGameState(get(GAMEID));
-		assertTrue(!result.isEmpty());
-
-		String[] customNames = get(RELEVANT_CUSTOM_DATA).split(",");
-		assertTrue(customNames != null);
-
-		List<String> listNames = Arrays.asList(customNames);
-		StringBuffer toWrite = new StringBuffer();
-
-		toWrite.append("PLAYER_ID;CHALLENGE_TYPE;CHALLENGE_END;SUCCESS;\n");
-		for (Content content : result) {
-			// if (getScore(content, "green leaves week 5") > 0) {
-			List<ChallengeTuple> cts = getChallengeWithEndDate(content);
-			if (!cts.isEmpty()) {
-				for (ChallengeTuple ct : cts) {
-					if (ct.getEndDate().contains("18/07/2016 00:00:01")) {
-						toWrite.append(content.getPlayerId() + ";"
-								+ ct.getType() + ";" + ct.getEndDate() + ";"
-								+ getSuccess(ct, content) + ";\n");
-					}
-				}
-			}
-			// }
-		}
-		IOUtils.write(toWrite.toString(), new FileOutputStream(
-				"challengeReportstatus.csv"));
-
-		assertTrue(!toWrite.toString().isEmpty());
-	}
-
-	private boolean getSuccess(ChallengeTuple ct, Content content) {
-		for (String key : content.getCustomData().getAdditionalProperties()
-				.keySet()) {
-			if (key.equals(ct.getUuid() + "_success")) {
-				return (boolean) content.getCustomData()
-						.getAdditionalProperties().get(key);
-			}
-		}
-		return false;
-	}
-
-	private List<ChallengeTuple> getChallengeWithEndDate(Content content) {
-		List<ChallengeTuple> result = new ArrayList<RestTest.ChallengeTuple>();
-		for (String key : content.getCustomData().getAdditionalProperties()
-				.keySet()) {
-			if (key.endsWith("_endChTs")) {
-				ChallengeTuple ct = new ChallengeTuple();
-				ct.setUuid(StringUtils.removeEnd(key, "_endChTs"));
-				ct.setEndDate(sdf.format(content.getCustomData()
-						.getAdditionalProperties().get(key)));
-				ct.setType((String) content.getCustomData()
-						.getAdditionalProperties().get(ct.getUuid() + "_type"));
-				result.add(ct);
-			}
-		}
-		return result;
-	}
-
-	private class ChallengeTuple {
-
-		private String uuid;
-
-		private String type;
-
-		public String getUuid() {
-			return uuid;
-		}
-
-		public void setUuid(String uuid) {
-			this.uuid = uuid;
-		}
-
-		public String getEndDate() {
-			return endDate;
-		}
-
-		public void setEndDate(String endDate) {
-			this.endDate = endDate;
-		}
-
-		private String endDate;
-
-		public String getType() {
-			return type;
-		}
-
-		public void setType(String type) {
-			this.type = type;
-		}
-
 	}
 
 	@Test
@@ -291,6 +235,7 @@ public class RestTest {
 				+ "\n");
 
 		for (Content user : result) {
+			// if (getScore(user, "green leaves", false, true) > 0) {
 			for (ChallengeConcept cc : user.getState().getChallengeConcept()) {
 				toWrite.append(user.getPlayerId() + ";");
 				toWrite.append(cc.getName() + ";");
@@ -310,9 +255,8 @@ public class RestTest {
 						(String) cc.getFields().get(Constants.COUNTER_NAME),
 						cc.getStart())
 						+ ";\n");
-				//
-				// }
 			}
+			// }
 		}
 
 		String writable = toWrite.toString();
@@ -322,6 +266,102 @@ public class RestTest {
 				"challengeReportDetails.csv"));
 		logger.info("challengeReportDetails.csv written");
 		assertTrue(!writable.isEmpty());
+	}
+
+	@Test
+	public void printPoints() throws FileNotFoundException, IOException {
+		// a small utility to get a list of all users with a given challenge in
+		// a period and its status
+		List<Content> result = facade.readGameState(get(GAMEID));
+		assertTrue(!result.isEmpty());
+
+		// week11 playerIds
+		// String playerIds =
+		// "24813,24538,17741,24816,24498,24871,24279,24612,24853,24339,24391,24150,24650,11125,24092,24869,24329,24826,24828,24762,24883,24288,24486,24566,24224,24741,24367,19092,24864,24347,24823,23513,24526,24327,1667,24120,24482,24320,24122,24440";
+		// List<String> ids = new ArrayList<String>();
+		// Collections.addAll(ids, playerIds.split(","));
+
+		System.out.println("PLAYER_ID;TOTAL_SCORE");
+		for (Content user : result) {
+			// if (ids.contains(user.getPlayerId())) {
+			// if (user.getPlayerId().equals("24823")) {
+			// System.out.println();
+			// }
+			for (PointConcept pc : user.getState().getPointConcept()) {
+				if (pc.getName().equals("green leaves")) {
+					if (pc.getPeriods().get("weekly").getInstances().size() > 12) {
+						Double score = pc.getPeriods().get("weekly")
+								.getInstances().get(12).getScore();
+						System.out.println(user.getPlayerId() + ";" + score);
+
+					} else {
+						// System.out.println();
+					}
+				}
+			}
+			// }
+		}
+	}
+
+	@Test
+	/**
+	 * Print an excel file, for every week, the status for all players
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	public void finalGameStatus() throws FileNotFoundException, IOException {
+		List<Content> result = facade.readGameState(get(GAMEID));
+
+		// Get the workbook instance for XLS file
+		Workbook workbook = new XSSFWorkbook();
+
+		String customNames = get(RELEVANT_CUSTOM_DATA);
+		customNames = "PLAYER_ID;" + customNames;
+		String[] labels = customNames.split(";");
+
+		for (int w = 1; w <= 12; w++) {
+			// Get first sheet from the workbook
+			Sheet sheet = workbook.createSheet("Week" + w);
+
+			Row header = sheet.createRow(0);
+			int i = 0;
+			for (String label : labels) {
+				header.createCell(i).setCellValue(label);
+				i++;
+			}
+			int rowIndex = 1;
+
+			for (Content user : result) {
+				if (existInWeek(user, w)) {
+					Row row = sheet.createRow(rowIndex);
+					sheet = ExcelUtil.buildRow(user.getPlayerId(),
+							getCustomDataForWeek(user, w), sheet, row);
+					rowIndex++;
+				}
+			}
+
+		}
+
+		workbook.write(new FileOutputStream(new File("finalGameStatus.xlsx")));
+		workbook.close();
+		logger.info("written finalGameStatus.xlsx");
+	}
+
+	private boolean existInWeek(Content user, int w) {
+		for (PointConcept pc : user.getState().getPointConcept()) {
+			if (pc.getName().equals("green leaves")) {
+				try {
+					PeriodInstanceImpl v = pc.getPeriods().get("weekly")
+							.getInstances().get(w);
+					if (v.getScore() > 0) {
+						return true;
+					}
+				} catch (IndexOutOfBoundsException e) {
+					// continue
+				}
+			}
+		}
+		return false;
 	}
 
 }

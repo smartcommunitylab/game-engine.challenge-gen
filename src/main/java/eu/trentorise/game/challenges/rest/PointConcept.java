@@ -220,7 +220,7 @@ public class PointConcept {
 		public int getIndex();
 	}
 
-	private class PeriodInternal implements Period {
+	public class PeriodInternal implements Period {
 		private Date start;
 		private long period;
 		private String identifier;
@@ -358,7 +358,7 @@ public class PointConcept {
 		}
 	}
 
-	private class PeriodInstanceImpl implements PeriodInstance {
+	public class PeriodInstanceImpl implements PeriodInstance {
 		private Double score = 0d;
 		private long start;
 		private long end;

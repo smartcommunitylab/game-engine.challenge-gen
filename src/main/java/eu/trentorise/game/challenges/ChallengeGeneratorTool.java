@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -14,7 +15,11 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import eu.fbk.das.rs.challengeGeneration.RecommendationSystem;
+import eu.fbk.das.rs.challengeGeneration.RecommendationSystemConfig;
+import eu.trentorise.game.challenges.api.Constants;
 import eu.trentorise.game.challenges.exception.UndefinedChallengeException;
+import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import eu.trentorise.game.challenges.rest.Content;
 import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
 import eu.trentorise.game.challenges.util.CalendarUtil;
@@ -63,6 +68,9 @@ public class ChallengeGeneratorTool {
 		String output = "challenge.json";
 		String username = "";
 		String password = "";
+		String filterIds = "";
+		Boolean useRecommendationSystem = Boolean.FALSE;
+		Boolean useFiltering = Boolean.FALSE;
 		if (cmd.hasOption("host")) {
 			host = cmd.getArgList().get(0);
 		} else {
@@ -90,15 +98,25 @@ public class ChallengeGeneratorTool {
 		if (cmd.hasOption("password")) {
 			password = cmd.getArgList().get(5);
 		}
+		if (cmd.hasOption("useRecommendationSystem")) {
+			useRecommendationSystem = Boolean.valueOf(cmd.getArgList().get(6));
+		}
+		if (cmd.hasOption("enableFiltering")) {
+			useFiltering = Boolean.valueOf(cmd.getArgList().get(7));
+		}
+		if (cmd.hasOption("filterIds")) {
+			filterIds = cmd.getArgList().get(8);
+		}
 		// call generation
-		generate(host, gameId, input, output, username, password);
+		generate(host, gameId, input, output, username, password, filterIds,
+				useRecommendationSystem, useFiltering);
 	}
 
 	private static void printHelp() {
 		helpFormatter
 				.printHelp(
 						"challengeGeneratorTool",
-						"-host <host> -gameId <gameId> -input <input csv file> -template <template directory> [-output output file] [-username -password]",
+						"-host <host> -gameId <gameId> -input <input csv file> -template <template directory> [-output output file] [-username -password] -useRecommendationSystem <true/false> -filterIds <list of filter ids comma separated>",
 						options, "");
 	}
 
@@ -112,26 +130,30 @@ public class ChallengeGeneratorTool {
 	 * @param output
 	 * @param username
 	 * @param password
+	 * @param filterIds
+	 * @param useRecommendationSystem
 	 */
 	public static void generate(String host, String gameId, String input,
-			String output, String username, String password) {
+			String output, String username, String password, String filterIds,
+			Boolean useRecommendationSystem, Boolean useFiltering) {
 		// load
-		ChallengeRules result;
+		ChallengeRules challengeDefinition;
 		try {
-			result = ChallengeRulesLoader.load(input);
+			challengeDefinition = ChallengeRulesLoader.load(input);
 		} catch (NullPointerException | IllegalArgumentException | IOException e1) {
 			String msg = "Error in challenge definition loading for " + input
 					+ ": " + e1.getMessage();
 			System.err.println(msg);
 			return;
 		}
-		if (result == null) {
+		if (challengeDefinition == null) {
 			String msg = "Error in loading : " + input;
 			System.out.println(msg);
 			return;
 		}
 		System.out.println("Challenge definition file: " + input);
-		generate(host, gameId, result, username, password, output);
+		generate(host, gameId, challengeDefinition, username, password, output,
+				filterIds, useRecommendationSystem, useFiltering);
 	}
 
 	/**
@@ -139,7 +161,7 @@ public class ChallengeGeneratorTool {
 	 * 
 	 * @param host
 	 * @param gameId
-	 * @param result
+	 * @param challengeDefinitions
 	 * @param templateDir
 	 * @param output
 	 * @param username
@@ -148,8 +170,9 @@ public class ChallengeGeneratorTool {
 	 * @see ChallengeRulesLoader
 	 */
 	public static String generate(String host, String gameId,
-			ChallengeRules result, String username, String password,
-			String output) {
+			ChallengeRules challengeDefinitions, String username,
+			String password, String output, String filterIds,
+			Boolean useRecommendationSystem, Boolean useFiltering) {
 		String log = "";
 		// get users from gamification engine
 		GamificationEngineRestFacade facade;
@@ -163,7 +186,7 @@ public class ChallengeGeneratorTool {
 		}
 		String msg = "Contacting gamification engine on host " + host;
 		System.out.println(msg);
-		log += msg + "\n";
+		log += msg + Constants.LINE_SEPARATOR;
 		List<Content> users = null;
 
 		try {
@@ -172,25 +195,26 @@ public class ChallengeGeneratorTool {
 			msg = "Error in reading game state from host " + host
 					+ " for gameId " + gameId + " error: " + e.getMessage();
 			System.err.println(msg);
-			log += msg + "\n";
+			log += msg + Constants.LINE_SEPARATOR;
 			return log;
 		}
 		if (users == null || users.isEmpty()) {
 			msg = "Warning: no users for game " + gameId;
 			System.err.println(msg);
-			log += msg + "\n";
+			log += msg + Constants.LINE_SEPARATOR;
 			return log;
 		}
 		msg = "Start date "
 				+ sdf.format(CalendarUtil.getStart().getTime())
-				+ "\n"
+				+ Constants.LINE_SEPARATOR
 				+ "End date "
 				+ sdf.format(CalendarUtil.getEnd().getTime())
-				+ "\n"
+				+ Constants.LINE_SEPARATOR
 				+ "Reading game from gamification engine game state for gameId: "
-				+ gameId + "\n" + "Users in game: " + users.size();
+				+ gameId + Constants.LINE_SEPARATOR + "Users in game: "
+				+ users.size();
 		System.out.println(msg);
-		log += msg + "\n";
+		log += msg + Constants.LINE_SEPARATOR;
 		ChallengesRulesGenerator crg;
 		try {
 			crg = new ChallengesRulesGenerator(new ChallengeInstanceFactory(),
@@ -198,18 +222,48 @@ public class ChallengeGeneratorTool {
 		} catch (IOException e2) {
 			msg = "Error in creating " + "generated-rules-report.csv";
 			System.err.println(msg);
-			log += msg + "\n";
+			log += msg + Constants.LINE_SEPARATOR;
 			return log;
 		}
+		// recommandationsystem integration
+		if (useRecommendationSystem) {
+			RecommendationSystem rs = new RecommendationSystem(
+					new RecommendationSystemConfig(useFiltering, filterIds));
+			Map<String, List<ChallengeDataDTO>> rsChallenges = rs
+					.recommendation(users, CalendarUtil.getStart().getTime(),
+							CalendarUtil.getEnd().getTime());
+			if (rsChallenges == null
+					|| (rsChallenges != null && rsChallenges.isEmpty())) {
+				msg = "Warning: no challenges generated using recommendation system, even if is enabled";
+				System.out.println(msg);
+				log += msg + Constants.LINE_SEPARATOR;
+				return log;
+			}
+			try {
+				crg.setChallenges(rsChallenges, gameId);
+				msg = "Generated challenges using recommandation system for "
+						+ rsChallenges.size() + " players";
+				System.out.println(msg);
+				log += msg + Constants.LINE_SEPARATOR;
+				// write configuration file to filesystem
+				rs.writeToFile(rsChallenges);
+			} catch (IOException e) {
+				msg = "Error in challenge generation : " + e.getMessage();
+				System.err.println(msg);
+				log += msg + Constants.LINE_SEPARATOR;
+				return log;
+			}
+		}
 		// generate challenges
-		for (ChallengeRuleRow challengeSpec : result.getChallenges()) {
+		for (ChallengeRuleRow challengeSpec : challengeDefinitions
+				.getChallenges()) {
 			Matcher matcher = new Matcher(challengeSpec);
 			List<Content> filteredUsers = matcher.match(users);
 			if (filteredUsers.isEmpty()) {
 				msg = "Warning: no users for challenge : "
 						+ challengeSpec.getName();
 				System.out.println(msg);
-				log += msg + "\n";
+				log += msg + Constants.LINE_SEPARATOR;
 				continue;
 			}
 			try {
@@ -219,7 +273,7 @@ public class ChallengeGeneratorTool {
 			} catch (UndefinedChallengeException | IOException e) {
 				msg = "Error in challenge generation : " + e.getMessage();
 				System.err.println(msg);
-				log += msg + "\n";
+				log += msg + Constants.LINE_SEPARATOR;
 				return log;
 			}
 		}
@@ -228,11 +282,11 @@ public class ChallengeGeneratorTool {
 			msg = "Challenges generated and written report file generated-rules-report.csv , "
 					+ output + " ready to be uploaded";
 			System.out.println(msg);
-			log += msg + "\n";
+			log += msg + Constants.LINE_SEPARATOR;
 			return log;
 		} catch (IOException e) {
 			msg = "Error in writing challenges to file";
-			log += msg + "\n";
+			log += msg + Constants.LINE_SEPARATOR;
 			return log;
 		}
 	}
@@ -260,9 +314,17 @@ public class ChallengeGeneratorTool {
 
 	public static String generate(String host, String gameId,
 			ChallengeRules challenges, String username, String password,
-			String output, Date startDate, Date endDate) {
+			String output, Date startDate, Date endDate, String filterIds,
+			Boolean useRecommendationSystem, Boolean useFiltering) {
+		if (host == null || gameId == null || challenges == null
+				|| username == null || password == null || output == null
+				|| startDate == null || endDate == null || filterIds == null
+				|| useRecommendationSystem == null) {
+			throw new IllegalArgumentException("inputs must be not null");
+		}
 		CalendarUtil.setStart(startDate);
 		CalendarUtil.setEnd(endDate);
-		return generate(host, gameId, challenges, username, password, output);
+		return generate(host, gameId, challenges, username, password, output,
+				filterIds, useRecommendationSystem, useFiltering);
 	}
 }

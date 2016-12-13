@@ -6,6 +6,10 @@ public final class Constants {
 	private Constants() {
 	}
 
+	// General constants
+	public static final String LINE_SEPARATOR = System
+			.getProperty("line.separator");
+
 	// Challenge constants
 	public static final String fileExt = ".drl";
 	public static final String CH = "ch_";
