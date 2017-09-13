@@ -1,1 +1,5 @@
-NAME;TYPE;GOAL_TYPE;TARGET;BONUS;POINT_TYPE;DIFFICULTY;BASELINE_VARIABLE;SELECTION_CRITERIA_POINTS;SELECTION_CRITERIA_BADGES;;;w2_bike_sharing_4;absoluteIncrement;BikeSharing_Trips;4.0;100;green leaves;;;BikeSharing_Trips >= 1;;;;w2_bike_sharing_try_1;absoluteIncrement;BikeSharing_Trips;1.0;100;green leaves;;;Bike_Km > 0 && BikeSharing_Trips < 1;;;;w2_green_leaves_100;absoluteIncrement;green leaves;100.0;50;green leaves;;;TRUE;;;;w2_recommendation_1;absoluteIncrement;Recommendations;1.0;100;green leaves;;;TRUE;;;;
+NAME;TYPE;GOAL_TYPE;TARGET;BONUS;POINT_TYPE;DIFFICULTY;BASELINE_VARIABLE;SELECTION_CRITERIA_POINTS;SELECTION_CRITERIA_BADGES
+w2_recommendation_1;absoluteIncrement;Recommendations;1.0;100;green leaves;;;TRUE;
+w2_bike_sharing_4;absoluteIncrement;BikeSharing_Trips;4.0;100;green leaves;;;BikeSharing_Trips >= 1;
+w2_bike_sharing_try_1;absoluteIncrement;BikeSharing_Trips;1.0;100;green leaves;;;Bike_Km > 0 && BikeSharing_Trips < 1;
+w2_green_leaves_100;absoluteIncrement;green leaves;100.0;50;green leaves;;;TRUE;
