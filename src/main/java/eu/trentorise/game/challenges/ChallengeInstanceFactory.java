@@ -32,7 +32,8 @@ public class ChallengeInstanceFactory {
                 return buildCheckIn(params, user);
             case Constants.LEADERBOARDPOSITION:
                 return buildLeaderBoardPosition(params, user);
-
+            case Constants.REPETITIVE_BEHAVIOUR:
+                return buildRepetitiveBehaviour(params, user);
             default:
                 throw new UndefinedChallengeException(
                         "Challenge Generator doesn't recognize this challenge type! "
@@ -173,6 +174,26 @@ public class ChallengeInstanceFactory {
             }
         }
         return 0;
+    }
+
+
+    private ChallengeDataDTO buildRepetitiveBehaviour(Map<String, Object> params, Content user) {
+        ChallengeDataDTO cdd = new ChallengeDataDTO();
+        cdd.setModelName(Constants.REPETITIVE_BEHAVIOUR);
+        cdd.setInstanceName(params.get(Constants.NAME) + "_" + UUID.randomUUID());
+        cdd.setStart((Date) params.get(Constants.START_DATE));
+        cdd.setEnd((Date) params.get(Constants.END_DATE));
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put(Constants.COUNTER_NAME, params.get(Constants.GOAL_TYPE));
+        data.put(Constants.PERIOD_NAME, params.get(Constants.PERIOD_NAME));
+        data.put(Constants.PERIOD_TARGET, params.get(Constants.PERIOD_TARGET));
+        data.put(Constants.TARGET, params.get(Constants.TARGET));
+        data.put(Constants.BONUS_POINT_TYPE, params.get(Constants.BONUS_POINT_TYPE));
+        data.put(Constants.BONUS_SCORE,
+                Double.valueOf(params.get(Constants.BONUS_SCORE).toString()));
+
+        cdd.setData(data);
+        return cdd;
     }
 
     private ChallengeDataDTO buildLeaderBoardPosition(Map<String, Object> params, Content user) {

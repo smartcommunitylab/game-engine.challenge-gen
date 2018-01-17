@@ -31,6 +31,7 @@ public final class Constants {
     public static final String LEADERBOARDPOSITION = "leaderboardPosition";
 
     public static final String CHECKIN = "checkin";
+    public static final String REPETITIVE_BEHAVIOUR = "repetitiveBehaviour";
 
     // challenges various constants
     public static final String NAME = "name";
@@ -43,6 +44,7 @@ public final class Constants {
     public static final String ZEROIMPACT = "zeroImpact";
     public static final String COUNTER_NAME = "counterName";
     public static final String PERIOD_NAME = "periodName";
+    public static final String PERIOD_TARGET = "periodTarget";
     public static final String BASELINE = "baseline";
     public static final String BADGECOLLECTIONNAME = "badgeCollectionName";
     public static final String GOAL_TYPE = "goalType";
