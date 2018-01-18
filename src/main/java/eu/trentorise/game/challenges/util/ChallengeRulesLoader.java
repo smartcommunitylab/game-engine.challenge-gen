@@ -100,11 +100,11 @@ public final class ChallengeRulesLoader {
                 crr.setPointType(elements[columnsMapping.get("POINT_TYPE")]);
                 crr.setBaselineVar(elements[columnsMapping.get("BASELINE_VARIABLE")]);
                 // maybe if can be removed
-                if (elements.length > 8) {
+                if (elements.length > columnsMapping.get("SELECTION_CRITERIA_POINTS")) {
                     crr.setSelectionCriteriaPoints(
                             elements[columnsMapping.get("SELECTION_CRITERIA_POINTS")]);
                 }
-                if (elements.length > 9) {
+                if (elements.length > columnsMapping.get("SELECTION_CRITERIA_BADGES")) {
                     crr.setSelectionCriteriaBadges(
                             elements[columnsMapping.get("SELECTION_CRITERIA_BADGES")]);
                 }
