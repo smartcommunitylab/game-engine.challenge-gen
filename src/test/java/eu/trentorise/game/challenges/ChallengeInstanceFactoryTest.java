@@ -30,7 +30,7 @@ public class ChallengeInstanceFactoryTest {
         Map<String, Object> params = new HashMap<>();
         params.put("goalType", "goalType");
         params.put("periodName", "myPeriod");
-        params.put("periodTarget", "period_target");
+        params.put("periodTarget", 2.0);
         params.put("bonusPointType", "bonus_type");
         params.put("bonusScore", "25");
         params.put("target", "target");
@@ -41,7 +41,7 @@ public class ChallengeInstanceFactoryTest {
         result.setData(new HashMap<String, Object>());
         result.getData().put("counterName", "goalType");
         result.getData().put("periodName", "myPeriod");
-        result.getData().put("periodTarget", "period_target");
+        result.getData().put("periodTarget", 2d);
         result.getData().put("bonusPointType", "bonus_type");
         result.getData().put("bonusScore", 25d);
         result.getData().put("target", "target");
