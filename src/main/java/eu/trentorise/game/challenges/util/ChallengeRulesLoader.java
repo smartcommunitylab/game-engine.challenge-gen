@@ -96,6 +96,8 @@ public final class ChallengeRulesLoader {
                         crr.setTarget(elements[columnsMapping.get("TARGET")]);
                     }
                 }
+                crr.setPeriodName(elements[columnsMapping.get("PERIOD_NAME")]);
+                crr.setPeriodTarget(elements[columnsMapping.get("PERIOD_TARGET")]);
                 crr.setBonus(Double.valueOf(elements[columnsMapping.get("BONUS")]));
                 crr.setPointType(elements[columnsMapping.get("POINT_TYPE")]);
                 crr.setBaselineVar(elements[columnsMapping.get("BASELINE_VARIABLE")]);
