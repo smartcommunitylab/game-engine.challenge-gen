@@ -186,7 +186,8 @@ public class ChallengeInstanceFactory {
         Map<String, Object> data = new HashMap<String, Object>();
         data.put(Constants.COUNTER_NAME, params.get(Constants.GOAL_TYPE));
         data.put(Constants.PERIOD_NAME, params.get(Constants.PERIOD_NAME));
-        data.put(Constants.PERIOD_TARGET, params.get(Constants.PERIOD_TARGET));
+        data.put(Constants.PERIOD_TARGET,
+                Double.valueOf(params.get(Constants.PERIOD_TARGET).toString()));
         data.put(Constants.TARGET, params.get(Constants.TARGET));
         data.put(Constants.BONUS_POINT_TYPE, params.get(Constants.BONUS_POINT_TYPE));
         data.put(Constants.BONUS_SCORE,
