@@ -19,92 +19,101 @@ import java.util.Map;
  */
 public class TransitTimeTable {
 
-	/**
-	 * stop names
-	 */
-  private List<String> stops;
-  
-  /**
-   * stop ids
-   */
-  private List<String> stopsId;
-  
-  /**
-   * times (day -> trip -> times)
-   */
-  private List<List<List<String>>> times;
-  
-  /**
-   * delays (day -> trip)
-   */
-  private List<List<Map<String, String>>> delays;
-  
-  /**
-   * tripIds (day -> trip -> id)
-   */
-  private List<List<String>> tripIds;  
-  
-  
-	public TransitTimeTable() {
-	}
-	
-	public TransitTimeTable(TransitTimeTable other) {
-		this.delays = other.delays;
-		this.stops = other.stops;
-		this.stopsId = other.stopsId;
-		this.times = other.times;
-		this.tripIds = other.tripIds;
-	}	  
-  
-  public List<String> getStops() {
-      return stops;
-  }
-  public void setStops(List<String> stops) {
-      this.stops = stops;
-  }
-  public List<String> getStopsId() {
-      return stopsId;
-  }
-  public void setStopsId(List<String> stopsId) {
-      this.stopsId = stopsId;
-  }
-  public List<List<List<String>>> getTimes() {
-      return times;
-  }
-  public void setTimes(List<List<List<String>>> times) {
-      this.times = times;
-  }
-  public List<List<Map<String, String>>> getDelays() {
-      return delays;
-  }
-  public void setDelays(List<List<Map<String, String>>> delays) {
-      this.delays = delays;
-  }
-	public List<List<String>> getTripIds() {
-		return tripIds;
-	}
-	public void setTripIds(List<List<String>> tripIds) {
-		this.tripIds = tripIds;
-	}
-	
-	@Override
-  public String toString() {
-  	return stops + ", " + stopsId + ", " + tripIds + ", " + times + ", " + delays;
-  }
-  
-	public String toCSV() {
-		String s = "";
-		for (int i = 0; i < stops.size(); i++) {
-			s += stops.get(i) + ",";
-			List<List<String>> day = times.get(0);
-			for (List<String> trip: day) {
-				s += trip.get(i) + ","; 
-			}
-			s += "\n";
-		}
-		
-		return s;
-	}
-	
+    /**
+     * stop names
+     */
+    private List<String> stops;
+
+    /**
+     * stop ids
+     */
+    private List<String> stopsId;
+
+    /**
+     * times (day -> trip -> times)
+     */
+    private List<List<List<String>>> times;
+
+    /**
+     * delays (day -> trip)
+     */
+    private List<List<Map<String, String>>> delays;
+
+    /**
+     * tripIds (day -> trip -> id)
+     */
+    private List<List<String>> tripIds;
+
+
+    public TransitTimeTable() {
+    }
+
+    public TransitTimeTable(TransitTimeTable other) {
+        this.delays = other.delays;
+        this.stops = other.stops;
+        this.stopsId = other.stopsId;
+        this.times = other.times;
+        this.tripIds = other.tripIds;
+    }
+
+    public List<String> getStops() {
+        return stops;
+    }
+
+    public void setStops(List<String> stops) {
+        this.stops = stops;
+    }
+
+    public List<String> getStopsId() {
+        return stopsId;
+    }
+
+    public void setStopsId(List<String> stopsId) {
+        this.stopsId = stopsId;
+    }
+
+    public List<List<List<String>>> getTimes() {
+        return times;
+    }
+
+    public void setTimes(List<List<List<String>>> times) {
+        this.times = times;
+    }
+
+    public List<List<Map<String, String>>> getDelays() {
+        return delays;
+    }
+
+    public void setDelays(List<List<Map<String, String>>> delays) {
+        this.delays = delays;
+    }
+
+    public List<List<String>> getTripIds() {
+        return tripIds;
+    }
+
+    public void setTripIds(List<List<String>> tripIds) {
+        this.tripIds = tripIds;
+    }
+
+    @Override
+    public String toString() {
+        return stops + ", " + stopsId + ", " + tripIds + ", " + times + ", " + delays;
+    }
+
+    public String toCSV() {
+        String s = "";
+        for (int i = 0; i < stops.size(); i++) {
+            s += stops.get(i) + ",";
+            List<List<String>> day = times.get(0);
+            for (List<String> trip : day) {
+                s += trip.get(i) + ",";
+            }
+            s += "\n";
+        }
+
+        return s;
+    }
+
 
 }

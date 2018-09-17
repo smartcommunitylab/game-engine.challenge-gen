@@ -1,23 +1,21 @@
-
 package eu.trentorise.game.challenges.rest;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.fasterxml.jackson.annotation.*;
+
 import javax.annotation.Generated;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
-    "playerId",
-    "gameId",
-    "state",
-    "customData"
+        "playerId",
+        "gameId",
+        "state",
+        "customData",
+        "levels"
 })
 public class Content {
 
@@ -31,11 +29,11 @@ public class Content {
     private CustomData customData;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+    @JsonProperty("levels")
+    private List<PlayerLevel> levels;
 
     /**
-     * 
-     * @return
-     *     The playerId
+     * @return The playerId
      */
     @JsonProperty("playerId")
     public String getPlayerId() {
@@ -43,9 +41,7 @@ public class Content {
     }
 
     /**
-     * 
-     * @param playerId
-     *     The playerId
+     * @param playerId The playerId
      */
     @JsonProperty("playerId")
     public void setPlayerId(String playerId) {
@@ -53,9 +49,7 @@ public class Content {
     }
 
     /**
-     * 
-     * @return
-     *     The gameId
+     * @return The gameId
      */
     @JsonProperty("gameId")
     public String getGameId() {
@@ -63,9 +57,7 @@ public class Content {
     }
 
     /**
-     * 
-     * @param gameId
-     *     The gameId
+     * @param gameId The gameId
      */
     @JsonProperty("gameId")
     public void setGameId(String gameId) {
@@ -73,9 +65,7 @@ public class Content {
     }
 
     /**
-     * 
-     * @return
-     *     The state
+     * @return The state
      */
     @JsonProperty("state")
     public State getState() {
@@ -83,9 +73,7 @@ public class Content {
     }
 
     /**
-     * 
-     * @param state
-     *     The state
+     * @param state The state
      */
     @JsonProperty("state")
     public void setState(State state) {
@@ -93,9 +81,7 @@ public class Content {
     }
 
     /**
-     * 
-     * @return
-     *     The customData
+     * @return The customData
      */
     @JsonProperty("customData")
     public CustomData getCustomData() {
@@ -103,9 +89,7 @@ public class Content {
     }
 
     /**
-     * 
-     * @param customData
-     *     The customData
+     * @param customData The customData
      */
     @JsonProperty("customData")
     public void setCustomData(CustomData customData) {

@@ -1,20 +1,6 @@
 package eu.trentorise.game.challenges;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import eu.trentorise.game.challenges.api.Constants;
 import eu.trentorise.game.challenges.exception.UndefinedChallengeException;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
@@ -24,6 +10,16 @@ import eu.trentorise.game.challenges.rest.PointConcept;
 import eu.trentorise.game.challenges.util.ChallengeRuleRow;
 import eu.trentorise.game.challenges.util.ChallengeRulesLoader;
 import eu.trentorise.game.challenges.util.PointConceptUtil;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.*;
+
+import static eu.fbk.das.rs.Utils.dbg;
 
 /**
  * Generate rules for challenges
@@ -46,7 +42,7 @@ public class ChallengesRulesGenerator {
     private List<ChallengeDataInternalDto> challenges;
 
     public ChallengesRulesGenerator(ChallengeInstanceFactory factory, String reportName,
-            String outputName) throws IOException {
+                                    String outputName) throws IOException {
         this.factory = factory;
         this.challenges = new ArrayList<ChallengeDataInternalDto>();
         // prepare report output
@@ -56,20 +52,20 @@ public class ChallengesRulesGenerator {
         IOUtils.write(reportHeader, fout);
         // init challenge map
         challengeMap = new HashMap<String, Integer>();
-        logger.debug("ChallengesRulesGenerator - created");
+        dbg(logger, "ChallengesRulesGenerator - created");
     }
 
     /**
      * Generate rules starting from a challenge specification for a set of given users
-     * 
+     *
      * @param challengeSpec
      * @param users
      * @throws UndefinedChallengeException
      * @throws IOException
      */
     public void generateChallenges(ChallengeRuleRow challengeSpec, List<Content> users,
-            Date startDate, Date endDate) throws UndefinedChallengeException, IOException {
-        logger.debug("ChallengesRulesGenerator - started");
+                                   Date startDate, Date endDate) throws UndefinedChallengeException, IOException {
+        dbg(logger, "ChallengesRulesGenerator - started");
         this.reportBuffer = new StringBuffer();
 
         Map<String, Object> params = new HashMap<String, Object>();
@@ -85,10 +81,10 @@ public class ChallengesRulesGenerator {
                 params.put(Constants.BONUS_SCORE, challengeSpec.getBonus());
                 params.put(Constants.PERIOD_NAME, StringUtils.isBlank(challengeSpec.getPeriodName())
                         ? "weekly" : challengeSpec.getPeriodName()); // to maintain compatibility
-                                                                     // with old csv with periodName
-                                                                     // field wasn't explicit and
-                                                                     // manage this side as with a
-                                                                     // constant
+                // with old csv with periodName
+                // field wasn't explicit and
+                // manage this side as with a
+                // constant
                 params.put(Constants.PERIOD_TARGET, challengeSpec.getPeriodTarget());
                 params.put(Constants.GOAL_TYPE, StringUtils.trim(challengeSpec.getGoalType()));
                 params.put(Constants.START_DATE, startDate);
@@ -156,7 +152,7 @@ public class ChallengesRulesGenerator {
     }
 
     private Double getPointConceptCurrentValue(Content user, String baselineVar,
-            String periodName) {
+                                               String periodName) {
         if (StringUtils.isEmpty(baselineVar)) {
             throw new IllegalArgumentException(
                     "baselineVar must be a not null and not empty string");
@@ -215,7 +211,7 @@ public class ChallengesRulesGenerator {
         ObjectMapper mapper = new ObjectMapper();
         //
         IOUtils.write(mapper.writeValueAsString(challenges), oout);
-        logger.debug(
+        dbg(logger,
                 "ChallengesRulesGenerator - completed - written challenges " + challenges.size());
         closeStream();
     }
@@ -223,7 +219,7 @@ public class ChallengesRulesGenerator {
     /**
      * Before challenge generation, add a set of challenges and use them before actual challenge
      * generation
-     * 
+     *
      * @param rsChallenges
      * @param gameId
      * @throws IOException
@@ -246,7 +242,7 @@ public class ChallengesRulesGenerator {
                     reportBuffer.append(playerId + ";" + challenge.getData().get("challengeName")
                             + ";" + challenge.getModelName() + ";" + "goalType" + ";"
                             + (challenge.getData().containsKey("baseline")
-                                    ? challenge.getData().get("baseline") : 0)
+                            ? challenge.getData().get("baseline") : 0)
                             + ";" + (challenge.getData().get("target")) + ";"
                             + challenge.getData().get("bonusScore") + ";"
                             + challenge.getData().get("bonusPointType") + ";"

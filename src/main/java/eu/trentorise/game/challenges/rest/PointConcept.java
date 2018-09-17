@@ -1,30 +1,18 @@
 package eu.trentorise.game.challenges.rest;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeMap;
-
-import javax.annotation.Generated;
-
+import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import javax.annotation.Generated;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.Map.Entry;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
@@ -157,8 +145,15 @@ public class PointConcept {
     }
 
     public Double getPeriodScore(String periodIdentifier, long moment) {
-        return periods.containsKey(periodIdentifier)
-                ? periods.get(periodIdentifier).getScore(moment) : 0d;
+        if (! periods.containsKey(periodIdentifier))
+            return 0d;
+
+        PeriodInternal p = periods.get(periodIdentifier);
+        LocalDateTime momentDate = new LocalDateTime(moment);
+        if (p.start.after(momentDate.toDate()))
+            return 0d;
+
+        return p.getScore(moment);
     }
 
     public PeriodInstance getPeriodInstance(String periodIdentifier, long moment) {
@@ -217,9 +212,9 @@ public class PointConcept {
         /*
          * JsonDeserialize is used by convertValue method of ObjectMapper field of PlayerState. In
          * constructor of playerState the StatePersistence object is deserialized.
-         * 
+         *
          * convertValue method invoked PointConcept constructor annotated with JsonCreator.
-         * 
+         *
          * Improve this flow. Use PointConceptTest.persistPeriod() as example
          */
         @JsonDeserialize(keyUsing = LocalDateTimeDeserializer.class)
@@ -340,7 +335,7 @@ public class PointConcept {
         }
 
         private int getInstanceIndex(LocalDateTime start, org.joda.time.Period period,
-                LocalDateTime momentDate) {
+                                     LocalDateTime momentDate) {
             int index = -1;
             Interval interval = null;
             LocalDateTime cursorDate = start;

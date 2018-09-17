@@ -1,24 +1,20 @@
 package eu.trentorise.game.challenges.util;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.HashMap;
-import java.util.Map;
-
+import eu.trentorise.game.challenges.api.Constants;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import eu.trentorise.game.challenges.api.Constants;
+import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
+
+import static eu.fbk.das.rs.Utils.dbg;
 
 /**
  * Load challenges rule from and csv file
- *
+ * <p>
  * {@link IOUtils}
  */
 public final class ChallengeRulesLoader {
@@ -30,7 +26,8 @@ public final class ChallengeRulesLoader {
             "SELECTION_CRITERIA_POINTS", "SELECTION_CRITERIA_BADGES"};
 
 
-    private ChallengeRulesLoader() {}
+    private ChallengeRulesLoader() {
+    }
 
 
     private static Map<String, Integer> mapTheColums(String values) {
@@ -91,7 +88,7 @@ public final class ChallengeRulesLoader {
                     try {
                         crr.setTarget(Double.valueOf(elements[columnsMapping.get("TARGET")]));
                     } catch (NumberFormatException nfe) {
-                        logger.debug(
+                        dbg(logger,
                                 "Target value is not a number, current challenge is a LeaderboardPosition?");
                         crr.setTarget(elements[columnsMapping.get("TARGET")]);
                     }
@@ -119,7 +116,7 @@ public final class ChallengeRulesLoader {
                 }
                 response.getChallenges().add(crr);
             }
-            logger.debug("Rows in file " + response.getChallenges().size());
+            dbg(logger, "Rows in file: %d", response.getChallenges().size());
             return response;
         } finally {
             if (rdr != null) {

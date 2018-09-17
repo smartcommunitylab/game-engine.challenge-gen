@@ -3,93 +3,93 @@ package it.sayservice.platform.smartplanner.data.message;
 import java.io.Serializable;
 
 public class RoadElement implements Serializable {
-	private static final long serialVersionUID = -2806074797696111050L;
-	
-	private String lat;
-	private String lon;
-	
-	private String streetCode;
-	private String street;
+    private static final long serialVersionUID = -2806074797696111050L;
 
-	private String fromNumber;
-	private String toNumber;
-	
-	private String fromIntersection;
-	private String toIntersection;
+    private String lat;
+    private String lon;
 
-	private String note;
+    private String streetCode;
+    private String street;
 
-	public String getLat() {
-		return lat;
-	}
+    private String fromNumber;
+    private String toNumber;
 
-	public void setLat(String lat) {
-		this.lat = lat;
-	}
+    private String fromIntersection;
+    private String toIntersection;
 
-	public String getLon() {
-		return lon;
-	}
+    private String note;
 
-	public void setLon(String lon) {
-		this.lon = lon;
-	}
+    public String getLat() {
+        return lat;
+    }
 
-	public String getStreetCode() {
-		return streetCode;
-	}
+    public void setLat(String lat) {
+        this.lat = lat;
+    }
 
-	public void setStreetCode(String streetCode) {
-		this.streetCode = streetCode;
-	}
+    public String getLon() {
+        return lon;
+    }
 
-	public String getStreet() {
-		return street;
-	}
+    public void setLon(String lon) {
+        this.lon = lon;
+    }
 
-	public void setStreet(String street) {
-		this.street = street;
-	}
+    public String getStreetCode() {
+        return streetCode;
+    }
 
-	public String getFromNumber() {
-		return fromNumber;
-	}
+    public void setStreetCode(String streetCode) {
+        this.streetCode = streetCode;
+    }
 
-	public void setFromNumber(String fromNumber) {
-		this.fromNumber = fromNumber;
-	}
+    public String getStreet() {
+        return street;
+    }
 
-	public String getToNumber() {
-		return toNumber;
-	}
+    public void setStreet(String street) {
+        this.street = street;
+    }
 
-	public void setToNumber(String toNumber) {
-		this.toNumber = toNumber;
-	}
+    public String getFromNumber() {
+        return fromNumber;
+    }
 
-	public String getFromIntersection() {
-		return fromIntersection;
-	}
+    public void setFromNumber(String fromNumber) {
+        this.fromNumber = fromNumber;
+    }
 
-	public void setFromIntersection(String fromIntersection) {
-		this.fromIntersection = fromIntersection;
-	}
+    public String getToNumber() {
+        return toNumber;
+    }
 
-	public String getToIntersection() {
-		return toIntersection;
-	}
+    public void setToNumber(String toNumber) {
+        this.toNumber = toNumber;
+    }
 
-	public void setToIntersection(String toIntersection) {
-		this.toIntersection = toIntersection;
-	}
+    public String getFromIntersection() {
+        return fromIntersection;
+    }
 
-	public String getNote() {
-		return note;
-	}
+    public void setFromIntersection(String fromIntersection) {
+        this.fromIntersection = fromIntersection;
+    }
 
-	public void setNote(String note) {
-		this.note = note;
-	}
+    public String getToIntersection() {
+        return toIntersection;
+    }
 
-	
+    public void setToIntersection(String toIntersection) {
+        this.toIntersection = toIntersection;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+
 }

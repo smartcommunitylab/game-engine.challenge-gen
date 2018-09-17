@@ -3,7 +3,8 @@ package eu.trentorise.game.challenges.api;
 public final class Constants {
 
     // private constructor to avoid instantiations
-    private Constants() {}
+    private Constants() {
+    }
 
     // General constants
     public static final String LINE_SEPARATOR = System.getProperty("line.separator");

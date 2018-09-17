@@ -1,37 +1,9 @@
 package eu.trentorise.challenge.generation;
 
-import static eu.trentorise.challenge.PropertiesUtil.CONTEXT;
-import static eu.trentorise.challenge.PropertiesUtil.GAMEID;
-import static eu.trentorise.challenge.PropertiesUtil.HOST;
-import static eu.trentorise.challenge.PropertiesUtil.INSERT_CONTEXT;
-import static eu.trentorise.challenge.PropertiesUtil.PASSWORD;
-import static eu.trentorise.challenge.PropertiesUtil.USERNAME;
-import static eu.trentorise.challenge.PropertiesUtil.get;
-import static org.junit.Assert.assertTrue;
-
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.joda.time.LocalDate;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.collect.Sets;
-
+import eu.trentorise.challenge.BaseTest;
 import eu.trentorise.game.challenges.ChallengeFactory;
 import eu.trentorise.game.challenges.ChallengeInstanceFactory;
 import eu.trentorise.game.challenges.ChallengesRulesGenerator;
@@ -42,13 +14,23 @@ import eu.trentorise.game.challenges.model.ChallengeModel;
 import eu.trentorise.game.challenges.model.ChallengeType;
 import eu.trentorise.game.challenges.rest.Content;
 import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
-import eu.trentorise.game.challenges.util.CalendarUtil;
-import eu.trentorise.game.challenges.util.ChallengeRuleRow;
-import eu.trentorise.game.challenges.util.ChallengeRules;
-import eu.trentorise.game.challenges.util.ChallengeRulesLoader;
-import eu.trentorise.game.challenges.util.Matcher;
+import eu.trentorise.game.challenges.util.*;
+import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.joda.time.LocalDate;
+import org.junit.Before;
+import org.junit.Test;
 
-public class GenerationTest {
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.*;
+
+import static eu.fbk.das.rs.Utils.dbg;
+import static org.junit.Assert.assertTrue;
+
+public class GenerationTest extends BaseTest {
 
     private static final Logger logger = LogManager.getLogger(GenerationTest.class);
 
@@ -60,16 +42,16 @@ public class GenerationTest {
 
     @Before
     public void setup() {
-        facade = new GamificationEngineRestFacade(get(HOST) + get(CONTEXT), get(USERNAME),
-                get(PASSWORD));
-        insertFacade = new GamificationEngineRestFacade(get(HOST) + get(INSERT_CONTEXT),
-                get(USERNAME), get(PASSWORD));
+        facade = new GamificationEngineRestFacade(HOST + CONTEXT, USERNAME,
+                PASSWORD);
+        insertFacade = new GamificationEngineRestFacade(HOST + INSERT_CONTEXT,
+                USERNAME, PASSWORD);
         challengeModelFacade =
-                new GamificationEngineRestFacade(get(HOST), get(USERNAME), get(PASSWORD));
-        challengeAssignFacade = new GamificationEngineRestFacade(get(HOST) + "data/game/",
-                get(USERNAME), get(PASSWORD));
-        challengeModelReadFacade = new GamificationEngineRestFacade(get(HOST) + "model/game/",
-                get(USERNAME), get(PASSWORD));
+                new GamificationEngineRestFacade(HOST, USERNAME, PASSWORD);
+        challengeAssignFacade = new GamificationEngineRestFacade(HOST + "data/game/",
+                USERNAME, PASSWORD);
+        challengeModelReadFacade = new GamificationEngineRestFacade(HOST + "model/game/",
+                USERNAME, PASSWORD);
     }
 
     @Test
@@ -80,7 +62,7 @@ public class GenerationTest {
 
         assertTrue(result != null && !result.getChallenges().isEmpty());
 
-        List<Content> users = facade.readGameState(get(GAMEID));
+        List<Content> users = facade.readGameState(GAMEID);
 
         System.out.println("Users found: " + users.size());
 
@@ -102,17 +84,17 @@ public class GenerationTest {
         assertTrue(result != null && !result.getChallenges().isEmpty());
 
         // get users from gamification engine
-        List<Content> users = facade.readGameState(get(GAMEID));
+        List<Content> users = facade.readGameState(GAMEID);
 
         ChallengesRulesGenerator crg = new ChallengesRulesGenerator(new ChallengeInstanceFactory(),
                 "generated-rules-report.csv", "output.json");
 
         // generate challenges
         for (ChallengeRuleRow challengeSpec : result.getChallenges()) {
-            logger.debug("rules generation for challenge: " + challengeSpec.getName());
+            dbg(logger, "rules generation for challenge: " + challengeSpec.getName());
             Matcher matcher = new Matcher(challengeSpec);
             List<Content> filteredUsers = matcher.match(users);
-            logger.debug("found users: " + filteredUsers.size());
+            dbg(logger, "found users: " + filteredUsers.size());
             // generate rule
             if (!filteredUsers.isEmpty()) {
                 crg.generateChallenges(challengeSpec, filteredUsers,
@@ -131,17 +113,17 @@ public class GenerationTest {
         assertTrue(result != null && !result.getChallenges().isEmpty());
 
         // get users from gamification engine
-        List<Content> users = facade.readGameState(get(GAMEID));
+        List<Content> users = facade.readGameState(GAMEID);
 
         ChallengesRulesGenerator crg = new ChallengesRulesGenerator(new ChallengeInstanceFactory(),
                 "generated-rules-report.csv", "output.json");
 
         // generate challenges
         for (ChallengeRuleRow challengeSpec : result.getChallenges()) {
-            logger.debug("rules generation for challenge: " + challengeSpec.getName());
+            dbg(logger, "rules generation for challenge: " + challengeSpec.getName());
             Matcher matcher = new Matcher(challengeSpec);
             List<Content> filteredUsers = matcher.match(users);
-            logger.debug("found users: " + filteredUsers.size());
+            dbg(logger, "found users: " + filteredUsers.size());
             // generate rule
             if (!filteredUsers.isEmpty()) {
                 crg.generateChallenges(challengeSpec, filteredUsers,
@@ -210,7 +192,7 @@ public class GenerationTest {
         data.put("counterName", "ZeroImpact_Trips");
 
         cdd.setData(data);
-        assertTrue(challengeAssignFacade.assignChallengeToPlayer(cdd, get(GAMEID), "1"));
+        assertTrue(challengeAssignFacade.assignChallengeToPlayer(cdd, GAMEID, "1"));
     }
 
     @Test
@@ -233,7 +215,7 @@ public class GenerationTest {
         data.put("weekClassificationName", "week classification test");
 
         cdd.setData(data);
-        assertTrue(challengeAssignFacade.assignChallengeToPlayer(cdd, get(GAMEID), "4"));
+        assertTrue(challengeAssignFacade.assignChallengeToPlayer(cdd, GAMEID, "4"));
     }
 
     @Test
@@ -256,12 +238,12 @@ public class GenerationTest {
         data.put("weekClassificationName", "week classification test");
 
         cdd.setData(data);
-        assertTrue(challengeAssignFacade.assignChallengeToPlayer(cdd, get(GAMEID), "23897"));
+        assertTrue(challengeAssignFacade.assignChallengeToPlayer(cdd, GAMEID, "23897"));
     }
 
     @Test
     public void readAllChallengeModelTest() {
-        HashSet result = (HashSet) challengeModelReadFacade.readChallengesModel(get(GAMEID));
+        HashSet result = (HashSet) challengeModelReadFacade.readChallengesModel(GAMEID);
         assertTrue(result != null);
         List<ChallengeModel> models = new ArrayList<ChallengeModel>();
         Iterator iter = result.iterator();
@@ -301,7 +283,7 @@ public class GenerationTest {
         data.put("bonusPointType", "green leaves");
 
         cdd.setData(data);
-        assertTrue(challengeAssignFacade.assignChallengeToPlayer(cdd, get(GAMEID), "24607"));
+        assertTrue(challengeAssignFacade.assignChallengeToPlayer(cdd, GAMEID, "24607"));
     }
 
     @Test(expected = UndefinedChallengeException.class)

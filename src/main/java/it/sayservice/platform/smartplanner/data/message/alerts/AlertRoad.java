@@ -3,43 +3,43 @@ package it.sayservice.platform.smartplanner.data.message.alerts;
 import it.sayservice.platform.smartplanner.data.message.RoadElement;
 
 public class AlertRoad extends Alert {
-	private static final long serialVersionUID = -6928706057154015012L;
+    private static final long serialVersionUID = -6928706057154015012L;
 
-	/**
-	 * agency managing the roads
-	 */
-	private String agencyId;
-	/**
-	 * Road affected
-	 */
-	private RoadElement road;
-	
-	/**
-	 * Types of changes
-	 */
-	private AlertRoadType[] changeTypes;
+    /**
+     * agency managing the roads
+     */
+    private String agencyId;
+    /**
+     * Road affected
+     */
+    private RoadElement road;
 
-	public String getAgencyId() {
-		return agencyId;
-	}
+    /**
+     * Types of changes
+     */
+    private AlertRoadType[] changeTypes;
 
-	public void setAgencyId(String agencyId) {
-		this.agencyId = agencyId;
-	}
+    public String getAgencyId() {
+        return agencyId;
+    }
 
-	public RoadElement getRoad() {
-		return road;
-	}
+    public void setAgencyId(String agencyId) {
+        this.agencyId = agencyId;
+    }
 
-	public void setRoad(RoadElement road) {
-		this.road = road;
-	}
+    public RoadElement getRoad() {
+        return road;
+    }
 
-	public AlertRoadType[] getChangeTypes() {
-		return changeTypes;
-	}
+    public void setRoad(RoadElement road) {
+        this.road = road;
+    }
 
-	public void setChangeTypes(AlertRoadType[] changeTypes) {
-		this.changeTypes = changeTypes;
-	}
+    public AlertRoadType[] getChangeTypes() {
+        return changeTypes;
+    }
+
+    public void setChangeTypes(AlertRoadType[] changeTypes) {
+        this.changeTypes = changeTypes;
+    }
 }

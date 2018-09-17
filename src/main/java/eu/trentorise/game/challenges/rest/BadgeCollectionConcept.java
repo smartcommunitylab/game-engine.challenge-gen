@@ -1,23 +1,18 @@
-
 package eu.trentorise.game.challenges.rest;
 
+import com.fasterxml.jackson.annotation.*;
+
+import javax.annotation.Generated;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Generated;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
-    "name",
-    "badgeEarned"
+        "name",
+        "badgeEarned"
 })
 public class BadgeCollectionConcept {
 
@@ -29,9 +24,7 @@ public class BadgeCollectionConcept {
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
-     * 
-     * @return
-     *     The name
+     * @return The name
      */
     @JsonProperty("name")
     public String getName() {
@@ -39,9 +32,7 @@ public class BadgeCollectionConcept {
     }
 
     /**
-     * 
-     * @param name
-     *     The name
+     * @param name The name
      */
     @JsonProperty("name")
     public void setName(String name) {
@@ -49,9 +40,7 @@ public class BadgeCollectionConcept {
     }
 
     /**
-     * 
-     * @return
-     *     The badgeEarned
+     * @return The badgeEarned
      */
     @JsonProperty("badgeEarned")
     public List<String> getBadgeEarned() {
@@ -59,9 +48,7 @@ public class BadgeCollectionConcept {
     }
 
     /**
-     * 
-     * @param badgeEarned
-     *     The badgeEarned
+     * @param badgeEarned The badgeEarned
      */
     @JsonProperty("badgeEarned")
     public void setBadgeEarned(List<String> badgeEarned) {

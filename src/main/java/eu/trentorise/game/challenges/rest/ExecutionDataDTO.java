@@ -12,35 +12,35 @@ public class ExecutionDataDTO {
     }
 
     public String getGameId() {
-	return gameId;
+        return gameId;
     }
 
     public void setGameId(String gameId) {
-	this.gameId = gameId;
+        this.gameId = gameId;
     }
 
     public String getActionId() {
-	return actionId;
+        return actionId;
     }
 
     public void setActionId(String actionId) {
-	this.actionId = actionId;
+        this.actionId = actionId;
     }
 
     public String getPlayerId() {
-	return playerId;
+        return playerId;
     }
 
     public void setPlayerId(String playerId) {
-	this.playerId = playerId;
+        this.playerId = playerId;
     }
 
     public Map<String, Object> getData() {
-	return data;
+        return data;
     }
 
     public void setData(Map<String, Object> data) {
-	this.data = data;
+        this.data = data;
     }
 
 }

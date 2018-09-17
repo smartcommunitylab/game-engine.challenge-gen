@@ -1,0 +1,12 @@
+NAME;TYPE;GOAL_TYPE;TARGET;BONUS;POINT_TYPE;DIFFICULTY;BASELINE_VARIABLE;SELECTION_CRITERIA_POINTS;SELECTION_CRITERIA_BADGES
+w2_zero_impact_3;absoluteIncrement;ZeroImpact_Trips;3.0;150;green leaves;;;ZeroImpact_Trips < 1;
+w2_zero_impact_6;absoluteIncrement;ZeroImpact_Trips;6.0;100;green leaves;;;ZeroImpact_Trips >= 1 && ZeroImpact_Trips <= 4;
+w2_zero_impact_8;absoluteIncrement;ZeroImpact_Trips;8.0;100;green leaves;;;ZeroImpact_Trips > 4;
+w2_bike_percent_100;percentageIncrement;Bike_Km;0.99;150;green leaves;;Bike_Km;Bike_Km.weekly.current > 0 && Bike_Km.weekly.current <= 4;
+w2_bike_percent_50;percentageIncrement;Bike_Km;0.5;150;green leaves;;Bike_Km;Bike_Km.weekly.current > 4 && Bike_Km.weekly.current <= 10;
+w2_bike_percent_30;percentageIncrement;Bike_Km;0.3;150;green leaves;;Bike_Km;Bike_Km.weekly.current > 10;
+w2_walk_percent_100;percentageIncrement;Walk_Km;0.99;100;green leaves;;Walk_Km;Walk_Km.weekly.current > 0 && Walk_Km.weekly.current <= 1;
+w2_walk_percent_50;percentageIncrement;Walk_Km;0.5;100;green leaves;;Walk_Km;Walk_Km.weekly.current > 1 && Walk_Km.weekly.current <= 5;
+w2_walk_percent_30;percentageIncrement;Walk_Km;0.3;100;green leaves;;Walk_Km;Walk_Km.weekly.current > 5 && Walk_Km.weekly.current <= 25;
+w2_recommendation_2;absoluteIncrement;Recommendations;1.0;150;green leaves;;;Walk_Km.weekly.current > 25;
+w2_green_leaves_200;absoluteIncrement;green leaves;200.0;100;green leaves;;;TRUE;
