@@ -147,6 +147,8 @@ public class UploaderTool {
 		boolean r = false;
 		// upload every challenge
 		for (ChallengeDataInternalDto ch : challenges) {
+			ch.getDto().setOrigin("gen");
+
 			// upload and assign challenge
 			tot++;
 			try {

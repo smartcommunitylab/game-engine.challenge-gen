@@ -1,16 +1,30 @@
 package eu.fbk.das.rs.challengeGeneration;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.Properties;
+
 import eu.fbk.das.rs.valuator.PlanePointFunction;
+
+import static eu.fbk.das.rs.Utils.logExp;
 
 /**
  * RecommendationSystem configuration main class
  */
 public class RecommendationSystemConfig {
+
+	private static final Logger logger = LogManager.getLogger(RecommendationSystemConfig.class);
+
+	public static final String RS_PROPERTIES = "rs.properties";
+
+	private static Properties prop;
 
 	// --------------------------------------
 	// default configuration
@@ -81,6 +95,19 @@ public class RecommendationSystemConfig {
 	private RecommendationSystemModeConfiguration modeConfiguration;
 	private String challengeNamePrefix = "w12_rs_";
 	private String filteringIds;
+
+	public RecommendationSystemConfig() {
+
+		prop = new Properties();
+		try {
+			prop.load(getClass().getClassLoader().getResourceAsStream(RS_PROPERTIES));
+		} catch (IOException e) {
+			logExp(logger, e);
+		}
+
+		init();
+	}
+
 
 	public RecommendationSystemConfig(Boolean filteringEnabled,
 			String filteringIds) {

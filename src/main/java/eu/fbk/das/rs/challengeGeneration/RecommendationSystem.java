@@ -50,6 +50,10 @@ public class RecommendationSystem {
 	private RecommendationSystemChallengeValuator valuator;
 	private RecommendationSystemChallengeFilteringAndSorting filtering;
 
+	public RecommendationSystem() {
+		this(new RecommendationSystemConfig());
+	}
+
 	public RecommendationSystem(RecommendationSystemConfig configuration) {
 		this.configuration = configuration;
 		generator = new RecommendationSystemChallengeGeneration(configuration);
