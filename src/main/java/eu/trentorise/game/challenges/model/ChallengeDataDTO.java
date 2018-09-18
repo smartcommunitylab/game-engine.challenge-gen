@@ -5,7 +5,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Date;
 import java.util.Map;
 
+import static eu.fbk.das.rs.Utils.f;
+import static eu.fbk.das.rs.Utils.pf;
+
 public class ChallengeDataDTO {
+
 	private String modelName;
 	private String instanceName;
 	private Map<String, Object> data;
@@ -58,6 +62,10 @@ public class ChallengeDataDTO {
 	public void setEnd(Date end) {
 		this.end = end;
 	}
+
+    public String toString() {
+        return f("%s - %s - %s - %s - %s", modelName, data.get("bonusScore"), data.get("counterName"), data.get("target"), start.toString());
+    }
 
     public String getState() {
         return state;

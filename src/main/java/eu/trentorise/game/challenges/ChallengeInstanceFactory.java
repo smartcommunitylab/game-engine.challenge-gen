@@ -1,15 +1,15 @@
 package eu.trentorise.game.challenges;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
 import eu.trentorise.game.challenges.api.Constants;
 import eu.trentorise.game.challenges.exception.UndefinedChallengeException;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import eu.trentorise.game.challenges.rest.BadgeCollectionConcept;
 import eu.trentorise.game.challenges.rest.Content;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class ChallengeInstanceFactory {
 
@@ -56,7 +56,7 @@ public class ChallengeInstanceFactory {
     }
 
     private ChallengeDataDTO buildCompleteBadgeCollection(Map<String, Object> params,
-            Content user) {
+                                                          Content user) {
         ChallengeDataDTO cdd = new ChallengeDataDTO();
         cdd.setModelName(Constants.COMPLETEBADGECOLLECTION);
         cdd.setInstanceName(params.get(Constants.NAME) + "_" + UUID.randomUUID());
@@ -155,8 +155,8 @@ public class ChallengeInstanceFactory {
         cdd.setEnd((Date) params.get(Constants.END_DATE));
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("checkinType", params.get(Constants.GOAL_TYPE)); // reused an excel existing field
-                                                                  // for this
-                                                                  // type of challenge
+        // for this
+        // type of challenge
         data.put(Constants.BONUS_POINT_TYPE, params.get(Constants.BONUS_POINT_TYPE));
         data.put(Constants.BONUS_SCORE,
                 Double.valueOf(params.get(Constants.BONUS_SCORE).toString()));
@@ -164,7 +164,6 @@ public class ChallengeInstanceFactory {
         cdd.setData(data);
         return cdd;
     }
-
 
 
     private Integer getCurrentBadgeCollectionSize(Content user, String name) {

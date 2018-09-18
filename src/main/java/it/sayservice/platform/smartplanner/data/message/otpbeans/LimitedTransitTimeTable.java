@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * 
  * Information about stop times for a route at a particular stop.<br/>
  * <br/>
  * For an example, see this (limited to 5 times) json representation of an instance of this class:<br/>
@@ -15,66 +14,66 @@ import java.util.TreeMap;
  */
 public class LimitedTransitTimeTable {
 
-	/**
-	 * stop name
-	 */
-	private String name;
-	
-	/**
-	 * route
-	 */
-	private String route;
-	
-	/**
-	 * next stop times
-	 */
-	private List<StopTime> times;
-	
-	/**
-	 * delays
-	 */
-	private Map<String, Integer> delays;
-	
-	public LimitedTransitTimeTable() {
-		times = new ArrayList<StopTime>();
-		delays = new TreeMap<String, Integer>();
-	}
+    /**
+     * stop name
+     */
+    private String name;
 
-	public String getName() {
-		return name;
-	}
+    /**
+     * route
+     */
+    private String route;
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    /**
+     * next stop times
+     */
+    private List<StopTime> times;
 
-	public String getRoute() {
-		return route;
-	}
+    /**
+     * delays
+     */
+    private Map<String, Integer> delays;
 
-	public void setRoute(String route) {
-		this.route = route;
-	}
+    public LimitedTransitTimeTable() {
+        times = new ArrayList<StopTime>();
+        delays = new TreeMap<String, Integer>();
+    }
 
-	public List<StopTime> getTimes() {
-		return times;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setTimes(List<StopTime> times) {
-		this.times = times;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public Map<String, Integer> getDelays() {
-		return delays;
-	}
+    public String getRoute() {
+        return route;
+    }
 
-	public void setDelays(Map<String, Integer> delays) {
-		this.delays = delays;
-	}
+    public void setRoute(String route) {
+        this.route = route;
+    }
 
-	@Override
-	public String toString() {
-		return route + ", " + name + ", " + times + ", " + delays;
-	}
-	
+    public List<StopTime> getTimes() {
+        return times;
+    }
+
+    public void setTimes(List<StopTime> times) {
+        this.times = times;
+    }
+
+    public Map<String, Integer> getDelays() {
+        return delays;
+    }
+
+    public void setDelays(Map<String, Integer> delays) {
+        this.delays = delays;
+    }
+
+    @Override
+    public String toString() {
+        return route + ", " + name + ", " + times + ", " + delays;
+    }
+
 }

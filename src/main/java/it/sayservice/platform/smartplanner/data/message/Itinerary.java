@@ -1,17 +1,17 @@
 /**
- *    Copyright 2011-2013 SAYservice s.r.l.
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
+ * Copyright 2011-2013 SAYservice s.r.l.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package it.sayservice.platform.smartplanner.data.message;
@@ -68,8 +68,8 @@ import java.util.Map;
 public class Itinerary implements Serializable {
 
     /**
-	 * 
-	 */
+     *
+     */
     private static final long serialVersionUID = 4313807067301934095L;
 
     /**
@@ -118,151 +118,151 @@ public class Itinerary implements Serializable {
     private Map<String, Object> customData;
 
     public Itinerary(Position from, Position to, long startime, long endtime,
-	    long duration, long walkDuration,
-	    List<it.sayservice.platform.smartplanner.data.message.Leg> leg) {
-	super();
-	this.from = from;
-	this.to = to;
-	this.startime = startime;
-	this.endtime = endtime;
-	this.duration = duration;
-	this.walkingDuration = walkDuration;
-	this.leg = leg;
-	customData = new HashMap<String, Object>();
+                     long duration, long walkDuration,
+                     List<it.sayservice.platform.smartplanner.data.message.Leg> leg) {
+        super();
+        this.from = from;
+        this.to = to;
+        this.startime = startime;
+        this.endtime = endtime;
+        this.duration = duration;
+        this.walkingDuration = walkDuration;
+        this.leg = leg;
+        customData = new HashMap<String, Object>();
     }
 
     public Itinerary() {
-	super();
-	customData = new HashMap<String, Object>();
+        super();
+        customData = new HashMap<String, Object>();
     }
 
     public Position getFrom() {
-	return from;
+        return from;
     }
 
     public void setFrom(Position from) {
-	this.from = from;
+        this.from = from;
     }
 
     public Position getTo() {
-	return to;
+        return to;
     }
 
     public void setTo(Position to) {
-	this.to = to;
+        this.to = to;
     }
 
     public long getStartime() {
-	return startime;
+        return startime;
     }
 
     public void setStartime(long startime) {
-	this.startime = startime;
+        this.startime = startime;
     }
 
     public long getEndtime() {
-	return endtime;
+        return endtime;
     }
 
     public void setEndtime(long endtime) {
-	this.endtime = endtime;
+        this.endtime = endtime;
     }
 
     public long getDuration() {
-	return duration;
+        return duration;
     }
 
     public void setDuration(long duration) {
-	this.duration = duration;
+        this.duration = duration;
     }
 
     public List<Leg> getLeg() {
-	return leg;
+        return leg;
     }
 
     public void setLeg(List<Leg> leg) {
-	this.leg = leg;
+        this.leg = leg;
     }
 
     public long getWalkingDuration() {
-	return walkingDuration;
+        return walkingDuration;
     }
 
     public void setWalkingDuration(long walkingDuration) {
-	this.walkingDuration = walkingDuration;
+        this.walkingDuration = walkingDuration;
     }
 
     public boolean isPromoted() {
-	return promoted;
+        return promoted;
     }
 
     public void setPromoted(boolean promoted) {
-	this.promoted = promoted;
+        this.promoted = promoted;
     }
 
     public Map<String, Object> getCustomData() {
-	return customData;
+        return customData;
     }
 
     public void setCustomData(Map<String, Object> customData) {
-	this.customData = customData;
+        this.customData = customData;
     }
 
     @Override
     public int hashCode() {
-	final int prime = 31;
-	int result = 1;
-	result = prime * result + (int) (duration ^ (duration >>> 32));
-	result = prime * result + (int) (endtime ^ (endtime >>> 32));
-	result = prime * result + ((from == null) ? 0 : from.hashCode());
-	result = prime * result + ((leg == null) ? 0 : leg.hashCode());
-	result = prime * result + (int) (startime ^ (startime >>> 32));
-	result = prime * result + ((to == null) ? 0 : to.hashCode());
-	result = prime * result
-		+ (int) (walkingDuration ^ (walkingDuration >>> 32));
-	return result;
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (int) (duration ^ (duration >>> 32));
+        result = prime * result + (int) (endtime ^ (endtime >>> 32));
+        result = prime * result + ((from == null) ? 0 : from.hashCode());
+        result = prime * result + ((leg == null) ? 0 : leg.hashCode());
+        result = prime * result + (int) (startime ^ (startime >>> 32));
+        result = prime * result + ((to == null) ? 0 : to.hashCode());
+        result = prime * result
+                + (int) (walkingDuration ^ (walkingDuration >>> 32));
+        return result;
     }
 
     @Override
     public boolean equals(Object obj) {
-	if (this == obj)
-	    return true;
-	if (obj == null)
-	    return false;
-	if (getClass() != obj.getClass())
-	    return false;
-	Itinerary other = (Itinerary) obj;
-	if (duration != other.duration)
-	    return false;
-	if (endtime != other.endtime)
-	    return false;
-	if (from == null) {
-	    if (other.from != null)
-		return false;
-	} else if (!from.equals(other.from))
-	    return false;
-	if (leg == null) {
-	    if (other.leg != null)
-		return false;
-	} else if (!leg.equals(other.leg))
-	    return false;
-	if (startime != other.startime)
-	    return false;
-	if (to == null) {
-	    if (other.to != null)
-		return false;
-	} else if (!to.equals(other.to))
-	    return false;
-	if (walkingDuration != other.walkingDuration)
-	    return false;
-	return true;
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Itinerary other = (Itinerary) obj;
+        if (duration != other.duration)
+            return false;
+        if (endtime != other.endtime)
+            return false;
+        if (from == null) {
+            if (other.from != null)
+                return false;
+        } else if (!from.equals(other.from))
+            return false;
+        if (leg == null) {
+            if (other.leg != null)
+                return false;
+        } else if (!leg.equals(other.leg))
+            return false;
+        if (startime != other.startime)
+            return false;
+        if (to == null) {
+            if (other.to != null)
+                return false;
+        } else if (!to.equals(other.to))
+            return false;
+        if (walkingDuration != other.walkingDuration)
+            return false;
+        return true;
     }
 
     @Override
     public String toString() {
-	return "Itinerary [from=" + from + ", to=" + to + ", startime="
-		+ startime + ", endtime=" + endtime + ", duration=" + duration
-		+ ", walkingDuration=" + walkingDuration + ", leg=" + leg + "]";
+        return "Itinerary [from=" + from + ", to=" + to + ", startime="
+                + startime + ", endtime=" + endtime + ", duration=" + duration
+                + ", walkingDuration=" + walkingDuration + ", leg=" + leg + "]";
     }
 
 }

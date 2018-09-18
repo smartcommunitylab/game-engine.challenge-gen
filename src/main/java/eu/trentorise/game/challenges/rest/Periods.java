@@ -1,20 +1,15 @@
-
 package eu.trentorise.game.challenges.rest;
 
+import com.fasterxml.jackson.annotation.*;
+
+import javax.annotation.Generated;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Generated;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
-    "weekly"
+        "weekly"
 })
 public class Periods {
 
@@ -24,9 +19,7 @@ public class Periods {
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
-     * 
-     * @return
-     *     The weekly
+     * @return The weekly
      */
     @JsonProperty("weekly")
     public Weekly getWeekly() {
@@ -34,9 +27,7 @@ public class Periods {
     }
 
     /**
-     * 
-     * @param weekly
-     *     The weekly
+     * @param weekly The weekly
      */
     @JsonProperty("weekly")
     public void setWeekly(Weekly weekly) {

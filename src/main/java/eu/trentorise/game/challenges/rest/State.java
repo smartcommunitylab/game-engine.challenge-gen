@@ -1,20 +1,14 @@
 package eu.trentorise.game.challenges.rest;
 
+import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import javax.annotation.Generated;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.annotation.Generated;
-
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
@@ -38,7 +32,6 @@ public class State extends HashMap<String, List<Object>> {
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
-     * 
      * @return The BadgeCollectionConcept
      */
     @JsonProperty("BadgeCollectionConcept")
@@ -49,7 +42,7 @@ public class State extends HashMap<String, List<Object>> {
     }
 
     /**
-     * 
+     *
      * @param BadgeCollectionConcept The BadgeCollectionConcept
      */
     // @JsonProperty("BadgeCollectionConcept")
@@ -59,7 +52,6 @@ public class State extends HashMap<String, List<Object>> {
     // }
 
     /**
-     * 
      * @return The PointConcept
      */
     @JsonProperty("PointConcept")
@@ -70,7 +62,6 @@ public class State extends HashMap<String, List<Object>> {
     }
 
     /**
-     * 
      * @param PointConcept The PointConcept
      */
     // @JsonProperty("PointConcept")
@@ -78,7 +69,6 @@ public class State extends HashMap<String, List<Object>> {
     // List<eu.trentorise.game.challenges.rest.PointConcept> PointConcept) {
     // this.PointConcept = PointConcept;
     // }
-
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;

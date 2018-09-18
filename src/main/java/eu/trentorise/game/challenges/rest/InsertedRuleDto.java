@@ -13,33 +13,33 @@ public class InsertedRuleDto {
     }
 
     public InsertedRuleDto(RuleDto rule) {
-	this.id = rule.getId();
-	this.content = rule.getContent();
-	this.name = rule.getName();
+        this.id = rule.getId();
+        this.content = rule.getContent();
+        this.name = rule.getName();
     }
 
     public String getId() {
-	return id;
+        return id;
     }
 
     public void setId(String id) {
-	this.id = id;
+        this.id = id;
     }
 
     public String getContent() {
-	return content;
+        return content;
     }
 
     public void setContent(String content) {
-	this.content = content;
+        this.content = content;
     }
 
     public String getName() {
-	return name;
+        return name;
     }
 
     public void setName(String name) {
-	this.name = name;
+        this.name = name;
     }
 
 }

@@ -1,0 +1,17 @@
+cntT -  challenge type: (3) absoluteIncrement, percentageIncrement, repetitiveBehaviour
+encoding: 3 inputs, 1 active
+
+cntN - challenge name: (18) Bus_Km, green leaves, PandR_Trips, Transit_Trips, BikeSharing_Km, Bike_Trips, Car_Km, BikeSharing_Trips, Walk_Trips, Train_Km, Recommendations, Walk_Km, Bus_Trips, Car_Trips, Train_Trips, Bike_Km, NoCar_Trips, ZeroImpact_Trips
+encoding: 18 inputs, 1 active
+
+baseline - numerico
+
+target - numerico
+
+prize - numerico
+
+Per ogni PointConcept (18): Bus_Km, green leaves, PandR_Trips, Transit_Trips, BikeSharing_Km, Bike_Trips, Car_Km, BikeSharing_Trips, Walk_Trips, Train_Km, Recommendations, Walk_Km, Bus_Trips, Car_Trips, Train_Trips, Bike_Km, NoCar_Trips, ZeroImpact_Trips
+
+- Current score
+- weekly score: settimana precedente, quella prima e quella prima ancora (0 se non aveva giocato)
+- daily score: 7 giorni precedenti?

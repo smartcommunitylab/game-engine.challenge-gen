@@ -7,15 +7,15 @@ import eu.trentorise.game.challenges.rest.PointConcept.PeriodInternal;
 
 /**
  * Utility class for {@link PointConcept}
- *
  */
 public final class PointConceptUtil {
 
-    private PointConceptUtil() {}
+    private PointConceptUtil() {
+    }
 
     /**
      * Return max value for given {@link PointConcept} type in a period for a specific user
-     * 
+     *
      * @param user
      * @param pointType
      * @param periodIdentifier
@@ -40,7 +40,7 @@ public final class PointConceptUtil {
 
     /**
      * Search for point concept of a given type in a user
-     * 
+     *
      * @param user
      * @param pointType
      * @return {@link PointConcept} or null
@@ -60,7 +60,7 @@ public final class PointConceptUtil {
 
     /**
      * Get current score from a point oncept of a type and period for a user
-     * 
+     *
      * @param user
      * @param pointType
      * @param periodIdentifier
@@ -76,7 +76,7 @@ public final class PointConceptUtil {
 
     /**
      * Return value for a point concept with given name for a user
-     * 
+     *
      * @param user
      * @param name
      * @return
@@ -92,7 +92,7 @@ public final class PointConceptUtil {
 
     /**
      * Return previous score for a point concept of given type in a period for a user
-     * 
+     *
      * @param user
      * @param pointType
      * @param periodIdentifier

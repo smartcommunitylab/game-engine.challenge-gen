@@ -8,19 +8,19 @@ public class JourneyData {
     private Map<String, Object> data;
 
     public String getUserId() {
-	return userId;
+        return userId;
     }
 
     public void setUserId(String userId) {
-	this.userId = userId;
+        this.userId = userId;
     }
 
     public Map<String, Object> getData() {
-	return data;
+        return data;
     }
 
     public void setData(Map<String, Object> data) {
-	this.data = data;
+        this.data = data;
     }
 
 }

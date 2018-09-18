@@ -1,0 +1,13 @@
+NAME;TYPE;GOAL_TYPE;TARGET;BONUS;POINT_TYPE;DIFFICULTY;BASELINE_VARIABLE;SELECTION_CRITERIA_POINTS;SELECTION_CRITERIA_BADGES
+w10_zero_impact_trips_try;absoluteIncrement;ZeroImpact_Trips;1.0;200;green leaves;;;ZeroImpact_Trips.weekly.current == 0;
+w10_zero_impact_trips_percent_100;percentageIncrement;ZeroImpact_Trips;0.99;200;green leaves;;ZeroImpact_Trips;ZeroImpact_Trips.weekly.current > 0 && ZeroImpact_Trips.weekly.current < 5;
+w10_zero_impact_trips_percent_50;percentageIncrement;ZeroImpact_Trips;0.5;200;green leaves;;ZeroImpact_Trips;ZeroImpact_Trips.weekly.current >= 5 && ZeroImpact_Trips.weekly.current < 10;
+w10_zero_impact_trips_percent_30;percentageIncrement;ZeroImpact_Trips;0.3;250;green leaves;;ZeroImpact_Trips;ZeroImpact_Trips.weekly.current >= 10 && ZeroImpact_Trips.weekly.current < 15;
+w10_zero_impact_trips_percent_10;percentageIncrement;ZeroImpact_Trips;0.1;150;green leaves;;ZeroImpact_Trips;ZeroImpact_Trips.weekly.current >= 15;
+w10_train_trips_percent_50;percentageIncrement;Train_Trips;0.5;300;green leaves;;Train_Trips;Train_Trips.weekly.current > 0 && Train_Trips.weekly.current < 5;
+w10_train_trips_percent_10;percentageIncrement;Train_Trips;0.1;200;green leaves;;Train_Trips;Train_Trips.weekly.current >= 5;
+w10_bus_trips_percent_50;percentageIncrement;Bus_Trips;0.5;300;green leaves;;Bus_Trips;Bus_Trips.weekly.current > 0 && Bus_Trips.weekly.current < 4;
+w10_bus_trips_percent_30;percentageIncrement;Bus_Trips;0.3;250;green leaves;;Bus_Trips;Bus_Trips.weekly.current >= 4 && Bus_Trips.weekly.current < 8;
+w10_bus_trips_percent_10;percentageIncrement;Bus_Trips;0.1;200;green leaves;;Bus_Trips;Bus_Trips.weekly.current >= 8;
+w10_bus_try;absoluteIncrement;Bus_Trips;1.0;250;green leaves;;;Bus_Trips.weekly.current == 0;
+w10_train_try;absoluteIncrement;Train_Trips;1.0;250;green leaves;;;Train_Trips.weekly.current == 0;

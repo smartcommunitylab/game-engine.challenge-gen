@@ -7,9 +7,9 @@ import eu.trentorise.game.challenges.model.ChallengeType;
 public class NegatedModeChallenge extends TripNumberChallenge {
 
     public NegatedModeChallenge(String templateDir) {
-    	super(templateDir);
-    	this.templateName = "NegateModeTemplate.drt";
-    	this.type = ChallengeType.NEGATEDMODE;
+        super(templateDir);
+        this.templateName = "NegateModeTemplate.drt";
+        this.type = ChallengeType.NEGATEDMODE;
     }
 
 }

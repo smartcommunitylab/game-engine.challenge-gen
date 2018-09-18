@@ -1,0 +1,88 @@
+{
+  "_id": {
+    "$oid": "5465aa0f975a9a61f431e0be"
+  },
+  "_class": "eu.trentorise.smartcampus.mobility.logging.StatDataObject",
+  "userId": "178",
+  "timestamp": 1415948815248,
+  "data": {
+    "_class": "eu.trentorise.smartcampus.mobility.sync.BasicItinerary",
+    "data": {
+      "from": {
+        "name": "corner of Pista Ciclabile Valle dell'Adige and steps",
+        "stopId": {
+          "_id": "",
+          "agencyId": ""
+        },
+        "stopCode": "null",
+        "lon": "11.016303",
+        "lat": "45.886243"
+      },
+      "to": {
+        "name": "Via Fornaci",
+        "stopId": {
+          "_id": "",
+          "agencyId": ""
+        },
+        "stopCode": "null",
+        "lon": "11.00505844498993",
+        "lat": "45.85846311702596"
+      },
+      "startime": 1415948460000,
+      "endtime": 1415949411000,
+      "duration": 951000,
+      "walkingDuration": 951,
+      "leg": [
+        {
+          "legId": "null_null",
+          "startime": 1415948460000,
+          "endtime": 1415949390000,
+          "duration": 930000,
+          "from": {
+            "name": "Pista Ciclabile Valle dell'Adige",
+            "stopCode": "null",
+            "lon": "11.0163567",
+            "lat": "45.8861941"
+          },
+          "to": {
+            "name": "Via Fornaci",
+            "stopCode": "null",
+            "lon": "11.00505844498993",
+            "lat": "45.85846311702596"
+          },
+          "transport": {
+            "type": "BICYCLE",
+            "agencyId": "null",
+            "routeId": "null",
+            "routeShortName": "null",
+            "tripId": "null"
+          },
+          "legGeometery": {
+            "length": 112,
+            "levels": "null",
+            "points": "ucawGesfbA|BgBnBmBbA}@?OHBHAJIf@Gp@SxAc@`@UDIPe@JwBE_@Cg@o@qCr@mAR]|BuDLOb@Wt@KfCIf@ELCt@a@BJ|@bDvDjJR^v@n@lEzCTDjB`@fD`BvDrClE`DJ\\Xb@lL`H|CvBxEjCvDdBpB~A|B`ChCdEVr@r@cANZ|C|FHTDVFb@@J@P?VARAHAFA?ABEDABCDCFEVAJ?J@P@LBJFLFHLLLDN@NCJGJIFOFSHIJAHDFPJXDRFPNl@l@zA`@nADJ|AxDz@dBpChC~AfAfC`At@?j@g@JWFONc@nBmFn@q@x@_@fADnDp@lB^`AG??"
+          },
+          "alertStrikeList": [],
+          "alertDelayList": [],
+          "alertParkingList": [],
+          "alertRoadList": [],
+          "alertAccidentList": [],
+          "length": 4107.783362517648
+        }
+      ],
+      "promoted": true
+    },
+    "monitor": false,
+    "originalFrom": {
+      "name": "Pista Ciclabile Valle dell'Adige, Isera, 38068, Italia",
+      "lon": "11.016303",
+      "lat": "45.886243"
+    },
+    "originalTo": {
+      "name": "Via Fornaci, Rovereto, 38068, Italia",
+      "lon": "11.005058",
+      "lat": "45.858463"
+    },
+    "name": "consegna documenti"
+  }
+}

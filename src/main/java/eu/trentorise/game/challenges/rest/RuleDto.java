@@ -13,35 +13,35 @@ public class RuleDto {
     private Map<String, Map<String, Object>> customData;
 
     public String getId() {
-	return id;
+        return id;
     }
 
     public void setId(String id) {
-	this.id = id;
+        this.id = id;
     }
 
     public String getContent() {
-	return content;
+        return content;
     }
 
     public void setContent(String content) {
-	this.content = content;
+        this.content = content;
     }
 
     public String getName() {
-	return name;
+        return name;
     }
 
     public void setName(String name) {
-	this.name = name;
+        this.name = name;
     }
 
     public void setCustomData(Map<String, Map<String, Object>> customData) {
-	this.customData = customData;
+        this.customData = customData;
     }
 
     public Map<String, Map<String, Object>> getCustomData() {
-	return customData;
+        return customData;
     }
 
 }
