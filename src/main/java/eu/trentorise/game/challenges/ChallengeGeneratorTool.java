@@ -108,8 +108,7 @@ public class ChallengeGeneratorTool {
 			filterIds = cmd.getArgList().get(8);
 		}
 		// call generation
-		generate(host, gameId, input, output, username, password, filterIds,
-				useRecommendationSystem, useFiltering);
+		generate(host, gameId, input, output, username, password, filterIds, useFiltering);
 	}
 
 	private static void printHelp() {
@@ -122,20 +121,9 @@ public class ChallengeGeneratorTool {
 
 	/**
 	 * Generate challenges starting from input file
-	 * 
-	 * @param host
-	 * @param gameId
-	 * @param input
-	 * @param templateDir
-	 * @param output
-	 * @param username
-	 * @param password
-	 * @param filterIds
-	 * @param useRecommendationSystem
 	 */
 	public static void generate(String host, String gameId, String input,
-			String output, String username, String password, String filterIds,
-			Boolean useRecommendationSystem, Boolean useFiltering) {
+			String output, String username, String password, String filterIds, Boolean useFiltering) {
 		// load
 		ChallengeRules challengeDefinition;
 		try {
@@ -153,26 +141,17 @@ public class ChallengeGeneratorTool {
 		}
 		System.out.println("Challenge definition file: " + input);
 		generate(host, gameId, challengeDefinition, username, password, output,
-				filterIds, useRecommendationSystem, useFiltering);
+				filterIds, useFiltering);
 	}
 
 	/**
 	 * Generate challenges starting from a {@link ChallengeRules}
 	 * 
-	 * @param host
-	 * @param gameId
-	 * @param challengeDefinitions
-	 * @param templateDir
-	 * @param output
-	 * @param username
-	 * @param password
-	 * 
 	 * @see ChallengeRulesLoader
 	 */
 	public static String generate(String host, String gameId,
 			ChallengeRules challengeDefinitions, String username,
-			String password, String output, String filterIds,
-			Boolean useRecommendationSystem, Boolean useFiltering) {
+			String password, String output, String filterIds, Boolean useFiltering) {
 		String log = "";
 		// get users from gamification engine
 		GamificationEngineRestFacade facade;
@@ -225,35 +204,7 @@ public class ChallengeGeneratorTool {
 			log += msg + Constants.LINE_SEPARATOR;
 			return log;
 		}
-		// recommandationsystem integration
-		if (useRecommendationSystem) {
-			RecommendationSystem rs = new RecommendationSystem(
-					new RecommendationSystemConfig(useFiltering, filterIds));
-			Map<String, List<ChallengeDataDTO>> rsChallenges = rs
-					.recommendation(users, CalendarUtil.getStart().getTime(),
-							CalendarUtil.getEnd().getTime());
-			if (rsChallenges == null
-					|| (rsChallenges != null && rsChallenges.isEmpty())) {
-				msg = "Warning: no challenges generated using recommendation system, even if is enabled";
-				System.out.println(msg);
-				log += msg + Constants.LINE_SEPARATOR;
-				return log;
-			}
-			try {
-				crg.setChallenges(rsChallenges, gameId);
-				msg = "Generated challenges using recommandation system for "
-						+ rsChallenges.size() + " players";
-				System.out.println(msg);
-				log += msg + Constants.LINE_SEPARATOR;
-				// write configuration file to filesystem
-				rs.writeToFile(rsChallenges);
-			} catch (IOException e) {
-				msg = "Error in challenge generation : " + e.getMessage();
-				System.err.println(msg);
-				log += msg + Constants.LINE_SEPARATOR;
-				return log;
-			}
-		}
+
 		// generate challenges
 		for (ChallengeRuleRow challengeSpec : challengeDefinitions
 				.getChallenges()) {
@@ -315,16 +266,16 @@ public class ChallengeGeneratorTool {
 	public static String generate(String host, String gameId,
 			ChallengeRules challenges, String username, String password,
 			String output, Date startDate, Date endDate, String filterIds,
-			Boolean useRecommendationSystem, Boolean useFiltering) {
+			Boolean useFiltering) {
 		if (host == null || gameId == null || challenges == null
 				|| username == null || password == null || output == null
 				|| startDate == null || endDate == null || filterIds == null
-				|| useRecommendationSystem == null) {
+				) {
 			throw new IllegalArgumentException("inputs must be not null");
 		}
 		CalendarUtil.setStart(startDate);
 		CalendarUtil.setEnd(endDate);
 		return generate(host, gameId, challenges, username, password, output,
-				filterIds, useRecommendationSystem, useFiltering);
+				filterIds, useFiltering);
 	}
 }
