@@ -19,7 +19,6 @@ package it.sayservice.platform.smartplanner.data.message;
 import java.io.Serializable;
 
 /**
- *
  * Geometry of a leg (used for graphical representation)
  */
 public class LegGeometery implements Serializable {

@@ -17,7 +17,6 @@
 package it.sayservice.platform.smartplanner.data.message.otpbeans;
 
 /**
- *
  * A transport stop
  */
 public class Stop {

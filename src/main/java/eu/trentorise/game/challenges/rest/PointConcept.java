@@ -145,7 +145,7 @@ public class PointConcept {
     }
 
     public Double getPeriodScore(String periodIdentifier, long moment) {
-        if (! periods.containsKey(periodIdentifier))
+        if (!periods.containsKey(periodIdentifier))
             return 0d;
 
         PeriodInternal p = periods.get(periodIdentifier);

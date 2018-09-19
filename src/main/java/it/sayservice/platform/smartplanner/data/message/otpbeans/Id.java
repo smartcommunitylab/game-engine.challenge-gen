@@ -18,7 +18,6 @@ package it.sayservice.platform.smartplanner.data.message.otpbeans;
 
 /**
  * Id for a trip
- *
  */
 public class Id {
 

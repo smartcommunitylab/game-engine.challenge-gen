@@ -8,7 +8,9 @@ import eu.trentorise.game.challenges.rest.PointConcept;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.*;
 
 import static eu.fbk.das.rs.Utils.*;
@@ -40,9 +42,9 @@ public class ChallengeDataGuru extends BaseTest {
     private List<double[]> training_data = new ArrayList<>();
     private List<Double> training_label = new ArrayList<>();
 
-    private String[] challengeType = new String[] {"absoluteIncrement", "percentageIncrement", "repetitiveBehaviour"};
+    private String[] challengeType = new String[]{"absoluteIncrement", "percentageIncrement", "repetitiveBehaviour"};
 
-    private String[] challengeName = new String[] {"Bus_Km", "green leaves", "PandR_Trips", "Transit_Trips", "BikeSharing_Km", "Bike_Trips", "Car_Km", "BikeSharing_Trips", "Walk_Trips", "Train_Km", "Recommendations", "Walk_Km", "Bus_Trips", "Car_Trips", "Train_Trips", "Bike_Km", "NoCar_Trips", "ZeroImpact_Trips"};
+    private String[] challengeName = new String[]{"Bus_Km", "green leaves", "PandR_Trips", "Transit_Trips", "BikeSharing_Km", "Bike_Trips", "Car_Km", "BikeSharing_Trips", "Walk_Trips", "Train_Km", "Recommendations", "Walk_Km", "Bus_Trips", "Car_Trips", "Train_Trips", "Bike_Km", "NoCar_Trips", "ZeroImpact_Trips"};
 
     int datum_length = 95;
     private int datum_start;
@@ -78,11 +80,11 @@ public class ChallengeDataGuru extends BaseTest {
     public void generate() throws IOException {
 
         // Read challenge completed list
-     //   readCompleted();
-    //    p(completed);
+        //   readCompleted();
+        //    p(completed);
 
         // Read challenge assigned list
-      //    readAll();
+        //    readAll();
 
         computeData();
 
@@ -108,7 +110,7 @@ public class ChallengeDataGuru extends BaseTest {
         wf(wr, "@relation playgo\n\n");
         wf(wr, "@attribute model {0,1,2}\n");
         wf(wr, "@attribute counter {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17}\n", Utils.joinArray(challengeName).replace("\"", ""));
-        for (int i = datum_start ; i < datum_length; i++)
+        for (int i = datum_start; i < datum_length; i++)
             wf(wr, "@attribute w%d numeric\n", i);
 
         wf(wr, "@attribute class {0, 1}\n");
@@ -117,7 +119,7 @@ public class ChallengeDataGuru extends BaseTest {
         for (int i = 0; i < training_data.size(); i++) {
             double[] datum = training_data.get(i);
             wf(wr, "%d,%d", training_model.get(i), training_counter.get(i));
-            for (int j = datum_start ; j < datum_length; j++)
+            for (int j = datum_start; j < datum_length; j++)
                 wf(wr, ",%.3f", datum[j]);
             wf(wr, ",%d\n", (int) Math.round(training_label.get(i)));
             wr.flush();
@@ -131,11 +133,11 @@ public class ChallengeDataGuru extends BaseTest {
         Set<String> players = facade.getGamePlayers(GAMEID);
 
 
-        for (String pId: players) {
+        for (String pId : players) {
 
             Content user = getContent(pId);
 
-            for (ChallengeConcept cha: user.getState().getChallengeConcept()) {
+            for (ChallengeConcept cha : user.getState().getChallengeConcept()) {
 
                 goChallenge(user, cha);
             }
@@ -145,7 +147,7 @@ public class ChallengeDataGuru extends BaseTest {
 
         // compute means
         double[] means = new double[datum_length];
-        for (double[] datum: training_data) {
+        for (double[] datum : training_data) {
             for (int i = datum_start; i < means.length; i++)
                 means[i] += datum[i];
         }
@@ -154,7 +156,7 @@ public class ChallengeDataGuru extends BaseTest {
 
         // compute std
         double[] std = new double[datum_length];
-        for (double[] datum: training_data) {
+        for (double[] datum : training_data) {
             for (int i = datum_start; i < means.length; i++)
                 std[i] += Math.pow(means[i] - datum[i], 2);
         }
@@ -164,7 +166,7 @@ public class ChallengeDataGuru extends BaseTest {
         }
 
         // Normalize data
-        for (double[] datum: training_data) {
+        for (double[] datum : training_data) {
             for (int i = datum_start; i < means.length; i++)
                 if (std[i] != 0)
                     datum[i] = (datum[i] - means[i]) / std[i];
@@ -179,13 +181,13 @@ public class ChallengeDataGuru extends BaseTest {
         if (!cId.startsWith("w"))
             return;
 
-        for (String s: new String[] {"check_in", "pioneer", "next_badge", "aficionado"})
+        for (String s : new String[]{"check_in", "pioneer", "next_badge", "aficionado"})
             if (cId.contains(s))
                 return;
 
         String s_week = cId.substring(0, cId.indexOf("_")).replace("w", "");
 
-        int week =  Integer.valueOf(s_week);
+        int week = Integer.valueOf(s_week);
 
         // consider only week 3 forward (we need the others as a baseline
         if (week < 3)
@@ -257,7 +259,7 @@ public class ChallengeDataGuru extends BaseTest {
 
             //  - daily score: 7 giorni precedenti?
             // for (int i = 0; i < 3; i++) {
-                 // datum[ix++] = pc.getPeriodScore("daily", getDateFromStart(week - 1, i));
+            // datum[ix++] = pc.getPeriodScore("daily", getDateFromStart(week - 1, i));
             // }
 
         }
@@ -277,7 +279,7 @@ public class ChallengeDataGuru extends BaseTest {
         if ("".equals(s))
             return 0;
         else
-        return Double.parseDouble(s);
+            return Double.parseDouble(s);
     }
 
     private long getDateFromStart(int n_week, int n_days) {
@@ -335,7 +337,7 @@ public class ChallengeDataGuru extends BaseTest {
 
         while (ln != null) {
             String[] aux = ln.split(",");
-            completed.add(aux[aux.length -1].replace("\"", ""));
+            completed.add(aux[aux.length - 1].replace("\"", ""));
             ln = rd.readLine();
         }
 

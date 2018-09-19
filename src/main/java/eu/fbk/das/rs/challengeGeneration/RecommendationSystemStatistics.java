@@ -119,7 +119,7 @@ public class RecommendationSystemStatistics {
         for (String mode : l_mode) {
             stats.put(mode, new ArrayList<Double>());
         }
-        stats.put(cfg.gLeaves,  new ArrayList<Double>());
+        stats.put(cfg.gLeaves, new ArrayList<Double>());
 
         List<Content> l_player = facade.readGameState(cfg.get("GAME_ID"));
 
@@ -151,7 +151,7 @@ public class RecommendationSystemStatistics {
         for (PointConcept pc : cnt.getState().getPointConcept()) {
 
             String m = pc.getName();
-            
+
             if (pc.getName().equals(cfg.gLeaves)) {
                 stats.get(cfg.gLeaves).add(pc.getPeriodScore("weekly", execDate.getTime()));
             }

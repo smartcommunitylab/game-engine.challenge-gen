@@ -1,7 +1,6 @@
 package eu.fbk.das.rs.valuator;
 
 import com.google.common.math.Quantiles;
-import eu.fbk.das.rs.ArrayUtils;
 import eu.fbk.das.rs.challengeGeneration.RecommendationSystemConfig;
 import eu.fbk.das.rs.challengeGeneration.SingleModeConfig;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
@@ -14,7 +13,6 @@ import java.util.Map;
 import static eu.fbk.das.rs.ArrayUtils.find;
 import static eu.fbk.das.rs.Utils.dbg;
 import static eu.fbk.das.rs.Utils.err;
-import static eu.fbk.das.rs.Utils.p;
 
 public class RecommendationSystemChallengeValuator {
 

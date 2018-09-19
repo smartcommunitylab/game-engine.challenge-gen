@@ -24,13 +24,11 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- *
  * Parameters needed to generate a recurrent journey.<br/>
  * <br/>
  * For an example, see this json representation of an instance of this class:<br/>
  * <br/>
  * { "recurrence" : [1,4], "from" :  "46.062005,11.129169", "to" : "46.068854,11.151184", "time" : "2:48pm", "interval" : 7200000, "transportTypes" : ["TRANSIT"], "routeType" : "fastest", "fromDate" : "1347487200000", "toDate" : "1356130800000" }
- *
  */
 public class RecurrentJourneyParameters implements Serializable {
 

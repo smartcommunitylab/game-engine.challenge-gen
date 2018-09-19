@@ -1,6 +1,5 @@
 package eu.fbk.das.rs.sortfilter;
 
-import eu.fbk.das.rs.ArrayUtils;
 import eu.fbk.das.rs.challengeGeneration.RecommendationSystemConfig;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import eu.trentorise.game.challenges.rest.Content;
@@ -84,7 +83,7 @@ public class RecommendationSystemChallengeFilteringAndSorting {
             double wi = percentageImprovment * weight;
             challenge.getData().put("wi", wi);
             // finding the position of the player in the leader board
-            int  position = findPosition(leaderboard,  player);
+            int position = findPosition(leaderboard, player);
 
 
             if (position == 0) {
@@ -129,7 +128,7 @@ public class RecommendationSystemChallengeFilteringAndSorting {
 
     private int findPosition(double[] leaderboard, Content player) {
         double score = 0;
-        for (PointConcept pc: player.getState().getPointConcept()) {
+        for (PointConcept pc : player.getState().getPointConcept()) {
             if (!pc.getName().equals(cfg.gLeaves))
                 continue;
 
@@ -138,7 +137,7 @@ public class RecommendationSystemChallengeFilteringAndSorting {
 
         int pos = pos(score, leaderboard);
         if (pos < 0) {
-            pos = -(pos) -1;
+            pos = -(pos) - 1;
         }
 
         return pos;

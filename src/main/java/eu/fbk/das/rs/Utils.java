@@ -291,13 +291,13 @@ public class Utils {
      *
      * @param ph (optional) file path
      * @return writer to use to output result
-<<<<<<< HEAD
-     * @throws UnsupportedEncodingException error in stream creation
-     * @throws FileNotFoundException        file path not valid
-=======
+     * <<<<<<< HEAD
+     * @throws UnsupportedEncodingException         error in stream creation
+     * @throws FileNotFoundException                file path not valid
+     *                                              =======
      * @throws java.io.UnsupportedEncodingException error in stream creation
      * @throws java.io.FileNotFoundException        file path not valid
->>>>>>> mauro
+     *                                              >>>>>>> mauro
      */
     public static Writer getWriter(String ph)
             throws UnsupportedEncodingException, FileNotFoundException {
@@ -332,13 +332,13 @@ public class Utils {
      *
      * @param ph dir path
      * @return directory
-<<<<<<< HEAD
-     * @throws UnsupportedEncodingException error in stream creation
-     * @throws FileNotFoundException        file path not valid
-=======
+     * <<<<<<< HEAD
+     * @throws UnsupportedEncodingException         error in stream creation
+     * @throws FileNotFoundException                file path not valid
+     *                                              =======
      * @throws java.io.UnsupportedEncodingException error in stream creation
      * @throws java.io.FileNotFoundException        file path not valid
->>>>>>> mauro
+     *                                              >>>>>>> mauro
      */
     public static File getDirectory(String ph) throws Exception {
 

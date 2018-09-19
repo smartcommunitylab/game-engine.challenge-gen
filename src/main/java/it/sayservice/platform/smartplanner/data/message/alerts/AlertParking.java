@@ -28,13 +28,19 @@ public class AlertParking extends Alert {
      */
     private static final long serialVersionUID = 1090808895270541790L;
 
-    /** agencyId(BIKE-STATION,CAR-STATION), id(PLACE ID) **/
+    /**
+     * agencyId(BIKE-STATION,CAR-STATION), id(PLACE ID)
+     **/
     private StopId place;
 
-    /** number of parking posts. **/
+    /**
+     * number of parking posts.
+     **/
     private int placesAvailable;
 
-    /** number of available rental vehicles **/
+    /**
+     * number of available rental vehicles
+     **/
     private int noOfvehicles;
 
     public StopId getPlace() {

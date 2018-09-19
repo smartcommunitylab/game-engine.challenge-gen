@@ -23,9 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
  * Class representing a leg (a part of an itinerary)
- *
  */
 public class Leg implements Serializable {
 

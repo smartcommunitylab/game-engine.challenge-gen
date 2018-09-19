@@ -17,7 +17,6 @@
 package it.sayservice.platform.smartplanner.data.message.otpbeans;
 
 /**
- *
  * The time a trip passes by a stop
  */
 public class StopTime implements Comparable<StopTime> {

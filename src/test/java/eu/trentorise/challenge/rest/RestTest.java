@@ -1,28 +1,12 @@
 package eu.trentorise.challenge.rest;
 
-import static eu.trentorise.challenge.PropertiesUtil.CONTEXT;
-import static eu.trentorise.challenge.PropertiesUtil.GAMEID;
-import static eu.trentorise.challenge.PropertiesUtil.HOST;
-import static eu.trentorise.challenge.PropertiesUtil.INSERT_CONTEXT;
-import static eu.trentorise.challenge.PropertiesUtil.PASSWORD;
-import static eu.trentorise.challenge.PropertiesUtil.RELEVANT_CUSTOM_DATA;
-import static eu.trentorise.challenge.PropertiesUtil.SAVE_ITINERARY;
-import static eu.trentorise.challenge.PropertiesUtil.USERNAME;
-import static eu.trentorise.challenge.PropertiesUtil.get;
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
+import eu.trentorise.game.challenges.api.Constants;
+import eu.trentorise.game.challenges.rest.*;
+import eu.trentorise.game.challenges.rest.PointConcept.PeriodInstanceImpl;
+import eu.trentorise.game.challenges.util.CalendarUtil;
+import eu.trentorise.game.challenges.util.ConverterUtil;
+import eu.trentorise.game.challenges.util.ExcelUtil;
+import eu.trentorise.game.challenges.util.JourneyData;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -34,18 +18,15 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Before;
 import org.junit.Test;
 
-import eu.trentorise.game.challenges.api.Constants;
-import eu.trentorise.game.challenges.rest.ChallengeConcept;
-import eu.trentorise.game.challenges.rest.Content;
-import eu.trentorise.game.challenges.rest.ExecutionDataDTO;
-import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
-import eu.trentorise.game.challenges.rest.InsertedRuleDto;
-import eu.trentorise.game.challenges.rest.PointConcept;
-import eu.trentorise.game.challenges.rest.PointConcept.PeriodInstanceImpl;
-import eu.trentorise.game.challenges.util.CalendarUtil;
-import eu.trentorise.game.challenges.util.ConverterUtil;
-import eu.trentorise.game.challenges.util.ExcelUtil;
-import eu.trentorise.game.challenges.util.JourneyData;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+import static eu.trentorise.challenge.PropertiesUtil.*;
+import static org.junit.Assert.assertTrue;
 
 public class RestTest {
 
@@ -139,11 +120,11 @@ public class RestTest {
         for (Content content : result) {
             toWrite.append(content.getPlayerId() + ";"
                     + getScore(content, "green leaves", true, false) + ";" // false,
-                                                                           // false
-                                                                           // =
-                                                                           // current
-                                                                           // week
-                                                                           // counter
+                    // false
+                    // =
+                    // current
+                    // week
+                    // counter
                     + getCustomData(content, true) + "\n");
 
         }
@@ -304,7 +285,7 @@ public class RestTest {
     @Test
     /**
      * Print an excel file, for every week, the status for all players
-     * 
+     *
      * @throws FileNotFoundException
      * @throws IOException
      */

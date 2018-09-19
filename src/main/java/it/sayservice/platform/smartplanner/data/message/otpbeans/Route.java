@@ -17,7 +17,6 @@
 package it.sayservice.platform.smartplanner.data.message.otpbeans;
 
 /**
- *
  * A route of a transit.</br>
  * </br>
  * For an example, see this json representation of an instance of this class:<br/>

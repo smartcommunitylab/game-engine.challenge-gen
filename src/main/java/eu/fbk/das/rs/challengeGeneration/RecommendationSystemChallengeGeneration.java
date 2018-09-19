@@ -82,20 +82,20 @@ public class RecommendationSystemChallengeGeneration {
         } else {
             // if (configuration.isDefaultMode(mode)) {
 
-                // build a try once
-                ChallengeDataDTO cdd = prepareChallange(mode, execDate, "try");
-                cdd.setModelName("absoluteIncrement");
-                Map<String, Object> data = new HashMap<String, Object>();
-                data.put("target", 1);
-                data.put("bonusPointType", "green leaves");
-                data.put("bonusScore", 100d);
-                data.put("counterName", mode);
-                data.put("periodName", "weekly");
-                data.put("challengeName",
-                        configuration.getChallengeNamePrefix() + mode
-                                + "_try");
-                cdd.setData(data);
-                output.add(cdd);
+            // build a try once
+            ChallengeDataDTO cdd = prepareChallange(mode, execDate, "try");
+            cdd.setModelName("absoluteIncrement");
+            Map<String, Object> data = new HashMap<String, Object>();
+            data.put("target", 1);
+            data.put("bonusPointType", "green leaves");
+            data.put("bonusScore", 100d);
+            data.put("counterName", mode);
+            data.put("periodName", "weekly");
+            data.put("challengeName",
+                    configuration.getChallengeNamePrefix() + mode
+                            + "_try");
+            cdd.setData(data);
+            output.add(cdd);
             // }
         }
 
