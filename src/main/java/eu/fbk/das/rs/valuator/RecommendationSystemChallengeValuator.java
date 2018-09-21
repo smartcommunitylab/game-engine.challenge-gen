@@ -1,7 +1,7 @@
 package eu.fbk.das.rs.valuator;
 
-import com.google.common.math.Quantiles;
 import eu.fbk.das.rs.challengeGeneration.RecommendationSystemConfig;
+import eu.fbk.das.rs.challengeGeneration.RecommendationSystemStatistics;
 import eu.fbk.das.rs.challengeGeneration.SingleModeConfig;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import org.apache.logging.log4j.LogManager;
@@ -22,7 +22,7 @@ public class RecommendationSystemChallengeValuator {
     // Prize Matrix for each mode
     private Map<String, PlanePointFunction> prizeMatrixMap = new HashMap<String, PlanePointFunction>();
     private RecommendationSystemConfig cfg;
-    private HashMap<String, Map<Integer, Double>> m_quartiles;
+    private RecommendationSystemStatistics stats;
 
     /**
      * Create a new recommandation system challenge valuator
@@ -36,8 +36,9 @@ public class RecommendationSystemChallengeValuator {
                     "Recommandation system cfg must be not null");
         }
         this.cfg = configuration;
-        for (String mode : configuration.getModeKeySet()) {
+        for (String mode : cfg.defaultMode) {
             SingleModeConfig config = configuration.getModeConfig(mode);
+
             PlanePointFunction matrix = new PlanePointFunction(
                     RecommendationSystemConfig.PRIZE_MATRIX_NROW,
                     RecommendationSystemConfig.PRIZE_MATRIX_NCOL, config.getPrizeMatrixMin(),
@@ -50,18 +51,8 @@ public class RecommendationSystemChallengeValuator {
     }
 
     // Prepare quantiles given statistic
-    public void prepare(HashMap<String, double[]> stats) {
-
-        m_quartiles = new HashMap<String, Map<Integer, Double>>();
-
-        for (String mode : cfg.getDefaultMode()) {
-            double[] activePlayersvalues = stats.get(mode);
-
-            Map<Integer, Double> quartiles = Quantiles.scale(10).indexes(4, 7, 9).compute(activePlayersvalues);
-
-            m_quartiles.put(mode, quartiles);
-        }
-
+    public void prepare(RecommendationSystemStatistics stats) {
+        this.stats = stats;
     }
 
     // Updates a challenge, evaluating its difficulty
@@ -73,7 +64,7 @@ public class RecommendationSystemChallengeValuator {
             return;
         }
 
-        Map<Integer, Double> quartiles = m_quartiles.get(counterName);
+        Map<Integer, Double> quartiles = stats.getQuartiles(counterName);
 
         if (challenge.getModelName().equals("percentageIncrement")) {
             Double baseline = (Double) challenge.getData().get("baseline");

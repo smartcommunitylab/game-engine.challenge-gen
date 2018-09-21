@@ -50,6 +50,7 @@ public class RecommendationSystemConfig {
     private static final String ZERO_IMPACT_TRIPS = "ZeroImpact_Trips";
     private static final String BIKE_SHARING_KM = "BikeSharing_Km";
     private static final String WALK_KM = "Walk_Km";
+    private static final String GREEN_LEAVES = "Green_Leaves";
 
     // Default prize matrix dimension, number of rows
     public static final int PRIZE_MATRIX_NROW = 4;
@@ -80,7 +81,7 @@ public class RecommendationSystemConfig {
 
     // Transportation mode configuration
     // First, declare call supported modes. Order matters!
-    private final String[] defaultMode = {BIKE_KM, WALK_KM, BUS_TRIPS, TRAIN_TRIPS};
+    public String[] defaultMode = {BIKE_KM, WALK_KM, BUS_TRIPS, TRAIN_TRIPS, GREEN_LEAVES};
     // Second, declare corresponding *_Trips of *_Km modes (i.e. Walk_km =>
     // Walk_Trips), used for try once challenges
     private final String[] defaultModetrip = {BIKE_TRIPS, WALK_TRIPS,
@@ -139,6 +140,10 @@ public class RecommendationSystemConfig {
         modeConfiguration.put(BIKE_TRIPS, new SingleModeConfig(BIKE_TRIPS, 0,
                 220.0, 380.0, 300.0));
         modeConfiguration.put(ZERO_IMPACT_TRIPS, new SingleModeConfig(
+                ZERO_IMPACT_TRIPS, 0, 200.0, 380.0, 280.0));
+
+        // TODO CHECK
+        modeConfiguration.put(GREEN_LEAVES, new SingleModeConfig(
                 ZERO_IMPACT_TRIPS, 0, 200.0, 380.0, 280.0));
 
         Arrays.sort(defaultMode);

@@ -94,10 +94,10 @@ public class RecommendationSystemTest extends BaseTest {
         Date date = Utils.stringToDate(cfg.get("DATE"));
 
         RecommendationSystemStatistics statistics = new RecommendationSystemStatistics(cfg);
-        HashMap<String, double[]> stats = statistics.checkAndUpdateStats(facade, date, cfg.getDefaultMode());
+        statistics.checkAndUpdateStats(facade, date, cfg.getDefaultMode());
 
-        rscv.prepare(stats);
-        rscf.prepare(stats);
+        rscv.prepare(statistics);
+        rscf.prepare(statistics);
 
         Content cnt = facade.getPlayerState(cfg.get("GAME_ID"), player_id);
 

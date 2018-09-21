@@ -11,6 +11,7 @@ import eu.fbk.das.rs.valuator.RecommendationSystemChallengeValuator;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import eu.trentorise.game.challenges.rest.Content;
 import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
+import eu.trentorise.game.challenges.rest.PlayerLevel;
 import eu.trentorise.game.challenges.rest.PointConcept;
 import eu.trentorise.game.challenges.util.ExcelUtil;
 import org.apache.commons.io.IOUtils;
@@ -85,9 +86,8 @@ public class RecommendationSystem {
             err(logger, "Invalid date! %s", conf.get("DATE"));
         }
 
-        HashMap<String, double[]> stats = this.stats.checkAndUpdateStats(facade, date, cfg.getDefaultMode());
-        rscv.prepare(stats);
-        rscf.prepare(stats);
+
+        prepare(cfg, date);
 
         Map<String, List<ChallengeDataDTO>> challenges = new HashMap<>();
 
@@ -101,7 +101,7 @@ public class RecommendationSystem {
             String[] splited = playerIds.split("\\s+");
             for (String pId : splited)
                 if (!allPlayerIds.contains(pId))
-                    throw new IllegalArgumentException(f("Given player id %d is nowhere to be found in the game", pId));
+                    throw new IllegalArgumentException(f("Given player id %s is nowhere to be found in the game", pId));
 
             for (String pId : splited)
                 challenges.put(pId, recommend(pId, date));
@@ -118,11 +118,22 @@ public class RecommendationSystem {
     public List<ChallengeDataDTO> recommend(String pId, Date d) {
 
         Content state = facade.getPlayerState(cfg.get("GAME_ID"), pId);
-        Map<String, List<ChallengeDataDTO>> m_cha = new HashMap<>();
+
+        List<PlayerLevel> lvls = state.getLevels();
+
+
+        return recommendAll(state, d);
+
+    }
+
+    public List<ChallengeDataDTO> recommendAll(Content state, Date d) {
 
         List<ChallengeDataDTO> challanges = new ArrayList<>();
         for (String mode : cfg.getDefaultMode()) {
             List<ChallengeDataDTO> l_cha = generator.generate(state, mode, d);
+
+            if (l_cha.isEmpty())
+                continue;
 
             for (int i = 0; i < l_cha.size(); i++)
                 rscv.valuate(l_cha.get(i));
@@ -339,10 +350,9 @@ public class RecommendationSystem {
 
     public void prepare(RecommendationSystemConfig cfg, Date date) {
 
-        RecommendationSystemStatistics statistics = new RecommendationSystemStatistics(cfg);
-        HashMap<String, double[]> stats = statistics.checkAndUpdateStats(facade, date, cfg.getDefaultMode());
-
+        stats.checkAndUpdateStats(facade, date, cfg.defaultMode);
         rscv.prepare(stats);
         rscf.prepare(stats);
     }
+
 }

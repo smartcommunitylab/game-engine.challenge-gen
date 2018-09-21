@@ -105,4 +105,7 @@ public class Content {
         this.additionalProperties.put(name, value);
     }
 
+    public List<PlayerLevel> getLevels() {
+        return levels;
+    }
 }

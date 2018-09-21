@@ -1,6 +1,7 @@
 package eu.fbk.das.rs.sortfilter;
 
 import eu.fbk.das.rs.challengeGeneration.RecommendationSystemConfig;
+import eu.fbk.das.rs.challengeGeneration.RecommendationSystemStatistics;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import eu.trentorise.game.challenges.rest.Content;
 import eu.trentorise.game.challenges.rest.PointConcept;
@@ -11,7 +12,6 @@ import java.util.*;
 
 import static eu.fbk.das.rs.ArrayUtils.pos;
 import static eu.fbk.das.rs.Utils.dbg;
-import static eu.fbk.das.rs.Utils.err;
 
 public class RecommendationSystemChallengeFilteringAndSorting {
 
@@ -40,22 +40,27 @@ public class RecommendationSystemChallengeFilteringAndSorting {
         dbg(logger, "RecommendationSystemChallengeFilteringAndSorting init complete");
     }
 
-    public void prepare(HashMap<String, double[]> stats) {
+    public void prepare(RecommendationSystemStatistics stats) {
+
+        /* REMOVED LEADERBOARD
         if (!stats.containsKey(cfg.gLeaves)) {
             err(logger, "No green leaves leaderboard in statistics!");
             return;
         }
 
         leaderboard = stats.get(cfg.gLeaves);
+        */
     }
 
     public List<ChallengeDataDTO> filter(List<ChallengeDataDTO> challenges, Content player, Date date) {
         this.execDate = date;
 
-        ArrayList<ChallengeDataDTO> result = new ArrayList<ChallengeDataDTO>();
+        List<ChallengeDataDTO> result = new ArrayList<ChallengeDataDTO>();
 
+        /* REMOVED LEADERBOARD
         List<ChallengeDataDTO> improvingLeaderboard = new ArrayList<ChallengeDataDTO>();
         List<ChallengeDataDTO> notImprovingLeaderboard = new ArrayList<ChallengeDataDTO>();
+        */
 
         for (ChallengeDataDTO challenge : challenges) {
             Double baseline = (Double) challenge.getData().get("baseline");
@@ -83,6 +88,10 @@ public class RecommendationSystemChallengeFilteringAndSorting {
             double wi = percentageImprovment * weight;
             challenge.getData().put("wi", wi);
             // finding the position of the player in the leader board
+
+
+            /* REMOVED LEADERBOARD
+
             int position = findPosition(leaderboard, player);
 
 
@@ -108,8 +117,13 @@ public class RecommendationSystemChallengeFilteringAndSorting {
 
                 }
             }
+            */
+
+            result.add(challenge);
 
         }
+
+        /* REMOVED LEADERBOARD
 
         // sorting both lists
         Collections.sort(improvingLeaderboard, new DifficultyWiComparator());
@@ -121,7 +135,9 @@ public class RecommendationSystemChallengeFilteringAndSorting {
         }
         if (!notImprovingLeaderboard.isEmpty()) {
             result.addAll(notImprovingLeaderboard);
-        }
+        } */
+
+        Collections.sort(result, new DifficultyPrizeComparator());
 
         return result;
     }

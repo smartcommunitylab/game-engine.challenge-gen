@@ -1,5 +1,6 @@
 package eu.fbk.das.rs.challengeGeneration;
 
+import com.google.common.math.Quantiles;
 import eu.fbk.das.rs.ArrayUtils;
 import eu.trentorise.game.challenges.rest.Content;
 import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
@@ -19,28 +20,32 @@ public class RecommendationSystemStatistics {
 
     private Date execDate;
     private String[] l_mode;
+    private Map<String, Map<Integer, Double>> quartiles;
 
     public RecommendationSystemStatistics(RecommendationSystemConfig cfg) {
         this.cfg = cfg;
+        quartiles = new HashMap<>();
     }
 
-    public HashMap<String, double[]> checkAndUpdateStats(GamificationEngineRestFacade facade, Date date, String[] l_mode) {
+    public Map<String, Map<Integer, Double>> checkAndUpdateStats(GamificationEngineRestFacade facade, Date date, String[] l_mode) {
         this.facade = facade;
 
-        this.l_mode = cloneArray(l_mode);
+        this.l_mode = new String[l_mode.length];
+        for (int i = 0; i < l_mode.length; i++)
+            this.l_mode[i] = fix(l_mode[i]);
         Arrays.sort(this.l_mode);
 
         execDate = date;
 
-        HashMap<String, double[]> result = tryReadStats();
+        quartiles = tryReadStats();
 
-        if (result != null)
-            return result;
+        if (quartiles != null)
+            return quartiles;
 
         return updateStats();
     }
 
-    private HashMap<String, double[]> tryReadStats() {
+    private Map<String, Map<Integer, Double>> tryReadStats() {
 
         if (!new File(STATS_FILENAME).exists())
             return null;
@@ -68,31 +73,31 @@ public class RecommendationSystemStatistics {
         return null;
     }
 
-    private HashMap<String, double[]> readStats(BufferedReader r) throws IOException {
-        HashMap<String, double[]> stats = new HashMap<String, double[]>();
+    private Map<String, Map<Integer, Double>> readStats(BufferedReader r) throws IOException {
+        Map<String, Map<Integer, Double>> stats = new HashMap<>();
         String line = r.readLine();
         while (line != null) {
             String[] aux = line.split(":");
             String name = aux[0];
             aux = aux[1].split("\\s+");
-            double[] values = new double[aux.length];
+            Map<Integer, Double> qua = new HashMap<>();
             for (int i = 1; i < aux.length; i++)
-                values[i] = Double.valueOf(aux[i]);
-            stats.put(name, values);
+                qua.put(i, Double.valueOf(aux[i]));
+
+            stats.put(name, qua);
             line = r.readLine();
         }
 
         return stats;
     }
 
-    private void writeStats(Writer wr, HashMap<String, double[]> stats) {
+    private void writeStats(Writer wr) {
         try {
             wf(wr, "%s\n", sdf.format(execDate));
-            for (String s : stats.keySet()) {
+            for (String s : l_mode) {
                 wf(wr, "%s:", s);
-                double[] aux = stats.get(s);
-                for (int i = 0; i < aux.length; i++) {
-                    wf(wr, " %.2f", aux[i]);
+                for (int i = 0; i < 10; i++) {
+                    wf(wr, " %.2f", quartiles.get(s).get(i));
                 }
                 wf(wr, "\n");
                 wr.flush();
@@ -104,7 +109,7 @@ public class RecommendationSystemStatistics {
 
     }
 
-    private HashMap<String, double[]> updateStats() {
+    private Map<String, Map<Integer, Double>> updateStats() {
 
         Writer wr;
         try {
@@ -114,12 +119,11 @@ public class RecommendationSystemStatistics {
             return null;
         }
 
-        HashMap<String, List<Double>> stats = new HashMap<String, List<Double>>();
+        HashMap<String, List<Double>> stats = new HashMap<>();
 
         for (String mode : l_mode) {
             stats.put(mode, new ArrayList<Double>());
         }
-        stats.put(cfg.gLeaves, new ArrayList<Double>());
 
         List<Content> l_player = facade.readGameState(cfg.get("GAME_ID"));
 
@@ -129,7 +133,10 @@ public class RecommendationSystemStatistics {
             update(stats, player);
         }
 
+        /*
+
         HashMap<String, double[]> t_stats = new HashMap<String, double[]>();
+
 
         for (String s : stats.keySet()) {
             List<Double> aux = stats.get(s);
@@ -138,11 +145,16 @@ public class RecommendationSystemStatistics {
                 aux2[i] = aux.get(i);
             Arrays.sort(aux2);
             t_stats.put(s, aux2);
+        } */
+
+        for (String mode : l_mode) {
+            Map<Integer, Double> res = Quantiles.scale(10).indexes(0, 1, 2, 3, 4, 5, 6, 7, 8, 9).compute(stats.get(mode));
+            quartiles.put(mode, res);
         }
 
-        writeStats(wr, t_stats);
+        writeStats(wr);
 
-        return t_stats;
+        return quartiles;
     }
 
     private void update(HashMap<String, List<Double>> stats, Content cnt) {
@@ -152,18 +164,26 @@ public class RecommendationSystemStatistics {
 
             String m = pc.getName();
 
+            /*
             if (pc.getName().equals(cfg.gLeaves)) {
                 stats.get(cfg.gLeaves).add(pc.getPeriodScore("weekly", execDate.getTime()));
-            }
+            }*/
 
-            if (!ArrayUtils.find(pc.getName(), l_mode))
+            if (!ArrayUtils.find(fix(m), l_mode))
                 continue;
 
             Double score = pc.getPeriodScore("weekly", execDate.getTime());
             if (score > 0)
-                stats.get(m).add(score);
+            stats.get(m).add(score);
         }
     }
 
 
+    public Map<Integer, Double> getQuartiles(String cnt) {
+        return quartiles.get(fix(cnt));
+    }
+
+    private String fix(String mode) {
+        return mode.replace(" ", "_").toLowerCase();
+    }
 }
