@@ -3,15 +3,20 @@ package eu.fbk.das.rs;
 import gnu.trove.list.array.TIntArrayList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.Days;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.io.*;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Utils {
 
-    public static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+    static DateTimeFormatter sdf = DateTimeFormat.forPattern("dd/MM/yyyy");
+
+    static DateTimeFormatter df = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm");
 
     private static final Logger log = LogManager.getLogger(
             Utils.class.getName());
@@ -647,17 +652,12 @@ public class Utils {
         return o;
     }
 
-    public static Date stringToDate(String s) {
-        try {
-            return sdf.parse(s);
-        } catch (ParseException e) {
-            logExp(e);
-            return null;
-        }
+    public static DateTime stringToDate(String s) {
+            return sdf.parseDateTime(s);
     }
 
-    public static int daysApart(Date d1, Date d2) {
-        return (int) ((d1.getTime() - d2.getTime()) / (1000 * 60 * 60 * 24l));
+    public static int daysApart(DateTime d1, DateTime d2) {
+        return Days.daysBetween(d1.toLocalDate(), d2.toLocalDate()).getDays();
     }
 
     public static String joinArray(double[] a, String s) {
@@ -676,5 +676,41 @@ public class Utils {
             sb.append(",").append(a[i]);
 
         return sb.toString();
+    }
+
+
+    public static Date removeOneWeek(Date d) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(d);
+        cal.add(Calendar.DATE, -7);
+        return cal.getTime();
+    }
+
+    public static DateTime jumpToMonday(DateTime d) {
+
+        int v = d.getDayOfWeek() -1;
+        return d.minusDays(v);
+    }
+
+
+    public static double round(double value, int precision) {
+        int scale = (int) Math.pow(10, precision);
+        return (double) Math.round(value * scale) / scale;
+    }
+
+    public static String formatDate(DateTime d) {
+        return sdf.print(d);
+    }
+
+    public static String formatDateTime(DateTime d) {
+        return df.print(d);
+    }
+
+    public static boolean equal (String s1, String s2) {
+        return slug(s1).equals(slug(s2));
+    }
+
+    public static String slug(String s1) {
+        return s1.toLowerCase().replace(" ", "_");
     }
 }

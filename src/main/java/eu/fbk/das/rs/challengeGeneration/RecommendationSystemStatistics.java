@@ -5,11 +5,12 @@ import eu.fbk.das.rs.ArrayUtils;
 import eu.trentorise.game.challenges.rest.Content;
 import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
 import eu.trentorise.game.challenges.rest.PointConcept;
+import org.joda.time.DateTime;
 
 import java.io.*;
 import java.util.*;
 
-import static eu.fbk.das.rs.ArrayUtils.cloneArray;
+import static eu.fbk.das.rs.Utils.formatDate;
 import static eu.fbk.das.rs.Utils.*;
 
 public class RecommendationSystemStatistics {
@@ -18,7 +19,7 @@ public class RecommendationSystemStatistics {
     private String STATS_FILENAME = "rs.statistics";
     private GamificationEngineRestFacade facade;
 
-    private Date execDate;
+    private DateTime execDate;
     private String[] l_mode;
     private Map<String, Map<Integer, Double>> quartiles;
 
@@ -27,7 +28,7 @@ public class RecommendationSystemStatistics {
         quartiles = new HashMap<>();
     }
 
-    public Map<String, Map<Integer, Double>> checkAndUpdateStats(GamificationEngineRestFacade facade, Date date, String[] l_mode) {
+    public Map<String, Map<Integer, Double>> checkAndUpdateStats(GamificationEngineRestFacade facade, DateTime date, String[] l_mode) {
         this.facade = facade;
 
         this.l_mode = new String[l_mode.length];
@@ -57,7 +58,7 @@ public class RecommendationSystemStatistics {
             if (fileDateStr == null || fileDateStr.length() == 0)
                 return null;
 
-            Date fileDate = stringToDate(fileDateStr.trim());
+            DateTime fileDate = stringToDate(fileDateStr.trim());
             if (fileDate == null)
                 return null;
 
@@ -93,7 +94,7 @@ public class RecommendationSystemStatistics {
 
     private void writeStats(Writer wr) {
         try {
-            wf(wr, "%s\n", sdf.format(execDate));
+            wf(wr, "%s\n", formatDate(execDate));
             for (String s : l_mode) {
                 wf(wr, "%s:", s);
                 for (int i = 0; i < 10; i++) {
@@ -147,9 +148,16 @@ public class RecommendationSystemStatistics {
             t_stats.put(s, aux2);
         } */
 
+        quartiles = new HashMap<>();
+
         for (String mode : l_mode) {
-            Map<Integer, Double> res = Quantiles.scale(10).indexes(0, 1, 2, 3, 4, 5, 6, 7, 8, 9).compute(stats.get(mode));
-            quartiles.put(mode, res);
+
+            if (stats.get(mode).isEmpty()) {
+                quartiles.put(mode, emptyQuartiles());
+            } else {
+                Map<Integer, Double> res = Quantiles.scale(10).indexes(0, 1, 2, 3, 4, 5, 6, 7, 8, 9).compute(stats.get(mode));
+                quartiles.put(mode, res);
+            }
         }
 
         writeStats(wr);
@@ -157,29 +165,36 @@ public class RecommendationSystemStatistics {
         return quartiles;
     }
 
+    private Map<Integer, Double> emptyQuartiles() {
+        Map<Integer, Double> q = new HashMap<>();
+        for (int i = 0; i <10; i++)
+            q.put(i, 0.0);
+        return q;
+    }
+
     private void update(HashMap<String, List<Double>> stats, Content cnt) {
 
 
         for (PointConcept pc : cnt.getState().getPointConcept()) {
 
-            String m = pc.getName();
+            String m = fix(pc.getName());
 
             /*
             if (pc.getName().equals(cfg.gLeaves)) {
                 stats.get(cfg.gLeaves).add(pc.getPeriodScore("weekly", execDate.getTime()));
             }*/
 
-            if (!ArrayUtils.find(fix(m), l_mode))
+            if (!ArrayUtils.find(m, l_mode))
                 continue;
 
-            Double score = pc.getPeriodScore("weekly", execDate.getTime());
+            Double score = pc.getPeriodScore("weekly", execDate);
             if (score > 0)
-            stats.get(m).add(score);
+                stats.get(m).add(score);
         }
     }
 
 
-    public Map<Integer, Double> getQuartiles(String cnt) {
+    public Map<Integer, Double> getQuantiles(String cnt) {
         return quartiles.get(fix(cnt));
     }
 

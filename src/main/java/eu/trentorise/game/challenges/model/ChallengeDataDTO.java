@@ -1,6 +1,9 @@
 package eu.trentorise.game.challenges.model;
 
+import org.joda.time.DateTime;
+
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import static eu.fbk.das.rs.Utils.f;
@@ -12,6 +15,8 @@ public class ChallengeDataDTO {
     private Map<String, Object> data;
     private Date start;
     private Date end;
+
+    private Map<String, Object> info = new HashMap<>();
 
     // can be either PROPOSED, ASSIGNED, ACTIVE, COMPLETED, FAILED (default value is assigned)
     private String state;
@@ -88,4 +93,20 @@ public class ChallengeDataDTO {
         this.priority = priority;
     }
 
+    public void setStart(DateTime start) {
+        setStart(start.toDate());
+    }
+
+    public void setEnd(DateTime end) {
+        setEnd(end.toDate());
+    }
+
+
+    public void addInfo(String s, int v) {
+        info.put(s, v);
+    }
+
+    public Object getInfo(String s) {
+        return info.get(s);
+    }
 }

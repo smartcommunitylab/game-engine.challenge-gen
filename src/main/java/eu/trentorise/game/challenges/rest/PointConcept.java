@@ -185,6 +185,10 @@ public class PointConcept {
         return result;
     }
 
+    public Double getPeriodScore(String weekly, DateTime execDate) {
+        return getPeriodScore(weekly, execDate.getMillis());
+    }
+
     public interface Period {
         public Date getStart();
 

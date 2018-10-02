@@ -31,6 +31,8 @@ import static eu.fbk.das.rs.Utils.*;
  */
 public class GamificationEngineRestFacade {
 
+    // API: https://dev.smartcommunitylab.it/gamification/swagger-ui.html
+
     private static final Logger logger = LogManager
             .getLogger(GamificationEngineRestFacade.class);
 
@@ -123,6 +125,8 @@ public class GamificationEngineRestFacade {
         Response response = target.request().post(Entity.json(json));
         if (check(response))
             return response;
+
+        pf("Error in post request %s - %s \n", response.getStatus(), response.getStatusInfo());
         return null;
     }
 
@@ -358,9 +362,25 @@ public class GamificationEngineRestFacade {
         if (cdd == null || gameId == null || playerId == null) {
             throw new IllegalArgumentException("challenge, gameId and playerId cannot be null");
         }
-        WebTarget target = getTarget().path(gameId).path("player").path(playerId).path("challenges");
+        WebTarget target = challengePlayerPath(gameId, playerId);
         Response response = post(target, cdd);
         return response != null;
+    }
+
+    public List<LinkedHashMap<String, Object>> getChallengesPlayer(String gameId, String playerId) {
+        if (gameId == null || playerId == null) {
+            throw new IllegalArgumentException("challenge, gameId and playerId cannot be null");
+        }
+        WebTarget target = challengePlayerPath(gameId, playerId);
+        Response response = get(target);
+
+        List<LinkedHashMap<String, Object>> res = response.readEntity(List.class);
+
+        return res;
+    }
+
+    private WebTarget challengePlayerPath(String gameId, String playerId) {
+        return getTarget().path(DATA).path(gameId).path("player").path(playerId).path("challenges");
     }
 
     public Set<ChallengeModel> readChallengesModel(String gameId) {

@@ -21,6 +21,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.joda.time.DateTime;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -75,13 +76,10 @@ public class RecommendationSystem {
 
     public Map<String, List<ChallengeDataDTO>> recommendation(Map<String, String> conf) {
 
-        setFacade(new GamificationEngineRestFacade(conf.get("HOST"), conf.get("USERNAME"),
-                conf.get("PASSWORD")));
-
         dbg(logger, "Reading players from game");
         Set<String> allPlayerIds = facade.getGamePlayers(conf.get("GAME_ID"));
 
-        Date date = stringToDate(conf.get("DATE"));
+        DateTime date = stringToDate(conf.get("DATE"));
         if (date == null) {
             err(logger, "Invalid date! %s", conf.get("DATE"));
         }
@@ -115,18 +113,168 @@ public class RecommendationSystem {
     }
 
     // generate challenges
-    public List<ChallengeDataDTO> recommend(String pId, Date d) {
+    public List<ChallengeDataDTO> recommend(String pId, DateTime d) {
 
         Content state = facade.getPlayerState(cfg.get("GAME_ID"), pId);
 
+        // check the level of the player
         List<PlayerLevel> lvls = state.getLevels();
+        int lvl = getLevel(lvls);
 
+        List<ChallengeDataDTO> cha;
 
-        return recommendAll(state, d);
+        if (lvl <= 0)
+            return null;
+        // if level is low, assign only one
+        else if (lvl < 3)
+            cha =  assignOne(state, d);
+        else if (lvl < 6)
+            cha = assignLimit(2, state, d);
+        else
+            cha = assignLimit(3, state, d);
+
+        // return assignOne(state, d);
+
+        // return recommendForecast(state, d);
+
+        // return recommendAll(state, d);
+
+        for (ChallengeDataDTO c: cha)
+            c.addInfo("playerLevel", lvl);
+
+        return cha;
 
     }
 
-    public List<ChallengeDataDTO> recommendAll(Content state, Date d) {
+    private int getLevel(List<PlayerLevel> lvls) {
+        for (PlayerLevel lvl: lvls) {
+            if (!equal(lvl.getPointConcept(), "green leaves"))
+                continue;
+
+            String s = slug(lvl.getLevelValue()).replace("liv_", "");
+            try {
+                return Integer.valueOf(s);
+            }catch (Exception e) {
+                p(e.getMessage());
+                pf("Could not decode value %s of player level %s \n", lvl.getLevelValue(), lvl);
+            }
+        }
+
+        return 0;
+    }
+
+    private List<ChallengeDataDTO> assignOne(Content state, DateTime d) {
+        List<ChallengeDataDTO> list = recommendAll(state, d);
+        if (list == null || list.isEmpty())
+            return null;
+
+        ChallengeDataDTO chosen = list.get(0);
+
+        chosen.setState("assigned");
+        chosen.setOrigin("rs");
+
+        ArrayList<ChallengeDataDTO> res = new ArrayList<ChallengeDataDTO>();
+        res.add(chosen);
+
+        return res;
+
+    }
+
+    private List<ChallengeDataDTO> assignTwo(Content state, DateTime d) {
+
+        return assignLimit(2, state, d);
+    }
+
+    private List<ChallengeDataDTO> assignLimit(int limit, Content state, DateTime d) {
+
+        List<ChallengeDataDTO> list = recommendAll(state, d);
+        if (list == null || list.isEmpty())
+            return null;
+
+        Set<String> modes = new HashSet<>();
+
+        ArrayList<ChallengeDataDTO> res = new ArrayList<>();
+        ChallengeDataDTO cha = list.get(0);
+        cha.setState("proposed");
+        cha.setPriority("2");
+        cha.setOrigin("rs");
+        res.add(cha);
+        String counter = (String) cha.getData().get("counterName");
+        modes.add(counter);
+
+        int ix = 1;
+
+        for (int i = 0; i < limit -1; i++) {
+            boolean found = false;
+            while (!found) {
+
+                cha = list.get(ix++);
+                counter = (String) cha.getData().get("counterName");
+                if (modes.contains(counter))
+                    continue;
+                modes.add(counter);
+                cha.setState("proposed");
+                cha.setPriority("1");
+                cha.setOrigin("rs");
+                res.add(cha);
+                found = true;
+            }
+        }
+
+        return res;
+
+    }
+
+
+    public List<ChallengeDataDTO> recommendForecast(Content state, DateTime d) {
+
+        String max_mode = null;
+        int max_pos = -1;
+
+        for (String mode : cfg.getDefaultMode()) {
+            Double modeValue = generator.getContentMode(state, mode, d);
+            Map<Integer, Double> quan = stats.getQuantiles(mode);
+            int pos = getPosition(modeValue, quan);
+
+            if (pos > max_pos) {
+                max_pos = pos;
+                max_mode = mode;
+            }
+        }
+
+        if (max_mode == null)
+            return null;
+
+        Double currentValue = generator.getContentMode(state, max_mode, d);
+        Double lastValue = generator.getContentMode(state, max_mode, d.minusDays(7));
+
+        Double forecastValue = forecastMode(currentValue, lastValue);
+
+        p(forecastValue);
+
+        return null;
+
+    }
+
+    public Double forecastMode(Double currentValue, Double lastValue) {
+        double slope = (lastValue - currentValue) / lastValue;
+        slope = Math.abs(slope) * 0.8;
+        if (slope > 0.3)
+            slope = 0.3;
+
+        return (currentValue * (1 + slope));
+    }
+
+    private int getPosition(Double modeValue, Map<Integer, Double> quan) {
+        for (int i = 0; i < 10; i++)
+            if (modeValue < quan.get(i))
+                return i;
+
+        return 10;
+    }
+
+
+    public List<ChallengeDataDTO> recommendAll(Content state, DateTime d) {
 
         List<ChallengeDataDTO> challanges = new ArrayList<>();
         for (String mode : cfg.getDefaultMode()) {
@@ -156,7 +304,7 @@ public class RecommendationSystem {
      * value is a {@link List} of {@link ChallengeDataDTO}
      * @throws NullPointerException when data from gamification engine is null
      */
-    public Map<String, List<ChallengeDataDTO>> recommendation(Date start, Date end) {
+    public Map<String, List<ChallengeDataDTO>> recommendation(DateTime start, DateTime end) {
 
         facade = new GamificationEngineRestFacade(cfg.get("HOST") + cfg.get("CONTEXT"), cfg.get("USERNAME"),
                 cfg.get("PASSWORD"));
@@ -182,7 +330,7 @@ public class RecommendationSystem {
      * @throws NullPointerException when data from gamification engine is null
      */
     public Map<String, List<ChallengeDataDTO>> recommendation(
-            List<Content> gameData, Date start, Date end)
+            List<Content> gameData, DateTime start, DateTime end)
             throws NullPointerException {
 
         logger.info("Recommendation system challenge generation start");
@@ -348,11 +496,14 @@ public class RecommendationSystem {
     }
 
 
-    public void prepare(RecommendationSystemConfig cfg, Date date) {
+    public void prepare(RecommendationSystemConfig cfg, DateTime date) {
 
         stats.checkAndUpdateStats(facade, date, cfg.defaultMode);
         rscv.prepare(stats);
         rscf.prepare(stats);
     }
 
+    public GamificationEngineRestFacade getFacade() {
+        return facade;
+    }
 }

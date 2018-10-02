@@ -12,6 +12,7 @@ import eu.trentorise.game.challenges.rest.Content;
 import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,7 +29,7 @@ public class RecommendationSystemChallengeGenerationTest extends BaseTest {
 
     private GamificationEngineRestFacade facade;
     private RecommendationSystemConfig configuration;
-    private LocalDate now;
+    private DateTime now;
     private RecommendationSystemChallengeGeneration rcg;
 
     @Before
@@ -36,7 +37,7 @@ public class RecommendationSystemChallengeGenerationTest extends BaseTest {
         facade = new GamificationEngineRestFacade(HOST + CONTEXT,
                 USERNAME, PASSWORD);
         configuration = new RecommendationSystemConfig();
-        now = new LocalDate();
+        now = new DateTime();
 
         rcg = new RecommendationSystemChallengeGeneration(configuration);
     }
@@ -63,8 +64,8 @@ public class RecommendationSystemChallengeGenerationTest extends BaseTest {
         List<Content> gameData = facade.readGameState(GAMEID);
         // create all challenges combinations
         Map<String, List<ChallengeDataDTO>> challengeCombinations = rcg
-                .generate(gameData, now.dayOfMonth().addToCopy(1).toDate(), now
-                        .dayOfMonth().addToCopy(8).toDate());
+                .generate(gameData, now.dayOfMonth().addToCopy(1), now
+                        .dayOfMonth().addToCopy(8));
 
         for (String playerId : challengeCombinations.keySet()) {
             // generate at least two challenge for player
@@ -127,8 +128,8 @@ public class RecommendationSystemChallengeGenerationTest extends BaseTest {
         List<Content> gameData = facade.readGameState(GAMEID);
 
         Map<String, List<ChallengeDataDTO>> challengeCombinations = rcg
-                .generate(gameData, now.dayOfMonth().addToCopy(1).toDate(), now
-                        .dayOfMonth().addToCopy(8).toDate());
+                .generate(gameData, now.dayOfMonth().addToCopy(1), now
+                        .dayOfMonth().addToCopy(8));
         // evaluate all challenges
         RecommendationSystemChallengeValuator valuator = new RecommendationSystemChallengeValuator(
                 configuration);
@@ -183,8 +184,8 @@ public class RecommendationSystemChallengeGenerationTest extends BaseTest {
     public void recommendationSystemTest() throws IOException {
         RecommendationSystem rs = new RecommendationSystem(configuration);
         Map<String, List<ChallengeDataDTO>> result = rs.recommendation(
-                now.dayOfMonth().addToCopy(1).toDate(), now
-                        .dayOfMonth().addToCopy(8).toDate());
+                now.dayOfMonth().addToCopy(1), now
+                        .dayOfMonth().addToCopy(8));
         rs.writeToFile(result);
         assertTrue(!result.isEmpty());
     }
@@ -192,8 +193,8 @@ public class RecommendationSystemChallengeGenerationTest extends BaseTest {
     @Test(expected = IllegalArgumentException.class)
     public void recommendationSystemNullGameData() throws IOException {
         RecommendationSystem rs = new RecommendationSystem(configuration);
-        rs.recommendation(null, now.dayOfMonth().addToCopy(1).toDate(), now
-                .dayOfMonth().addToCopy(8).toDate());
+        rs.recommendation(null, now.dayOfMonth().addToCopy(1), now
+                .dayOfMonth().addToCopy(8));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -228,8 +229,8 @@ public class RecommendationSystemChallengeGenerationTest extends BaseTest {
 
         List<Content> input = new ArrayList<Content>();
         Map<String, List<ChallengeDataDTO>> result = rcg.generate(input, now
-                .dayOfMonth().addToCopy(1).toDate(), now.dayOfMonth()
-                .addToCopy(8).toDate());
+                .dayOfMonth().addToCopy(1), now.dayOfMonth()
+                .addToCopy(8));
 
         assertTrue(result.isEmpty());
     }
@@ -256,15 +257,15 @@ public class RecommendationSystemChallengeGenerationTest extends BaseTest {
     public void testDateStartEndMustBeDifferent() {
         List<Content> gameData = new ArrayList<Content>();
 
-        rcg.generate(gameData, now.toDate(), now.toDate());
+        rcg.generate(gameData, now, now);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testDateStartMustBeBeforeEnd() {
         List<Content> gameData = new ArrayList<Content>();
 
-        rcg.generate(gameData, now.dayOfMonth().addToCopy(1).toDate(),
-                now.toDate());
+        rcg.generate(gameData, now.dayOfMonth().addToCopy(1),
+                now);
     }
 
     @Test
@@ -277,7 +278,7 @@ public class RecommendationSystemChallengeGenerationTest extends BaseTest {
     @Test
     public void prepareChallangeTest() {
 
-        rcg.prepareChallange("test", new Date(), "try");
+        rcg.prepareChallange("test", new DateTime(), "try");
     }
 
 

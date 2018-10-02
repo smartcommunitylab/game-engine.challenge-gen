@@ -7,6 +7,7 @@ import eu.trentorise.game.challenges.rest.Content;
 import eu.trentorise.game.challenges.rest.PointConcept;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTime;
 
 import java.util.*;
 
@@ -22,7 +23,7 @@ public class RecommendationSystemChallengeFilteringAndSorting {
 
     private double[] leaderboard;
 
-    private Date execDate;
+    private DateTime execDate;
 
     /**
      * Create a new recommandation system challenge filtering and sorting
@@ -52,7 +53,7 @@ public class RecommendationSystemChallengeFilteringAndSorting {
         */
     }
 
-    public List<ChallengeDataDTO> filter(List<ChallengeDataDTO> challenges, Content player, Date date) {
+    public List<ChallengeDataDTO> filter(List<ChallengeDataDTO> challenges, Content player, DateTime date) {
         this.execDate = date;
 
         List<ChallengeDataDTO> result = new ArrayList<ChallengeDataDTO>();
@@ -148,7 +149,7 @@ public class RecommendationSystemChallengeFilteringAndSorting {
             if (!pc.getName().equals(cfg.gLeaves))
                 continue;
 
-            score = pc.getPeriodScore("weekly", execDate.getTime());
+            score = pc.getPeriodScore("weekly", execDate.getMillis() / 1000);
         }
 
         int pos = pos(score, leaderboard);

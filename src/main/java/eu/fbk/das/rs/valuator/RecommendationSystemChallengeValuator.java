@@ -10,7 +10,6 @@ import org.apache.logging.log4j.Logger;
 import java.util.HashMap;
 import java.util.Map;
 
-import static eu.fbk.das.rs.ArrayUtils.find;
 import static eu.fbk.das.rs.Utils.dbg;
 import static eu.fbk.das.rs.Utils.err;
 
@@ -59,17 +58,21 @@ public class RecommendationSystemChallengeValuator {
     public void valuate(ChallengeDataDTO challenge) {
 
         String counterName = (String) challenge.getData().get("counterName");
-        if (!find(counterName, cfg.getDefaultMode())) {
+
+        boolean found = false;
+        for (String mode : cfg.getDefaultMode())
+            if (counterName.equals(mode)) found = true;
+        if (!found) {
             err(logger, "Unknown mode: %s!", counterName);
             return;
         }
 
-        Map<Integer, Double> quartiles = stats.getQuartiles(counterName);
+        Map<Integer, Double> quantiles = stats.getQuantiles(counterName);
 
         if (challenge.getModelName().equals("percentageIncrement")) {
             Double baseline = (Double) challenge.getData().get("baseline");
             Double target = (Double) challenge.getData().get("target");
-            Integer difficulty = DifficultyCalculator.computeDifficulty(quartiles,
+            Integer difficulty = DifficultyCalculator.computeDifficulty(quantiles,
                     baseline, target);
             // + ", target=" + target + " difficulty="
             // + difficulty);

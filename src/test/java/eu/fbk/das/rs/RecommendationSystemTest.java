@@ -10,11 +10,15 @@ import eu.trentorise.challenge.BaseTest;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import eu.trentorise.game.challenges.rest.Content;
 import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static eu.fbk.das.rs.ArrayUtils.pos;
 import static eu.fbk.das.rs.Utils.p;
@@ -45,6 +49,46 @@ public class RecommendationSystemTest extends BaseTest {
     }
 
     @Test
+    public void testForecast() {
+
+        String pId = "24164"; // cfg.get("PLAYER_ID");
+
+        DateTime date = Utils.stringToDate(cfg.get("DATE"));
+
+        RecommendationSystem rs = new RecommendationSystem();
+        rs.setFacade(facade);
+        rs.prepare(cfg, date);
+
+        forecast(rs, 10.0, 9.0);
+        forecast(rs, 10.0, 11.0);
+
+        forecast(rs, 10.0, 5.0);
+        forecast(rs, 10.0, 15.0);
+    }
+
+    private void forecast(RecommendationSystem rs, double current, double last) {
+        pf("currentValue: %.2f, lastValue: %.2f\n", current, last);
+        Double forecastValue = rs.forecastMode(current, last);
+        pf("forecastValue: %.2f\n\n", forecastValue);
+    }
+
+    @Test
+    public void testRecommendationForecast() {
+        // preparazione
+        String pId = "24164"; // cfg.get("PLAYER_ID");
+
+        DateTime date = Utils.stringToDate(cfg.get("DATE"));
+
+        RecommendationSystem rs = new RecommendationSystem();
+        rs.setFacade(facade);
+        rs.prepare(cfg, date);
+
+        Content state = facade.getPlayerState(cfg.get("GAME_ID"), pId);
+
+        rs.recommendForecast(state, date);
+    }
+
+    @Test
     public void testRecommendation() {
 
         // preparazione
@@ -52,7 +96,7 @@ public class RecommendationSystemTest extends BaseTest {
         // Set<String> allPlayerIds = new HashSet<>();
         // allPlayerIds.add(player_id);
 
-        Date date = Utils.stringToDate(cfg.get("DATE"));
+        DateTime date = Utils.stringToDate(cfg.get("DATE"));
 
         RecommendationSystem rs = new RecommendationSystem();
         rs.setFacade(facade);
@@ -91,7 +135,7 @@ public class RecommendationSystemTest extends BaseTest {
         Set<String> allPlayerIds = new HashSet<>();
         allPlayerIds.add(player_id);
 
-        Date date = Utils.stringToDate(cfg.get("DATE"));
+        DateTime date = Utils.stringToDate(cfg.get("DATE"));
 
         RecommendationSystemStatistics statistics = new RecommendationSystemStatistics(cfg);
         statistics.checkAndUpdateStats(facade, date, cfg.getDefaultMode());

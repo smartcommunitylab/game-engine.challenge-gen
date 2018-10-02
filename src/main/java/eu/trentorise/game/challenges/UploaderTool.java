@@ -26,6 +26,9 @@ public class UploaderTool {
     private static Options options;
     private static HelpFormatter helpFormatter;
 
+    private static String log;
+    private static String msg;
+
     public static void main(String[] args) throws ParseException {
         // parse options
         init();
@@ -88,14 +91,15 @@ public class UploaderTool {
 
     public static String upload(String host, String gameId, String input,
                                 String username, String password) {
-        String log = "";
-        String msg = "";
+        log = "";
+
         if (input == null) {
             msg = "Input file cannot be null";
             log += msg + Constants.LINE_SEPARATOR;
             System.err.println(msg);
             return log;
         }
+
         GamificationEngineRestFacade challengeAssignFacade;
         if (username != null && password != null && !username.isEmpty()
                 && !password.isEmpty()) {

@@ -5,6 +5,7 @@ import eu.trentorise.game.challenges.rest.ChallengeConcept;
 import eu.trentorise.game.challenges.rest.Content;
 import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
 import eu.trentorise.game.challenges.rest.PointConcept;
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -284,16 +285,14 @@ public class ChallengeDataGuru extends BaseTest {
 
     private long getDateFromStart(int n_week, int n_days) {
 
-        Date dt = stringToDate("4/07/2017");
+        DateTime dt = stringToDate("4/07/2017");
 
         Calendar cal = Calendar.getInstance();
-        cal.setTime(dt);
         int to_add = n_week * 7 + n_days;
-        cal.add(Calendar.DATE, to_add);
+        dt.plusDays(to_add);
 
-        dt = cal.getTime();
         /// p(dt);
-        return dt.getTime();
+        return dt.getMillis() / 1000;
     }
 
     private Content getContent(String pId) {

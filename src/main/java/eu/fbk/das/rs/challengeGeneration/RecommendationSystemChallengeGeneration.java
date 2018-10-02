@@ -5,11 +5,12 @@ import eu.trentorise.game.challenges.rest.Content;
 import eu.trentorise.game.challenges.rest.PointConcept;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTime;
 
 import java.util.*;
 
-import static eu.fbk.das.rs.Utils.dbg;
-import static eu.fbk.das.rs.Utils.f;
+import static eu.fbk.das.rs.Utils.*;
+
 
 /**
  * RecommendationSystem challenge generation module: generate all possible
@@ -42,11 +43,13 @@ public class RecommendationSystemChallengeGeneration {
         dbg(logger, "RecommendationSystemChallengeGeneration init complete");
     }
 
-    public List<ChallengeDataDTO> generate(Content cnt, String mode, Date execDate) {
+    public List<ChallengeDataDTO> generate(Content cnt, String mode, DateTime execDate) {
 
         List<ChallengeDataDTO> output = new ArrayList<>();
 
         Double modeCounter = getContentMode(cnt, mode, execDate);
+
+        double lastCounter = -1;
 
         if (modeCounter > 0) {
 
@@ -60,9 +63,17 @@ public class RecommendationSystemChallengeGeneration {
                     improvementValue = Math.round(improvementValue);
                 } else {
                     improvementValue = tmpValueimprovment + modeCounter;
+                    improvementValue = round(improvementValue, 1);
                 }
 
+                if (improvementValue == lastCounter)
+                    continue;
+                lastCounter = improvementValue;
+
+                modeCounter  = round(modeCounter, 1);
+
                 ChallengeDataDTO cdd = prepareChallange(mode, execDate, "go");
+                cdd.setInstanceName(configuration.getChallengeNamePrefix() + mode + "_" + UUID.randomUUID());
                 cdd.setModelName("percentageIncrement");
                 Map<String, Object> data = new HashMap<String, Object>();
                 data.put("target", improvementValue);
@@ -72,10 +83,6 @@ public class RecommendationSystemChallengeGeneration {
                 data.put("counterName", mode);
                 data.put("periodName", "weekly");
                 data.put("percentage", configuration.getPercentage()[i]);
-                data.put("challengeName",
-                        configuration.getChallengeNamePrefix() + mode
-                                + "_"
-                                + configuration.getPercentage()[i]);
                 cdd.setData(data);
                 output.add(cdd);
             }
@@ -86,14 +93,12 @@ public class RecommendationSystemChallengeGeneration {
             ChallengeDataDTO cdd = prepareChallange(mode, execDate, "try");
             cdd.setModelName("absoluteIncrement");
             Map<String, Object> data = new HashMap<String, Object>();
+            cdd.setInstanceName(configuration.getChallengeNamePrefix() + mode + "_" + UUID.randomUUID());
             data.put("target", 1);
             data.put("bonusPointType", "green leaves");
             data.put("bonusScore", 100d);
             data.put("counterName", mode);
             data.put("periodName", "weekly");
-            data.put("challengeName",
-                    configuration.getChallengeNamePrefix() + mode
-                            + "_try");
             cdd.setData(data);
             output.add(cdd);
             // }
@@ -102,26 +107,26 @@ public class RecommendationSystemChallengeGeneration {
         return output;
     }
 
-    public ChallengeDataDTO prepareChallange(String mode, Date execDate, String sep) {
+    public ChallengeDataDTO prepareChallange(String mode, DateTime execDate, String sep) {
         ChallengeDataDTO cdd = new ChallengeDataDTO();
         cdd.setInstanceName(f("%s_%s_%s_%s", configuration.getChallengeNamePrefix(),
                 mode, "sep", UUID.randomUUID()));
 
         // Set next monday as start, and next sunday as end
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(execDate);
-        int week_day = cal.get(Calendar.DAY_OF_WEEK);
+
+        // Set next monday as start, and next sunday as end
+        int week_day = execDate.getDayOfWeek();
         int d = (7 - week_day) + 1;
 
-        cal.add(Calendar.DATE, d);
-        cdd.setStart(cal.getTime());
-        cal.add(Calendar.DATE, 7);
-        cdd.setEnd(cal.getTime());
+        DateTime startDate = execDate.plusDays(d);
+        cdd.setStart(startDate.toDate());
+        DateTime endDate = startDate.plusDays(d);
+        cdd.setEnd(endDate.toDate());
         return cdd;
     }
 
     public Map<String, List<ChallengeDataDTO>> generate(List<Content> input,
-                                                        Date start, Date end) {
+                                                        DateTime start, DateTime end) {
         if (input == null) {
             throw new IllegalArgumentException("Input must be not null");
         }
@@ -253,14 +258,14 @@ public class RecommendationSystemChallengeGeneration {
     }
 
 
-    private Double getContentMode(Content cnt, String mode, Date execDate) {
+    protected Double getContentMode(Content cnt, String mode, DateTime execDate) {
         for (PointConcept pc : cnt.getState().getPointConcept()) {
 
             String m = pc.getName();
             if (!m.equals(mode))
                 continue;
 
-            return pc.getPeriodScore("weekly", execDate.getTime());
+            return pc.getPeriodScore("weekly", execDate);
         }
 
         return 0.0;
