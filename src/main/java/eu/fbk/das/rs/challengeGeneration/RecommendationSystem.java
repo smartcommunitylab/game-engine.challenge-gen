@@ -123,15 +123,19 @@ public class RecommendationSystem {
 
         List<ChallengeDataDTO> cha;
 
+
         if (lvl <= 0)
             return null;
         // if level is low, assign only one
-        else if (lvl < 3)
+        else if (lvl < 2)
             cha =  assignOne(state, d);
-        else if (lvl < 6)
+        else if (lvl < 3)
             cha = assignLimit(2, state, d);
         else
             cha = assignLimit(3, state, d);
+
+
+        // cha = assignLimit(3, state, d);
 
         // return assignOne(state, d);
 
@@ -139,8 +143,10 @@ public class RecommendationSystem {
 
         // return recommendAll(state, d);
 
-        for (ChallengeDataDTO c: cha)
+        for (ChallengeDataDTO c: cha) {
             c.addInfo("playerLevel", lvl);
+            c.addInfo("player", pId);
+        }
 
         return cha;
 
@@ -151,16 +157,27 @@ public class RecommendationSystem {
             if (!equal(lvl.getPointConcept(), "green leaves"))
                 continue;
 
-            String s = slug(lvl.getLevelValue()).replace("liv_", "");
-            try {
-                return Integer.valueOf(s);
-            }catch (Exception e) {
-                p(e.getMessage());
-                pf("Could not decode value %s of player level %s \n", lvl.getLevelValue(), lvl);
-            }
+            return lvl.getLevelIndex();
+
+            /*
+
+            String s = slug(lvl.getLevelValue());
+            for (int i = 0; i < cfg.levelNames.length; i++)
+                if (equal(s, slug(cfg.levelNames[i])))
+                    return i;
+
+
+            pf("Could not decode value %s of player level %s \n", lvl.getLevelValue(), lvl);
+
+            return -1;
+
+            */
+
         }
 
-        return 0;
+        pf("Could not find level based on green leaves! %s \n", lvls);
+
+        return -1;
     }
 
     private List<ChallengeDataDTO> assignOne(Content state, DateTime d) {

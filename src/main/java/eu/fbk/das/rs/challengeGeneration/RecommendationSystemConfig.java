@@ -49,7 +49,7 @@ public class RecommendationSystemConfig {
     private static final String ZERO_IMPACT_TRIPS = "ZeroImpact_Trips";
     private static final String BIKE_SHARING_KM = "BikeSharing_Km";
     private static final String WALK_KM = "Walk_Km";
-    private static final String GREEN_LEAVES = "Green_Leaves";
+    protected static final String GREEN_LEAVES = "green leaves";
 
     // Default prize matrix dimension, number of rows
     public static final int PRIZE_MATRIX_NROW = 4;
@@ -97,6 +97,8 @@ public class RecommendationSystemConfig {
 
     // TODO fare che si aggiorni in automatico
     private String challengeNamePrefix = "w1_rs_";
+
+    protected String[] levelNames = new String[] {"GreenStarter", "GreenFollower", "GreenLover", "GreenInfluencer", "GreenSoldier", "GreenMaster", "GreenAmbassador", "GreenWarrior", "GreenVeteran", "GreenGuru", "GreenGod"};
 
     public RecommendationSystemConfig() {
 

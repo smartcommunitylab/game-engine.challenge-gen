@@ -711,6 +711,6 @@ public class Utils {
     }
 
     public static String slug(String s1) {
-        return s1.toLowerCase().replace(" ", "_");
+        return s1.toLowerCase().replace(" ", "");
     }
 }

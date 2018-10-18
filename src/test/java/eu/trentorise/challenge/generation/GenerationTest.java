@@ -184,14 +184,14 @@ public class GenerationTest extends BaseTest {
         cdd.setInstanceName("tripNumber_" + UUID.randomUUID());
         cdd.setStart(now.dayOfMonth().addToCopy(-10).toDate());
         cdd.setEnd(now.dayOfMonth().addToCopy(5).toDate());
-        Map<String, Object> data = new HashMap<String, Object>();
-        data.put("target", 2d);
-        data.put("bonusPointType", "green leaves");
-        data.put("bonusScore", 100d);
-        data.put("periodName", "weekly");
-        data.put("counterName", "ZeroImpact_Trips");
+        
+        cdd.setData("target", 2d);
+        cdd.setData("bonusPointType", "green leaves");
+        cdd.setData("bonusScore", 100d);
+        cdd.setData("periodName", "weekly");
+        cdd.setData("counterName", "ZeroImpact_Trips");
 
-        cdd.setData(data);
+        
         assertTrue(challengeAssignFacade.assignChallengeToPlayer(cdd, GAMEID, "1"));
     }
 
@@ -207,14 +207,14 @@ public class GenerationTest extends BaseTest {
         cdd.setInstanceName("InstanceName" + UUID.randomUUID());
         cdd.setStart(now.dayOfMonth().addToCopy(-2).toDate());
         cdd.setEnd(now.dayOfMonth().addToCopy(6).toDate());
-        Map<String, Object> data = new HashMap<String, Object>();
-        data.put("posMax", 3);
-        data.put("posMin", 2);
-        data.put("bonusPointType", "green leaves");
-        data.put("bonusScore", 500d);
-        data.put("weekClassificationName", "week classification test");
+        
+        cdd.setData("posMax", 3);
+        cdd.setData("posMin", 2);
+        cdd.setData("bonusPointType", "green leaves");
+        cdd.setData("bonusScore", 500d);
+        cdd.setData("weekClassificationName", "week classification test");
 
-        cdd.setData(data);
+        
         assertTrue(challengeAssignFacade.assignChallengeToPlayer(cdd, GAMEID, "4"));
     }
 
@@ -230,14 +230,14 @@ public class GenerationTest extends BaseTest {
         cdd.setInstanceName("InstanceName" + UUID.randomUUID());
         cdd.setStart(now.dayOfMonth().addToCopy(-2).toDate());
         cdd.setEnd(now.dayOfMonth().addToCopy(6).toDate());
-        Map<String, Object> data = new HashMap<String, Object>();
-        data.put("posMax", 3);
-        data.put("posMin", 2);
-        data.put("bonusPointType", "green leaves");
-        data.put("bonusScore", 500d);
-        data.put("weekClassificationName", "week classification test");
+        
+        cdd.setData("posMax", 3);
+        cdd.setData("posMin", 2);
+        cdd.setData("bonusPointType", "green leaves");
+        cdd.setData("bonusScore", 500d);
+        cdd.setData("weekClassificationName", "week classification test");
 
-        cdd.setData(data);
+        
         assertTrue(challengeAssignFacade.assignChallengeToPlayer(cdd, GAMEID, "23897"));
     }
 
@@ -274,15 +274,15 @@ public class GenerationTest extends BaseTest {
         cdd.setInstanceName("InstanceName" + UUID.randomUUID());
         cdd.setStart(now.dayOfMonth().addToCopy(-2).toDate());
         cdd.setEnd(now.dayOfMonth().addToCopy(6).toDate());
-        Map<String, Object> data = new HashMap<String, Object>();
-        data.put("poiName", "Trento Fiera");
-        data.put("eventName", "Fai la cosa giusta");
-        data.put("poiState", Boolean.FALSE);
-        data.put("eventState", Boolean.FALSE);
-        data.put("bonusScore", 200d);
-        data.put("bonusPointType", "green leaves");
+        
+        cdd.setData("poiName", "Trento Fiera");
+        cdd.setData("eventName", "Fai la cosa giusta");
+        cdd.setData("poiState", Boolean.FALSE);
+        cdd.setData("eventState", Boolean.FALSE);
+        cdd.setData("bonusScore", 200d);
+        cdd.setData("bonusPointType", "green leaves");
 
-        cdd.setData(data);
+        
         assertTrue(challengeAssignFacade.assignChallengeToPlayer(cdd, GAMEID, "24607"));
     }
 

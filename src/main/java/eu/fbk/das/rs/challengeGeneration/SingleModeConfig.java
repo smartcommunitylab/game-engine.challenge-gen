@@ -15,13 +15,16 @@ public class SingleModeConfig {
     private Double prizeMatrixMax;
     private Double prizeMatrixIntermediate;
 
+    // used to increment or decrement the prize for all modes
+    private double power = 1.8;
+
     public SingleModeConfig(String modeName, int weight, Double prizeMatrixMin,
                             Double prizeMatrixMax, Double prizeMatrixIntermediate) {
         this.modeName = modeName;
         this.weight = weight;
-        this.prizeMatrixMin = prizeMatrixMin;
-        this.prizeMatrixMax = prizeMatrixMax;
-        this.prizeMatrixIntermediate = prizeMatrixIntermediate;
+        this.prizeMatrixMin = prizeMatrixMin * power;
+        this.prizeMatrixMax = prizeMatrixMax * power;
+        this.prizeMatrixIntermediate = prizeMatrixIntermediate * power;
     }
 
     public int getWeight() {

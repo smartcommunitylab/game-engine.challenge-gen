@@ -13,13 +13,11 @@ import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -278,7 +276,7 @@ public class RecommendationSystemChallengeGenerationTest extends BaseTest {
     @Test
     public void prepareChallangeTest() {
 
-        rcg.prepareChallange("test", new DateTime(), "try");
+        rcg.prepareChallange("test", new DateTime());
     }
 
 

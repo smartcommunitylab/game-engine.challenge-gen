@@ -27,6 +27,8 @@ public class PlayerLevel {
     private Double endLevelScore;
     @JsonProperty("toNextLevel")
     private Double toNextLevel;
+    @JsonProperty("levelIndex")
+    private Integer levelIndex;
 
     @JsonProperty("levelName")
     public String getLevelName() {
@@ -88,4 +90,7 @@ public class PlayerLevel {
         this.toNextLevel = toNextLevel;
     }
 
+    public Integer getLevelIndex() {
+        return levelIndex;
+    }
 }

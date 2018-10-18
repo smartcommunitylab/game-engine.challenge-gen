@@ -37,13 +37,13 @@ public class ChallengeInstanceFactoryTest {
         ChallengeDataDTO challengeDTO = factory.createChallenge(challengeType, params, user);
 
         ChallengeDataDTO result = new ChallengeDataDTO();
-        result.setData(new HashMap<String, Object>());
-        result.getData().put("counterName", "goalType");
-        result.getData().put("periodName", "myPeriod");
-        result.getData().put("periodTarget", 2d);
-        result.getData().put("bonusPointType", "bonus_type");
-        result.getData().put("bonusScore", 25d);
-        result.getData().put("target", "target");
+
+        result.setData("counterName", "goalType");
+        result.setData("periodName", "myPeriod");
+        result.setData("periodTarget", 2d);
+        result.setData("bonusPointType", "bonus_type");
+        result.setData("bonusScore", 25d);
+        result.setData("target", "target");
         Assert.assertEquals(result.getData(), challengeDTO.getData());
 
     }

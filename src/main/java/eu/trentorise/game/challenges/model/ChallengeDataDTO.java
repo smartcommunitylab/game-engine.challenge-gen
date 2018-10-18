@@ -2,21 +2,20 @@ package eu.trentorise.game.challenges.model;
 
 import org.joda.time.DateTime;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static eu.fbk.das.rs.Utils.f;
+import static eu.fbk.das.rs.Utils.formatDateTime;
 
 public class ChallengeDataDTO {
 
     private String modelName;
     private String instanceName;
-    private Map<String, Object> data;
     private Date start;
     private Date end;
 
-    private Map<String, Object> info = new HashMap<>();
+    private Map<String, Object> data = new HashMap<>();
+    // private Map<String, Object> info = new HashMap<>();
 
     // can be either PROPOSED, ASSIGNED, ACTIVE, COMPLETED, FAILED (default value is assigned)
     private String state;
@@ -45,8 +44,8 @@ public class ChallengeDataDTO {
         return data;
     }
 
-    public void setData(Map<String, Object> data) {
-        this.data = data;
+    public void setData(String name, Object value) {
+        this.data.put(name, value);
     }
 
     public Date getStart() {
@@ -102,11 +101,46 @@ public class ChallengeDataDTO {
     }
 
 
-    public void addInfo(String s, int v) {
-        info.put(s, v);
+    public void addInfo(String s, Object v) {
+
+        // info.put(s, v);
     }
 
     public Object getInfo(String s) {
-        return info.get(s);
+        return null; // info.get(s);
+    }
+
+    public Vector<Object> getDisplayData() {
+        Vector<Object> result = new Vector<>();
+        result.add(getInfo("player"));
+        result.add(getInfo("playerLevel"));
+        result.add(getModelName());
+        result.add(getData().get("counterName"));
+        result.add(m(getData().get("baseline")));
+        result.add(m(getData().get("target")));
+        result.add(m( getData().get("difficulty")));
+        result.add(getData().get("bonusScore"));
+        result.add(getState());
+        result.add(getPriority());
+
+        result.add(formatDateTime(new DateTime(getStart())));
+        result.add(formatDateTime(new DateTime(getEnd())));
+        
+        return result;
+    }
+
+    public Vector<Object> getWriteData() {
+        Vector<Object> result = getDisplayData();
+        result.add(instanceName);
+        return result;
+    }
+
+    private String m(Object o) {
+        try {
+            String s = f("%.2f", o);
+            return s.replace("nu", "");
+        } catch (IllegalFormatConversionException ignored) {}
+
+        return f("%d", o);
     }
 }

@@ -107,19 +107,18 @@ public class DifficultyCalculatorTest {
     public void difficultyPrizeComparatorTest() {
         List<ChallengeDataDTO> test = new ArrayList<ChallengeDataDTO>();
         ChallengeDataDTO first = new ChallengeDataDTO();
-        first.setData(new HashMap<String, Object>());
+
         first.setInstanceName("Instance1");
-        first.getData().put("difficulty", 3);
-        first.getData().put("bonusScore", 100.0);
-        first.getData().put("wi", 100.0);
+        first.setData("difficulty", 3);
+        first.setData("bonusScore", 100.0);
+        first.setData("wi", 100.0);
         test.add(first);
 
         ChallengeDataDTO second = new ChallengeDataDTO();
-        second.setData(new HashMap<String, Object>());
         second.setInstanceName("Instance2");
-        second.getData().put("difficulty", 1);
-        second.getData().put("bonusScore", 200.0);
-        second.getData().put("wi", 200.0);
+        second.setData("difficulty", 1);
+        second.setData("bonusScore", 200.0);
+        second.setData("wi", 200.0);
         test.add(second);
 
         Collections.sort(test, new DifficultyPrizeComparator());
