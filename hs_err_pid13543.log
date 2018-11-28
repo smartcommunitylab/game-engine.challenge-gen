@@ -224,8 +224,8 @@ Event: 2,464 Thread 0x00007f6954012000 Uncommon trap: reason=class_check action=
 
 Classes redefined (3 events):
 Event: 297,197 Thread 0x00007f6954147000 redefined class name=eu.fbk.das.rs.RecommendationSystemTest, count=1
-Event: 582,360 Thread 0x00007f6954147000 redefined class name=eu.fbk.das.rs.challengeGeneration.RecommendationSystemStatistics, count=1
-Event: 735,619 Thread 0x00007f6954147000 redefined class name=eu.fbk.das.rs.challengeGeneration.RecommendationSystemStatistics, count=2
+Event: 582,360 Thread 0x00007f6954147000 redefined class name=eu.fbk.das.rs.challenges.generation.RecommendationSystemStatistics, count=1
+Event: 735,619 Thread 0x00007f6954147000 redefined class name=eu.fbk.das.rs.challenges.generation.RecommendationSystemStatistics, count=2
 
 Internal exceptions (10 events):
 Event: 258,085 Thread 0x00007f6954012000 Exception <a 'java/lang/ArrayIndexOutOfBoundsException': 102> (0x00000007454adcc8) thrown at [/build/openjdk-8-pREaNj/openjdk-8-8u181-b13/src/hotspot/src/share/vm/interpreter/interpreterRuntime.cpp, line 366]

@@ -1,9 +1,9 @@
-package eu.trentorise.challenge.generation;
+package eu.fbk.das.rs.challenges.generation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.collect.Sets;
-import eu.trentorise.challenge.BaseTest;
+import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 import eu.trentorise.game.challenges.ChallengeFactory;
 import eu.trentorise.game.challenges.ChallengeInstanceFactory;
 import eu.trentorise.game.challenges.ChallengesRulesGenerator;
@@ -30,7 +30,7 @@ import java.util.*;
 import static eu.fbk.das.rs.Utils.dbg;
 import static org.junit.Assert.assertTrue;
 
-public class GenerationTest extends BaseTest {
+public class GenerationTest extends ChallengesBaseTest {
 
     private static final Logger logger = LogManager.getLogger(GenerationTest.class);
 
@@ -62,7 +62,11 @@ public class GenerationTest extends BaseTest {
 
         assertTrue(result != null && !result.getChallenges().isEmpty());
 
-        List<Content> users = facade.readGameState(GAMEID);
+        Map<String, Content> m_users = facade.readGameState(GAMEID);
+        List<Content> users = new ArrayList<Content>();
+        for (String pId: m_users.keySet())
+            users.add(m_users.get(pId));
+
 
         System.out.println("Users found: " + users.size());
 
@@ -84,7 +88,10 @@ public class GenerationTest extends BaseTest {
         assertTrue(result != null && !result.getChallenges().isEmpty());
 
         // get users from gamification engine
-        List<Content> users = facade.readGameState(GAMEID);
+        Map<String, Content> m_users = facade.readGameState(GAMEID);
+        List<Content> users = new ArrayList<Content>();
+        for (String pId: m_users.keySet())
+            users.add(m_users.get(pId));
 
         ChallengesRulesGenerator crg = new ChallengesRulesGenerator(new ChallengeInstanceFactory(),
                 "generated-rules-report.csv", "output.json");
@@ -113,7 +120,10 @@ public class GenerationTest extends BaseTest {
         assertTrue(result != null && !result.getChallenges().isEmpty());
 
         // get users from gamification engine
-        List<Content> users = facade.readGameState(GAMEID);
+        Map<String, Content> m_users = facade.readGameState(GAMEID);
+        List<Content> users = new ArrayList<Content>();
+        for (String pId: m_users.keySet())
+            users.add(m_users.get(pId));
 
         ChallengesRulesGenerator crg = new ChallengesRulesGenerator(new ChallengeInstanceFactory(),
                 "generated-rules-report.csv", "output.json");

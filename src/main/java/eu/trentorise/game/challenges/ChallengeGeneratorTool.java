@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Command line tool for challenge generation, requires in input</br> -
@@ -149,10 +150,14 @@ public class ChallengeGeneratorTool {
         String msg = "Contacting gamification engine on host " + host;
         System.out.println(msg);
         log += msg + Constants.LINE_SEPARATOR;
+        Map<String, Content> m_users = null;
+
         List<Content> users = null;
 
         try {
-            users = facade.readGameState(gameId);
+            m_users = facade.readGameState(gameId);
+            for (String pId: m_users.keySet())
+                users.add(m_users.get(pId));
         } catch (Exception e) {
             msg = "Error in reading game state from host " + host
                     + " for gameId " + gameId + " error: " + e.getMessage();

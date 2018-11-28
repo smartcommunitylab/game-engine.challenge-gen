@@ -1,6 +1,6 @@
 package eu.trentorise.game.challenges.util;
 
-import eu.fbk.das.rs.challengeGeneration.RecommendationSystemConfig;
+import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;

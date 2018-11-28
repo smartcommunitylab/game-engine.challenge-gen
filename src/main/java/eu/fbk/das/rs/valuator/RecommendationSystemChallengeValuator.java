@@ -1,8 +1,8 @@
 package eu.fbk.das.rs.valuator;
 
-import eu.fbk.das.rs.challengeGeneration.RecommendationSystemConfig;
-import eu.fbk.das.rs.challengeGeneration.RecommendationSystemStatistics;
-import eu.fbk.das.rs.challengeGeneration.SingleModeConfig;
+import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
+import eu.fbk.das.rs.challenges.generation.RecommendationSystemStatistics;
+import eu.fbk.das.rs.challenges.generation.SingleModeConfig;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,15 +19,12 @@ public class RecommendationSystemChallengeValuator {
             LogManager.getLogger(RecommendationSystemChallengeValuator.class);
 
     // Prize Matrix for each mode
-    private Map<String, PlanePointFunction> prizeMatrixMap = new HashMap<String, PlanePointFunction>();
+    private Map<String, PlanePointFunction> prizeMatrixMap = new HashMap<>();
     private RecommendationSystemConfig cfg;
     private RecommendationSystemStatistics stats;
 
     /**
      * Create a new recommandation system challenge valuator
-     *
-     * @param configuration
-     * @throws IllegalArgumentException if cfg is null
      */
     public RecommendationSystemChallengeValuator(RecommendationSystemConfig configuration) {
         if (configuration == null) {
@@ -69,49 +66,51 @@ public class RecommendationSystemChallengeValuator {
 
         Map<Integer, Double> quantiles = stats.getQuantiles(counterName);
 
-        if (challenge.getModelName().equals("percentageIncrement")) {
-            Double baseline = (Double) challenge.getData().get("baseline");
-            Double target = (Double) challenge.getData().get("target");
-            Integer difficulty = DifficultyCalculator.computeDifficulty(quantiles,
-                    baseline, target);
-            // + ", target=" + target + " difficulty="
-            // + difficulty);
-            challenge.getData().put("difficulty", difficulty);
+        switch (challenge.getModelName()) {
+            case "percentageIncrement":
+                Double baseline = (Double) challenge.getData().get("baseline");
+                Double target = (Double) challenge.getData().get("target");
+                Integer difficulty = DifficultyCalculator.computeDifficulty(quantiles,
+                        baseline, target);
+                // + ", target=" + target + " difficulty="
+                // + difficulty);
+                challenge.getData().put("difficulty", difficulty);
 
-            double d = (double) challenge.getData().get("percentage");
+                double d = (double) challenge.getData().get("percentage");
 
-            Double prize = calculatePrize(difficulty, d, counterName);
-            challenge.getData().put("bonusScore", prize);
-        } else if (challenge.getModelName().equals("absoluteIncrement")) {
-            challenge.getData().put("difficulty", DifficultyCalculator.MEDIUM);
-            Double tryOnceBonus = prizeMatrixMap.get(counterName).getTryOncePrize(
-                    RecommendationSystemConfig.PRIZE_MATRIX_TRY_ONCE_ROW_INDEX,
-                    RecommendationSystemConfig.PRIZE_MATRIX_TRY_ONCE_COL_INDEX);
-            challenge.getData().put("bonusScore", tryOnceBonus);
-        } else {
-            err(logger, "Unknown model for the challenge: %s!", challenge.getModelName());
+                int prize = calculatePrize(difficulty, d, counterName);
+                challenge.getData().put("bonusScore", prize);
+                break;
+            case "absoluteIncrement":
+                challenge.getData().put("difficulty", DifficultyCalculator.MEDIUM);
+                int tryOnceBonus = (int) Math.ceil(prizeMatrixMap.get(counterName).getTryOncePrize(
+                        RecommendationSystemConfig.PRIZE_MATRIX_TRY_ONCE_ROW_INDEX,
+                        RecommendationSystemConfig.PRIZE_MATRIX_TRY_ONCE_COL_INDEX));
+                challenge.getData().put("bonusScore", tryOnceBonus);
+                break;
+            default:
+                err(logger, "Unknown model for the challenge: %s!", challenge.getModelName());
+                break;
         }
 
     }
 
-    private Double calculatePrize(Integer difficulty, double percent, String modeName) {
+    private int calculatePrize(Integer difficulty, double percent, String modeName) {
         // TODO: config!
         int y = 0;
-        if (percent == 0.1) {
+        if (percent <= 0.1) {
             y = 0;
-        } else if (percent == 0.2) {
+        } else if (percent <= 0.2) {
             y = 1;
-        } else if (percent == 0.3) {
+        } else if (percent <= 0.3) {
             y = 2;
-        } else if (percent == 0.5) {
+        } else if (percent <= 0.4) {
             y = 4;
-        } else if (percent == 1) {
+        } else if (percent <= 1) {
             y = 9;
         }
 
-        Double prize = prizeMatrixMap.get(modeName).get(difficulty - 1, y);
-
-        return prize;
+        return (int) Math.ceil(prizeMatrixMap.get(modeName).get(difficulty - 1, y));
     }
 
 }

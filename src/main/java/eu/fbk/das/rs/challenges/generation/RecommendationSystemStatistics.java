@@ -1,4 +1,4 @@
-package eu.fbk.das.rs.challengeGeneration;
+package eu.fbk.das.rs.challenges.generation;
 
 import com.google.common.math.Quantiles;
 import eu.fbk.das.rs.ArrayUtils;
@@ -15,35 +15,54 @@ import static eu.fbk.das.rs.Utils.*;
 
 public class RecommendationSystemStatistics {
 
-    private final RecommendationSystemConfig cfg;
     private String STATS_FILENAME = "rs.statistics";
     private GamificationEngineRestFacade facade;
 
     private DateTime execDate;
     private String[] l_mode;
     private Map<String, Map<Integer, Double>> quartiles;
+    private boolean offline = false;
+    private RecommendationSystemConfig cfg;
+    private DateTime date;
 
-    public RecommendationSystemStatistics(RecommendationSystemConfig cfg) {
-        this.cfg = cfg;
+    public RecommendationSystemStatistics() {
         quartiles = new HashMap<>();
     }
 
-    public Map<String, Map<Integer, Double>> checkAndUpdateStats(GamificationEngineRestFacade facade, DateTime date, String[] l_mode) {
+    public Map<String, Map<Integer, Double>> checkAndUpdateStats(GamificationEngineRestFacade facade, DateTime date, RecommendationSystemConfig cfg) {
         this.facade = facade;
+        this.date = date;
+        this.cfg = cfg;
 
-        this.l_mode = new String[l_mode.length];
-        for (int i = 0; i < l_mode.length; i++)
-            this.l_mode[i] = fix(l_mode[i]);
+        this.l_mode = new String[cfg.defaultMode.length];
+        for (int i = 0; i < cfg.defaultMode.length; i++)
+            this.l_mode[i] = fix(cfg.defaultMode[i]);
         Arrays.sort(this.l_mode);
 
         execDate = date;
 
+        if (offline)
+            return updateStatsOffline();
+
+        return updateStatsOnline();
+
+    }
+
+    private Map<String, Map<Integer, Double>> updateStatsOnline() {
+
+        facade.readGameStatistics(cfg.get("GAME_ID"));
+
+        return  null;
+    }
+
+    private Map<String, Map<Integer, Double>> updateStatsOffline() {
         quartiles = tryReadStats();
 
         if (quartiles != null)
             return quartiles;
 
-        return updateStats();
+        return updateStats(cfg);
+
     }
 
     private Map<String, Map<Integer, Double>> tryReadStats() {
@@ -62,7 +81,7 @@ public class RecommendationSystemStatistics {
             if (fileDate == null)
                 return null;
 
-            if (daysApart(fileDate, execDate) >= 6)
+            if (daysApart(fileDate, execDate) >= 3)
                 return null;
 
             return readStats(r);
@@ -110,7 +129,7 @@ public class RecommendationSystemStatistics {
 
     }
 
-    private Map<String, Map<Integer, Double>> updateStats() {
+    private Map<String, Map<Integer, Double>> updateStats(RecommendationSystemConfig cfg) {
 
         Writer wr;
         try {
@@ -126,12 +145,12 @@ public class RecommendationSystemStatistics {
             stats.put(mode, new ArrayList<Double>());
         }
 
-        List<Content> l_player = facade.readGameState(cfg.get("GAME_ID"));
+        Map<String, Content> m_player = facade.readGameState(cfg.get("GAME_ID"));
 
         // update(stats, "24440");
 
-        for (Content player : l_player) {
-            update(stats, player);
+        for (String pId: m_player.keySet()) {
+            update(stats, m_player.get(pId));
         }
 
         /*
@@ -187,18 +206,28 @@ public class RecommendationSystemStatistics {
             if (!ArrayUtils.find(m, l_mode))
                 continue;
 
-            Double score = pc.getPeriodScore("weekly", execDate);
+            Double score = pc.getPeriodScore("weekly", execDate.minus(7));
             if (score > 0)
                 stats.get(m).add(score);
         }
     }
 
 
-    public Map<Integer, Double> getQuantiles(String cnt) {
-        return quartiles.get(fix(cnt));
+    public Map<Integer, Double> getQuantiles(String mode) {
+        return quartiles.get(fix(mode));
     }
 
     private String fix(String mode) {
         return mode.replace(" ", "_").toLowerCase();
     }
+
+    public int getPosition(String mode, Double modeValue) {
+       Map<Integer, Double> quan = getQuantiles(mode);
+            for (int i = 1; i < 11; i++)
+                if (modeValue < quan.get(i))
+                    return i;
+
+            return 10;
+        }
+
 }

@@ -51,13 +51,13 @@ public class PlanePointFunction {
     }
 
     private void calculate() {
-        double dh = (double) ((intermediate - min)) / (double) (ncol - 1);
-        double dv = (double) (max - intermediate) / (double) (nrow - 1);
+        double dh = (intermediate - min) / (double) (ncol - 1);
+        double dv = (max - intermediate) / (double) (nrow - 1);
 
         for (int i = 0; i < nrow; i++) {
             for (int j = 0; j < ncol; j++) {
                 matrix[i][j] = Math.round(Math.round(min + dh * j + i * dv)
-                        / (double) approximator)
+                        / approximator)
                         * approximator;
             }
         }
@@ -87,7 +87,7 @@ public class PlanePointFunction {
         return intermediate;
     }
 
-    public Double getTryOncePrize(int x, int y) {
+    Double getTryOncePrize(int x, int y) {
         return matrix[x][y];
     }
 }

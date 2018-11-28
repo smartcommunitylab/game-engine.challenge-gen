@@ -10,14 +10,10 @@ public class DifficultyCalculator {
     public final static Integer VERY_HARD = 4;
 
     /**
-     * @param quartiles
-     * @param baseline
-     * @param target
-     * @return computed difficulty valye for given input
-     * @throws if inputs are null
+     * compute difficulties valye for given input
      */
-    public static Integer computeDifficulty(Map<Integer, Double> quartiles,
-                                            Double baseline, Double target) {
+    public static Integer computeDifficulty(Map<Integer, Double> quartiles, Double baseline, Double target) {
+
         if (quartiles == null || baseline == null || target == null) {
             throw new IllegalArgumentException("All input must be not null");
         }

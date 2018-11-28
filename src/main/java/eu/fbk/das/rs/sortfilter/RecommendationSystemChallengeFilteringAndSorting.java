@@ -1,7 +1,7 @@
 package eu.fbk.das.rs.sortfilter;
 
-import eu.fbk.das.rs.challengeGeneration.RecommendationSystemConfig;
-import eu.fbk.das.rs.challengeGeneration.RecommendationSystemStatistics;
+import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
+import eu.fbk.das.rs.challenges.generation.RecommendationSystemStatistics;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import eu.trentorise.game.challenges.rest.Content;
 import eu.trentorise.game.challenges.rest.PointConcept;
@@ -83,7 +83,7 @@ public class RecommendationSystemChallengeFilteringAndSorting {
             } else {
                 percentageImprovment = 1.0;
             }
-            Double prize = (Double) challenge.getData().get("bonusScore");
+            int prize = (int) challenge.getData().get("bonusScore");
             // calculating the WI for each mode based on weight of Mode and
             // improvement percentage
             double wi = percentageImprovment * weight;

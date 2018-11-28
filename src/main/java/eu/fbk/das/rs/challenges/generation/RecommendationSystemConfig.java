@@ -1,4 +1,4 @@
-package eu.fbk.das.rs.challengeGeneration;
+package eu.fbk.das.rs.challenges.generation;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,17 +38,17 @@ public class RecommendationSystemConfig {
 
     // default modes
     private static final String NO_CAR_TRIPS = "NoCar_Trips";
-    private static final String BIKE_KM = "Bike_Km";
+    protected static final String BIKE_KM = "Bike_Km";
     private static final String BUS_KM = "Bus_Km";
     private static final String BIKE_SHARING_TRIPS = "BikeSharing_Trips";
     private static final String WALK_TRIPS = "Walk_Trips";
     private static final String BIKE_TRIPS = "Bike_Trips";
     private static final String TRAIN_KM = "Train_Km";
-    private static final String BUS_TRIPS = "Bus_Trips";
-    private static final String TRAIN_TRIPS = "Train_Trips";
+    protected static final String BUS_TRIPS = "Bus_Trips";
+    protected static final String TRAIN_TRIPS = "Train_Trips";
     private static final String ZERO_IMPACT_TRIPS = "ZeroImpact_Trips";
     private static final String BIKE_SHARING_KM = "BikeSharing_Km";
-    private static final String WALK_KM = "Walk_Km";
+    protected static final String WALK_KM = "Walk_Km";
     protected static final String GREEN_LEAVES = "green leaves";
 
     // Default prize matrix dimension, number of rows
@@ -63,7 +63,7 @@ public class RecommendationSystemConfig {
     // Default prize matrix coordinate for try once, number of column
     public static final int PRIZE_MATRIX_TRY_ONCE_COL_INDEX = 9;
 
-    // Prize matrix approximator value, @see {@link PlanePointFunction}
+    // Prize matrix approximator value
     public static final Double PRIZE_MATRIX_APPROXIMATOR = 10.0;
 
     /**
@@ -96,7 +96,7 @@ public class RecommendationSystemConfig {
     private RecommendationSystemModeConfiguration modeConfiguration;
 
     // TODO fare che si aggiorni in automatico
-    private String challengeNamePrefix = "w1_rs_";
+    private String challengeNamePrefix = "w%d_rs_";
 
     protected String[] levelNames = new String[] {"GreenStarter", "GreenFollower", "GreenLover", "GreenInfluencer", "GreenSoldier", "GreenMaster", "GreenAmbassador", "GreenWarrior", "GreenVeteran", "GreenGuru", "GreenGod"};
 
@@ -129,7 +129,7 @@ public class RecommendationSystemConfig {
 
         // TODO CHECK
         modeConfiguration.put(GREEN_LEAVES, new SingleModeConfig(
-                ZERO_IMPACT_TRIPS, 0, 100.0, 250.0, 175.0));
+                GREEN_LEAVES, 0, 100.0, 250.0, 175.0));
 
         // OLD
 

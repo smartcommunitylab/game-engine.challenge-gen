@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import javax.annotation.Generated;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -39,6 +40,10 @@ public class ChallengeConcept {
     @JsonProperty("priority")
     // if no challenge is chosen by the user, it will be given the one with highest priority
     private String priority;
+
+    @JsonProperty("stateDate")
+    // register of states updates
+    private Map<String, Date> stateDate = new LinkedHashMap<String, Date>();
 
     /**
      * @return The name

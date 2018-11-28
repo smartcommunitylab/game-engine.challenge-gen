@@ -1,52 +1,24 @@
-package eu.fbk.das.rs;
+package eu.fbk.das.rs.challenges.generation;
 
-import eu.fbk.das.rs.challengeGeneration.RecommendationSystem;
-import eu.fbk.das.rs.challengeGeneration.RecommendationSystemChallengeGeneration;
-import eu.fbk.das.rs.challengeGeneration.RecommendationSystemConfig;
-import eu.fbk.das.rs.challengeGeneration.RecommendationSystemStatistics;
-import eu.fbk.das.rs.sortfilter.RecommendationSystemChallengeFilteringAndSorting;
-import eu.fbk.das.rs.valuator.RecommendationSystemChallengeValuator;
-import eu.trentorise.challenge.BaseTest;
+
+import eu.fbk.das.rs.Utils;
+import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
+import eu.trentorise.game.challenges.rest.ChallengeConcept;
 import eu.trentorise.game.challenges.rest.Content;
-import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
-import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static eu.fbk.das.rs.ArrayUtils.pos;
 import static eu.fbk.das.rs.Utils.p;
 import static eu.fbk.das.rs.Utils.pf;
 
-public class RecommendationSystemTest extends BaseTest {
-
-    private GamificationEngineRestFacade facade;
-    private RecommendationSystemConfig cfg;
-    private RecommendationSystemChallengeValuator rscv;
-    private RecommendationSystemChallengeGeneration rscg;
-    private RecommendationSystemChallengeFilteringAndSorting rscf;
-
-    private LocalDate now;
-
-    @Before
-    public void setup() {
-        facade = new GamificationEngineRestFacade(HOST,
-                USERNAME, PASSWORD);
-        cfg = new RecommendationSystemConfig();
-        now = new LocalDate();
-
-        rscv = new RecommendationSystemChallengeValuator(cfg);
-
-        rscg = new RecommendationSystemChallengeGeneration(cfg);
-
-        rscf = new RecommendationSystemChallengeFilteringAndSorting(cfg);
-    }
+public class RecommendationSystemTest extends ChallengesBaseTest {
 
     @Test
     public void testForecast() {
@@ -56,20 +28,40 @@ public class RecommendationSystemTest extends BaseTest {
         DateTime date = Utils.stringToDate(cfg.get("DATE"));
 
         RecommendationSystem rs = new RecommendationSystem();
-        rs.setFacade(facade);
-        rs.prepare(cfg, date);
+        rs.prepare(facade, date);
 
-        forecast(rs, 10.0, 9.0);
-        forecast(rs, 10.0, 11.0);
+        RecommendationSystemChallengeGeneration rscg = new RecommendationSystemChallengeGeneration(cfg, null);
 
-        forecast(rs, 10.0, 5.0);
-        forecast(rs, 10.0, 15.0);
+        forecast(rscg, 10.0, 9.0);
+        forecast(rscg, 10.0, 11.0);
+
+        forecast(rscg, 10.0, 5.0);
+        forecast(rscg, 10.0, 15.0);
     }
 
-    private void forecast(RecommendationSystem rs, double current, double last) {
+    private void forecast(RecommendationSystemChallengeGeneration rs, double current, double last) {
         pf("currentValue: %.2f, lastValue: %.2f\n", current, last);
         Double forecastValue = rs.forecastMode(current, last);
         pf("forecastValue: %.2f\n\n", forecastValue);
+    }
+
+
+    @Test
+    public void test() {
+        RecommendationSystem rs = new RecommendationSystem();
+        DateTime date = new DateTime();
+        rs.prepare(facade, date);
+
+        Map<String, Content> res = facade.readGameState(cfg.get("GAME_ID"));
+        for (String pId: res.keySet()) {
+
+            Content cnt = res.get(pId);
+            for (ChallengeConcept cha: cnt.getState().getChallengeConcept()) {
+                Long end = cha.getEnd();
+                p(end - 1541635200);
+            }
+
+        }
     }
 
     @Test
@@ -77,15 +69,42 @@ public class RecommendationSystemTest extends BaseTest {
         // preparazione
         String pId = "24164"; // cfg.get("PLAYER_ID");
 
-        DateTime date = Utils.stringToDate(cfg.get("DATE"));
+        String d = cfg.get("DATE");
+        DateTime date;
+        if ("".equals(d))
+            date = new DateTime();
+        else
+            date = Utils.stringToDate(d);
 
         RecommendationSystem rs = new RecommendationSystem();
-        rs.setFacade(facade);
-        rs.prepare(cfg, date);
+        rs.prepare(facade, date);
 
         Content state = facade.getPlayerState(cfg.get("GAME_ID"), pId);
 
-        rs.recommendForecast(state, date);
+        List<ChallengeDataDTO> l_cha = rs.assignForecast(state, date);
+
+        List<ChallengeDataDTO> l_cha_2 = rs.assignLimit(3, state, date);
+    }
+
+    @Test
+    public void loadTestChallenge() {
+        // preparazione
+        String pId = "122"; // cfg.get("PLAYER_ID");
+
+        RecommendationSystem rs = new RecommendationSystem();
+        rs.prepare(facade, new DateTime());
+        RecommendationSystemChallengeGeneration rscg = new RecommendationSystemChallengeGeneration(cfg, null);
+
+        DateTime start = Utils.parseDateTime("26/10/2018 00:00");
+        DateTime end = Utils.parseDateTime("28/10/2018 23:59");
+
+        ChallengeDataDTO cdd = rscg.prepareChallange("Walk_Km");
+        cdd.setModelName("absoluteIncrement");
+        cdd.setData("target", 7);
+
+        boolean state = facade.assignChallengeToPlayer(cdd, cfg.get("GAME_ID"), pId);
+
+        p(state);
     }
 
     @Test
@@ -99,8 +118,7 @@ public class RecommendationSystemTest extends BaseTest {
         DateTime date = Utils.stringToDate(cfg.get("DATE"));
 
         RecommendationSystem rs = new RecommendationSystem();
-        rs.setFacade(facade);
-        rs.prepare(cfg, date);
+        rs.prepare(facade, date);
 
         List<ChallengeDataDTO> cnt = rs.recommend(player_id, date);
 
@@ -113,8 +131,6 @@ public class RecommendationSystemTest extends BaseTest {
     // After change of player state adding player level, check of compatibility
     public void testGetPlayerState() {
 
-        facade = new GamificationEngineRestFacade(cfg.get("HOST"),
-                cfg.get("USERNAME"), cfg.get("PASSWORD"));
         Content c = facade.getPlayerState("5b7a885149c95d50c5f9d442", "8");
 
         p(c.getPlayerId());
@@ -137,8 +153,10 @@ public class RecommendationSystemTest extends BaseTest {
 
         DateTime date = Utils.stringToDate(cfg.get("DATE"));
 
-        RecommendationSystemStatistics statistics = new RecommendationSystemStatistics(cfg);
-        statistics.checkAndUpdateStats(facade, date, cfg.getDefaultMode());
+        RecommendationSystem rs = new RecommendationSystem();
+
+        RecommendationSystemStatistics statistics = new RecommendationSystemStatistics();
+        statistics.checkAndUpdateStats(facade, date, cfg);
 
         rscv.prepare(statistics);
         rscf.prepare(statistics);
@@ -146,7 +164,7 @@ public class RecommendationSystemTest extends BaseTest {
         Content cnt = facade.getPlayerState(cfg.get("GAME_ID"), player_id);
 
         // generazione della challenges
-        List<ChallengeDataDTO> l_cha = rscg.generate(cnt, "Walk_Km", date);
+        List<ChallengeDataDTO> l_cha = rscg.generate(cnt, "Walk_Km", date, rs);
 
         p("\n #### GENERATED #### \n");
         for (ChallengeDataDTO cha : l_cha) {

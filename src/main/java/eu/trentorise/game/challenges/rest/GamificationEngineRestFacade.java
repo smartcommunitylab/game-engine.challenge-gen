@@ -1,3 +1,4 @@
+
 package eu.trentorise.game.challenges.rest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -52,7 +53,7 @@ public class GamificationEngineRestFacade {
     // PATHS
     private static final String SEARCH = "player/search";
 
-    private HashMap<String, List<Content>> gameStateCache;
+    private HashMap<String, Map<String, Content>> gameStateCache;
 
     private WebTarget target;
 
@@ -74,7 +75,7 @@ public class GamificationEngineRestFacade {
     }
 
     private void prepare() {
-        gameStateCache = new HashMap<String, List<Content>>();
+        gameStateCache = new HashMap<String, Map<String, Content>>();
     }
 
     /**
@@ -109,38 +110,31 @@ public class GamificationEngineRestFacade {
 
     private Response get(WebTarget target) {
         Response response = target.request().get();
-        if (check(response))
-            return response;
-        return null;
+        return check(response);
     }
 
     private Response put(WebTarget target, Object json) {
         Response response = target.request().put(Entity.json(json));
-        if (check(response))
-            return response;
-        return null;
+        return check(response);
     }
 
     private Response post(WebTarget target, Object json) {
         Response response = target.request().post(Entity.json(json));
-        if (check(response))
-            return response;
-
-        pf("Error in post request %s - %s \n", response.getStatus(), response.getStatusInfo());
-        return null;
+        return check(response);
     }
 
 
-    private boolean check(Response response) {
+    private Response check(Response response) {
 
         if (response.getStatus() == Response.Status.OK.getStatusCode()) {
             if (verbosity >= 2) dbg(logger, "response code: %s", response.getStatus());
-            return true;
+            return response;
         }
 
-        if (verbosity >= 1)
-            err(logger, "response code: %d, reason: %s", response.getStatus(), response.getStatusInfo());
-        return false;
+        pf("Error in post request %s - %s \n", response.getStatus(), response.getStatusInfo());
+        p(response);
+        p(response.getEntity());
+        return null;
     }
 
 
@@ -150,7 +144,7 @@ public class GamificationEngineRestFacade {
      * @param gameId
      * @return a list of {@link Content}, null if error
      */
-    public List<Content> readGameState(String gameId) {
+    public Map<String, Content> readGameState(String gameId) {
         checkGameId(gameId);
 
         if (!gameStateCache.containsKey(gameId)) {
@@ -163,30 +157,35 @@ public class GamificationEngineRestFacade {
                 err(logger, "error in reading game state");
                 return null;
             }
-            if (response.getLast()) {
-                logger.info("service return only one page of result");
-                return response.getContent();
-            }
             List<Content> result = new ArrayList<Content>();
-            int page = 2;
-            boolean end = false;
-            Paginator pageResponse;
             result.addAll(response.getContent());
-            while (!end) {
-                pageResponse = target.queryParam("page", page).request()
-                        .get(Paginator.class);
-                if (pageResponse != null) {
-                    result.addAll(pageResponse.getContent());
-                    if (pageResponse.getLast()) {
-                        end = true;
-                    } else {
-                        page++;
+
+            if (!response.getLast()) {
+                int page = 2;
+                boolean end = false;
+                Paginator pageResponse;
+                while (!end) {
+                    pageResponse = target.queryParam("page", page).request()
+                            .get(Paginator.class);
+                    if (pageResponse != null) {
+                        result.addAll(pageResponse.getContent());
+                        if (pageResponse.getLast()) {
+                            end = true;
+                        } else {
+                            page++;
+                        }
                     }
                 }
+                dbg(logger, "service return " + page + " pages of result");
             }
-            dbg(logger, "service return " + page + " pages of result");
 
-            gameStateCache.put(gameId, result);
+            Map<String, Content> contentCache = new HashMap<>();
+
+            for (Content cnt: result) {
+                contentCache.put(cnt.getPlayerId(), cnt);
+            }
+
+            gameStateCache.put(gameId, contentCache);
         }
 
         return gameStateCache.get(gameId);
@@ -199,11 +198,23 @@ public class GamificationEngineRestFacade {
      * @return state
      */
     public Content getPlayerState(String gameId, String pId) {
+
         checkGameId(gameId);
         checkPlayerId(pId);
-        WebTarget target = getTarget().path(DATA).path(gameId).path(PLAYER).path(pId).path(STATE);
-        Response response = get(target);
-        return response.readEntity(Content.class);
+
+        if (!gameStateCache.containsKey(gameId))
+            gameStateCache.put(gameId, new HashMap<String, Content>());
+
+        Map<String, Content> contentCache = gameStateCache.get(gameId);
+
+        if (!contentCache.containsKey(pId)) {
+            WebTarget target = getTarget().path(DATA).path(gameId).path(PLAYER).path(pId).path(STATE);
+            Response response = get(target);
+            Content cnt = response.readEntity(Content.class);
+            contentCache.put(pId, cnt);
+        }
+
+        return contentCache.get(pId);
     }
 
     private void checkPlayerId(String pId) {
@@ -213,7 +224,7 @@ public class GamificationEngineRestFacade {
     }
 
     private void checkGameId(String gameId) {
-        if (gameId == null) {
+        if (gameId == null || "".equals(gameId)) {
             throw new IllegalArgumentException("gameId cannot be null");
         }
     }
@@ -364,6 +375,7 @@ public class GamificationEngineRestFacade {
         }
         WebTarget target = challengePlayerPath(gameId, playerId);
         Response response = post(target, cdd);
+
         return response != null;
     }
 
@@ -397,5 +409,11 @@ public class GamificationEngineRestFacade {
         return target;
     }
 
+    public Response readGameStatistics(String gameId) {
+        checkGameId(gameId);
+        WebTarget target = getTarget().path(DATA).path(gameId).path("statistics");
+        Response response = get(target);
+return check(response);
+    }
 }
 

@@ -1,4 +1,4 @@
-package eu.fbk.das.rs.challengeGeneration;
+package eu.fbk.das.rs.challenges.generation;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package eu.trentorise.challenge.generation;
+package eu.fbk.das.rs.challenges.generation;
 
 import eu.trentorise.game.challenges.ChallengeGeneratorTool;
 import eu.trentorise.game.challenges.util.ChallengeRules;

@@ -1,13 +1,12 @@
-package eu.fbk.das.rs;
+package eu.fbk.das.rs.challenges.evaluation;
 
-import eu.trentorise.challenge.BaseTest;
-import eu.trentorise.game.challenges.rest.ChallengeConcept;
+import eu.fbk.das.rs.Utils;
+import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
+import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import eu.trentorise.game.challenges.rest.Content;
 import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
 import eu.trentorise.game.challenges.rest.PointConcept;
 import org.joda.time.DateTime;
-import org.junit.Before;
-import org.junit.Test;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,65 +19,43 @@ import static eu.fbk.das.rs.Utils.*;
  * This script collects the available data on the challenges assigned during the 2017 edition.
  * The goal is to have a training data for a classifier able to estimate the "likeness" of completion.
  */
-public class ChallengeDataGuru extends BaseTest {
+public class ChallengeDataGuru {
 
-    private final HashMap<String, Content> userCache;
+    private final RecommendationSystemConfig cfg;
     private GamificationEngineRestFacade facade;
 
-    private String out_path = "/home/loskana/Desktop/tensorflow/play-classifier/";
     private List<Integer> training_model = new ArrayList<>();
     private List<Integer> training_counter = new ArrayList<>();
 
-    public ChallengeDataGuru() {
-        all = new HashMap<>();
-        completed = new HashSet<>();
-        userCache = new HashMap<String, Content>();
-    }
-
-    String path = "src/test/resources/eu/fbk/das/rs/";
-
     private Set<String> completed;
-    private Map<String, ChallengeDt> all;
 
-    private List<double[]> training_data = new ArrayList<>();
-    private List<Double> training_label = new ArrayList<>();
+
+    private List<double[]> training_data;
+    // private List<Double> training_label;
 
     private String[] challengeType = new String[]{"absoluteIncrement", "percentageIncrement", "repetitiveBehaviour"};
 
-    private String[] challengeName = new String[]{"Bus_Km", "green leaves", "PandR_Trips", "Transit_Trips", "BikeSharing_Km", "Bike_Trips", "Car_Km", "BikeSharing_Trips", "Walk_Trips", "Train_Km", "Recommendations", "Walk_Km", "Bus_Trips", "Car_Trips", "Train_Trips", "Bike_Km", "NoCar_Trips", "ZeroImpact_Trips"};
+    // private String[] challengeName = new String[]{"Bus_Km", "green leaves", "PandR_Trips", "Transit_Trips", "BikeSharing_Km", "Bike_Trips", "Car_Km", "BikeSharing_Trips", "Walk_Trips", "Train_Km", "Recommendations", "Walk_Km", "Bus_Trips", "Car_Trips", "Train_Trips", "Bike_Km", "NoCar_Trips", "ZeroImpact_Trips"};
+    private String[] challengeName = new String[]{"green leaves", "Walk_Km", "Bike_Km", "Bus_Trips", "Train_Trips"};
 
-    int datum_length = 95;
+    private String[] pointConcept = new String[]{"green leaves", "Walk_Km", "Bike_Km", "Bus_Trips", "Train_Trips",  "NoCar_Trips", "ZeroImpact_Trips", "Walk_Trips", "Bike_Trips", "Bus_Km",  "Train_Km", "PandR_Trips",  "Transit_Trips", "BikeSharing_Km", "Car_Km", "BikeSharing_Trips", "Recommendations",   "Car_Trips"};
+
+    int datum_length = 206;
     private int datum_start;
+    private DateTime date;
+    private ArrayList<ChallengeDataDTO> l_cha;
 
-    private class ChallengeDt {
+    public ChallengeDataGuru(RecommendationSystemConfig cfg) {
+        this.cfg = cfg;
 
-        private String pId;  // player id
+        // all = new HashMap<>();
+        completed = new HashSet<>();
 
-        private String cntT;  // challenge type
-
-        private String cntN; // counter name
-
-        private String bsl; // baseline
-
-        public String tgt; // target
-
-        public String pz; // prize
-
-        public String rw; // reward
-
-        public String id; // id
-    }
-
-    @Before
-    public void setup() {
         training_data = new ArrayList<>();
-        training_label = new ArrayList<>();
-        facade = new GamificationEngineRestFacade(HOST, USERNAME, PASSWORD);
+        // training_label = new ArrayList<>();
     }
 
-
-    @Test
-    public void generate() throws IOException {
+    public void generate(String out_path, Map<String, List<ChallengeDataDTO>> challenges, GamificationEngineRestFacade facade, DateTime date, String[] challengeColNames) throws IOException {
 
         // Read challenge completed list
         //   readCompleted();
@@ -87,30 +64,56 @@ public class ChallengeDataGuru extends BaseTest {
         // Read challenge assigned list
         //    readAll();
 
-        computeData();
+        this.facade = facade;
+        this.date = date;
 
-        writeDown();
+        computeData(challenges);
+
+        writeDown(out_path, challengeColNames);
     }
 
-    private void writeDown() throws IOException {
+    private void writeDown(String out_path, String[] challengeColNames) throws IOException {
 
+        /*
         Writer wr = Utils.getWriter(out_path + "training_label");
         for (int i = 0; i < training_label.size(); i++)
             wf(wr, "%.2f\n", training_label.get(i));
         wr.close();
+        */
 
 
-        wr = Utils.getWriter(out_path + "training_data");
+        Writer wr = Utils.getWriter(out_path + ".csv");
+        wf(wr, ",%s", joinArray(challengeColNames));
+        for (String aChallengeType : challengeType) {
+            wf(wr, ",is_%s", aChallengeType);
+        }
+        for (String aChallengeName : challengeName) {
+            wf(wr, ",is_%s", aChallengeName);
+        }
+        for (String aPointConcept : pointConcept) {
+
+            wf(wr, ",%s", aPointConcept);
+
+            for (int j = 1; j < 4; j++)
+                wf(wr, ",%s_w%d", aPointConcept, j);
+
+            for (int j = 1; j < 8; j++)
+                wf(wr, ",%s_d%d", aPointConcept, j);
+        }
+        wf(wr, "\n");
+
+
         for (int i = 0; i < training_data.size(); i++) {
+            wf(wr, "%s,", l_cha.get(i).printData());
             wf(wr, "%s\n", Utils.joinArray(training_data.get(i), ","));
             wr.flush();
         }
         wr.close();
 
-        wr = Utils.getWriter(out_path + "data.arff");
+        wr = Utils.getWriter(out_path + ".arff");
         wf(wr, "@relation playgo\n\n");
         wf(wr, "@attribute model {0,1,2}\n");
-        wf(wr, "@attribute counter {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17}\n", Utils.joinArray(challengeName).replace("\"", ""));
+        wf(wr, "@attribute counter {0,1,2,3,4}\n", Utils.joinArray(challengeName).replace("\"", ""));
         for (int i = datum_start; i < datum_length; i++)
             wf(wr, "@attribute w%d numeric\n", i);
 
@@ -122,29 +125,36 @@ public class ChallengeDataGuru extends BaseTest {
             wf(wr, "%d,%d", training_model.get(i), training_counter.get(i));
             for (int j = datum_start; j < datum_length; j++)
                 wf(wr, ",%.3f", datum[j]);
-            wf(wr, ",%d\n", (int) Math.round(training_label.get(i)));
+            // wf(wr, ",%d\n", (int) Math.round(training_label.get(i)));
+            wf(wr, ",%s\n","?");
             wr.flush();
         }
         wr.close();
 
     }
 
-    private void computeData() {
+    private void computeData(Map<String, List<ChallengeDataDTO>> challenges) {
 
-        Set<String> players = facade.getGamePlayers(GAMEID);
+        l_cha = new ArrayList<>();
 
+        for (String pId: challenges.keySet()) {
+            Content cnt = facade.getPlayerState(cfg.get("GAME_ID"), pId);
 
-        for (String pId : players) {
+            for (ChallengeDataDTO cha: challenges.get(pId)) {
+                goChallenge(cnt, cha);
 
-            Content user = getContent(pId);
-
-            for (ChallengeConcept cha : user.getState().getChallengeConcept()) {
-
-                goChallenge(user, cha);
+                l_cha.add(cha);
             }
         }
 
-        datum_start = 20;
+        // p(training_data.size());
+    }
+
+    private void normalizeData() {
+        
+        // TODO usage
+        
+        datum_start = 10;
 
         // compute means
         double[] means = new double[datum_length];
@@ -172,12 +182,11 @@ public class ChallengeDataGuru extends BaseTest {
                 if (std[i] != 0)
                     datum[i] = (datum[i] - means[i]) / std[i];
         }
-
-        p(training_data.size());
     }
 
-    private void goChallenge(Content user, ChallengeConcept cha) {
-        String cId = cha.getName();
+    private void goChallenge(Content user, ChallengeDataDTO cha) {
+
+        String cId = cha.getInstanceName();
 
         if (!cId.startsWith("w"))
             return;
@@ -190,14 +199,14 @@ public class ChallengeDataGuru extends BaseTest {
 
         int week = Integer.valueOf(s_week);
 
-        // consider only week 3 forward (we need the others as a baseline
-        if (week < 3)
-            return;
+        // TODO remove ? consider only week 3 forward (we need the others as a baseline
+        // if (week < 3)
+        //     return;
 
-        computeDatum(cha, week, user);
+        computeDatum(cha, user);
     }
 
-    private void computeDatum(ChallengeConcept cha, Integer week, Content user) {
+    private void computeDatum(ChallengeDataDTO cha, Content user) {
         double[] datum = new double[datum_length];
         int ix = 0;
 
@@ -206,74 +215,93 @@ public class ChallengeDataGuru extends BaseTest {
         int ix_model = -1;
         for (int i = 0; i < challengeType.length; i++) {
             if (challengeType[i].equals(cha.getModelName())) {
-                datum[ix++] = 1;
+                datum[ix] = 1;
                 ix_model = i;
             }
+            ix++;
         }
         if (ix_model < 0)
-            p("NOT FOUND!!!");
+            p("challengeType NOT FOUND!!!");
 
         // cntN - challenge name: (18) Bus_Km, green leaves, PandR_Trips, Transit_Trips, BikeSharing_Km, Bike_Trips, Car_Km, BikeSharing_Trips, Walk_Trips, Train_Km, Recommendations, Walk_Km, Bus_Trips, Car_Trips, Train_Trips, Bike_Km, NoCar_Trips, ZeroImpact_Trips
         // encoding: 18 inputs, 1 active
         int ix_counter = -1;
         for (int i = 0; i < challengeName.length; i++) {
             if (challengeName[i].equals(getField(cha, "counterName"))) {
-                datum[ix++] = 1;
+                datum[ix] = 1;
                 ix_counter = i;
             }
+            ix++;
         }
         if (ix_counter < 0)
-            p("NOT FOUND!!!");
+            p("challengeName NOT FOUND!!!");
 
-        try {
-            // target - numerico
-            datum[ix++] = (double) getField(cha, "target");
-
-            // prize - numerico
-            datum[ix++] = (double) getField(cha, "bonusScore");
-        } catch (Exception e) {
-            p(e);
-        }
+        // p(ix);
 
 
         // Per ogni PointConcept (18): Bus_Km, green leaves, PandR_Trips, Transit_Trips, BikeSharing_Km, Bike_Trips, Car_Km, BikeSharing_Trips, Walk_Trips, Train_Km, Recommendations, Walk_Km, Bus_Trips, Car_Trips, Train_Trips, Bike_Km, NoCar_Trips, ZeroImpact_Trips
-        for (PointConcept pc : user.getState().getPointConcept()) {
+        for (String aPointConcept : pointConcept) {
+
+            PointConcept pc = getPointConcept(aPointConcept, user);
+            if (pc == null)
+                continue;
 
             //  - Current score
             datum[ix++] = pc.getScore();
 
-            double tot = 0;
+            DateTime d;
 
             //  - weekly score: settimana precedente, quella prima e quella prima ancora (0 se non aveva giocato)
-            for (int i = 0; i < 3; i++) {
+            for (int i = 1; i < 4; i++) {
                 try {
-                    Double a = pc.getPeriodScore("weekly", getDateFromStart(week - (i + 1), 0));
+                    d = date.minusDays(7 * i);
+                    // p(Utils.printDate(d));
+                    Double a = pc.getPeriodScore("weekly", d);
                     datum[ix++] = a;
-                    tot += a;
                 } catch (Exception e) {
                     p(e);
                 }
             }
 
-            if (tot <= 0 && "green leaves".equals(pc.getName()))
-                return;
+            // 6 giorni precedenti
+            for (int i = 1; i < 8; i++) {
+                d = date.minusDays(i);
+                // p(Utils.printDate(d));
+                try {
+                    datum[ix++] = pc.getPeriodScore("daily", d);
+                } catch (Exception e) {
+                    p(e);
+                }
+            }
 
-            //  - daily score: 7 giorni precedenti?
-            // for (int i = 0; i < 3; i++) {
-            // datum[ix++] = pc.getPeriodScore("daily", getDateFromStart(week - 1, i));
-            // }
+            // p(pc.getName());
 
         }
 
+        // p(ix);
+
 
         training_data.add(datum);
-        training_label.add((double) (cha.getCompleted() ? 1 : 0));
+        // training_label.add((double) (cha.getCompleted() ? 1 : 0));
         training_model.add(ix_model);
         training_counter.add(ix_counter);
     }
 
-    private Object getField(ChallengeConcept cha, String a) {
-        return cha.getFields().get(a);
+    private PointConcept getPointConcept(String s, Content user) {
+        for (PointConcept pc2 : user.getState().getPointConcept()) {
+            if (pc2.getName().equals(s)) {
+                return pc2;
+
+            }
+
+        }
+
+        pf("POINT CONCEPT NOT FOUND!!! %s", s);
+        return null;
+    }
+
+    private Object getField(ChallengeDataDTO cha, String s) {
+        return cha.getData().get(s);
     }
 
     private double parse(String s) {
@@ -295,17 +323,31 @@ public class ChallengeDataGuru extends BaseTest {
         return dt.getMillis() / 1000;
     }
 
-    private Content getContent(String pId) {
-        if (userCache.get(pId) == null) {
-            Content cnt = facade.getPlayerState(GAMEID, pId);
-            userCache.put(pId, cnt);
-            return cnt;
-        }
+    /*
+    private Map<String, ChallengeDt> all;
 
-        return userCache.get(pId);
+    private class ChallengeDt {
+
+        private String pId;  // player id
+
+        private String cntT;  // challenge type
+
+        private String cntN; // counter name
+
+        private String bsl; // baseline
+
+        public String tgt; // target
+
+        public String pz; // prize
+
+        public String rw; // reward
+
+        public String id; // id
     }
 
-    private void readAll() throws IOException {
+
+
+    protected void readAll(String path) throws IOException {
         BufferedReader rd = Utils.getReader(path + "challenges_combined.csv");
         String ln = rd.readLine();
         while (ln != null) {
@@ -327,9 +369,9 @@ public class ChallengeDataGuru extends BaseTest {
             all.put(cdt.id, cdt);
         }
 
-    }
+    } */
 
-    private void readCompleted() throws IOException {
+    protected void readCompleted(String path) throws IOException {
         BufferedReader rd = Utils.getReader(path + "ChallengeCompletedFiltered.csv");
         String ln = rd.readLine();
         ln = rd.readLine();

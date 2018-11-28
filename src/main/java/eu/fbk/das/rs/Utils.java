@@ -18,6 +18,10 @@ public class Utils {
 
     static DateTimeFormatter df = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm");
 
+    static DateTimeFormatter dff = DateTimeFormat.forPattern("yyyy-MM-dd");
+
+    static Random r = new Random(System.currentTimeMillis());
+
     private static final Logger log = LogManager.getLogger(
             Utils.class.getName());
 
@@ -28,9 +32,9 @@ public class Utils {
             return str;
     }
 
-    public static Random getRandom() {
-        return new Random(System.currentTimeMillis());
-    }
+public static double rand() {
+        return r.nextDouble();
+}
 
     public static int index(int s, int v1, int v2) {
         if (v1 > v2) {
@@ -657,7 +661,7 @@ public class Utils {
     }
 
     public static int daysApart(DateTime d1, DateTime d2) {
-        return Days.daysBetween(d1.toLocalDate(), d2.toLocalDate()).getDays();
+        return Math.abs(Days.daysBetween(d1.toLocalDate(), d2.toLocalDate()).getDays());
     }
 
     public static String joinArray(double[] a, String s) {
@@ -706,11 +710,31 @@ public class Utils {
         return df.print(d);
     }
 
+    public static String formatDateTimeFileName(DateTime d) {
+        return dff.print(d);
+    }
+
     public static boolean equal (String s1, String s2) {
         return slug(s1).equals(slug(s2));
     }
 
     public static String slug(String s1) {
         return s1.toLowerCase().replace(" ", "");
+    }
+
+    public static boolean randChance(double v) {
+        return (rand() <= v);
+    }
+
+    public static DateTime parseDateTime(String s) {
+        return df.parseDateTime(s);
+    }
+
+    public static String printDate(DateTime d) {
+        return sdf.print(d);
+    }
+
+    public static DateTime parseDate(String s) {
+        return sdf.parseDateTime(s);
     }
 }

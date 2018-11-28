@@ -1,12 +1,12 @@
 package eu.fbk.das.rs;
 
-import eu.fbk.das.rs.challengeGeneration.RecommendationSystem;
-import eu.fbk.das.rs.challengeGeneration.RecommendationSystemChallengeGeneration;
-import eu.fbk.das.rs.challengeGeneration.RecommendationSystemConfig;
+import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
+import eu.fbk.das.rs.challenges.generation.RecommendationSystemChallengeGeneration;
+import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
 import eu.fbk.das.rs.sortfilter.RecommendationSystemChallengeFilteringAndSorting;
 import eu.fbk.das.rs.valuator.DifficultyCalculator;
 import eu.fbk.das.rs.valuator.RecommendationSystemChallengeValuator;
-import eu.trentorise.challenge.BaseTest;
+import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import eu.trentorise.game.challenges.rest.Content;
 import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
@@ -23,7 +23,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertTrue;
 
-public class RecommendationSystemChallengeGenerationTest extends BaseTest {
+public class RecommendationSystemChallengeGenerationTest extends ChallengesBaseTest {
 
     private GamificationEngineRestFacade facade;
     private RecommendationSystemConfig configuration;
@@ -37,7 +37,7 @@ public class RecommendationSystemChallengeGenerationTest extends BaseTest {
         configuration = new RecommendationSystemConfig();
         now = new DateTime();
 
-        rcg = new RecommendationSystemChallengeGeneration(configuration);
+        rcg = new RecommendationSystemChallengeGeneration(configuration, null);
     }
 
     @Test
@@ -47,7 +47,7 @@ public class RecommendationSystemChallengeGenerationTest extends BaseTest {
     public void readGameTest() {
         assertTrue(facade != null);
         // read data from gamification engine
-        List<Content> gameData = facade.readGameState(GAMEID);
+        Map<String, Content> gameData = facade.readGameState(GAMEID);
 
         assertTrue(!gameData.isEmpty());
     }
@@ -59,11 +59,14 @@ public class RecommendationSystemChallengeGenerationTest extends BaseTest {
      */
     public void challengeGeneration() {
         assertTrue(facade != null);
-        List<Content> gameData = facade.readGameState(GAMEID);
+        Map<String, Content> m_users = facade.readGameState(GAMEID);
+        List<Content> gameData = new ArrayList<Content>();
+        for (String pId: m_users.keySet())
+            gameData.add(m_users.get(pId));
+
         // create all challenges combinations
         Map<String, List<ChallengeDataDTO>> challengeCombinations = rcg
-                .generate(gameData, now.dayOfMonth().addToCopy(1), now
-                        .dayOfMonth().addToCopy(8));
+                .generateAll(gameData);
 
         for (String playerId : challengeCombinations.keySet()) {
             // generate at least two challenge for player
@@ -123,11 +126,13 @@ public class RecommendationSystemChallengeGenerationTest extends BaseTest {
      * Evaluate challenges adding difficulty and computing the prize
      */
     public void challengeValuator() {
-        List<Content> gameData = facade.readGameState(GAMEID);
+        Map<String, Content> m_users = facade.readGameState(GAMEID);
+        List<Content> gameData = new ArrayList<Content>();
+        for (String pId: m_users.keySet())
+            gameData.add(m_users.get(pId));
 
         Map<String, List<ChallengeDataDTO>> challengeCombinations = rcg
-                .generate(gameData, now.dayOfMonth().addToCopy(1), now
-                        .dayOfMonth().addToCopy(8));
+                .generateAll(gameData);
         // evaluate all challenges
         RecommendationSystemChallengeValuator valuator = new RecommendationSystemChallengeValuator(
                 configuration);
@@ -175,26 +180,6 @@ public class RecommendationSystemChallengeGenerationTest extends BaseTest {
                 || (rc.isUserfiltering() && rc.getPlayerIds().size() > 2));
     }
 
-    @Test
-    /**
-     * Sort and filter challenges using difficulty and prize and write to file
-     */
-    public void recommendationSystemTest() throws IOException {
-        RecommendationSystem rs = new RecommendationSystem(configuration);
-        Map<String, List<ChallengeDataDTO>> result = rs.recommendation(
-                now.dayOfMonth().addToCopy(1), now
-                        .dayOfMonth().addToCopy(8));
-        rs.writeToFile(result);
-        assertTrue(!result.isEmpty());
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void recommendationSystemNullGameData() throws IOException {
-        RecommendationSystem rs = new RecommendationSystem(configuration);
-        rs.recommendation(null, now.dayOfMonth().addToCopy(1), now
-                .dayOfMonth().addToCopy(8));
-    }
-
     @Test(expected = IllegalArgumentException.class)
     public void recommendationSystemWriteNullChallenges() throws IOException {
         RecommendationSystem rs = new RecommendationSystem(configuration);
@@ -205,7 +190,7 @@ public class RecommendationSystemChallengeGenerationTest extends BaseTest {
     public void generatorNullConfigTest() throws IOException {
         @SuppressWarnings("unused")
         RecommendationSystemChallengeGeneration rg = new RecommendationSystemChallengeGeneration(
-                null);
+                null, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -226,9 +211,7 @@ public class RecommendationSystemChallengeGenerationTest extends BaseTest {
     public void generatorContentEmptyTest() throws IOException {
 
         List<Content> input = new ArrayList<Content>();
-        Map<String, List<ChallengeDataDTO>> result = rcg.generate(input, now
-                .dayOfMonth().addToCopy(1), now.dayOfMonth()
-                .addToCopy(8));
+        Map<String, List<ChallengeDataDTO>> result = rcg.generateAll(input);
 
         assertTrue(result.isEmpty());
     }
@@ -248,22 +231,21 @@ public class RecommendationSystemChallengeGenerationTest extends BaseTest {
     public void testDateNotNull() {
         List<Content> gameData = new ArrayList<Content>();
 
-        rcg.generate(gameData, null, null);
+        rcg.generateAll(gameData);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testDateStartEndMustBeDifferent() {
         List<Content> gameData = new ArrayList<Content>();
 
-        rcg.generate(gameData, now, now);
+        rcg.generateAll(gameData);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testDateStartMustBeBeforeEnd() {
         List<Content> gameData = new ArrayList<Content>();
 
-        rcg.generate(gameData, now.dayOfMonth().addToCopy(1),
-                now);
+        rcg.generateAll(gameData);
     }
 
     @Test
@@ -272,12 +254,6 @@ public class RecommendationSystemChallengeGenerationTest extends BaseTest {
                 && !configuration.getPlayerIds().isEmpty());
     }
 
-
-    @Test
-    public void prepareChallangeTest() {
-
-        rcg.prepareChallange("test", new DateTime());
-    }
 
 
 }

@@ -1,11 +1,13 @@
 package eu.trentorise.game.challenges.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.joda.time.DateTime;
 
 import java.util.*;
 
 import static eu.fbk.das.rs.Utils.f;
 import static eu.fbk.das.rs.Utils.formatDateTime;
+import static eu.fbk.das.rs.Utils.p;
 
 public class ChallengeDataDTO {
 
@@ -15,7 +17,7 @@ public class ChallengeDataDTO {
     private Date end;
 
     private Map<String, Object> data = new HashMap<>();
-    // private Map<String, Object> info = new HashMap<>();
+    private Map<String, String> info = new HashMap<>();
 
     // can be either PROPOSED, ASSIGNED, ACTIVE, COMPLETED, FAILED (default value is assigned)
     private String state;
@@ -100,26 +102,32 @@ public class ChallengeDataDTO {
         setEnd(end.toDate());
     }
 
-
-    public void addInfo(String s, Object v) {
-
-        // info.put(s, v);
+    public void setInfo(String s, Object v) {
+        info.put(s, String.valueOf(v));
     }
 
-    public Object getInfo(String s) {
-        return null; // info.get(s);
+    public void setInfo(String s, String v) {
+        info.put(s, v);
     }
 
+    public String getInfo(String s) {
+        return info.get(s);
+    }
+
+    @JsonIgnore
     public Vector<Object> getDisplayData() {
         Vector<Object> result = new Vector<>();
-        result.add(getInfo("player"));
-        result.add(getInfo("playerLevel"));
+        result.add(i(getInfo("player")));
+        result.add(i(getInfo("playerLevel")));
+        result.add(i(getInfo("id")));
+        result.add(getInfo("experiment"));
         result.add(getModelName());
         result.add(getData().get("counterName"));
         result.add(m(getData().get("baseline")));
         result.add(m(getData().get("target")));
-        result.add(m( getData().get("difficulty")));
-        result.add(getData().get("bonusScore"));
+        result.add(m(getInfo("improvement")));
+        result.add(m(getData().get("difficulty")));
+        result.add(i(getData().get("bonusScore")));
         result.add(getState());
         result.add(getPriority());
 
@@ -129,18 +137,36 @@ public class ChallengeDataDTO {
         return result;
     }
 
+    private Object i(Object s) {
+        return Integer.valueOf(String.valueOf(s));
+    }
+
+    @JsonIgnore
     public Vector<Object> getWriteData() {
-        Vector<Object> result = getDisplayData();
+        Vector<Object> result = new Vector<>();
         result.add(instanceName);
+        result.addAll(getDisplayData());
         return result;
     }
 
-    private String m(Object o) {
-        try {
-            String s = f("%.2f", o);
-            return s.replace("nu", "");
-        } catch (IllegalFormatConversionException ignored) {}
+    private Double m(Object o) {
 
-        return f("%d", o);
+        try {
+            String s = String.valueOf(o);
+            if ("null".equals(s))
+                return 0.0;
+            Double d = Double.valueOf(s);
+            d = Math.ceil(d * 100.0) / 100.0;
+            return d;
+        } catch (IllegalFormatConversionException ex) {
+            p(ex.getMessage());
+        }
+
+        return -1.0;
+    }
+
+
+    public String printData() {
+        return getWriteData().toString().replace("[", "").replace("]", "");
     }
 }

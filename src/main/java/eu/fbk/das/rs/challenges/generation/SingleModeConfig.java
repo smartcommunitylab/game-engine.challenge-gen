@@ -1,4 +1,4 @@
-package eu.fbk.das.rs.challengeGeneration;
+package eu.fbk.das.rs.challenges.generation;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +16,7 @@ public class SingleModeConfig {
     private Double prizeMatrixIntermediate;
 
     // used to increment or decrement the prize for all modes
-    private double power = 1.8;
+    private double power = 1.2;
 
     public SingleModeConfig(String modeName, int weight, Double prizeMatrixMin,
                             Double prizeMatrixMax, Double prizeMatrixIntermediate) {
