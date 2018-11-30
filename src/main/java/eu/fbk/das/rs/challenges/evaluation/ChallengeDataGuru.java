@@ -282,7 +282,7 @@ public class ChallengeDataGuru {
 
 
         training_data.add(datum);
-        // training_label.add((double) (cha.getCompleted() ? 1 : 0));
+        // training_label.add((double) (cha.isCompleted() ? 1 : 0));
         training_model.add(ix_model);
         training_counter.add(ix_counter);
     }

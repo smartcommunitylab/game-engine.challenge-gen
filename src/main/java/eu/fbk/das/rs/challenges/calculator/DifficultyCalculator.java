@@ -1,5 +1,6 @@
-package eu.fbk.das.rs.valuator;
+package eu.fbk.das.rs.challenges.calculator;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class DifficultyCalculator {
@@ -8,6 +9,22 @@ public class DifficultyCalculator {
     public final static Integer MEDIUM = 2;
     public final static Integer HARD = 3;
     public final static Integer VERY_HARD = 4;
+
+    // Prize Matrix for each mode
+    private Map<String, PlanePointFunction> prizeMatrixMap = new HashMap<>();
+
+    public DifficultyCalculator() {
+        for (String mode : ChallengesConfig.defaultMode) {
+            SingleModeConfig config = ChallengesConfig.getModeConfig(mode);
+
+            PlanePointFunction matrix = new PlanePointFunction(
+                    ChallengesConfig.PRIZE_MATRIX_NROW,
+                    ChallengesConfig.PRIZE_MATRIX_NCOL, config.getPrizeMatrixMin(),
+                    config.getPrizeMatrixMax(), config.getPrizeMatrixIntermediate(),
+                    ChallengesConfig.PRIZE_MATRIX_APPROXIMATOR);
+            prizeMatrixMap.put(mode, matrix);
+        }
+    }
 
     /**
      * compute difficulties valye for given input
@@ -67,4 +84,28 @@ public class DifficultyCalculator {
         return null;
     }
 
+
+    public int calculatePrize(Integer difficulty, double percent, String modeName) {
+
+        int y = 0;
+        if (percent <= 0.1) {
+            y = 0;
+        } else if (percent <= 0.2) {
+            y = 1;
+        } else if (percent <= 0.3) {
+            y = 2;
+        } else if (percent <= 0.4) {
+            y = 4;
+        } else if (percent <= 1) {
+            y = 9;
+        }
+
+        return (int) Math.ceil(prizeMatrixMap.get(modeName).get(difficulty - 1, y));
+    }
+
+    public int getTryOnceBonus(String counterName) {
+        return (int) Math.ceil(prizeMatrixMap.get(counterName).getTryOncePrize(
+                ChallengesConfig.PRIZE_MATRIX_TRY_ONCE_ROW_INDEX,
+                ChallengesConfig.PRIZE_MATRIX_TRY_ONCE_COL_INDEX));
+    }
 }

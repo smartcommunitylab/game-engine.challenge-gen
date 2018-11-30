@@ -3,8 +3,9 @@ package eu.fbk.das.rs;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemChallengeGeneration;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
+import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
 import eu.fbk.das.rs.sortfilter.RecommendationSystemChallengeFilteringAndSorting;
-import eu.fbk.das.rs.valuator.DifficultyCalculator;
+import eu.fbk.das.rs.challenges.calculator.DifficultyCalculator;
 import eu.fbk.das.rs.valuator.RecommendationSystemChallengeValuator;
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
@@ -175,7 +176,7 @@ public class RecommendationSystemChallengeGenerationTest extends ChallengesBaseT
     @Test
     public void configurationFilteringTest() {
         // at least two users for filtering
-        RecommendationSystemConfig rc = new RecommendationSystemConfig();
+        ChallengesConfig rc = new ChallengesConfig();
         assertTrue(!rc.isUserfiltering()
                 || (rc.isUserfiltering() && rc.getPlayerIds().size() > 2));
     }
@@ -218,13 +219,13 @@ public class RecommendationSystemChallengeGenerationTest extends ChallengesBaseT
 
     @Test
     public void testConfigIsModeNull() throws IOException {
-        assertTrue(!configuration.isDefaultMode(null));
+        assertTrue(!ChallengesConfig.isDefaultMode(null));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConfigFilteringIdsNull() {
         @SuppressWarnings("unused")
-        RecommendationSystemConfig config = new RecommendationSystemConfig();
+        ChallengesConfig config = new ChallengesConfig();
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -250,8 +251,8 @@ public class RecommendationSystemChallengeGenerationTest extends ChallengesBaseT
 
     @Test
     public void testUseFilteringAndFilterIds() {
-        assertTrue(configuration.isUserfiltering()
-                && !configuration.getPlayerIds().isEmpty());
+        assertTrue(ChallengesConfig.isUserfiltering()
+                && !ChallengesConfig.getPlayerIds().isEmpty());
     }
 
 

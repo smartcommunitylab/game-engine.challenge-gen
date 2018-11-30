@@ -1,13 +1,13 @@
 package eu.fbk.das.rs.valuator;
 
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
+import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemStatistics;
-import eu.fbk.das.rs.challenges.generation.SingleModeConfig;
+import eu.fbk.das.rs.challenges.calculator.DifficultyCalculator;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static eu.fbk.das.rs.Utils.dbg;
@@ -18,9 +18,8 @@ public class RecommendationSystemChallengeValuator {
     private static final Logger logger =
             LogManager.getLogger(RecommendationSystemChallengeValuator.class);
 
-    // Prize Matrix for each mode
-    private Map<String, PlanePointFunction> prizeMatrixMap = new HashMap<>();
-    private RecommendationSystemConfig cfg;
+    private final DifficultyCalculator dc;
+
     private RecommendationSystemStatistics stats;
 
     /**
@@ -31,17 +30,8 @@ public class RecommendationSystemChallengeValuator {
             throw new IllegalArgumentException(
                     "Recommandation system cfg must be not null");
         }
-        this.cfg = configuration;
-        for (String mode : cfg.defaultMode) {
-            SingleModeConfig config = configuration.getModeConfig(mode);
 
-            PlanePointFunction matrix = new PlanePointFunction(
-                    RecommendationSystemConfig.PRIZE_MATRIX_NROW,
-                    RecommendationSystemConfig.PRIZE_MATRIX_NCOL, config.getPrizeMatrixMin(),
-                    config.getPrizeMatrixMax(), config.getPrizeMatrixIntermediate(),
-                    RecommendationSystemConfig.PRIZE_MATRIX_APPROXIMATOR);
-            prizeMatrixMap.put(mode, matrix);
-        }
+        this.dc = new DifficultyCalculator();
 
         dbg(logger, "RecommendationSystemChallengeValuator init complete");
     }
@@ -57,7 +47,7 @@ public class RecommendationSystemChallengeValuator {
         String counterName = (String) challenge.getData().get("counterName");
 
         boolean found = false;
-        for (String mode : cfg.getDefaultMode())
+        for (String mode : ChallengesConfig.defaultMode)
             if (counterName.equals(mode)) found = true;
         if (!found) {
             err(logger, "Unknown mode: %s!", counterName);
@@ -78,14 +68,12 @@ public class RecommendationSystemChallengeValuator {
 
                 double d = (double) challenge.getData().get("percentage");
 
-                int prize = calculatePrize(difficulty, d, counterName);
+                int prize = dc.calculatePrize(difficulty, d, counterName);
                 challenge.getData().put("bonusScore", prize);
                 break;
             case "absoluteIncrement":
                 challenge.getData().put("difficulty", DifficultyCalculator.MEDIUM);
-                int tryOnceBonus = (int) Math.ceil(prizeMatrixMap.get(counterName).getTryOncePrize(
-                        RecommendationSystemConfig.PRIZE_MATRIX_TRY_ONCE_ROW_INDEX,
-                        RecommendationSystemConfig.PRIZE_MATRIX_TRY_ONCE_COL_INDEX));
+                int tryOnceBonus = (int) dc.getTryOnceBonus(counterName);
                 challenge.getData().put("bonusScore", tryOnceBonus);
                 break;
             default:
@@ -93,24 +81,6 @@ public class RecommendationSystemChallengeValuator {
                 break;
         }
 
-    }
-
-    private int calculatePrize(Integer difficulty, double percent, String modeName) {
-        // TODO: config!
-        int y = 0;
-        if (percent <= 0.1) {
-            y = 0;
-        } else if (percent <= 0.2) {
-            y = 1;
-        } else if (percent <= 0.3) {
-            y = 2;
-        } else if (percent <= 0.4) {
-            y = 4;
-        } else if (percent <= 1) {
-            y = 9;
-        }
-
-        return (int) Math.ceil(prizeMatrixMap.get(modeName).get(difficulty - 1, y));
     }
 
 }

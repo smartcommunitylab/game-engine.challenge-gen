@@ -8,9 +8,11 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import eu.fbk.das.rs.Utils;
 import eu.fbk.das.rs.sortfilter.RecommendationSystemChallengeFilteringAndSorting;
 import eu.fbk.das.rs.valuator.RecommendationSystemChallengeValuator;
+import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import eu.trentorise.game.challenges.rest.*;
 import eu.trentorise.game.challenges.util.ExcelUtil;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -113,7 +115,7 @@ public class RecommendationSystem {
                 continue;
 
             p(cha.getName());
-            p(cha.getCompleted());
+            p(cha.isCompleted());
 
         }
     }
@@ -158,7 +160,7 @@ public class RecommendationSystem {
         String max_mode = null;
         int max_pos = -1;
 
-        for (String mode : cfg.getDefaultMode()) {
+        for (String mode : ChallengesConfig.defaultMode) {
             Double modeValue = getWeeklyContentMode(state, mode, execDate);
             int pos = stats.getPosition(mode, modeValue);
 
@@ -295,7 +297,7 @@ public class RecommendationSystem {
 
 
         List<ChallengeDataDTO> challanges = new ArrayList<>();
-        for (String mode : cfg.getDefaultMode()) {
+        for (String mode : ChallengesConfig.defaultMode) {
             List<ChallengeDataDTO> l_cha = rscg.generate(state, mode, d, this);
 
             if (l_cha.isEmpty())

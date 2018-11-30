@@ -1,12 +1,9 @@
-package eu.fbk.das.rs.challenges.generation;
+package eu.fbk.das.rs.challenges.calculator;
 
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Convenience class for mode configuration for
- * {@link RecommendationSystemConfig}
- */
+
 public class SingleModeConfig {
 
     private String modeName;

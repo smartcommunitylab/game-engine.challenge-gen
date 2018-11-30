@@ -1,7 +1,7 @@
 package eu.fbk.das.rs;
 
 import eu.fbk.das.rs.sortfilter.DifficultyPrizeComparator;
-import eu.fbk.das.rs.valuator.DifficultyCalculator;
+import eu.fbk.das.rs.challenges.calculator.DifficultyCalculator;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import org.junit.Test;
 

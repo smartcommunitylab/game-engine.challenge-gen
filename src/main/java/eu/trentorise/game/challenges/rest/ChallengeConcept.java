@@ -102,7 +102,7 @@ public class ChallengeConcept {
     }
 
     @JsonProperty("completed")
-    public boolean getCompleted() {
+    public boolean isCompleted() {
         return completed;
     }
 

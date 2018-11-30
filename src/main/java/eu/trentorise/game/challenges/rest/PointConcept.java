@@ -2,6 +2,7 @@ package eu.trentorise.game.challenges.rest;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import eu.trentorise.game.repo.LocalDateTimeDeserializer;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;

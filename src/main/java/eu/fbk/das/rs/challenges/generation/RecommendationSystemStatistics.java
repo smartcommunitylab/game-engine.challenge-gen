@@ -2,9 +2,11 @@ package eu.fbk.das.rs.challenges.generation;
 
 import com.google.common.math.Quantiles;
 import eu.fbk.das.rs.ArrayUtils;
+import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
 import eu.trentorise.game.challenges.rest.Content;
 import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
 import eu.trentorise.game.challenges.rest.PointConcept;
+import eu.trentorise.game.challenges.rest.State;
 import org.joda.time.DateTime;
 
 import java.io.*;
@@ -21,7 +23,7 @@ public class RecommendationSystemStatistics {
     private DateTime execDate;
     private String[] l_mode;
     private Map<String, Map<Integer, Double>> quartiles;
-    private boolean offline = false;
+    private boolean offline = true;
     private RecommendationSystemConfig cfg;
     private DateTime date;
 
@@ -34,9 +36,7 @@ public class RecommendationSystemStatistics {
         this.date = date;
         this.cfg = cfg;
 
-        this.l_mode = new String[cfg.defaultMode.length];
-        for (int i = 0; i < cfg.defaultMode.length; i++)
-            this.l_mode[i] = fix(cfg.defaultMode[i]);
+        this.l_mode = ArrayUtils.cloneArray(ChallengesConfig.defaultMode);
         Arrays.sort(this.l_mode);
 
         execDate = date;
@@ -193,8 +193,11 @@ public class RecommendationSystemStatistics {
 
     private void update(HashMap<String, List<Double>> stats, Content cnt) {
 
+        State st = cnt.getState();
 
-        for (PointConcept pc : cnt.getState().getPointConcept()) {
+        p(st.getPointConcept());
+
+        for (PointConcept pc : st.getPointConcept()) {
 
             String m = fix(pc.getName());
 

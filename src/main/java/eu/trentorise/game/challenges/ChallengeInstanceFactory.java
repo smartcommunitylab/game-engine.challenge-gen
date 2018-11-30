@@ -7,7 +7,6 @@ import eu.trentorise.game.challenges.rest.BadgeCollectionConcept;
 import eu.trentorise.game.challenges.rest.Content;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 

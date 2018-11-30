@@ -1,4 +1,4 @@
-package eu.fbk.das.rs.challenges.generation;
+package eu.fbk.das.rs.challenges.calculator;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,7 +7,7 @@ import java.util.Set;
 /**
  * Recommendation system mode configuration
  */
-public class RecommendationSystemModeConfiguration {
+public class ChallengesModeConfiguration {
 
     private Map<String, SingleModeConfig> configuration = new HashMap<String, SingleModeConfig>();
 

@@ -1,6 +1,7 @@
 package eu.trentorise.game.challenges.rest;
 
 import com.fasterxml.jackson.annotation.*;
+import eu.trentorise.game.model.CustomData;
 
 import javax.annotation.Generated;
 import java.util.HashMap;

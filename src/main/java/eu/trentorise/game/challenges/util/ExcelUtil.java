@@ -1,6 +1,7 @@
 package eu.trentorise.game.challenges.util;
 
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
+import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -39,7 +40,7 @@ public final class ExcelUtil {
         row.createCell(3).setCellValue(
                 (String) challenge.getData().get(COUNTER_NAME));
         row.createCell(4).setCellValue(
-                (Integer) configuration.getWeight((String) challenge.getData()
+                (Integer) ChallengesConfig.getWeight((String) challenge.getData()
                         .get(COUNTER_NAME)));
         row.createCell(5).setCellValue(
                 (Integer) challenge.getData().get(DIFFICULTY));

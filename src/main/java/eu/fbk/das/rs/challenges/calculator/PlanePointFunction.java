@@ -1,4 +1,4 @@
-package eu.fbk.das.rs.valuator;
+package eu.fbk.das.rs.challenges.calculator;
 
 /**
  * Plane point function
@@ -87,7 +87,7 @@ public class PlanePointFunction {
         return intermediate;
     }
 
-    Double getTryOncePrize(int x, int y) {
+    public Double getTryOncePrize(int x, int y) {
         return matrix[x][y];
     }
 }

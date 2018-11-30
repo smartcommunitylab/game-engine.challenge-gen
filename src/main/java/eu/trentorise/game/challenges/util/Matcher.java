@@ -215,6 +215,7 @@ public class Matcher {
      * @return true if user exist and contains all custom data mentioned in
      * criteria
      */
+    /*
     private boolean isUserValidCustomData(Content user, String criteria) {
         if (user != null && criteria != null && !criteria.isEmpty()
                 && user.getCustomData() != null
@@ -255,7 +256,7 @@ public class Matcher {
         }
         logger.warn("user null or not custom data available");
         return false;
-    }
+    } */
 
     private List<String> getVariablesFromCriteria(String criteria) {
         List<String> result = new ArrayList<String>();

@@ -1,6 +1,6 @@
 package eu.fbk.das.rs;
 
-import eu.fbk.das.rs.valuator.PlanePointFunction;
+import eu.fbk.das.rs.challenges.calculator.PlanePointFunction;
 import org.junit.Before;
 import org.junit.Test;
 

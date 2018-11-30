@@ -6,6 +6,7 @@ import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import eu.trentorise.game.challenges.rest.ChallengeConcept;
 import eu.trentorise.game.challenges.rest.Content;
+
 import org.joda.time.DateTime;
 import org.junit.Test;
 

@@ -1,6 +1,7 @@
 package eu.fbk.das.rs.sortfilter;
 
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
+import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemStatistics;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import eu.trentorise.game.challenges.rest.Content;
@@ -71,7 +72,7 @@ public class RecommendationSystemChallengeFilteringAndSorting {
             } else {
                 target = (Double) challenge.getData().get("target");
             }
-            Integer weight = cfg.getWeight((String) challenge.getData().get("counterName"));
+            Integer weight = ChallengesConfig.getWeight((String) challenge.getData().get("counterName"));
             Double percentageImprovment = 0.0;
             if (baseline != null) {
                 if (challenge.getModelName().equals("percentageIncrement")) {
@@ -146,7 +147,7 @@ public class RecommendationSystemChallengeFilteringAndSorting {
     private int findPosition(double[] leaderboard, Content player) {
         double score = 0;
         for (PointConcept pc : player.getState().getPointConcept()) {
-            if (!pc.getName().equals(cfg.gLeaves))
+            if (!pc.getName().equals(ChallengesConfig.gLeaves))
                 continue;
 
             score = pc.getPeriodScore("weekly", execDate.getMillis() / 1000);
@@ -179,7 +180,7 @@ public class RecommendationSystemChallengeFilteringAndSorting {
                 } else {
                     target = (Double) challenge.getData().get("target");
                 }
-                Integer weight = cfg.getWeight((String) challenge
+                Integer weight = ChallengesConfig.getWeight((String) challenge
                         .getData().get("counterName"));
                 Double percentageImprovment = 0.0;
                 if (baseline != null) {

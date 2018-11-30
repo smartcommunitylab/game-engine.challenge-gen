@@ -1,6 +1,7 @@
 package eu.fbk.das.rs.challenges.generation;
 
 import eu.fbk.das.rs.valuator.RecommendationSystemChallengeValuator;
+import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import eu.trentorise.game.challenges.rest.Content;
 import org.apache.logging.log4j.LogManager;
@@ -14,7 +15,7 @@ import static eu.fbk.das.rs.Utils.*;
 
 /**
  * RecommendationSystem challenge generation module: generate all possible
- * challenges using provided {@link RecommendationSystemConfig}
+ * challenges using provided {@link ChallengesConfig}
  */
 public class RecommendationSystemChallengeGeneration {
 
@@ -57,7 +58,7 @@ public class RecommendationSystemChallengeGeneration {
         startDate = startDate.minusDays(2);
         endDate = startDate.plusDays(7);
 
-        prefix = f(cfg.getChallengeNamePrefix(), rs.getChallengeWeek(execDate));
+        prefix = f(ChallengesConfig.getChallengeNamePrefix(), rs.getChallengeWeek(execDate));
     }
 
     public List<ChallengeDataDTO> generate(Content state, String mode, DateTime execDate, RecommendationSystem rs) {
@@ -90,17 +91,17 @@ public class RecommendationSystemChallengeGeneration {
             } else {
 
                 // generate different types of challenges by percentage
-                for (int i = 0; i < cfg.getPercentage().length; i++) {
+                for (int i = 0; i < ChallengesConfig.getPercentage().length; i++) {
                     // calculating the improvement of last week activity
                     // define a temporary variable to save the improvement
-                    double tmpValueimprovment = cfg.getPercentage()[i] * currentValue;
+                    double tmpValueimprovment = ChallengesConfig.getPercentage()[i] * currentValue;
 
                     // define a variable that the player should improve its mode
                     double improvementValue = tmpValueimprovment + currentValue;
 
                     improvementValue = checkMax(improvementValue, mode);
 
-                    ChallengeDataDTO cdd = generatePercentage(currentValue, mode, improvementValue, cfg.getPercentage()[i]);
+                    ChallengeDataDTO cdd = generatePercentage(currentValue, mode, improvementValue, ChallengesConfig.getPercentage()[i]);
                     if (cdd != null)
                         output.add(cdd);
 
@@ -110,7 +111,7 @@ public class RecommendationSystemChallengeGeneration {
             }
         } else {
 
-            if (equal(mode, RecommendationSystemConfig.GREEN_LEAVES))
+            if (equal(mode, ChallengesConfig.GREEN_LEAVES))
                 return output;
 
             // if (cfg.isDefaultMode(mode)) {
@@ -167,16 +168,16 @@ public class RecommendationSystemChallengeGeneration {
     }
 
     private double checkMax(double v, String mode) {
-        if (mode.equals(RecommendationSystemConfig.WALK_KM) && v >= 70)
+        if (mode.equals(ChallengesConfig.WALK_KM) && v >= 70)
             return 70;
-        if (mode.equals(RecommendationSystemConfig.BIKE_KM) && v >= 210)
+        if (mode.equals(ChallengesConfig.BIKE_KM) && v >= 210)
             return 210;
-        if (mode.equals(RecommendationSystemConfig.TRAIN_TRIPS) && v >= 56)
+        if (mode.equals(ChallengesConfig.TRAIN_TRIPS) && v >= 56)
             return 56;
-        if (mode.equals(RecommendationSystemConfig.BUS_TRIPS) && v >= 56)
+        if (mode.equals(ChallengesConfig.BUS_TRIPS) && v >= 56)
             return 56;
 
-        if (mode.equals(RecommendationSystemConfig.GREEN_LEAVES) && v >= 3000)
+        if (mode.equals(ChallengesConfig.GREEN_LEAVES) && v >= 3000)
             return 3000;
 
         return v;
@@ -231,7 +232,7 @@ public class RecommendationSystemChallengeGeneration {
         for (Content cnt: data) {
 
             List<ChallengeDataDTO> challanges = new ArrayList<>();
-            for (String mode : cfg.getDefaultMode()) {
+            for (String mode : ChallengesConfig.getDefaultMode()) {
                 challanges.addAll(generate(cnt, mode, new DateTime(), new RecommendationSystem()));
             }
 

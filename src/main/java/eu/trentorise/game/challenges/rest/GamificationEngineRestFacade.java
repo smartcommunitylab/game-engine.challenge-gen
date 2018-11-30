@@ -6,9 +6,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import eu.trentorise.game.bean.ExecutionDataDTO;
 import eu.trentorise.game.challenges.api.Constants;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import eu.trentorise.game.challenges.model.ChallengeModel;
+import eu.trentorise.game.model.GameStatistics;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -112,6 +115,7 @@ public class GamificationEngineRestFacade {
         Response response = target.request().get();
         return check(response);
     }
+
 
     private Response put(WebTarget target, Object json) {
         Response response = target.request().put(Entity.json(json));
@@ -400,20 +404,40 @@ public class GamificationEngineRestFacade {
         WebTarget target = getTarget().path(gameId).path("challenge");
         Response response = get(target);
         if (response == null)
-            return new HashSet<ChallengeModel>();
+            return new ChallengeModelSet();
 
-        return (Set<ChallengeModel>) response.readEntity(Set.class);
+        return response.readEntity(ChallengeModelSet.class);
     }
 
     private WebTarget getTarget() {
         return target;
     }
 
-    public Response readGameStatistics(String gameId) {
+    public GameStatisticsSet readGameStatistics(String gameId, String pcName, String timestamp) {
         checkGameId(gameId);
         WebTarget target = getTarget().path(DATA).path(gameId).path("statistics");
+        if (pcName != null)
+            target = target.queryParam("pointConceptName", pcName);
+        if (timestamp != null)
+            target = target.queryParam("timestamp", timestamp);
+        target = target.queryParam("periodName", "weekly");
+
         Response response = get(target);
-return check(response);
+if (response == null)
+    return new GameStatisticsSet();
+
+        return response.readEntity(GameStatisticsSet.class);
     }
+
+    public GameStatisticsSet readGameStatistics(String gameid, String mode) {
+        return readGameStatistics(gameid, mode, null);
+    }
+
+    public GameStatisticsSet readGameStatistics(String gameid) {
+        return readGameStatistics(gameid, null);
+    }
+
+    public class ChallengeModelSet extends HashSet<ChallengeModel> { }
+
 }
 

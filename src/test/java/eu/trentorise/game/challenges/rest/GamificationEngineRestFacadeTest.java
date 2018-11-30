@@ -1,11 +1,13 @@
 package eu.trentorise.game.challenges.rest;
 
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
+import eu.trentorise.game.bean.ExecutionDataDTO;
 import eu.trentorise.game.challenges.api.Constants;
 import eu.trentorise.game.challenges.util.CalendarUtil;
 import eu.trentorise.game.challenges.util.ConverterUtil;
 import eu.trentorise.game.challenges.util.ExcelUtil;
 import eu.trentorise.game.challenges.util.JourneyData;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -242,15 +244,15 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
                 toWrite.append(cc.getFields().get(Constants.TARGET) + ";");
                 toWrite.append(cc.getFields().get(Constants.BONUS_SCORE) + ";");
                 toWrite.append(cc.getFields().get(Constants.BONUS_POINT_TYPE) + ";");
-                toWrite.append(CalendarUtil.format((Long) cc.getStart()) + ";");
-                toWrite.append(CalendarUtil.format((Long) cc.getEnd()) + ";");
-                toWrite.append(cc.getCompleted() + ";");
-                toWrite.append(CalendarUtil.format(cc.getDateCompleted()) + ";");
+                toWrite.append(cc.getStart());
+                toWrite.append(cc.getEnd());
+                toWrite.append(cc.isCompleted() + ";");
+                toWrite.append(cc.getDateCompleted());
                 toWrite.append(cc.getFields().get(Constants.BASELINE) + ";");
                 toWrite.append(cc.getFields().get(Constants.PERIOD_NAME) + ";");
                 toWrite.append(cc.getFields().get(Constants.COUNTER_NAME) + ";");
                 toWrite.append(getScore(user, (String) cc.getFields().get(Constants.COUNTER_NAME),
-                        cc.getStart()) + ";\n");
+                        cc.getStart()));
             }
             // }
         }
