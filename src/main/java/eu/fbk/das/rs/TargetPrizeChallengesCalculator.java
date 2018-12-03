@@ -10,6 +10,11 @@ import eu.trentorise.game.challenges.rest.PointConcept;
 import eu.trentorise.game.model.GameStatistics;
 import org.joda.time.DateTime;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import static eu.fbk.das.rs.Utils.pf;
+
 
 public class TargetPrizeChallengesCalculator {
 
@@ -45,7 +50,7 @@ public class TargetPrizeChallengesCalculator {
     }
 
 
-    private Object targetPrizeChallengesCompute(String pId_1, String pId_2, String counter, String type) {
+    public Map<String, Double> targetPrizeChallengesCompute(String pId_1, String pId_2, String counter, String type) {
 
         prepare();
 
@@ -64,21 +69,25 @@ public class TargetPrizeChallengesCalculator {
         Content player2 = facade.getPlayerState(gameId, pId_2);
         Double player2_tgt = forecast(player1, counter);
 
+        Map<String, Double> res = new HashMap<>();
+
         double target;
         if (type.equals("CompetitivaTempo")) {
             target = (player1_tgt + player2_tgt) / 2.0;
 
-            int player1_prz = evaluate(target, player1, counter) ;
-            int player2_prz = evaluate(target, player2, counter);
+            res.put("target", target);
+                    res.put("player1_prz", evaluate(target, player1, counter));
+            res.put("player2_prz",  evaluate(target, player2, counter));
         }
         else {
             target = player1_tgt + player2_tgt;
 
-            int player1_prz = evaluate(player1_tgt, player1, counter);
-            int player2_prz = evaluate(player2_tgt, player2, counter);
+            res.put("target", target);
+            res.put("player1_prz", evaluate(player1_tgt, player1, counter));
+            res.put("player2_prz", evaluate(player2_tgt, player2, counter));
         }
 
-        return null;
+        return res;
     }
 
     private void prepare() {
@@ -131,12 +140,9 @@ public class TargetPrizeChallengesCalculator {
         return null;
     } */
 
-    public static void pf(String format, Object... args) {
-        System.out.printf(format, args);
-    }
 
 
-        public int evaluate(Double target, Content player, String counter) {
+        public Double evaluate(Double target, Content player, String counter) {
 
             Double baseline = getWeeklyContentMode(player, counter, lastMonday);
 
@@ -147,7 +153,7 @@ public class TargetPrizeChallengesCalculator {
 
             int prize = dc.calculatePrize(difficulty, d, counter);
 
-            return (int) Math.ceil(prize * ChallengesConfig.competitiveChallengesBooster);
+            return Math.ceil(prize * ChallengesConfig.competitiveChallengesBooster);
         }
     
 }
