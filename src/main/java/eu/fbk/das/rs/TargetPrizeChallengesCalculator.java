@@ -78,12 +78,16 @@ public class TargetPrizeChallengesCalculator {
         if (type.equals("groupCompetitiveTime")) {
             target = roundTarget(counter,(player1_tgt + player2_tgt) / 2.0);
 
+            target = checkMaxTargetCompetitive(counter, target);
+
             res.put("target", target);
                     res.put("player1_prz", evaluate(target, player1_bas, counter, quantiles));
             res.put("player2_prz",  evaluate(target, player2_bas, counter, quantiles));
         }
         else if (type.equals("groupCooperative")) {
             target =roundTarget(counter, player1_tgt + player2_tgt);
+
+            target = checkMaxTargetCooperative(counter, target);
 
             double player1_prz = evaluate(player1_tgt, player1_bas, counter, quantiles);
             double player2_prz = evaluate(player2_tgt, player2_bas, counter, quantiles);
@@ -98,6 +102,30 @@ public class TargetPrizeChallengesCalculator {
             p("UNKOWN TYPE");
 
         return res;
+    }
+
+    private double checkMaxTargetCompetitive(String counter, double v) {
+            if ("Walk_Km".equals(counter))
+                return Math.min(70, v);
+            if ("Bike_Km".equals(counter))
+                return Math.min(210, v);
+            if ("green leaves".equals(counter))
+                return Math.max(3000, v);
+
+            p("WRONG COUNTER");
+            return 0.0;
+        }
+
+    private double checkMaxTargetCooperative(String counter, double v) {
+        if ("Walk_Km".equals(counter))
+            return Math.min(140, v);
+        if ("Bike_Km".equals(counter))
+            return Math.min(420, v);
+        if ("green leaves".equals(counter))
+            return Math.max(6000, v);
+
+        p("WRONG COUNTER");
+        return 0.0;
     }
 
     private Double checkMinTarget(String counter, Double v) {
