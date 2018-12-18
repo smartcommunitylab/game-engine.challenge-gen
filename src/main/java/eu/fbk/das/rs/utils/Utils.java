@@ -1,4 +1,4 @@
-package eu.fbk.das.rs;
+package eu.fbk.das.rs.utils;
 
 import gnu.trove.list.array.TIntArrayList;
 import org.apache.logging.log4j.LogManager;
@@ -9,7 +9,6 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import java.io.*;
-import java.text.ParseException;
 import java.util.*;
 
 public class Utils {

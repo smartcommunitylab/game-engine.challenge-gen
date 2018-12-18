@@ -3,17 +3,21 @@ package eu.fbk.das.rs;
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
 import eu.fbk.das.rs.challenges.calculator.DifficultyCalculator;
 
-import eu.trentorise.game.challenges.rest.Content;
+import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
+import eu.fbk.das.rs.utils.Pair;
+import eu.trentorise.game.challenges.rest.Player;
 import eu.trentorise.game.challenges.rest.GameStatisticsSet;
 import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
 import eu.trentorise.game.challenges.rest.PointConcept;
 import eu.trentorise.game.model.GameStatistics;
+import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.joda.time.DateTime;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static eu.fbk.das.rs.Utils.pf;
+import static eu.fbk.das.rs.challenges.generation.RecommendationSystemChallengeGeneration.roundTarget;
+import static eu.fbk.das.rs.utils.Utils.*;
 
 
 public class TargetPrizeChallengesCalculator {
@@ -28,16 +32,7 @@ public class TargetPrizeChallengesCalculator {
     private DifficultyCalculator dc;
 
     private String gameId;
-
-    public static void test() {
-
-        TargetPrizeChallengesCalculator tpcc = new TargetPrizeChallengesCalculator();
-        tpcc.prepare("https://dev.smartcommunitylab.it/gamification-copia/", "long-rovereto", "long_RoVg@me",  "5b7a885149c95d50c5f9d442");
-
-        String pId_1 = "200";
-        String pId_2 = "236";
-        tpcc.targetPrizeChallengesCompute(pId_1, pId_2, "Walk_Km", "CompetitivaTempo");
-    }
+    private RecommendationSystem rs;
 
 
     public void prepare(String host, String username, String password, String gameId) {
@@ -49,10 +44,79 @@ public class TargetPrizeChallengesCalculator {
         this.gameId = gameId;
     }
 
+    // TODO remove
+    public void prepare(RecommendationSystem rs, String gameId) {
+
+        execDate = new DateTime();
+
+        facade = rs.facade;
+
+        this.rs = rs;
+        this.gameId = gameId;
+    }
+
 
     public Map<String, Double> targetPrizeChallengesCompute(String pId_1, String pId_2, String counter, String type) {
 
         prepare();
+
+        Map<Integer, Double> quantiles = getQuantiles2(gameId, counter);
+
+        Map<String, Double> res = new HashMap<>();
+
+        Player player1 = facade.getPlayerState(gameId, pId_1);
+        Pair<Double, Double> res1 = forecast(res, "player1", player1, counter);
+        double player1_tgt = res1.getFirst();
+        double player1_bas = res1.getSecond();
+
+        Player player2 = facade.getPlayerState(gameId, pId_2);
+        Pair<Double, Double> res2 = forecast(res, "player2", player2, counter);
+        double player2_tgt = res2.getFirst();
+        double player2_bas = res2.getSecond();
+
+        double target;
+        if (type.equals("groupCompetitiveTime")) {
+            target = roundTarget(counter,(player1_tgt + player2_tgt) / 2.0);
+
+            res.put("target", target);
+                    res.put("player1_prz", evaluate(target, player1_bas, counter, quantiles));
+            res.put("player2_prz",  evaluate(target, player2_bas, counter, quantiles));
+        }
+        else if (type.equals("groupCooperative")) {
+            target =roundTarget(counter, player1_tgt + player2_tgt);
+
+            double player1_prz = evaluate(player1_tgt, player1_bas, counter, quantiles);
+            double player2_prz = evaluate(player2_tgt, player2_bas, counter, quantiles);
+            double prz = Math.max(player1_prz, player2_prz);
+
+            res.put("target", target);
+            res.put("player1_prz", prz);
+            res.put("player2_prz", prz);
+        }  else if (type.equals("groupCompetitivePerformance")) {
+            p("WRONG TYPE");
+        } else
+            p("UNKOWN TYPE");
+
+        return res;
+    }
+
+    private Double checkMinTarget(String counter, Double v) {
+        if ("Walk_Km".equals(counter))
+            return Math.max(1, v);
+        if ("Bike_Km".equals(counter))
+            return Math.max(5, v);
+        if ("green leaves".equals(counter))
+            return Math.max(50, v);
+
+        p("WRONG COUNTER");
+        return 0.0;
+    }
+
+    private Map<Integer, Double> getQuantiles2(String gameId, String counter) {
+        return rs.getStats().getQuantiles(counter);
+    }
+
+    private Map<Integer, Double> getQuantiles(String gameId, String counter) {
 
         // Da sistemare richiesta per dati della settimana precedente, al momento non presenti
         GameStatisticsSet stats = facade.readGameStatistics(gameId, counter);
@@ -62,32 +126,7 @@ public class TargetPrizeChallengesCalculator {
         }
 
         gs = stats.iterator().next();
-
-        Content player1 = facade.getPlayerState(gameId, pId_1);
-        Double player1_tgt = forecast(player1, counter);
-
-        Content player2 = facade.getPlayerState(gameId, pId_2);
-        Double player2_tgt = forecast(player1, counter);
-
-        Map<String, Double> res = new HashMap<>();
-
-        double target;
-        if (type.equals("CompetitivaTempo")) {
-            target = (player1_tgt + player2_tgt) / 2.0;
-
-            res.put("target", target);
-                    res.put("player1_prz", evaluate(target, player1, counter));
-            res.put("player2_prz",  evaluate(target, player2, counter));
-        }
-        else {
-            target = player1_tgt + player2_tgt;
-
-            res.put("target", target);
-            res.put("player1_prz", evaluate(player1_tgt, player1, counter));
-            res.put("player2_prz", evaluate(player2_tgt, player2, counter));
-        }
-
-        return res;
+        return gs.getQuantiles();
     }
 
     private void prepare() {
@@ -101,20 +140,51 @@ public class TargetPrizeChallengesCalculator {
         dc = new DifficultyCalculator();
     }
 
-    private Double forecast(Content state, String counter) {
+    private Pair<Double, Double> forecast(Map<String, Double> res, String nm, Player state, String counter) {
 
-            Double lastWeek = getWeeklyContentMode(state, counter, lastMonday);
-            Double previousWeek = getWeeklyContentMode(state, counter, lastMonday.minusDays(7));
+        // Last 3 values?
+        int v = 3;
+        double[][] d = new double[v][];
 
-        double slope = (previousWeek - lastWeek) / previousWeek;
-        slope = Math.abs(slope) * 0.8;
-        if (slope > 0.3)
-            slope = 0.3;
+        DateTime date = lastMonday;
 
-        return (lastWeek * (1 + slope));
+        double wma = 0;
+        int wma_d = 0;
+
+        for (int i = 0 ; i < v; i++) {
+            int ix = v - (i+1);
+            d[ix] = new double[2];
+            Double c = getWeeklyContentMode(state, counter, date);
+            d[ix][1] = c;
+            d[ix][0] = ix + 1;
+            date = date.minusDays(7);
+            res.put(f("%s_base_%d", nm, ix), c);
+
+            wma += (v-i) * c;
+            wma_d += (v-i);
+        }
+
+        wma /= wma_d;
+
+        SimpleRegression simpleRegression = new SimpleRegression(true);
+        simpleRegression.addData(d);
+
+        double slope = simpleRegression.getSlope();
+        double intercept =  simpleRegression.getIntercept();
+        double pv;
+        if (slope < 0)
+            pv = wma * 1.1;
+        else
+            pv = intercept + slope * (v+1) * 0.9;
+
+        pv = checkMinTarget(counter, pv);
+
+        res.put(f("%s_tgt", nm), pv);
+
+        return new Pair<Double, Double>(pv, wma);
     }
 
-    public Double getWeeklyContentMode(Content cnt, String mode, DateTime execDate) {
+    public Double getWeeklyContentMode(Player cnt, String mode, DateTime execDate) {
 
 
         for (PointConcept pc : cnt.getState().getPointConcept()) {
@@ -142,18 +212,20 @@ public class TargetPrizeChallengesCalculator {
 
 
 
-        public Double evaluate(Double target, Content player, String counter) {
+        public Double evaluate(Double target, Double baseline, String counter, Map<Integer, Double> quantiles) {
 
-            Double baseline = getWeeklyContentMode(player, counter, lastMonday);
+            if (baseline == 0)
+                return 100.0;
 
-            Integer difficulty = DifficultyCalculator.computeDifficulty(gs.getQuantiles(),
+            Integer difficulty = DifficultyCalculator.computeDifficulty(quantiles,
                     baseline, target);
 
-            double d = target * 1.0 / baseline;
+            double d = (target  / Math.max(1, baseline)) - 1;
 
             int prize = dc.calculatePrize(difficulty, d, counter);
 
-            return Math.ceil(prize * ChallengesConfig.competitiveChallengesBooster);
+            return Math.ceil(prize * ChallengesConfig.competitiveChallengesBooster / 10.0) * 10;
         }
-    
+
+
 }

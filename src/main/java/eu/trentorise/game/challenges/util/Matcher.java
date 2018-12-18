@@ -1,7 +1,7 @@
 package eu.trentorise.game.challenges.util;
 
 import eu.trentorise.game.challenges.rest.BadgeCollectionConcept;
-import eu.trentorise.game.challenges.rest.Content;
+import eu.trentorise.game.challenges.rest.Player;
 import eu.trentorise.game.challenges.rest.PointConcept;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -13,7 +13,7 @@ import javax.script.ScriptException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static eu.fbk.das.rs.Utils.dbg;
+import static eu.fbk.das.rs.utils.Utils.dbg;
 
 public class Matcher {
 
@@ -45,13 +45,13 @@ public class Matcher {
         }
     }
 
-    public List<Content> match(List<Content> users) {
+    public List<Player> match(List<Player> users) {
         if (users == null || users.isEmpty()) {
             logger.warn("No users to match");
-            return new ArrayList<Content>();
+            return new ArrayList<Player>();
         }
-        List<Content> result = new ArrayList<Content>();
-        for (Content user : users) {
+        List<Player> result = new ArrayList<Player>();
+        for (Player user : users) {
             if (challenge.getSelectionCriteriaPoints() != null
                     && !challenge.getSelectionCriteriaPoints().isEmpty()) {
                 if (pointsMatch(user)) {
@@ -68,7 +68,7 @@ public class Matcher {
         return result;
     }
 
-    private boolean pointsMatch(Content user) {
+    private boolean pointsMatch(Player user) {
         String criteria = challenge.getSelectionCriteriaPoints();
         dbg(logger, "criteria to evaluate: %s", criteria);
         if (criteria.equalsIgnoreCase("true")) {
@@ -134,7 +134,7 @@ public class Matcher {
         return false;
     }
 
-    private boolean badgeMatch(Content user) {
+    private boolean badgeMatch(Player user) {
         String criteria = challenge.getSelectionCriteriaBadges();
         dbg(logger, "criteria to evaluate: %s", criteria);
         if (user.getState() != null
@@ -216,7 +216,7 @@ public class Matcher {
      * criteria
      */
     /*
-    private boolean isUserValidCustomData(Content user, String criteria) {
+    private boolean isUserValidCustomData(Player user, String criteria) {
         if (user != null && criteria != null && !criteria.isEmpty()
                 && user.getCustomData() != null
                 && user.getCustomData().getAdditionalProperties() != null) {

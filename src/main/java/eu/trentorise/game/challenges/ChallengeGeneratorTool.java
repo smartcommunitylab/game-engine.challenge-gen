@@ -2,7 +2,7 @@ package eu.trentorise.game.challenges;
 
 import eu.trentorise.game.challenges.api.Constants;
 import eu.trentorise.game.challenges.exception.UndefinedChallengeException;
-import eu.trentorise.game.challenges.rest.Content;
+import eu.trentorise.game.challenges.rest.Player;
 import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
 import eu.trentorise.game.challenges.util.*;
 import org.apache.commons.cli.*;
@@ -150,9 +150,9 @@ public class ChallengeGeneratorTool {
         String msg = "Contacting gamification engine on host " + host;
         System.out.println(msg);
         log += msg + Constants.LINE_SEPARATOR;
-        Map<String, Content> m_users = null;
+        Map<String, Player> m_users = null;
 
-        List<Content> users = null;
+        List<Player> users = null;
 
         try {
             m_users = facade.readGameState(gameId);
@@ -197,7 +197,7 @@ public class ChallengeGeneratorTool {
         for (ChallengeRuleRow challengeSpec : challengeDefinitions
                 .getChallenges()) {
             Matcher matcher = new Matcher(challengeSpec);
-            List<Content> filteredUsers = matcher.match(users);
+            List<Player> filteredUsers = matcher.match(users);
             if (filteredUsers.isEmpty()) {
                 msg = "Warning: no users for challenge : "
                         + challengeSpec.getName();

@@ -1,0 +1,129 @@
+package eu.fbk.das.rs;
+
+import eu.fbk.das.rs.challenges.ChallengesBaseTest;
+import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
+import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
+import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
+import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
+import eu.trentorise.game.challenges.rest.Player;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static eu.fbk.das.rs.utils.Utils.*;
+import static org.junit.Assert.*;
+
+public class TargetPrizeChallengesCalculatorTest extends ChallengesBaseTest {
+
+    private DateTime now;
+
+    private TargetPrizeChallengesCalculator tpcc;
+
+    private boolean header = true;
+
+    private String[] key = new String[] {"player1", "player2"};
+    private String[] key2 = new String[] {"base_0", "base_1", "base_2", "tgt", "prz"};
+    private String gameId;
+    private RecommendationSystem rs;
+
+    @Test
+    public void test() {
+
+        String pId_1 = "127";
+        String pId_2 = "18375";
+
+        Map<String, Double> res_4 = tpcc.targetPrizeChallengesCompute("11126", "127", "Bike_Km", "groupCompetitiveTime");
+
+        Map<String, Double> res_3 = tpcc.targetPrizeChallengesCompute("19092", "24288", "Walk_Km", "groupCompetitiveTime");
+
+        Map<String, Double> res_1 = tpcc.targetPrizeChallengesCompute(pId_1, pId_2, "Walk_Km", "groupCompetitiveTime");
+
+        Map<String, Double> res_2 = tpcc.targetPrizeChallengesCompute(pId_1, pId_2, "Walk_Km", "groupCooperative");
+    }
+
+    @Test
+    public void generation() throws IOException {
+
+        prepare();
+
+        // READ ALL THE PLAYERS
+        Set<String> players = facade.getGamePlayers(gameId);
+        List<String> playersToConsider = new ArrayList<String>(players.size());
+        int ix = 0;
+        for (String pId: players) {
+           // if (ix++ > 50)
+         //       break;
+            Player p = facade.getPlayerState(gameId, pId);
+            int lvl = rs.getLevel(p);
+            if (lvl >= 3)
+                playersToConsider.add(pId);
+        }
+
+        BufferedWriter w = new BufferedWriter(new FileWriter("challenges-group.csv"));
+
+        for (int i = 0; i < playersToConsider.size(); i++) {
+            for (int j = i+1; j < playersToConsider.size(); j++) {
+                for (String type: new String[] {"groupCompetitiveTime", "groupCooperative"}) {
+                    for (String counter: new String[] {"Bike_Km", "Walk_Km", "green leaves"}) {
+                        execute(w, playersToConsider.get(i), playersToConsider.get(j), type, counter);
+                    }
+                }
+            }
+        }
+
+        w.close();
+
+
+    }
+
+    @Before
+    public void prepare() {
+        cfg = new RecommendationSystemConfig();
+
+        now = new DateTime();
+
+        facade = new GamificationEngineRestFacade(cfg.get("HOST"),
+                cfg.get("USERNAME"), cfg.get("PASSWORD"));
+
+        gameId = cfg.get("GAME_ID");
+
+        rs = new RecommendationSystem();
+        rs.prepare(facade, now);
+        tpcc = new TargetPrizeChallengesCalculator();
+        tpcc.prepare(rs, gameId);
+
+    }
+
+    private void execute(BufferedWriter w, String pId_1, String pId_2, String type, String counter) throws IOException {
+        Map<String, Double> res = tpcc.targetPrizeChallengesCompute(pId_1, pId_2, counter, type);
+        if (header) {
+            wf(w, "p1,p2,type,counter,target");
+            for (String k1: key )
+                for (String k2: key2)
+                    wf(w, ",%s_%s", k1, k2);
+
+            wf(w, "\n");
+            header = false;
+        }
+        wf(w,"%s,%s,%s,%s,%.2f", pId_1, pId_2, type, counter, res.get("target"));
+        for (String k1: key )
+            for (String k2: key2)
+            wf(w,",%.2f", res.get(k1+"_" +k2));
+
+        wf(w, "\n");
+        w.flush();
+    }
+
+
+
+
+}

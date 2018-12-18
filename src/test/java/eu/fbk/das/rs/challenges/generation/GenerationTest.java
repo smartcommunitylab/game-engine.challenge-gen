@@ -12,7 +12,7 @@ import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import eu.trentorise.game.challenges.model.ChallengeDataInternalDto;
 import eu.trentorise.game.challenges.model.ChallengeModel;
 import eu.trentorise.game.challenges.model.ChallengeType;
-import eu.trentorise.game.challenges.rest.Content;
+import eu.trentorise.game.challenges.rest.Player;
 import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
 import eu.trentorise.game.challenges.util.*;
 import org.apache.commons.io.IOUtils;
@@ -27,7 +27,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
 
-import static eu.fbk.das.rs.Utils.dbg;
+import static eu.fbk.das.rs.utils.Utils.dbg;
 import static org.junit.Assert.assertTrue;
 
 public class GenerationTest extends ChallengesBaseTest {
@@ -62,8 +62,8 @@ public class GenerationTest extends ChallengesBaseTest {
 
         assertTrue(result != null && !result.getChallenges().isEmpty());
 
-        Map<String, Content> m_users = facade.readGameState(GAMEID);
-        List<Content> users = new ArrayList<Content>();
+        Map<String, Player> m_users = facade.readGameState(GAMEID);
+        List<Player> users = new ArrayList<Player>();
         for (String pId: m_users.keySet())
             users.add(m_users.get(pId));
 
@@ -73,7 +73,7 @@ public class GenerationTest extends ChallengesBaseTest {
         // generate challenges
         for (ChallengeRuleRow challengeSpec : result.getChallenges()) {
             Matcher matcher = new Matcher(challengeSpec);
-            List<Content> r = matcher.match(users);
+            List<Player> r = matcher.match(users);
             assertTrue(r != null);
             System.out.println("Users match: " + r.size());
         }
@@ -88,8 +88,8 @@ public class GenerationTest extends ChallengesBaseTest {
         assertTrue(result != null && !result.getChallenges().isEmpty());
 
         // get users from gamification engine
-        Map<String, Content> m_users = facade.readGameState(GAMEID);
-        List<Content> users = new ArrayList<Content>();
+        Map<String, Player> m_users = facade.readGameState(GAMEID);
+        List<Player> users = new ArrayList<Player>();
         for (String pId: m_users.keySet())
             users.add(m_users.get(pId));
 
@@ -100,7 +100,7 @@ public class GenerationTest extends ChallengesBaseTest {
         for (ChallengeRuleRow challengeSpec : result.getChallenges()) {
             dbg(logger, "rules generation for challenge: " + challengeSpec.getName());
             Matcher matcher = new Matcher(challengeSpec);
-            List<Content> filteredUsers = matcher.match(users);
+            List<Player> filteredUsers = matcher.match(users);
             dbg(logger, "found users: " + filteredUsers.size());
             // generate rule
             if (!filteredUsers.isEmpty()) {
@@ -120,8 +120,8 @@ public class GenerationTest extends ChallengesBaseTest {
         assertTrue(result != null && !result.getChallenges().isEmpty());
 
         // get users from gamification engine
-        Map<String, Content> m_users = facade.readGameState(GAMEID);
-        List<Content> users = new ArrayList<Content>();
+        Map<String, Player> m_users = facade.readGameState(GAMEID);
+        List<Player> users = new ArrayList<Player>();
         for (String pId: m_users.keySet())
             users.add(m_users.get(pId));
 
@@ -132,7 +132,7 @@ public class GenerationTest extends ChallengesBaseTest {
         for (ChallengeRuleRow challengeSpec : result.getChallenges()) {
             dbg(logger, "rules generation for challenge: " + challengeSpec.getName());
             Matcher matcher = new Matcher(challengeSpec);
-            List<Content> filteredUsers = matcher.match(users);
+            List<Player> filteredUsers = matcher.match(users);
             dbg(logger, "found users: " + filteredUsers.size());
             // generate rule
             if (!filteredUsers.isEmpty()) {

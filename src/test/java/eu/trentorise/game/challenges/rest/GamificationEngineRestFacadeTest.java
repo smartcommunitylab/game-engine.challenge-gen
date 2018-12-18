@@ -3,7 +3,6 @@ package eu.trentorise.game.challenges.rest;
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 import eu.trentorise.game.bean.ExecutionDataDTO;
 import eu.trentorise.game.challenges.api.Constants;
-import eu.trentorise.game.challenges.util.CalendarUtil;
 import eu.trentorise.game.challenges.util.ConverterUtil;
 import eu.trentorise.game.challenges.util.ExcelUtil;
 import eu.trentorise.game.challenges.util.JourneyData;
@@ -50,7 +49,7 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
 
     @Test
     public void gameReadGameStateTest() {
-        Map<String, Content> result = facade.readGameState(GAMEID);
+        Map<String, Player> result = facade.readGameState(GAMEID);
         assertTrue(result != null && !result.isEmpty());
     }
 
@@ -62,13 +61,13 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
 
     @Test
     public void getPlayerStateTest() {
-        Content content = facade.getPlayerState(GAMEID, USERID);
+        Player content = facade.getPlayerState(GAMEID, USERID);
         assertTrue(content != null);
     }
 
     @Test
     public void gameReadGameStateTest1() {
-        Map<String, Content> result = facade.readGameState(GAMEID);
+        Map<String, Player> result = facade.readGameState(GAMEID);
         assertTrue(result != null && !result.get(0).getState().getBadgeCollectionConcept().isEmpty());
     }
 
@@ -124,7 +123,7 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
 
     @Test
     public void printGameStatus() throws FileNotFoundException, IOException {
-        Map<String, Content> result = facade.readGameState(GAMEID);
+        Map<String, Player> result = facade.readGameState(GAMEID);
         assertTrue(result != null && !result.isEmpty());
 
         String customNames = RELEVANT_CUSTOM_DATA;
@@ -134,7 +133,7 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
 
         toWrite.append("PLAYER_ID;SCORE_GREEN_LEAVES;" + customNames + "\n");
         for (String pId: result.keySet()) {
-            Content content = result.get(pId);
+            Player content = result.get(pId);
             toWrite.append(content.getPlayerId() + ";"
                     + getScore(content, "green leaves", true, false) + ";" // false,
                     // false
@@ -150,7 +149,7 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
         assertTrue(result != null && !toWrite.toString().isEmpty());
     }
 
-    private String getCustomData(Content content, boolean weekly) {
+    private String getCustomData(Player content, boolean weekly) {
         String result = "";
         List<PointConcept> concepts = content.getState().getPointConcept();
         Collections.sort(concepts, new Comparator<PointConcept>() {
@@ -173,7 +172,7 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
         return result;
     }
 
-    private String getCustomDataForWeek(Content content, int w) {
+    private String getCustomDataForWeek(Player content, int w) {
         String result = "";
         List<PointConcept> concepts = content.getState().getPointConcept();
         Collections.sort(concepts, new Comparator<PointConcept>() {
@@ -196,7 +195,7 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
         return result;
     }
 
-    private Double getScore(Content content, String points, boolean previous, boolean total) {
+    private Double getScore(Player content, String points, boolean previous, boolean total) {
         for (PointConcept pc : content.getState().getPointConcept()) {
             if (pc.getName().equalsIgnoreCase(points)) {
                 if (total) {
@@ -211,7 +210,7 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
         return null;
     }
 
-    private Double getScore(Content content, String points, Long moment) {
+    private Double getScore(Player content, String points, Long moment) {
         for (PointConcept pc : content.getState().getPointConcept()) {
             if (pc.getName().equalsIgnoreCase(points)) {
                 return pc.getPeriodScore("weekly", moment);
@@ -224,7 +223,7 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
     public void challengeReportDetails() throws FileNotFoundException, IOException {
         // a small utility to get a list of all users with a given challenge in
         // a period and its status
-        Map<String, Content> result = facade.readGameState(GAMEID);
+        Map<String, Player> result = facade.readGameState(GAMEID);
         assertTrue(result != null && !result.isEmpty());
 
         StringBuffer toWrite = new StringBuffer();
@@ -235,7 +234,7 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
                         + "\n");
 
         for (String pId: result.keySet()) {
-            Content user = result.get(pId);
+            Player user = result.get(pId);
             // if (getScore(user, "green leaves", false, true) > 0) {
             for (ChallengeConcept cc : user.getState().getChallengeConcept()) {
                 toWrite.append(user.getPlayerId() + ";");
@@ -269,7 +268,7 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
     public void printPoints() throws FileNotFoundException, IOException {
         // a small utility to get a list of all users with a given challenge in
         // a period and its status
-        Map<String, Content> result = facade.readGameState(GAMEID);
+        Map<String, Player> result = facade.readGameState(GAMEID);
         assertTrue(result != null && !result.isEmpty());
 
         // week11 playerIds
@@ -280,7 +279,7 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
 
         System.out.println("PLAYER_ID;TOTAL_SCORE");
         for (String pId: result.keySet()) {
-            Content user = result.get(pId);
+            Player user = result.get(pId);
             // if (ids.contains(user.getPlayerId())) {
             // if (user.getPlayerId().equals("24823")) {
             // System.out.println();
@@ -309,7 +308,7 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
      * @throws IOException
      */
     public void finalGameStatus() throws FileNotFoundException, IOException {
-        Map<String, Content> result = facade.readGameState(GAMEID);
+        Map<String, Player> result = facade.readGameState(GAMEID);
 
         // Get the workbook instance for XLS file
         Workbook workbook = new XSSFWorkbook();
@@ -331,7 +330,7 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
             int rowIndex = 1;
 
             for (String pId: result.keySet()) {
-                Content user = result.get(pId);
+                Player user = result.get(pId);
                 if (existInWeek(user, w)) {
                     Row row = sheet.createRow(rowIndex);
                     sheet = ExcelUtil.buildRow(user.getPlayerId(), getCustomDataForWeek(user, w),
@@ -347,7 +346,7 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
         logger.info("written finalGameStatus.xlsx");
     }
 
-    private boolean existInWeek(Content user, int w) {
+    private boolean existInWeek(Player user, int w) {
         for (PointConcept pc : user.getState().getPointConcept()) {
             if (pc.getName().equals("green leaves")) {
                 try {

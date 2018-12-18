@@ -1,16 +1,18 @@
 package eu.fbk.das.rs.challenges.generation;
 
+import eu.fbk.das.rs.utils.Pair;
 import eu.fbk.das.rs.valuator.RecommendationSystemChallengeValuator;
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
-import eu.trentorise.game.challenges.rest.Content;
+import eu.trentorise.game.challenges.rest.Player;
+import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 
 import java.util.*;
 
-import static eu.fbk.das.rs.Utils.*;
+import static eu.fbk.das.rs.utils.Utils.*;
 
 
 /**
@@ -61,7 +63,7 @@ public class RecommendationSystemChallengeGeneration {
         prefix = f(ChallengesConfig.getChallengeNamePrefix(), rs.getChallengeWeek(execDate));
     }
 
-    public List<ChallengeDataDTO> generate(Content state, String mode, DateTime execDate, RecommendationSystem rs) {
+    public List<ChallengeDataDTO> generate(Player state, String mode, DateTime execDate, RecommendationSystem rs) {
 
         prepare(execDate, rs);
 
@@ -78,13 +80,13 @@ public class RecommendationSystemChallengeGeneration {
 
             if (pos > 4) {
 
-                Double lastValue = rs.getWeeklyContentMode(state, mode, lastMonday.minusDays(7));
+                Pair<Double, Double> res = forecastMode(state, mode, rs);
+                double target = res.getFirst();
+                double baseline = res.getSecond();
 
-                Double forecastValue = forecastMode(currentValue, lastValue);
+                target = checkMax(target, mode);
 
-                forecastValue = checkMax(forecastValue, mode);
-
-                ChallengeDataDTO cdd = generatePercentage(currentValue, mode, forecastValue, (forecastValue / currentValue) - 1);
+                ChallengeDataDTO cdd = generatePercentage(baseline, mode, target);
                 if (cdd != null)
                     output.add(cdd);
 
@@ -101,7 +103,7 @@ public class RecommendationSystemChallengeGeneration {
 
                     improvementValue = checkMax(improvementValue, mode);
 
-                    ChallengeDataDTO cdd = generatePercentage(currentValue, mode, improvementValue, ChallengesConfig.getPercentage()[i]);
+                    ChallengeDataDTO cdd = generatePercentage(currentValue, mode, improvementValue);
                     if (cdd != null)
                         output.add(cdd);
 
@@ -134,17 +136,9 @@ public class RecommendationSystemChallengeGeneration {
         return output;
     }
 
-    private ChallengeDataDTO generatePercentage(Double modeCounter, String mode, double improvementValue, Double impr) {
-         if (mode.endsWith("_Trips")) {
-            improvementValue = Math.ceil(improvementValue);
-        } else {
-             if (improvementValue > 1000)
-                 improvementValue = Math.ceil(improvementValue / 100) * 100;
-             else if (improvementValue > 100)
-                 improvementValue = Math.ceil(improvementValue / 10) * 10;
-             else
-                 improvementValue = Math.ceil(improvementValue);
-        }
+    private ChallengeDataDTO generatePercentage(Double modeCounter, String mode, double improvementValue) {
+
+        improvementValue = roundTarget(mode, improvementValue);
 
         if (improvementValue == lastCounter)
             return null;
@@ -158,13 +152,27 @@ public class RecommendationSystemChallengeGeneration {
 
         cdd.setModelName("percentageIncrement");
         cdd.setData("target", improvementValue);
-        cdd.setData("percentage", impr);
+        cdd.setData("percentage", improvementValue / modeCounter - 1);
         cdd.setData("baseline", modeCounter);
         cdd.setInfo("improvement", improvementValue / modeCounter);
 
         rscv.valuate(cdd);
 
         return cdd;
+    }
+
+    public static double roundTarget(String mode, double improvementValue) {
+        if (mode.endsWith("_Trips")) {
+           improvementValue = Math.ceil(improvementValue);
+       } else {
+            if (improvementValue > 1000)
+                improvementValue = Math.ceil(improvementValue / 100) * 100;
+            else if (improvementValue > 100)
+                improvementValue = Math.ceil(improvementValue / 10) * 10;
+            else
+                improvementValue = Math.ceil(improvementValue);
+       }
+        return improvementValue;
     }
 
     private double checkMax(double v, String mode) {
@@ -205,7 +213,7 @@ public class RecommendationSystemChallengeGeneration {
 /*
     private HashMap<String, HashMap<String, Double>> buildModeValues(
             HashMap<String, HashMap<String, Double>> modeValues,
-            HashMap<String, Double> playerScore, Content content) {
+            HashMap<String, Double> playerScore, Player content) {
         // retrieving the players' last week data "weekly"
         for (int i = 0; i < cfg.getDefaultMode().length; i++) {
 
@@ -225,11 +233,11 @@ public class RecommendationSystemChallengeGeneration {
     } */
 
 
-    public Map<String, List<ChallengeDataDTO>> generateAll(List<Content> data) {
+    public Map<String, List<ChallengeDataDTO>> generateAll(List<Player> data) {
 
         Map<String, List<ChallengeDataDTO>> res = new HashMap<>();
 
-        for (Content cnt: data) {
+        for (Player cnt: data) {
 
             List<ChallengeDataDTO> challanges = new ArrayList<>();
             for (String mode : ChallengesConfig.getDefaultMode()) {
@@ -242,16 +250,15 @@ public class RecommendationSystemChallengeGeneration {
         return res;
     }
 
-    public List<ChallengeDataDTO> forecast(Content state, String mode, DateTime execDate, RecommendationSystem rs) {
+    public List<ChallengeDataDTO> forecast(Player state, String mode, DateTime execDate, RecommendationSystem rs) {
 
         prepare(execDate, rs);
 
-        Double currentValue = rs.getWeeklyContentMode(state, mode, lastMonday);
-        Double lastValue = rs.getWeeklyContentMode(state, mode, lastMonday.minusDays(7));
+        Pair<Double, Double> res = forecastMode(state, mode, rs);
+        double target = res.getFirst();
+        double baseline = res.getSecond();
 
-        Double forecastValue = forecastMode(currentValue, lastValue);
-
-        p(forecastValue);
+        // p(forecastValue);
 
         List<ChallengeDataDTO> cha = new ArrayList<>();
 
@@ -261,11 +268,11 @@ public class RecommendationSystemChallengeGeneration {
 
         for (int i = 0; i < 3; i++) {
 
-            Double tgt = forecastValue + forecastValue * impr[i];
+            target = target + target * impr[i];
 
-            tgt = checkMax(tgt, mode);
+            target = checkMax(target, mode);
 
-            ChallengeDataDTO cdd = generatePercentage(currentValue, mode, tgt, (tgt / currentValue) - 1);
+            ChallengeDataDTO cdd = generatePercentage(baseline, mode, target);
             if (cdd != null)
                 cha.add(cdd);
 
@@ -277,13 +284,63 @@ public class RecommendationSystemChallengeGeneration {
 
     }
 
-    public Double forecastMode(Double currentValue, Double lastValue) {
+    private Pair<Double, Double> forecastMode(Player state, String counter, RecommendationSystem rs) {
+
+        // CHECK if it has at least 3 weeks of data!
+        // TODO
+
+        // Last 3 values
+        int v = 3;
+        double[][] d = new double[v][];
+
+        DateTime date = lastMonday;
+
+        double wma = 0;
+        int wma_d = 0;
+
+        for (int i = 0 ; i < v; i++) {
+            int ix = v - (i+1);
+            d[ix] = new double[2];
+            Double c = rs.getWeeklyContentMode(state, counter, date);
+            d[ix][1] = c;
+            d[ix][0] = ix + 1;
+            date = date.minusDays(7);
+            // res.put(f("%s_base_%d", nm, ix), c);
+
+            wma += (v-i) * c;
+            wma_d += (v-i);
+        }
+
+        wma /= wma_d;
+
+        SimpleRegression simpleRegression = new SimpleRegression(true);
+        simpleRegression.addData(d);
+
+        double slope = simpleRegression.getSlope();
+        double intercept =  simpleRegression.getIntercept();
+        double pv;
+        if (slope < 0)
+            pv = wma * 1.1;
+        else
+            pv = intercept + slope * (v+1) * 0.9;
+
+        // pv = checkMinTarget(counter, pv);
+
+        // res.put(f("%s_tgt", nm), pv);
+
+        return new Pair<Double, Double>(pv, wma);
+    }
+
+    public Double forecastModeOld(Double currentValue, Double lastValue) {
         double slope = (lastValue - currentValue) / lastValue;
         slope = Math.abs(slope) * 0.8;
         if (slope > 0.3)
             slope = 0.3;
 
-        return (currentValue * (1 + slope));
+        double value = currentValue * (1 + slope);
+        if (value == 0 || Double.isNaN(value))
+            value = 1;
+        return value;
     }
 
 

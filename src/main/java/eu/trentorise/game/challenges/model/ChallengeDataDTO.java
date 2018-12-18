@@ -5,9 +5,9 @@ import org.joda.time.DateTime;
 
 import java.util.*;
 
-import static eu.fbk.das.rs.Utils.f;
-import static eu.fbk.das.rs.Utils.formatDateTime;
-import static eu.fbk.das.rs.Utils.p;
+import static eu.fbk.das.rs.utils.Utils.f;
+import static eu.fbk.das.rs.utils.Utils.formatDateTime;
+import static eu.fbk.das.rs.utils.Utils.p;
 
 public class ChallengeDataDTO {
 

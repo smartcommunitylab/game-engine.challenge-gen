@@ -48,7 +48,7 @@ public class PointConcept {
         id = (idField != null) ? String.valueOf(idField) : null;
         name = (String) jsonProps.get("name");
         Object scoreField = jsonProps.get("score");
-        // fix: in some case PointConcept JSON representation contains 0 value
+        // fixMode: in some case PointConcept JSON representation contains 0 value
         // in score field
         // and so it is cast to Integer
         if (scoreField != null) {

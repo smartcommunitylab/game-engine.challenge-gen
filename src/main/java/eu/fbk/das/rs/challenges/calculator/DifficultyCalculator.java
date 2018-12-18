@@ -3,6 +3,8 @@ package eu.fbk.das.rs.challenges.calculator;
 import java.util.HashMap;
 import java.util.Map;
 
+import static eu.fbk.das.rs.utils.Utils.p;
+
 public class DifficultyCalculator {
 
     public final static Integer EASY = 1;
@@ -52,8 +54,8 @@ public class DifficultyCalculator {
         Integer zone = computeZone(values, baseline);
         Integer targetZone = computeZone(values, target);
 
-        Integer diffZone = targetZone - zone;
-        if (diffZone == 0) {
+        int diffZone = targetZone - zone;
+        if (diffZone <= 0) {
             return EASY;
         }
         if (diffZone == 1) {
@@ -81,6 +83,8 @@ public class DifficultyCalculator {
         } else if (baseline > values[5]) {
             return 7;
         }
+
+        p("EHM");
         return null;
     }
 

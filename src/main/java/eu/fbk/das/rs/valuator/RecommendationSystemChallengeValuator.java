@@ -10,8 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Map;
 
-import static eu.fbk.das.rs.Utils.dbg;
-import static eu.fbk.das.rs.Utils.err;
+import static eu.fbk.das.rs.utils.Utils.*;
 
 public class RecommendationSystemChallengeValuator {
 
@@ -60,6 +59,10 @@ public class RecommendationSystemChallengeValuator {
             case "percentageIncrement":
                 Double baseline = (Double) challenge.getData().get("baseline");
                 Double target = (Double) challenge.getData().get("target");
+
+                if (baseline == 0 || target == 0)
+                    p("eh");
+
                 Integer difficulty = DifficultyCalculator.computeDifficulty(quantiles,
                         baseline, target);
                 // + ", target=" + target + " difficulty="

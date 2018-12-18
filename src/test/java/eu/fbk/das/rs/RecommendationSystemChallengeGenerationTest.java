@@ -9,7 +9,7 @@ import eu.fbk.das.rs.challenges.calculator.DifficultyCalculator;
 import eu.fbk.das.rs.valuator.RecommendationSystemChallengeValuator;
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
-import eu.trentorise.game.challenges.rest.Content;
+import eu.trentorise.game.challenges.rest.Player;
 import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.StringUtils;
@@ -48,7 +48,7 @@ public class RecommendationSystemChallengeGenerationTest extends ChallengesBaseT
     public void readGameTest() {
         assertTrue(facade != null);
         // read data from gamification engine
-        Map<String, Content> gameData = facade.readGameState(GAMEID);
+        Map<String, Player> gameData = facade.readGameState(GAMEID);
 
         assertTrue(!gameData.isEmpty());
     }
@@ -60,8 +60,8 @@ public class RecommendationSystemChallengeGenerationTest extends ChallengesBaseT
      */
     public void challengeGeneration() {
         assertTrue(facade != null);
-        Map<String, Content> m_users = facade.readGameState(GAMEID);
-        List<Content> gameData = new ArrayList<Content>();
+        Map<String, Player> m_users = facade.readGameState(GAMEID);
+        List<Player> gameData = new ArrayList<Player>();
         for (String pId: m_users.keySet())
             gameData.add(m_users.get(pId));
 
@@ -127,8 +127,8 @@ public class RecommendationSystemChallengeGenerationTest extends ChallengesBaseT
      * Evaluate challenges adding difficulty and computing the prize
      */
     public void challengeValuator() {
-        Map<String, Content> m_users = facade.readGameState(GAMEID);
-        List<Content> gameData = new ArrayList<Content>();
+        Map<String, Player> m_users = facade.readGameState(GAMEID);
+        List<Player> gameData = new ArrayList<Player>();
         for (String pId: m_users.keySet())
             gameData.add(m_users.get(pId));
 
@@ -211,7 +211,7 @@ public class RecommendationSystemChallengeGenerationTest extends ChallengesBaseT
     @Test
     public void generatorContentEmptyTest() throws IOException {
 
-        List<Content> input = new ArrayList<Content>();
+        List<Player> input = new ArrayList<Player>();
         Map<String, List<ChallengeDataDTO>> result = rcg.generateAll(input);
 
         assertTrue(result.isEmpty());
@@ -230,21 +230,21 @@ public class RecommendationSystemChallengeGenerationTest extends ChallengesBaseT
 
     @Test(expected = IllegalArgumentException.class)
     public void testDateNotNull() {
-        List<Content> gameData = new ArrayList<Content>();
+        List<Player> gameData = new ArrayList<Player>();
 
         rcg.generateAll(gameData);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testDateStartEndMustBeDifferent() {
-        List<Content> gameData = new ArrayList<Content>();
+        List<Player> gameData = new ArrayList<Player>();
 
         rcg.generateAll(gameData);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testDateStartMustBeBeforeEnd() {
-        List<Content> gameData = new ArrayList<Content>();
+        List<Player> gameData = new ArrayList<Player>();
 
         rcg.generateAll(gameData);
     }

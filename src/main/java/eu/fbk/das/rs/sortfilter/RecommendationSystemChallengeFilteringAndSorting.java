@@ -4,7 +4,7 @@ import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemStatistics;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
-import eu.trentorise.game.challenges.rest.Content;
+import eu.trentorise.game.challenges.rest.Player;
 import eu.trentorise.game.challenges.rest.PointConcept;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,8 +12,8 @@ import org.joda.time.DateTime;
 
 import java.util.*;
 
-import static eu.fbk.das.rs.ArrayUtils.pos;
-import static eu.fbk.das.rs.Utils.dbg;
+import static eu.fbk.das.rs.utils.ArrayUtils.pos;
+import static eu.fbk.das.rs.utils.Utils.dbg;
 
 public class RecommendationSystemChallengeFilteringAndSorting {
 
@@ -54,7 +54,7 @@ public class RecommendationSystemChallengeFilteringAndSorting {
         */
     }
 
-    public List<ChallengeDataDTO> filter(List<ChallengeDataDTO> challenges, Content player, DateTime date) {
+    public List<ChallengeDataDTO> filter(List<ChallengeDataDTO> challenges, Player player, DateTime date) {
         this.execDate = date;
 
         List<ChallengeDataDTO> result = new ArrayList<ChallengeDataDTO>();
@@ -144,7 +144,7 @@ public class RecommendationSystemChallengeFilteringAndSorting {
         return result;
     }
 
-    private int findPosition(double[] leaderboard, Content player) {
+    private int findPosition(double[] leaderboard, Player player) {
         double score = 0;
         for (PointConcept pc : player.getState().getPointConcept()) {
             if (!pc.getName().equals(ChallengesConfig.gLeaves))

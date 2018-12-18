@@ -16,7 +16,7 @@ import java.util.Map;
 public class Paginator {
 
     @JsonProperty("content")
-    private List<Content> content = new ArrayList<Content>();
+    private List<Player> content = new ArrayList<Player>();
     @JsonProperty("totalElements")
     private Integer totalElements;
     @JsonProperty("totalPages")
@@ -44,7 +44,7 @@ public class Paginator {
      * @return The content
      */
     @JsonProperty("content")
-    public List<Content> getContent() {
+    public List<Player> getContent() {
         return content;
     }
 
@@ -52,7 +52,7 @@ public class Paginator {
      * @param content The content
      */
     @JsonProperty("content")
-    public void setContent(List<Content> content) {
+    public void setContent(List<Player> content) {
         this.content = content;
     }
 

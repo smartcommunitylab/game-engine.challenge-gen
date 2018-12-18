@@ -4,9 +4,14 @@ import eu.fbk.das.rs.challenges.generation.RecommendationSystemChallengeGenerati
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
 import eu.fbk.das.rs.sortfilter.RecommendationSystemChallengeFilteringAndSorting;
 import eu.fbk.das.rs.valuator.RecommendationSystemChallengeValuator;
+import eu.trentorise.game.challenges.rest.ChallengeConcept;
+import eu.trentorise.game.challenges.rest.Player;
 import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
 import org.joda.time.LocalDate;
 import org.junit.Before;
+import org.junit.Test;
+
+import static eu.fbk.das.rs.utils.Utils.p;
 
 public class ChallengesBaseTest {
 
@@ -48,6 +53,15 @@ public class ChallengesBaseTest {
         rscg = new RecommendationSystemChallengeGeneration(cfg, rscv);
 
         rscf = new RecommendationSystemChallengeFilteringAndSorting(cfg);
+    }
+
+    @Test
+    public void test() {
+        Player res = facade.getPlayerState(cfg.get("GAME_ID"), "25706");
+        for (ChallengeConcept cha: res.getState().getChallengeConcept()) {
+            p(cha.getName());
+            p(cha.getStateDate());
+        }
     }
 
 

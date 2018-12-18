@@ -11,7 +11,6 @@ import eu.trentorise.game.bean.ExecutionDataDTO;
 import eu.trentorise.game.challenges.api.Constants;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import eu.trentorise.game.challenges.model.ChallengeModel;
-import eu.trentorise.game.model.GameStatistics;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,7 +23,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import java.util.*;
 
-import static eu.fbk.das.rs.Utils.*;
+import static eu.fbk.das.rs.utils.Utils.*;
 
 /**
  * A facade for handling logic for Gamification Engine Rest api
@@ -56,7 +55,7 @@ public class GamificationEngineRestFacade {
     // PATHS
     private static final String SEARCH = "player/search";
 
-    private HashMap<String, Map<String, Content>> gameStateCache;
+    private HashMap<String, Map<String, Player>> gameStateCache;
 
     private WebTarget target;
 
@@ -78,7 +77,7 @@ public class GamificationEngineRestFacade {
     }
 
     private void prepare() {
-        gameStateCache = new HashMap<String, Map<String, Content>>();
+        gameStateCache = new HashMap<String, Map<String, Player>>();
     }
 
     /**
@@ -146,9 +145,9 @@ public class GamificationEngineRestFacade {
      * Read game state
      *
      * @param gameId
-     * @return a list of {@link Content}, null if error
+     * @return a list of {@link Player}, null if error
      */
-    public Map<String, Content> readGameState(String gameId) {
+    public Map<String, Player> readGameState(String gameId) {
         checkGameId(gameId);
 
         if (!gameStateCache.containsKey(gameId)) {
@@ -161,7 +160,7 @@ public class GamificationEngineRestFacade {
                 err(logger, "error in reading game state");
                 return null;
             }
-            List<Content> result = new ArrayList<Content>();
+            List<Player> result = new ArrayList<Player>();
             result.addAll(response.getContent());
 
             if (!response.getLast()) {
@@ -183,9 +182,9 @@ public class GamificationEngineRestFacade {
                 dbg(logger, "service return " + page + " pages of result");
             }
 
-            Map<String, Content> contentCache = new HashMap<>();
+            Map<String, Player> contentCache = new HashMap<>();
 
-            for (Content cnt: result) {
+            for (Player cnt: result) {
                 contentCache.put(cnt.getPlayerId(), cnt);
             }
 
@@ -201,20 +200,20 @@ public class GamificationEngineRestFacade {
      * @param pId id of the player
      * @return state
      */
-    public Content getPlayerState(String gameId, String pId) {
+    public Player getPlayerState(String gameId, String pId) {
 
         checkGameId(gameId);
         checkPlayerId(pId);
 
         if (!gameStateCache.containsKey(gameId))
-            gameStateCache.put(gameId, new HashMap<String, Content>());
+            gameStateCache.put(gameId, new HashMap<String, Player>());
 
-        Map<String, Content> contentCache = gameStateCache.get(gameId);
+        Map<String, Player> contentCache = gameStateCache.get(gameId);
 
         if (!contentCache.containsKey(pId)) {
             WebTarget target = getTarget().path(DATA).path(gameId).path(PLAYER).path(pId).path(STATE);
             Response response = get(target);
-            Content cnt = response.readEntity(Content.class);
+            Player cnt = response.readEntity(Player.class);
             contentCache.put(pId, cnt);
         }
 
@@ -416,12 +415,13 @@ public class GamificationEngineRestFacade {
     public GameStatisticsSet readGameStatistics(String gameId, String pcName, String timestamp) {
         checkGameId(gameId);
         WebTarget target = getTarget().path(DATA).path(gameId).path("statistics");
+        /*
         if (pcName != null)
             target = target.queryParam("pointConceptName", pcName);
         if (timestamp != null)
             target = target.queryParam("timestamp", timestamp);
         target = target.queryParam("periodName", "weekly");
-
+*/
         Response response = get(target);
 if (response == null)
     return new GameStatisticsSet();

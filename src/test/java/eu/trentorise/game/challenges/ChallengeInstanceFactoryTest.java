@@ -2,7 +2,7 @@ package eu.trentorise.game.challenges;
 
 import eu.trentorise.game.challenges.exception.UndefinedChallengeException;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
-import eu.trentorise.game.challenges.rest.Content;
+import eu.trentorise.game.challenges.rest.Player;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -17,7 +17,7 @@ public class ChallengeInstanceFactoryTest {
         ChallengeInstanceFactory factory = new ChallengeInstanceFactory();
         String challengeType = "dummie";
         Map<String, Object> params = new HashMap<>();
-        Content user = new Content();
+        Player user = new Player();
         factory.createChallenge(challengeType, params, user);
     }
 
@@ -33,7 +33,7 @@ public class ChallengeInstanceFactoryTest {
         params.put("bonusPointType", "bonus_type");
         params.put("bonusScore", "25");
         params.put("target", "target");
-        Content user = new Content();
+        Player user = new Player();
         ChallengeDataDTO challengeDTO = factory.createChallenge(challengeType, params, user);
 
         ChallengeDataDTO result = new ChallengeDataDTO();

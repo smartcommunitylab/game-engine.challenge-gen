@@ -17,7 +17,7 @@ public class ChallengesConfig {
      */
 
     // Increase in the prize of the challenges
-    public static double competitiveChallengesBooster = 1.2;
+    public static double competitiveChallengesBooster = 1;
 
     public static String gLeaves = "green leaves";
 
@@ -90,7 +90,7 @@ public class ChallengesConfig {
     }
 
     // init recommendation system configuration
-    private void init() {
+    private static void init() {
 
         modeConfiguration = new ChallengesModeConfiguration();
 
@@ -149,6 +149,8 @@ public class ChallengesConfig {
     }
 
     public static SingleModeConfig getModeConfig(String mode) {
+        if (null == modeConfiguration)
+            init();
         return modeConfiguration.get(mode);
     }
 

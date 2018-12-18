@@ -1,7 +1,6 @@
 package eu.fbk.das.rs.challenges.generation;
 
-import eu.fbk.das.rs.Utils;
-import eu.fbk.das.rs.valuator.RecommendationSystemChallengeValuator;
+import eu.fbk.das.rs.utils.Utils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

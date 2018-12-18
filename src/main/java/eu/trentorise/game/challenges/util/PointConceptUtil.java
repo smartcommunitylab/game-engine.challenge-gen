@@ -1,6 +1,6 @@
 package eu.trentorise.game.challenges.util;
 
-import eu.trentorise.game.challenges.rest.Content;
+import eu.trentorise.game.challenges.rest.Player;
 import eu.trentorise.game.challenges.rest.PointConcept;
 import eu.trentorise.game.challenges.rest.PointConcept.PeriodInstanceImpl;
 import eu.trentorise.game.challenges.rest.PointConcept.PeriodInternal;
@@ -21,7 +21,7 @@ public final class PointConceptUtil {
      * @param periodIdentifier
      * @return max value or 0
      */
-    public static Double getScoreMax(Content user, String pointType, String periodIdentifier) {
+    public static Double getScoreMax(Player user, String pointType, String periodIdentifier) {
         PointConcept pc = getPointConcept(user, pointType);
         if (pc != null) {
             Double max = 0d;
@@ -45,7 +45,7 @@ public final class PointConceptUtil {
      * @param pointType
      * @return {@link PointConcept} or null
      */
-    public static PointConcept getPointConcept(Content user, String pointType) {
+    public static PointConcept getPointConcept(Player user, String pointType) {
         if (user != null && user.getState() != null && user.getState().getPointConcept() != null
                 && pointType != null) {
             for (PointConcept pc : user.getState().getPointConcept()) {
@@ -66,7 +66,7 @@ public final class PointConceptUtil {
      * @param periodIdentifier
      * @return
      */
-    public static Double getScoreCurrent(Content user, String pointType, String periodIdentifier) {
+    public static Double getScoreCurrent(Player user, String pointType, String periodIdentifier) {
         PointConcept pc = getPointConcept(user, pointType);
         if (pc != null) {
             return pc.getPeriodCurrentScore(periodIdentifier);
@@ -81,7 +81,7 @@ public final class PointConceptUtil {
      * @param name
      * @return
      */
-    public static Double getScoreFromConcept(Content user, String name) {
+    public static Double getScoreFromConcept(Player user, String name) {
         for (PointConcept pc : user.getState().getPointConcept()) {
             if (pc.getName().equalsIgnoreCase(name)) {
                 return pc.getScore();
@@ -98,7 +98,7 @@ public final class PointConceptUtil {
      * @param periodIdentifier
      * @return
      */
-    public static Double getScorePrevious(Content user, String pointType, String periodIdentifier) {
+    public static Double getScorePrevious(Player user, String pointType, String periodIdentifier) {
         PointConcept pc = getPointConcept(user, pointType);
         if (pc != null) {
             return pc.getPeriodPreviousScore(periodIdentifier);

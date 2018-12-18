@@ -1,9 +1,9 @@
 package eu.fbk.das.rs.challenges.generation;
 
 import com.google.common.math.Quantiles;
-import eu.fbk.das.rs.ArrayUtils;
+import eu.fbk.das.rs.utils.ArrayUtils;
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
-import eu.trentorise.game.challenges.rest.Content;
+import eu.trentorise.game.challenges.rest.Player;
 import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
 import eu.trentorise.game.challenges.rest.PointConcept;
 import eu.trentorise.game.challenges.rest.State;
@@ -12,8 +12,9 @@ import org.joda.time.DateTime;
 import java.io.*;
 import java.util.*;
 
-import static eu.fbk.das.rs.Utils.formatDate;
-import static eu.fbk.das.rs.Utils.*;
+import static eu.fbk.das.rs.utils.Utils.formatDate;
+import static eu.fbk.das.rs.utils.Utils.*;
+import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.fixMode;
 
 public class RecommendationSystemStatistics {
 
@@ -37,6 +38,8 @@ public class RecommendationSystemStatistics {
         this.cfg = cfg;
 
         this.l_mode = ArrayUtils.cloneArray(ChallengesConfig.defaultMode);
+        for (int i = 0; i < l_mode.length; i++)
+            l_mode[i] = fixMode(l_mode[i]);
         Arrays.sort(this.l_mode);
 
         execDate = date;
@@ -58,10 +61,10 @@ public class RecommendationSystemStatistics {
     private Map<String, Map<Integer, Double>> updateStatsOffline() {
         quartiles = tryReadStats();
 
-        if (quartiles != null)
-            return quartiles;
+        if (quartiles == null)
+            quartiles = updateStats(cfg);
 
-        return updateStats(cfg);
+        return quartiles;
 
     }
 
@@ -145,7 +148,7 @@ public class RecommendationSystemStatistics {
             stats.put(mode, new ArrayList<Double>());
         }
 
-        Map<String, Content> m_player = facade.readGameState(cfg.get("GAME_ID"));
+        Map<String, Player> m_player = facade.readGameState(cfg.get("GAME_ID"));
 
         // update(stats, "24440");
 
@@ -191,15 +194,15 @@ public class RecommendationSystemStatistics {
         return q;
     }
 
-    private void update(HashMap<String, List<Double>> stats, Content cnt) {
+    private void update(HashMap<String, List<Double>> stats, Player cnt) {
 
         State st = cnt.getState();
 
-        p(st.getPointConcept());
+        // p(st.getPointConcept());
 
         for (PointConcept pc : st.getPointConcept()) {
 
-            String m = fix(pc.getName());
+            String m = fixMode(pc.getName());
 
             /*
             if (pc.getName().equals(cfg.gLeaves)) {
@@ -217,15 +220,13 @@ public class RecommendationSystemStatistics {
 
 
     public Map<Integer, Double> getQuantiles(String mode) {
-        return quartiles.get(fix(mode));
-    }
-
-    private String fix(String mode) {
-        return mode.replace(" ", "_").toLowerCase();
+        return quartiles.get(fixMode(mode));
     }
 
     public int getPosition(String mode, Double modeValue) {
-       Map<Integer, Double> quan = getQuantiles(mode);
+       Map<Integer, Double> quan = getQuantiles(fixMode(mode));
+       if (quan == null)
+           p("EHM");
             for (int i = 1; i < 11; i++)
                 if (modeValue < quan.get(i))
                     return i;

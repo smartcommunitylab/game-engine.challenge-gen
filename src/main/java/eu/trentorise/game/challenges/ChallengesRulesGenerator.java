@@ -5,7 +5,7 @@ import eu.trentorise.game.challenges.api.Constants;
 import eu.trentorise.game.challenges.exception.UndefinedChallengeException;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import eu.trentorise.game.challenges.model.ChallengeDataInternalDto;
-import eu.trentorise.game.challenges.rest.Content;
+import eu.trentorise.game.challenges.rest.Player;
 import eu.trentorise.game.challenges.rest.PointConcept;
 import eu.trentorise.game.challenges.util.ChallengeRuleRow;
 import eu.trentorise.game.challenges.util.ChallengeRulesLoader;
@@ -19,7 +19,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
 
-import static eu.fbk.das.rs.Utils.dbg;
+import static eu.fbk.das.rs.utils.Utils.dbg;
 
 /**
  * Generate rules for challenges
@@ -63,7 +63,7 @@ public class ChallengesRulesGenerator {
      * @throws UndefinedChallengeException
      * @throws IOException
      */
-    public void generateChallenges(ChallengeRuleRow challengeSpec, List<Content> users,
+    public void generateChallenges(ChallengeRuleRow challengeSpec, List<Player> users,
                                    Date startDate, Date endDate) throws UndefinedChallengeException, IOException {
         dbg(logger, "ChallengesRulesGenerator - started");
         this.reportBuffer = new StringBuffer();
@@ -72,7 +72,7 @@ public class ChallengesRulesGenerator {
         Double targetValue = 0d;
         Double baseLineValue = 0d;
         // get right challenge
-        for (Content user : users) {
+        for (Player user : users) {
             // create a challenge for user only under a specific limit
             if (getChallenges(user.getPlayerId()) < challengeLimitNumber) {
                 params.put(Constants.NAME, StringUtils.trim(challengeSpec.getName()));
@@ -151,7 +151,7 @@ public class ChallengesRulesGenerator {
         IOUtils.write(reportBuffer.toString(), fout);
     }
 
-    private Double getPointConceptCurrentValue(Content user, String baselineVar,
+    private Double getPointConceptCurrentValue(Player user, String baselineVar,
                                                String periodName) {
         if (StringUtils.isEmpty(baselineVar)) {
             throw new IllegalArgumentException(

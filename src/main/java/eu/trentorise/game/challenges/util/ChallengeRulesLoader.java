@@ -10,7 +10,7 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import static eu.fbk.das.rs.Utils.dbg;
+import static eu.fbk.das.rs.utils.Utils.dbg;
 
 /**
  * Load challenges rule from and csv file

@@ -4,7 +4,7 @@ import eu.trentorise.game.challenges.api.Constants;
 import eu.trentorise.game.challenges.exception.UndefinedChallengeException;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import eu.trentorise.game.challenges.rest.BadgeCollectionConcept;
-import eu.trentorise.game.challenges.rest.Content;
+import eu.trentorise.game.challenges.rest.Player;
 
 import java.util.Date;
 import java.util.Map;
@@ -12,7 +12,7 @@ import java.util.UUID;
 
 public class ChallengeInstanceFactory {
 
-    public ChallengeDataDTO createChallenge(String chType, Map<String, Object> params, Content user)
+    public ChallengeDataDTO createChallenge(String chType, Map<String, Object> params, Player user)
             throws UndefinedChallengeException {
         switch (chType) {
             case Constants.ABSOLUTEINCREMENT:
@@ -40,7 +40,7 @@ public class ChallengeInstanceFactory {
         }
     }
 
-    private ChallengeDataDTO buildSurvey(Map<String, Object> params, Content user) {
+    private ChallengeDataDTO buildSurvey(Map<String, Object> params, Player user) {
         ChallengeDataDTO cdd = new ChallengeDataDTO();
         cdd.setModelName(Constants.SURVEY);
         cdd.setInstanceName(params.get(Constants.NAME) + "_" + UUID.randomUUID());
@@ -55,7 +55,7 @@ public class ChallengeInstanceFactory {
     }
 
     private ChallengeDataDTO buildCompleteBadgeCollection(Map<String, Object> params,
-                                                          Content user) {
+                                                          Player user) {
         ChallengeDataDTO cdd = new ChallengeDataDTO();
         cdd.setModelName(Constants.COMPLETEBADGECOLLECTION);
         cdd.setInstanceName(params.get(Constants.NAME) + "_" + UUID.randomUUID());
@@ -71,7 +71,7 @@ public class ChallengeInstanceFactory {
         return cdd;
     }
 
-    private ChallengeDataDTO buildNextBadge(Map<String, Object> params, Content user) {
+    private ChallengeDataDTO buildNextBadge(Map<String, Object> params, Player user) {
         ChallengeDataDTO cdd = new ChallengeDataDTO();
         cdd.setModelName(Constants.NEXTBADGE);
         cdd.setInstanceName(params.get(Constants.NAME) + "_" + UUID.randomUUID());
@@ -125,7 +125,7 @@ public class ChallengeInstanceFactory {
         return cdd;
     }
 
-    private ChallengeDataDTO buildPoiCheckIn(Map<String, Object> params, Content user) {
+    private ChallengeDataDTO buildPoiCheckIn(Map<String, Object> params, Player user) {
 
         ChallengeDataDTO cdd = new ChallengeDataDTO();
         cdd.setModelName(Constants.POICHECKIN);
@@ -145,7 +145,7 @@ public class ChallengeInstanceFactory {
         return cdd;
     }
 
-    private ChallengeDataDTO buildCheckIn(Map<String, Object> params, Content user) {
+    private ChallengeDataDTO buildCheckIn(Map<String, Object> params, Player user) {
 
         ChallengeDataDTO cdd = new ChallengeDataDTO();
         cdd.setModelName(Constants.CHECKIN);
@@ -165,7 +165,7 @@ public class ChallengeInstanceFactory {
     }
 
 
-    private Integer getCurrentBadgeCollectionSize(Content user, String name) {
+    private Integer getCurrentBadgeCollectionSize(Player user, String name) {
         for (BadgeCollectionConcept bc : user.getState().getBadgeCollectionConcept()) {
             if (bc.getName().equals(name)) {
                 return bc.getBadgeEarned().size();
@@ -175,7 +175,7 @@ public class ChallengeInstanceFactory {
     }
 
 
-    private ChallengeDataDTO buildRepetitiveBehaviour(Map<String, Object> params, Content user) {
+    private ChallengeDataDTO buildRepetitiveBehaviour(Map<String, Object> params, Player user) {
         ChallengeDataDTO cdd = new ChallengeDataDTO();
         cdd.setModelName(Constants.REPETITIVE_BEHAVIOUR);
         cdd.setInstanceName(params.get(Constants.NAME) + "_" + UUID.randomUUID());
@@ -195,7 +195,7 @@ public class ChallengeInstanceFactory {
         return cdd;
     }
 
-    private ChallengeDataDTO buildLeaderBoardPosition(Map<String, Object> params, Content user) {
+    private ChallengeDataDTO buildLeaderBoardPosition(Map<String, Object> params, Player user) {
         ChallengeDataDTO cdd = new ChallengeDataDTO();
         cdd.setModelName(Constants.LEADERBOARDPOSITION);
         cdd.setInstanceName(params.get(Constants.NAME) + "_" + UUID.randomUUID());

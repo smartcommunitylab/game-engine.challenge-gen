@@ -17,7 +17,7 @@ import java.util.Map;
         "customData",
         "levels"
 })
-public class Content {
+public class Player {
 
     @JsonProperty("playerId")
     private String playerId;
