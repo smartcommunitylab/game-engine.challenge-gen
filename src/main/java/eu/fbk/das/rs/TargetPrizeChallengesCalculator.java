@@ -110,7 +110,7 @@ public class TargetPrizeChallengesCalculator {
             if ("Bike_Km".equals(counter))
                 return Math.min(210, v);
             if ("green leaves".equals(counter))
-                return Math.max(3000, v);
+                return Math.min(3000, v);
 
             p("WRONG COUNTER");
             return 0.0;
@@ -122,7 +122,7 @@ public class TargetPrizeChallengesCalculator {
         if ("Bike_Km".equals(counter))
             return Math.min(420, v);
         if ("green leaves".equals(counter))
-            return Math.max(6000, v);
+            return Math.min(6000, v);
 
         p("WRONG COUNTER");
         return 0.0;
