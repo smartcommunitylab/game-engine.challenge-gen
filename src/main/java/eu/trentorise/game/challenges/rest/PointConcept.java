@@ -15,6 +15,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
 
+import static eu.fbk.das.rs.utils.Utils.p;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({"name", "score", "instances", "id"})
@@ -147,12 +149,13 @@ public class PointConcept {
 
     public Double getPeriodScore(String periodIdentifier, long moment) {
         if (!periods.containsKey(periodIdentifier))
-            return 0d;
+            return -1.0;
 
         PeriodInternal p = periods.get(periodIdentifier);
         LocalDateTime momentDate = new LocalDateTime(moment);
-        if (p.start.after(momentDate.toDate()))
-            return 0d;
+        if (p.start.after(momentDate.toDate())) {
+            return -1.0;
+        }
 
         return p.getScore(moment);
     }

@@ -16,8 +16,9 @@ import org.joda.time.DateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import static eu.fbk.das.rs.challenges.generation.RecommendationSystemChallengeGeneration.roundTarget;
-import static eu.fbk.das.rs.utils.Utils.*;
+import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.booster;
+import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.roundTarget;
+import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.week_n;
 
 
 public class TargetPrizeChallengesCalculator {
@@ -65,14 +66,16 @@ public class TargetPrizeChallengesCalculator {
         Map<String, Double> res = new HashMap<>();
 
         Player player1 = facade.getPlayerState(gameId, pId_1);
-        Pair<Double, Double> res1 = forecast(res, "player1", player1, counter);
+        Pair<Double, Double> res1 = forecastMode(player1, counter);
         double player1_tgt = res1.getFirst();
         double player1_bas = res1.getSecond();
+        res.put("player1_tgt", player1_tgt);
 
         Player player2 = facade.getPlayerState(gameId, pId_2);
-        Pair<Double, Double> res2 = forecast(res, "player2", player2, counter);
+        Pair<Double, Double> res2 = forecastMode(player2, counter);
         double player2_tgt = res2.getFirst();
         double player2_bas = res2.getSecond();
+        res.put("player2_tgt", player2_tgt);
 
         double target;
         if (type.equals("groupCompetitiveTime")) {
@@ -85,7 +88,7 @@ public class TargetPrizeChallengesCalculator {
             res.put("player2_prz",  evaluate(target, player2_bas, counter, quantiles));
         }
         else if (type.equals("groupCooperative")) {
-            target =roundTarget(counter, player1_tgt + player2_tgt);
+            target = roundTarget(counter, player1_tgt + player2_tgt);
 
             target = checkMaxTargetCooperative(counter, target);
 
@@ -168,7 +171,82 @@ public class TargetPrizeChallengesCalculator {
         dc = new DifficultyCalculator();
     }
 
-    private Pair<Double, Double> forecast(Map<String, Double> res, String nm, Player state, String counter) {
+    private Pair<Double, Double> forecastMode(Player state, String counter) {
+
+        // Check date of registration, decide which method to use
+        int week_playing = getWeekPlaying(state, counter);
+
+        if (week_playing == 1) {
+            Double baseline = getWeeklyContentMode(state, counter, lastMonday);
+            return new Pair<Double, Double>(baseline*booster, baseline);
+        } else if (week_playing == 2) {
+            return forecastModeSimple(state, counter);
+        }
+
+        return forecastWMA(Math.min(week_n, week_playing), state, counter);
+    }
+
+    // Weighted moving average
+    private Pair<Double, Double> forecastWMA(int v, Player state, String counter) {
+
+        DateTime date = lastMonday;
+
+        double den = 0;
+        double num = 0;
+        for (int ix = 0; ix < v; ix++) {
+            // weight * value
+            Double c = getWeeklyContentMode(state, counter, date);
+            den += (v -ix) * c;
+            num += (v -ix);
+
+            date = date.minusDays(7);
+        }
+
+        double baseline = den / num;
+
+        double pv = baseline * booster;
+
+        return new Pair<Double, Double>(pv, baseline);
+    }
+
+    private int getWeekPlaying(Player state, String counter) {
+
+        DateTime date = lastMonday;
+        int i = 0;
+        while (i < 100) {
+            // weight * value
+            Double c = getWeeklyContentMode(state, counter, date);
+            if (c.equals(-1.0))
+                break;
+            i++;
+            date = date.minusDays(7);
+        }
+
+        return i;
+    }
+
+    public Pair<Double, Double> forecastModeSimple(Player state, String counter) {
+
+        DateTime date = lastMonday;
+        Double currentValue = getWeeklyContentMode(state, counter, date);
+        date = date.minusDays(7);
+        Double lastValue = getWeeklyContentMode(state, counter, date);
+
+        double slope = (lastValue - currentValue) / lastValue;
+        slope = Math.abs(slope) * 0.8;
+        if (slope > 0.3)
+            slope = 0.3;
+
+        double value = currentValue * (1 + slope);
+        if (value == 0 || Double.isNaN(value))
+            value = 1;
+
+
+        return new Pair<Double, Double>(value, currentValue);
+    }
+
+    // old approach
+    private Pair<Double, Double> forecastOld(Map<String, Double> res, String nm, Player state, String counter) {
 
         // Last 3 values?
         int v = 3;
@@ -256,4 +334,15 @@ public class TargetPrizeChallengesCalculator {
         }
 
 
+    public static void pf(String format, Object... args) {
+        System.out.printf(format, args);
+    }
+
+    public static String f(String format, Object... args) {
+        return String.format(format, args);
+    }
+
+    public static void p(String s) {
+        System.out.println(s);
+    }
 }

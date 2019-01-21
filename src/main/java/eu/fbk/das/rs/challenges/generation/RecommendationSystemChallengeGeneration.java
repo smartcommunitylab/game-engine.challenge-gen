@@ -12,6 +12,7 @@ import org.joda.time.DateTime;
 
 import java.util.*;
 
+import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.*;
 import static eu.fbk.das.rs.utils.Utils.*;
 
 
@@ -34,6 +35,7 @@ public class RecommendationSystemChallengeGeneration {
     private RecommendationSystemStatistics stats;
     private String prefix;
     private double lastCounter;
+    private RecommendationSystem rs;
 
     /**
      * Create a new recommandation system challenge generator
@@ -59,6 +61,8 @@ public class RecommendationSystemChallengeGeneration {
         startDate = execDate.plusDays(d);
         startDate = startDate.minusDays(2);
         endDate = startDate.plusDays(7);
+        
+        this.rs = rs;
 
         prefix = f(ChallengesConfig.getChallengeNamePrefix(), rs.getChallengeWeek(execDate));
     }
@@ -80,7 +84,7 @@ public class RecommendationSystemChallengeGeneration {
 
             if (pos > 4) {
 
-                Pair<Double, Double> res = forecastMode(state, mode, rs);
+                Pair<Double, Double> res = forecastMode(state, mode);
                 double target = res.getFirst();
                 double baseline = res.getSecond();
 
@@ -159,20 +163,6 @@ public class RecommendationSystemChallengeGeneration {
         rscv.valuate(cdd);
 
         return cdd;
-    }
-
-    public static double roundTarget(String mode, double improvementValue) {
-        if (mode.endsWith("_Trips")) {
-           improvementValue = Math.ceil(improvementValue);
-       } else {
-            if (improvementValue > 1000)
-                improvementValue = Math.ceil(improvementValue / 100) * 100;
-            else if (improvementValue > 100)
-                improvementValue = Math.ceil(improvementValue / 10) * 10;
-            else
-                improvementValue = Math.ceil(improvementValue);
-       }
-        return improvementValue;
     }
 
     private double checkMax(double v, String mode) {
@@ -254,7 +244,7 @@ public class RecommendationSystemChallengeGeneration {
 
         prepare(execDate, rs);
 
-        Pair<Double, Double> res = forecastMode(state, mode, rs);
+        Pair<Double, Double> res = forecastMode(state, mode);
         double target = res.getFirst();
         double baseline = res.getSecond();
 
@@ -284,7 +274,84 @@ public class RecommendationSystemChallengeGeneration {
 
     }
 
-    private Pair<Double, Double> forecastMode(Player state, String counter, RecommendationSystem rs) {
+
+    private Pair<Double, Double> forecastMode(Player state, String counter) {
+
+        // Check date of registration, decide which method to use
+        int week_playing = getWeekPlaying(state, counter);
+
+        if (week_playing == 1) {
+            Double baseline = getWeeklyContentMode(state, counter, lastMonday);
+            return new Pair<Double, Double>(baseline*booster, baseline);
+        } else if (week_playing == 2) {
+            return forecastModeSimple(state, counter);
+        }
+
+        return forecastWMA(Math.min(week_n, week_playing), state, counter);
+    }
+
+    // Weighted moving average
+    private Pair<Double, Double> forecastWMA(int v, Player state, String counter) {
+
+        DateTime date = lastMonday;
+
+        double den = 0;
+        double num = 0;
+        for (int ix = 0; ix < v; ix++) {
+            // weight * value
+            Double c = getWeeklyContentMode(state, counter, date);
+            den += (v -ix) * c;
+            num += (v -ix);
+
+            date = date.minusDays(7);
+        }
+
+        double baseline = den / num;
+
+        double pv = baseline * booster;
+
+        return new Pair<Double, Double>(pv, baseline);
+    }
+
+    private int getWeekPlaying(Player state, String counter) {
+
+        DateTime date = lastMonday;
+        int i = 0;
+        while (i < 100) {
+            // weight * value
+            Double c = getWeeklyContentMode(state, counter, date);
+            if (c.equals(-1.0))
+                break;
+            i++;
+            date = date.minusDays(7);
+        }
+
+        return i;
+    }
+
+    public Pair<Double, Double> forecastModeSimple(Player state, String counter) {
+
+        DateTime date = lastMonday;
+        Double currentValue = getWeeklyContentMode(state, counter, date);
+        date = date.minusDays(7);
+        Double lastValue = getWeeklyContentMode(state, counter, date);
+
+        double slope = (lastValue - currentValue) / lastValue;
+        slope = Math.abs(slope) * 0.8;
+        if (slope > 0.3)
+            slope = 0.3;
+
+        double value = currentValue * (1 + slope);
+        if (value == 0 || Double.isNaN(value))
+            value = 1;
+
+
+        return new Pair<Double, Double>(value, currentValue);
+    }
+
+
+
+    private Pair<Double, Double> forecastModeOld(Player state, String counter) {
 
         // CHECK if it has at least 3 weeks of data!
         // TODO
@@ -301,7 +368,7 @@ public class RecommendationSystemChallengeGeneration {
         for (int i = 0 ; i < v; i++) {
             int ix = v - (i+1);
             d[ix] = new double[2];
-            Double c = rs.getWeeklyContentMode(state, counter, date);
+            Double c = getWeeklyContentMode(state, counter, date);
             d[ix][1] = c;
             d[ix][0] = ix + 1;
             date = date.minusDays(7);
@@ -331,18 +398,9 @@ public class RecommendationSystemChallengeGeneration {
         return new Pair<Double, Double>(pv, wma);
     }
 
-    public Double forecastModeOld(Double currentValue, Double lastValue) {
-        double slope = (lastValue - currentValue) / lastValue;
-        slope = Math.abs(slope) * 0.8;
-        if (slope > 0.3)
-            slope = 0.3;
-
-        double value = currentValue * (1 + slope);
-        if (value == 0 || Double.isNaN(value))
-            value = 1;
-        return value;
+    private Double getWeeklyContentMode(Player state, String counter, DateTime date) {
+        return rs.getWeeklyContentMode(state, counter, date);
     }
-
 
     // Prepare quantiles given statistic
     public void prepare(RecommendationSystemStatistics stats) {

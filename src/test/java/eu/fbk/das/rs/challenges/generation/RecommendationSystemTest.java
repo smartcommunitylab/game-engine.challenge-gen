@@ -20,7 +20,7 @@ import static eu.fbk.das.rs.utils.Utils.p;
 import static eu.fbk.das.rs.utils.Utils.pf;
 
 public class RecommendationSystemTest extends ChallengesBaseTest {
-
+/*
     @Test
     public void testForecast() {
 
@@ -47,7 +47,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
         pf("currentValue: %.2f, lastValue: %.2f\n", current, last);
         Double forecastValue = rs.forecastModeOld(current, last);
         pf("forecastValue: %.2f\n\n", forecastValue);
-    }
+    }*/
 
 
     @Test
