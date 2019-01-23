@@ -66,16 +66,15 @@ public class TargetPrizeChallengesCalculator {
         Map<String, Double> res = new HashMap<>();
 
         Player player1 = facade.getPlayerState(gameId, pId_1);
-        Pair<Double, Double> res1 = forecastMode(player1, counter);
+        Pair<Double, Double> res1 = getForecast("player1", res, player1, counter);
         double player1_tgt = res1.getFirst();
         double player1_bas = res1.getSecond();
-        res.put("player1_tgt", player1_tgt);
 
         Player player2 = facade.getPlayerState(gameId, pId_2);
-        Pair<Double, Double> res2 = forecastMode(player2, counter);
+        Pair<Double, Double> res2 = getForecast("player2", res, player2, counter);
         double player2_tgt = res2.getFirst();
         double player2_bas = res2.getSecond();
-        res.put("player2_tgt", player2_tgt);
+
 
         double target;
         if (type.equals("groupCompetitiveTime")) {
@@ -105,6 +104,20 @@ public class TargetPrizeChallengesCalculator {
             p("UNKOWN TYPE");
 
         return res;
+    }
+
+    private Pair<Double, Double> getForecast(String nm, Map<String, Double> res, Player state, String counter) {
+        Pair<Double, Double> forecast = forecastMode(state, counter);
+
+        double tgt = forecast.getFirst();
+        double bas = forecast.getSecond();
+
+        tgt = checkMinTarget(counter, tgt);
+
+        res.put(nm + "_tgt", tgt);
+        res.put(nm + "_bas", bas);
+
+        return new Pair<>(tgt, bas);
     }
 
     private double checkMaxTargetCompetitive(String counter, double v) {

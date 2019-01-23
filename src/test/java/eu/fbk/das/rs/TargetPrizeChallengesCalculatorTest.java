@@ -31,7 +31,7 @@ public class TargetPrizeChallengesCalculatorTest extends ChallengesBaseTest {
     private boolean header = true;
 
     private String[] key = new String[] {"player1", "player2"};
-    private String[] key2 = new String[] {"base_0", "base_1", "base_2", "tgt", "prz"};
+    private String[] key2 = new String[] {"bas", "tgt", "prz"};
     private String gameId;
     private RecommendationSystem rs;
 
@@ -60,8 +60,8 @@ public class TargetPrizeChallengesCalculatorTest extends ChallengesBaseTest {
         List<String> playersToConsider = new ArrayList<String>(players.size());
         int ix = 0;
         for (String pId: players) {
-           // if (ix++ > 50)
-         //       break;
+            if (ix++ > 10)
+               break;
             Player p = facade.getPlayerState(gameId, pId);
             int lvl = rs.getLevel(p);
             if (lvl >= 3)
