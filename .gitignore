@@ -1,21 +1,8 @@
-/target/
-.settings/
-.classpath
-.project
-.DS_Store
-/generated-rules-report.csv
-/generatedRules.drl
-/output.json
-/report.csv
-/gamification.log
-/gamification.perf.log
-/gameStatus.csv
-/challengeReportstatus.csv
-/challengeReport.csv
-/challengeReportDetails.csv
-/diff.csv
-/generatedChallenges.json
-/reportGeneratedChallenges.csv
-/recommendationSystemConfiguration.json
-/reportGeneratedChallenges.xlsx
-/finalGameStatus.xlsx
+# Intellij
+.idea/
+*.iml
+*.iws
+
+# Maven
+log/
+target/
