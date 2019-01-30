@@ -82,7 +82,7 @@ public class RecommendationSystemChallengeGeneration {
 
             int pos = stats.getPosition(mode, currentValue);
 
-            if (pos > 4) {
+            // if (pos > 4) {
 
                 Pair<Double, Double> res = forecastMode(state, mode);
                 double target = res.getFirst();
@@ -94,7 +94,7 @@ public class RecommendationSystemChallengeGeneration {
                 if (cdd != null)
                     output.add(cdd);
 
-            } else {
+            /* } else {
 
                 // generate different types of challenges by percentage
                 for (int i = 0; i < ChallengesConfig.getPercentage().length; i++) {
@@ -114,7 +114,7 @@ public class RecommendationSystemChallengeGeneration {
                     lastCounter = improvementValue;
 
                 }
-            }
+            }*/
         } else {
 
             if (equal(mode, ChallengesConfig.GREEN_LEAVES))

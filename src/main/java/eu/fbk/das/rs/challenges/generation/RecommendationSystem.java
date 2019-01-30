@@ -46,6 +46,8 @@ public class RecommendationSystem {
     private RecommendationSystemChallengeFilteringAndSorting rscf;
     private RecommendationSystemStatistics stats;
 
+    public DateTime lastMonday;
+
     private String[] configuration = new String[]{"HOST", "GAME_ID", "USERNAME", "PASSWORD", "DATE", "PLAYER_IDS"};
 
     private int totPlayers;

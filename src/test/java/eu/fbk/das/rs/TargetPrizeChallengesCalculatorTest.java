@@ -41,6 +41,10 @@ public class TargetPrizeChallengesCalculatorTest extends ChallengesBaseTest {
         String pId_1 = "127";
         String pId_2 = "18375";
 
+        Map<String, Double> res_6 = tpcc.targetPrizeChallengesCompute("19092", "1069", "Walk_Km", "groupCompetitiveTime");
+
+        Map<String, Double> res_5 = tpcc.targetPrizeChallengesCompute("27300", "27465", "Bike_Km", "groupCompetitiveTime");
+
         Map<String, Double> res_4 = tpcc.targetPrizeChallengesCompute("11126", "127", "Bike_Km", "groupCompetitiveTime");
 
         Map<String, Double> res_3 = tpcc.targetPrizeChallengesCompute("19092", "24288", "Walk_Km", "groupCompetitiveTime");
@@ -60,7 +64,7 @@ public class TargetPrizeChallengesCalculatorTest extends ChallengesBaseTest {
         List<String> playersToConsider = new ArrayList<String>(players.size());
         int ix = 0;
         for (String pId: players) {
-            if (ix++ > 10)
+             if (ix++ > 100)
                break;
             Player p = facade.getPlayerState(gameId, pId);
             int lvl = rs.getLevel(p);

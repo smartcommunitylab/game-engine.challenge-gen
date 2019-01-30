@@ -19,30 +19,29 @@ import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.fixMode;
 public class RecommendationSystemStatistics {
 
     private String STATS_FILENAME = "rs.statistics";
-    private GamificationEngineRestFacade facade;
+    protected GamificationEngineRestFacade facade;
 
-    private DateTime execDate;
+    protected DateTime execDate;
     private String[] l_mode;
     private Map<String, Map<Integer, Double>> quartiles;
     private boolean offline = true;
-    private RecommendationSystemConfig cfg;
-    private DateTime date;
+    protected RecommendationSystemConfig cfg;
+
+    private DateTime lastMonday;
 
     public RecommendationSystemStatistics() {
         quartiles = new HashMap<>();
-    }
-
-    public Map<String, Map<Integer, Double>> checkAndUpdateStats(GamificationEngineRestFacade facade, DateTime date, RecommendationSystemConfig cfg) {
-        this.facade = facade;
-        this.date = date;
-        this.cfg = cfg;
 
         this.l_mode = ArrayUtils.cloneArray(ChallengesConfig.defaultMode);
         for (int i = 0; i < l_mode.length; i++)
             l_mode[i] = fixMode(l_mode[i]);
         Arrays.sort(this.l_mode);
+    }
 
-        execDate = date;
+    public Map<String, Map<Integer, Double>> checkAndUpdateStats(GamificationEngineRestFacade facade, DateTime date, RecommendationSystemConfig cfg) {
+        this.facade = facade;
+        this.cfg = cfg;
+        this.execDate = date;
 
         if (offline)
             return updateStatsOffline();
@@ -62,7 +61,7 @@ public class RecommendationSystemStatistics {
         quartiles = tryReadStats();
 
         if (quartiles == null)
-            quartiles = updateStats(cfg);
+            quartiles = updateStats();
 
         return quartiles;
 
@@ -104,8 +103,8 @@ public class RecommendationSystemStatistics {
             String name = aux[0];
             aux = aux[1].split("\\s+");
             Map<Integer, Double> qua = new HashMap<>();
-            for (int i = 1; i < aux.length; i++)
-                qua.put(i, Double.valueOf(aux[i]));
+            for (int i = 1; i < aux.length ; i++)
+                qua.put(i-1, Double.valueOf(aux[i]));
 
             stats.put(name, qua);
             line = r.readLine();
@@ -132,7 +131,12 @@ public class RecommendationSystemStatistics {
 
     }
 
-    private Map<String, Map<Integer, Double>> updateStats(RecommendationSystemConfig cfg) {
+    public Map<String, Map<Integer, Double>> updateStats() {
+
+        int week_day = execDate.getDayOfWeek();
+        int d = (7 - week_day) + 1;
+
+        lastMonday = execDate.minusDays(week_day-1).minusDays(7);
 
         Writer wr;
         try {
@@ -212,7 +216,7 @@ public class RecommendationSystemStatistics {
             if (!ArrayUtils.find(m, l_mode))
                 continue;
 
-            Double score = pc.getPeriodScore("weekly", execDate.minus(7));
+            Double score = pc.getPeriodScore("weekly", lastMonday);
             if (score > 0)
                 stats.get(m).add(score);
         }
@@ -227,7 +231,7 @@ public class RecommendationSystemStatistics {
        Map<Integer, Double> quan = getQuantiles(fixMode(mode));
        if (quan == null)
            p("EHM");
-            for (int i = 1; i < 11; i++)
+            for (int i = 0; i < 10; i++)
                 if (modeValue < quan.get(i))
                     return i;
 
