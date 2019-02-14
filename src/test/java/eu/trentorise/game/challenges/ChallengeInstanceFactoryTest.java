@@ -48,4 +48,22 @@ public class ChallengeInstanceFactoryTest {
         Assert.assertEquals(result.getData(), challengeDTO.getData());
 
     }
+
+    @Test
+    public void incentive_group_challenge_main_case() throws UndefinedChallengeException {
+        ChallengeInstanceFactory factory = new ChallengeInstanceFactory();
+        String challengeType = "incentiveGroupChallenge";
+        Map<String, Object> params = new HashMap<>();
+        params.put("bonusPointType", "bonus_type");
+        params.put("bonusScore", "25");
+        Content user = new Content();
+        ChallengeDataDTO challengeDTO = factory.createChallenge(challengeType, params, user);
+
+        ChallengeDataDTO result = new ChallengeDataDTO();
+        result.setData(new HashMap<String, Object>());
+        result.getData().put("bonusPointType", "bonus_type");
+        result.getData().put("bonusScore", 25d);
+        Assert.assertEquals(result.getData(), challengeDTO.getData());
+
+    }
 }

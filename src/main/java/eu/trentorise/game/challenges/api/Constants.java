@@ -32,6 +32,7 @@ public final class Constants {
 
     public static final String CHECKIN = "checkin";
     public static final String REPETITIVE_BEHAVIOUR = "repetitiveBehaviour";
+    public static final String INCENTIVE_GROUP_CHALLENGE = "incentiveGroupChallengeReward";
 
     // challenges various constants
     public static final String NAME = "name";
