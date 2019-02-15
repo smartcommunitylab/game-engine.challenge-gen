@@ -41,7 +41,7 @@ public class TargetPrizeChallengesCalculatorTest extends ChallengesBaseTest {
         String pId_1 = "127";
         String pId_2 = "18375";
 
-        Map<String, Double> res_6 = tpcc.targetPrizeChallengesCompute("19092", "1069", "Walk_Km", "groupCompetitiveTime");
+        Map<String, Double> res_6 = tpcc.targetPrizeChallengesCompute("27300", "1069", "Walk_Km", "groupCooperative");
 
         Map<String, Double> res_5 = tpcc.targetPrizeChallengesCompute("27300", "27465", "Bike_Km", "groupCompetitiveTime");
 

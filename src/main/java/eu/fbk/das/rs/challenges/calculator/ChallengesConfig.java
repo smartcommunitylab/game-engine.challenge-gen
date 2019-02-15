@@ -1,5 +1,9 @@
 package eu.fbk.das.rs.challenges.calculator;
 
+import eu.trentorise.game.challenges.rest.Player;
+import eu.trentorise.game.challenges.rest.PointConcept;
+import org.joda.time.DateTime;
+
 import java.util.List;
 import java.util.Set;
 
@@ -224,5 +228,19 @@ public class ChallengesConfig {
         return improvementValue;
     }
 
+    public static Double getWeeklyContentMode(Player cnt, String mode, DateTime execDate) {
+
+
+        for (PointConcept pc : cnt.getState().getPointConcept()) {
+
+            String m = pc.getName();
+            if (!m.equals(mode))
+                continue;
+
+            return pc.getPeriodScore("weekly", execDate);
+        }
+
+        return 0.0;
+    }
 
 }

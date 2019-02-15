@@ -16,9 +16,7 @@ import org.joda.time.DateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.booster;
-import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.roundTarget;
-import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.week_n;
+import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.*;
 
 
 public class TargetPrizeChallengesCalculator {
@@ -165,7 +163,7 @@ public class TargetPrizeChallengesCalculator {
     private Map<Integer, Double> getQuantiles(String gameId, String counter) {
 
         // Da sistemare richiesta per dati della settimana precedente, al momento non presenti
-        GameStatisticsSet stats = facade.readGameStatistics(gameId, counter);
+        GameStatisticsSet stats = facade.readGameStatistics(gameId, lastMonday, counter);
         if (stats == null || stats.isEmpty()) {
             pf("Nope \n");
             return null;
@@ -303,21 +301,6 @@ public class TargetPrizeChallengesCalculator {
         res.put(f("%s_tgt", nm), pv);
 
         return new Pair<Double, Double>(pv, wma);
-    }
-
-    public Double getWeeklyContentMode(Player cnt, String mode, DateTime execDate) {
-
-
-        for (PointConcept pc : cnt.getState().getPointConcept()) {
-
-            String m = pc.getName();
-            if (!m.equals(mode))
-                continue;
-
-            return pc.getPeriodScore("weekly", execDate);
-        }
-
-        return 0.0;
     }
 
     /*

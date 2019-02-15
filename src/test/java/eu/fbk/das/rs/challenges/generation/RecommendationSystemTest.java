@@ -160,7 +160,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
         RecommendationSystem rs = new RecommendationSystem();
 
         RecommendationSystemStatistics statistics = new RecommendationSystemStatistics();
-        statistics.checkAndUpdateStats(facade, date, cfg);
+        statistics.checkAndUpdateStats(facade, date, cfg, "test");
 
         rscv.prepare(statistics);
         rscf.prepare(statistics);

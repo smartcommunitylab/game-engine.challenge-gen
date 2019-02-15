@@ -482,13 +482,17 @@ public class RecommendationSystem {
     }
 
     /* fac_body è per facade di testing non ancora passati in produzione */
-    public void prepare(GamificationEngineRestFacade facade,  DateTime date) {
+    public void prepare(GamificationEngineRestFacade facade,  DateTime date, String host) {
         this.facade = facade;
 
-        stats.checkAndUpdateStats(facade, date, cfg);
+        stats.checkAndUpdateStats(facade, date, cfg, host);
         rscg.prepare(stats);
         rscv.prepare(stats);
         rscf.prepare(stats);
+    }
+
+    public void prepare(GamificationEngineRestFacade facade, DateTime date) {
+        prepare(facade, date, "test");
     }
 
     public RecommendationSystemStatistics getStats() {
@@ -520,4 +524,5 @@ public class RecommendationSystem {
     public static String fixMode(String mode) {
         return mode.replace(" ", "_").toLowerCase();
     }
+
 }

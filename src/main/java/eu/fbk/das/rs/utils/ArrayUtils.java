@@ -250,7 +250,7 @@ public class ArrayUtils {
     public static int[] addArray(int[] a, int p) {
         int[] b = new int[a.length + 1];
 
-        System.arraycopy(a, 0, b, 0, a.length);
+        System.arraycopy(a, 0, b, 0, Math.min(a.length, b.length));
         b[a.length] = p;
         return b;
     }
@@ -367,7 +367,7 @@ public class ArrayUtils {
     }
 
     public static void cloneArray(int[] a, int[] b) {
-        System.arraycopy(a, 0, b, 0, a.length);
+        System.arraycopy(a, 0, b, 0, Math.min(a.length, b.length));
     }
 
     public static double[] cloneArray(double[] a) {
@@ -385,7 +385,7 @@ public class ArrayUtils {
     }
 
     public static void cloneArray(String[] a, String[] b) {
-        System.arraycopy(a, 0, b, 0, a.length);
+        System.arraycopy(a, 0, b, 0, Math.min(a.length, b.length));
     }
 
     public static void cloneArray(int[] a, int[] b, int c) {
@@ -395,7 +395,7 @@ public class ArrayUtils {
     public static int[] cloneArray(int[] a) {
         int[] b = new int[a.length];
 
-        System.arraycopy(a, 0, b, 0, a.length);
+        System.arraycopy(a, 0, b, 0, Math.min(a.length, b.length));
         return b;
     }
 
@@ -414,23 +414,23 @@ public class ArrayUtils {
     }
 
     public static void cloneArray(short[] a, short[] b) {
-        System.arraycopy(a, 0, b, 0, a.length);
+        System.arraycopy(a, 0, b, 0, Math.min(a.length, b.length));
     }
 
     public static void cloneArray(double[] a, double[] b) {
-        System.arraycopy(a, 0, b, 0, a.length);
+        System.arraycopy(a, 0, b, 0, Math.min(a.length, b.length));
     }
 
     public static void cloneArray(boolean[] a, boolean[] b) {
-        System.arraycopy(a, 0, b, 0, a.length);
+        System.arraycopy(a, 0, b, 0, Math.min(a.length, b.length));
     }
 
     public static void cloneArray(TIntArrayList[] a, TIntArrayList[] b) {
-        System.arraycopy(a, 0, b, 0, a.length);
+        System.arraycopy(a, 0, b, 0, Math.min(a.length, b.length));
     }
 
     public static void cloneArray(TIntHashSet[] a, TIntHashSet[] b) {
-        System.arraycopy(a, 0, b, 0, a.length);
+        System.arraycopy(a, 0, b, 0, Math.min(a.length, b.length));
     }
 
     public static int max(int[] v) {
@@ -625,6 +625,26 @@ public class ArrayUtils {
                 return i;
             }
         }
+        return -1;
+    }
+
+    public static int binarySearch(String[] a, String x) {
+        int low = 0;
+        int high = a.length - 1;
+        int mid;
+
+        while (low <= high) {
+            mid = (low + high) / 2;
+
+            if (a[mid].compareTo(x) < 0) {
+                low = mid + 1;
+            } else if (a[mid].compareTo(x) > 0) {
+                high = mid - 1;
+            } else {
+                return mid;
+            }
+        }
+
         return -1;
     }
 }

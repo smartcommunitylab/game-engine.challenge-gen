@@ -3,10 +3,7 @@ package eu.fbk.das.rs.challenges.generation;
 import com.google.common.math.Quantiles;
 import eu.fbk.das.rs.utils.ArrayUtils;
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
-import eu.trentorise.game.challenges.rest.Player;
-import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
-import eu.trentorise.game.challenges.rest.PointConcept;
-import eu.trentorise.game.challenges.rest.State;
+import eu.trentorise.game.challenges.rest.*;
 import org.joda.time.DateTime;
 
 import java.io.*;
@@ -24,10 +21,11 @@ public class RecommendationSystemStatistics {
     protected DateTime execDate;
     private String[] l_mode;
     private Map<String, Map<Integer, Double>> quartiles;
-    private boolean offline = true;
+    private boolean offline = false;
     protected RecommendationSystemConfig cfg;
 
     private DateTime lastMonday;
+    private String host;
 
     public RecommendationSystemStatistics() {
         quartiles = new HashMap<>();
@@ -38,10 +36,11 @@ public class RecommendationSystemStatistics {
         Arrays.sort(this.l_mode);
     }
 
-    public Map<String, Map<Integer, Double>> checkAndUpdateStats(GamificationEngineRestFacade facade, DateTime date, RecommendationSystemConfig cfg) {
+    public Map<String, Map<Integer, Double>> checkAndUpdateStats(GamificationEngineRestFacade facade, DateTime date, RecommendationSystemConfig cfg, String host) {
         this.facade = facade;
         this.cfg = cfg;
         this.execDate = date;
+        this.host = host;
 
         if (offline)
             return updateStatsOffline();
@@ -52,7 +51,7 @@ public class RecommendationSystemStatistics {
 
     private Map<String, Map<Integer, Double>> updateStatsOnline() {
 
-        facade.readGameStatistics(cfg.get("GAME_ID"));
+        GameStatisticsSet st = facade.readGameStatistics(cfg.get("GAME_ID"), lastMonday);
 
         return  null;
     }
@@ -79,8 +78,16 @@ public class RecommendationSystemStatistics {
             if (fileDateStr == null || fileDateStr.length() == 0)
                 return null;
 
-            DateTime fileDate = stringToDate(fileDateStr.trim());
+            String[] aux = fileDateStr.trim().split(" ");
+
+            if (aux.length < 2)
+                return null;
+
+            DateTime fileDate = stringToDate(aux[0]);
             if (fileDate == null)
+                return null;
+
+            if (!aux[1].equals(host))
                 return null;
 
             if (daysApart(fileDate, execDate) >= 3)
@@ -115,7 +122,7 @@ public class RecommendationSystemStatistics {
 
     private void writeStats(Writer wr) {
         try {
-            wf(wr, "%s\n", formatDate(execDate));
+            wf(wr, "%s %s\n", formatDate(execDate), host);
             for (String s : l_mode) {
                 wf(wr, "%s:", s);
                 for (int i = 0; i < 10; i++) {

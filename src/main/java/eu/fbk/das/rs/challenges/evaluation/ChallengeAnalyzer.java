@@ -7,6 +7,7 @@ import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
 import org.joda.time.DateTime;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
@@ -19,10 +20,11 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
     private ArrayList<List<Double>> incrByLvl;
     private ArrayList<Double> incrTot;
 
-    public String[] files = new String[] {"challenges-2018-11-14-complete.csv", "challenges-2018-11-20-complete.csv", "challenges-2018-11-27-complete.csv"};
+    // "challenges-2018-11-14-complete.csv", "challenges-2018-11-20-complete.csv", "challenges-2018-11-27-complete.csv"
+    public String[] files = new String[] {"week-15/challenges-2019-02-06-complete.csv"};
 
+    String path = "/home/loskana/Desktop/challenges/";
     private int next_p;
-    private int s;
 
     String anim = "\\|/|";
 
@@ -34,31 +36,57 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
     private Map<String, Integer> counterChosen;
     private Map<String, Integer> counterTgt;
 
+    private int cnt;
+
+    private Set<String> playersChosen;
+    private Set<String> playersAll;
+
     public ChallengeAnalyzer(RecommendationSystemConfig cfg) {
         super(cfg);
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
         ChallengeAnalyzer cdg = new ChallengeAnalyzer(new RecommendationSystemConfig());
-        cdg.analyze();
+
+        // cdg.analyzeSelected();
+        cdg.analyzeAll();
     }
 
-    private void analyze() throws IOException, InterruptedException {
-        p(cfg.get("GAME_ID"));
-
-        facade = new GamificationEngineRestFacade(cfg.get("HOST"), cfg.get("USERNAME"), cfg.get("PASSWORD"));
-
-        String path = "/home/loskana/Desktop/challenges/";
-
+    private void analyzeAll() {
         prepare();
 
-        linesTot = 0;
+        for (int i = 3; i < 16; i++) {
+            String n_path = f("%s/week-%d/", path, i);
+            File[] listOfFiles = new File(n_path).listFiles();
+            if (listOfFiles == null)
+                continue;
+            for (File f: listOfFiles)
+                if (f.getAbsolutePath().endsWith(".csv") && !f.getName().contains("complete") && !f.getName().contains("group"))
+                    analyze(n_path, f.getName());
+        }
+    }
+
+    private void analyzeSelected() {
+        prepare();
+
         for (String s: files)
-            countLines(path + s);
+            analyze(path, s);
+    }
+
+    private void analyze(String path, String s)  {
+
+        p("");
+        p(cfg.get("GAME_ID"));
+        p(path + s);
+
+        playersAll = new HashSet<>();
+        playersChosen = new HashSet<>();
+
+        linesTot = 0;
+        countLines(path + s);
 
         linesCurrent = 0;
-        for (String s: files)
-            analyzeFile(path , s);
+        analyzeFile(path , s);
 
         output();
     }
@@ -83,9 +111,7 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
         pf("\n\n DONE!");
 
         pf("\n\n");
-        for (String s: counterTgt.keySet()) {
-         pf("# Chosen on %s: %d / %d - %.2f %% \n", s, counterChosen.get(s), counterTgt.get(s), counterChosen.get(s) * 100.0/ counterTgt.get(s));
-        }
+        pf("# Chosen: %d / %d - %.2f %% \n", playersChosen.size(), playersAll.size(), playersChosen.size() * 100.0 / playersAll.size());
 
         pf("\n\nGeneral improvement: %s ", an(incrTot));
 
@@ -124,12 +150,15 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
         // playersDone = new HashSet<String>();
         next_p = 0;
 
-        s = 1;
+        cnt = 1;
 
         last_adv = System.currentTimeMillis();
 
         counterTgt = new HashMap<>();
         counterChosen = new HashMap<>();
+
+        facade = new GamificationEngineRestFacade(cfg.get("HOST"), cfg.get("USERNAME"), cfg.get("PASSWORD"));
+
     }
 
     public void analyzeFile(String path, String file) {
@@ -155,14 +184,18 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
         showAdvancement(cr);
 
         // Ignore non-target experiments
-        if (!"tgt".equals(cr.exp))
-            return;
+        // if (!"tgt".equals(cr.exp))
+        //     return;
 
         incr(counterTgt, "gen", file);
+
+        playersAll.add(cr.pId);
 
         // Check only challenges that have been chosen (not automatically assigned)
         if (!cr.chosen)
             return;
+
+        playersChosen.add(cr.pId);
 
         incr(counterChosen, "gen", file);
 
@@ -198,12 +231,12 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
 
         long now = System.currentTimeMillis();
         if (now > last_adv + 500) {
-            s++;
-            if (s>3)
-                s = 0;
-            last_adv = now;
+            cnt++;
+            if (cnt>3)
+                cnt = 0;
+            last_adv = cnt;
         }
-        h += anim.charAt(s);
+        h += anim.charAt(cnt);
 
 
         while (h.length() < 10)
@@ -272,7 +305,9 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
 
             Player state = facade.getPlayerState(cfg.get("GAME_ID"), pId);
 
-            for (ChallengeConcept cha: state.getState().getChallengeConcept() ) {
+            List<ChallengeConcept> l_cha = state.getState().getChallengeConcept();
+            if (l_cha != null)
+            for (ChallengeConcept cha: l_cha ) {
                 if (!cha.getName().equals(name))
                     continue;
 

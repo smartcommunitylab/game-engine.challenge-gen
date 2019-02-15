@@ -15,6 +15,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
+import org.joda.time.DateTime;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -412,16 +413,17 @@ public class GamificationEngineRestFacade {
         return target;
     }
 
-    public GameStatisticsSet readGameStatistics(String gameId, String pcName, String timestamp) {
+    public GameStatisticsSet readGameStatistics(String gameId, DateTime timestamp, String pcName) {
         checkGameId(gameId);
         WebTarget target = getTarget().path(DATA).path(gameId).path("statistics");
-        /*
+
         if (pcName != null)
             target = target.queryParam("pointConceptName", pcName);
+
         if (timestamp != null)
             target = target.queryParam("timestamp", timestamp);
         target = target.queryParam("periodName", "weekly");
-*/
+
         Response response = get(target);
 if (response == null)
     return new GameStatisticsSet();
@@ -429,8 +431,8 @@ if (response == null)
         return response.readEntity(GameStatisticsSet.class);
     }
 
-    public GameStatisticsSet readGameStatistics(String gameid, String mode) {
-        return readGameStatistics(gameid, mode, null);
+    public GameStatisticsSet readGameStatistics(String gameid, DateTime timestamp) {
+        return readGameStatistics(gameid, timestamp, null);
     }
 
     public GameStatisticsSet readGameStatistics(String gameid) {
