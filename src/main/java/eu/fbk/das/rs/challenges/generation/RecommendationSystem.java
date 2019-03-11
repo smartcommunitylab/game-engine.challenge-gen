@@ -28,6 +28,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
 
+import static eu.fbk.das.rs.challenges.ChallengeUtil.getLevel;
 import static eu.fbk.das.rs.utils.Utils.*;
 
 /**
@@ -186,37 +187,6 @@ public class RecommendationSystem {
 
     }
 
-    public int getLevel(Player state) {
-
-        // check the level of the player
-        List<PlayerLevel> lvls = state.getLevels();
-
-        for (PlayerLevel lvl: lvls) {
-            if (!equal(lvl.getPointConcept(), "green leaves"))
-                continue;
-
-            return lvl.getLevelIndex();
-
-            /*
-
-            String s = slug(lvl.getLevelValue());
-            for (int i = 0; i < cfg.levelNames.length; i++)
-                if (equal(s, slug(cfg.levelNames[i])))
-                    return i;
-
-
-            pf("Could not decode value %s of player level %s \n", lvl.getLevelValue(), lvl);
-
-            return -1;
-
-            */
-
-        }
-
-        pf("Could not find level based on green leaves! %s - Assuming level 0 \n", lvls);
-
-        return 0;
-    }
 
     private List<ChallengeDataDTO> assignOne(Player state, DateTime d) {
         List<ChallengeDataDTO> list = recommendAll(state, d);

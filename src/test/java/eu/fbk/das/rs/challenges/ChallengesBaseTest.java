@@ -24,11 +24,11 @@ public class ChallengesBaseTest {
 
     private LocalDate now;
 
-    protected String HOST = "http://localhost:18000/gamification/";
+    protected String HOST = "https://dev.smartcommunitylab.it/gamification";
     protected String CONTEXT = "gengine/";
     protected String USERNAME = "long-rovereto";
-    protected String PASSWORD = "ciao";
-    protected String GAMEID = "59a91478e4b0c9db6800afaf";
+    protected String PASSWORD = "long_RoVg@me";
+    protected String GAMEID = "5b7a885149c95d50c5f9d442";
     protected String INSERT_CONTEXT = "todo";
     protected String SAVE_ITINERARY = "todo";
     protected String RELEVANT_CUSTOM_DATA = "todo";

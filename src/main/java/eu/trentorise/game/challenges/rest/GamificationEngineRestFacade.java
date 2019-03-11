@@ -11,6 +11,7 @@ import eu.trentorise.game.bean.ExecutionDataDTO;
 import eu.trentorise.game.challenges.api.Constants;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import eu.trentorise.game.challenges.model.ChallengeModel;
+import eu.trentorise.game.challenges.model.GroupChallengeDTO;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -383,6 +384,18 @@ public class GamificationEngineRestFacade {
         return response != null;
     }
 
+
+    public boolean assignGroupChallenge(GroupChallengeDTO cdd, String gameId) {
+        if (cdd == null || gameId == null) {
+            throw new IllegalArgumentException("challenge, gameId and playerId cannot be null");
+        }
+        cdd.setGameId(gameId);
+        WebTarget target = getTarget().path(DATA).path(gameId).path("group-challenges");
+        Response response = post(target, cdd);
+
+        return response != null;
+    }
+
     public List<LinkedHashMap<String, Object>> getChallengesPlayer(String gameId, String playerId) {
         if (gameId == null || playerId == null) {
             throw new IllegalArgumentException("challenge, gameId and playerId cannot be null");
@@ -420,8 +433,10 @@ public class GamificationEngineRestFacade {
         if (pcName != null)
             target = target.queryParam("pointConceptName", pcName);
 
-        if (timestamp != null)
-            target = target.queryParam("timestamp", timestamp);
+        if (timestamp != null) {
+            String vl = String.valueOf(timestamp.toDate().getTime());
+            target = target.queryParam("timestamp", vl);
+        }
         target = target.queryParam("periodName", "weekly");
 
         Response response = get(target);
@@ -437,6 +452,26 @@ if (response == null)
 
     public GameStatisticsSet readGameStatistics(String gameid) {
         return readGameStatistics(gameid, null);
+    }
+
+    public GroupChallengeDTO makeGroupChallengeDTO(String mode, String counter, String pId1, String pId2, DateTime start, DateTime end, Map<String, Double> res) {
+
+        GroupChallengeDTO gcd = new GroupChallengeDTO();
+        gcd.setChallengeModelName(mode);
+        gcd.addAttendee(pId1, "GUEST");
+        gcd.addAttendee(pId2, "GUEST");
+        gcd.setChallengeTarget(res.get("target"));
+        gcd.setChallengePointConcept(counter, "weekly");
+        gcd.setReward(pId1, res.get("player1_prz"),
+                pId2, res.get("player2_prz"),
+                "green leaves", "weekly", "green leaves");
+
+        gcd.setOrigin("gca");
+        gcd.setState("ASSIGNED");
+        gcd.setStart(start.toDate());
+        gcd.setEnd(end.toDate());
+
+        return gcd;
     }
 
     public class ChallengeModelSet extends HashSet<ChallengeModel> { }

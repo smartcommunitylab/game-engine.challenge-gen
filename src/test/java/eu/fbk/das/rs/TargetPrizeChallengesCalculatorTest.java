@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static eu.fbk.das.rs.challenges.ChallengeUtil.getLevel;
 import static eu.fbk.das.rs.utils.Utils.*;
 import static org.junit.Assert.*;
 
@@ -67,7 +68,7 @@ public class TargetPrizeChallengesCalculatorTest extends ChallengesBaseTest {
              if (ix++ > 100)
                break;
             Player p = facade.getPlayerState(gameId, pId);
-            int lvl = rs.getLevel(p);
+            int lvl = getLevel(p);
             if (lvl >= 3)
                 playersToConsider.add(pId);
         }

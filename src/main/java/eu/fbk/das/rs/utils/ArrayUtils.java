@@ -647,4 +647,11 @@ public class ArrayUtils {
 
         return -1;
     }
+
+    public static double sum(int[] a) {
+        double tot = 0.0;
+        for(double v: a)
+            tot += v;
+        return  tot;
+    }
 }

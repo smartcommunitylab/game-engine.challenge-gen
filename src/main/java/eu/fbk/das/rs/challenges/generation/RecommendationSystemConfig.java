@@ -38,4 +38,10 @@ public class RecommendationSystemConfig {
 
         return "";
     }
+
+    public void put(String key, String value) {
+        if (prop != null)
+             prop.setProperty(key, value);
+
+    }
 }

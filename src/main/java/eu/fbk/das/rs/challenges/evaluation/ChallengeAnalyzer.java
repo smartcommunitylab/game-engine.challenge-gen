@@ -23,7 +23,7 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
     // "challenges-2018-11-14-complete.csv", "challenges-2018-11-20-complete.csv", "challenges-2018-11-27-complete.csv"
     public String[] files = new String[] {"week-15/challenges-2019-02-06-complete.csv"};
 
-    String path = "/home/loskana/Desktop/challenges/";
+    String path = "/home/loskana/Documents/GamifDrive/Trento_Play&Go/challenges/";
     private int next_p;
 
     String anim = "\\|/|";
@@ -55,7 +55,7 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
     private void analyzeAll() {
         prepare();
 
-        for (int i = 3; i < 16; i++) {
+        for (int i = 16; i < 18; i++) {
             String n_path = f("%s/week-%d/", path, i);
             File[] listOfFiles = new File(n_path).listFiles();
             if (listOfFiles == null)

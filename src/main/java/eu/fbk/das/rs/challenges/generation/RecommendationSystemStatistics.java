@@ -21,7 +21,7 @@ public class RecommendationSystemStatistics {
     protected DateTime execDate;
     private String[] l_mode;
     private Map<String, Map<Integer, Double>> quartiles;
-    private boolean offline = false;
+    private boolean offline = true;
     protected RecommendationSystemConfig cfg;
 
     private DateTime lastMonday;
@@ -42,6 +42,11 @@ public class RecommendationSystemStatistics {
         this.execDate = date;
         this.host = host;
 
+        int week_day = execDate.getDayOfWeek();
+        int d = (7 - week_day) + 1;
+
+        lastMonday = execDate.minusDays(week_day-1).minusDays(7);
+
         if (offline)
             return updateStatsOffline();
 
@@ -52,6 +57,8 @@ public class RecommendationSystemStatistics {
     private Map<String, Map<Integer, Double>> updateStatsOnline() {
 
         GameStatisticsSet st = facade.readGameStatistics(cfg.get("GAME_ID"), lastMonday);
+
+        // GameStatisticsSet st = facade.readGameStatistics(cfg.get("GAME_ID"));
 
         return  null;
     }
@@ -140,10 +147,6 @@ public class RecommendationSystemStatistics {
 
     public Map<String, Map<Integer, Double>> updateStats() {
 
-        int week_day = execDate.getDayOfWeek();
-        int d = (7 - week_day) + 1;
-
-        lastMonday = execDate.minusDays(week_day-1).minusDays(7);
 
         Writer wr;
         try {

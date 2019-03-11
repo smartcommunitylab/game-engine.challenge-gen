@@ -1,9 +1,11 @@
 package eu.fbk.das.rs.challenges.generation;
 
+import eu.fbk.das.rs.challenges.ChallengeUtil;
 import eu.fbk.das.rs.utils.Pair;
 import eu.fbk.das.rs.valuator.RecommendationSystemChallengeValuator;
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
+import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
 import eu.trentorise.game.challenges.rest.Player;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.apache.logging.log4j.LogManager;
@@ -20,7 +22,7 @@ import static eu.fbk.das.rs.utils.Utils.*;
  * RecommendationSystem challenge generation module: generate all possible
  * challenges using provided {@link ChallengesConfig}
  */
-public class RecommendationSystemChallengeGeneration {
+public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
 
     private static final Logger logger = LogManager.getLogger(RecommendationSystem.class);
 
@@ -28,19 +30,15 @@ public class RecommendationSystemChallengeGeneration {
 
     private RecommendationSystemConfig cfg;
 
-    private DateTime endDate;
-    private DateTime startDate;
-    private DateTime execDate;
-    private DateTime lastMonday;
-    private RecommendationSystemStatistics stats;
-    private String prefix;
     private double lastCounter;
+    private RecommendationSystemStatistics stats;
     private RecommendationSystem rs;
 
     /**
      * Create a new recommandation system challenge generator
      */
     public RecommendationSystemChallengeGeneration(RecommendationSystemConfig configuration, RecommendationSystemChallengeValuator rscv) {
+        super(configuration);
         if (configuration == null) {
             throw new IllegalArgumentException(
                     "Recommandation system cfg must be not null");
@@ -49,22 +47,6 @@ public class RecommendationSystemChallengeGeneration {
         dbg(logger, "RecommendationSystemChallengeGeneration init complete");
 
         this.rscv = rscv;
-    }
-
-    private void prepare(DateTime execDate, RecommendationSystem rs) {
-        // Set next monday as start, and next sunday as end
-        int week_day = execDate.getDayOfWeek();
-        int d = (7 - week_day) + 1;
-
-        lastMonday = execDate.minusDays(week_day-1).minusDays(7);
-
-        startDate = execDate.plusDays(d);
-        startDate = startDate.minusDays(2);
-        endDate = startDate.plusDays(7);
-        
-        this.rs = rs;
-
-        prefix = f(ChallengesConfig.getChallengeNamePrefix(), rs.getChallengeWeek(execDate));
     }
 
     public List<ChallengeDataDTO> generate(Player state, String mode, DateTime execDate, RecommendationSystem rs) {
@@ -140,6 +122,12 @@ public class RecommendationSystemChallengeGeneration {
         return output;
     }
 
+    private void prepare(DateTime execDate, RecommendationSystem rs) {
+        super.prepare(execDate);
+        this.rs = rs;
+        prefix = f(ChallengesConfig.getChallengeNamePrefix(), rs.getChallengeWeek(execDate));
+    }
+
     private ChallengeDataDTO generatePercentage(Double modeCounter, String mode, double improvementValue) {
 
         improvementValue = roundTarget(mode, improvementValue);
@@ -205,9 +193,9 @@ public class RecommendationSystemChallengeGeneration {
             HashMap<String, HashMap<String, Double>> modeValues,
             HashMap<String, Double> playerScore, Player content) {
         // retrieving the players' last week data "weekly"
-        for (int i = 0; i < cfg.getDefaultMode().length; i++) {
+        for (int i = 0; i < cfg.getPerfomanceCounters().length; i++) {
 
-            String mode = cfg.getDefaultMode()[i];
+            String mode = cfg.getPerfomanceCounters()[i];
             for (PointConcept pc : content.getState().getPointConcept()) {
                 if (pc.getName().equals(mode)) {
                     Double score = pc.getPeriodCurrentScore("weekly");
@@ -230,7 +218,7 @@ public class RecommendationSystemChallengeGeneration {
         for (Player cnt: data) {
 
             List<ChallengeDataDTO> challanges = new ArrayList<>();
-            for (String mode : ChallengesConfig.getDefaultMode()) {
+            for (String mode : ChallengesConfig.getPerfomanceCounters()) {
                 challanges.addAll(generate(cnt, mode, new DateTime(), new RecommendationSystem()));
             }
 

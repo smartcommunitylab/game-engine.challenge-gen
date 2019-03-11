@@ -63,13 +63,11 @@ public class TargetPrizeChallengesCalculator {
 
         Map<String, Double> res = new HashMap<>();
 
-        Player player1 = facade.getPlayerState(gameId, pId_1);
-        Pair<Double, Double> res1 = getForecast("player1", res, player1, counter);
+        Pair<Double, Double> res1 = getForecast("player1", pId_1, res, counter);
         double player1_tgt = res1.getFirst();
         double player1_bas = res1.getSecond();
 
-        Player player2 = facade.getPlayerState(gameId, pId_2);
-        Pair<Double, Double> res2 = getForecast("player2", res, player2, counter);
+        Pair<Double, Double> res2 = getForecast("player2", pId_2, res, counter);
         double player2_tgt = res2.getFirst();
         double player2_bas = res2.getSecond();
 
@@ -104,7 +102,10 @@ public class TargetPrizeChallengesCalculator {
         return res;
     }
 
-    private Pair<Double, Double> getForecast(String nm, Map<String, Double> res, Player state, String counter) {
+    private Pair<Double, Double> getForecast(String nm, String pId, Map<String, Double> res,  String counter) {
+
+        Player state = facade.getPlayerState(gameId, pId);
+
         Pair<Double, Double> forecast = forecastMode(state, counter);
 
         double tgt = forecast.getFirst();
@@ -114,6 +115,7 @@ public class TargetPrizeChallengesCalculator {
 
         tgt = roundTarget(counter, tgt);
 
+        res.put(nm + "_id", Integer.valueOf(pId).doubleValue());
         res.put(nm + "_tgt", tgt);
         res.put(nm + "_bas", bas);
 

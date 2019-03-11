@@ -35,6 +35,10 @@ public static double rand() {
         return r.nextDouble();
 }
 
+public static int rand(int v) {
+    return r.nextInt(v);
+}
+
     public static int index(int s, int v1, int v2) {
         if (v1 > v2) {
             int t = v1;

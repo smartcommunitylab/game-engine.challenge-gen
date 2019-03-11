@@ -3,6 +3,7 @@ package eu.trentorise.game.challenges.rest;
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 import eu.trentorise.game.bean.ExecutionDataDTO;
 import eu.trentorise.game.challenges.api.Constants;
+import eu.trentorise.game.challenges.model.GroupChallengeDTO;
 import eu.trentorise.game.challenges.util.ConverterUtil;
 import eu.trentorise.game.challenges.util.ExcelUtil;
 import eu.trentorise.game.challenges.util.JourneyData;
@@ -15,6 +16,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -362,4 +364,24 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
         return false;
     }
 
+    @Test
+    public void assignGroupChallenge() {
+
+        HashMap<String, Double> res = new HashMap<String, Double>() {{
+            put("target", 10.0);
+            put("player1_prz", 5.0);
+            put("player2_prz", 10.0);
+        }};
+
+        DateTime today = new DateTime();
+        DateTime start = today.minusDays(2);
+        DateTime end = today.plusDays(2);
+
+        GroupChallengeDTO gcd = facade.makeGroupChallengeDTO(
+                "groupCompetitiveTime", "Walk_Km", "225", "7",
+               start, end, res
+        );
+
+        facade.assignGroupChallenge(gcd, GAMEID);
+    }
 }

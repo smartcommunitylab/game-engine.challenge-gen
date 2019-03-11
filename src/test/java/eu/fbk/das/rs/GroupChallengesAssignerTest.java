@@ -1,6 +1,7 @@
 package eu.fbk.das.rs;
 
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
+import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.search.strategy.Search;
@@ -11,9 +12,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import static org.junit.Assert.*;
-
 public class GroupChallengesAssignerTest extends ChallengesBaseTest {
+
+    @Test
+    public void test() {
+        cfg.put("HOST", "https://dev.smartcommunitylab.it/gamification/");
+        facade = new GamificationEngineRestFacade(cfg.get("HOST"),
+                cfg.get("USERNAME"), cfg.get("PASSWORD"));
+        GroupChallengesAssigner gca = new GroupChallengesAssigner(cfg, facade);
+        gca.execute();
+    }
 
     @Test
     public void execute() {
@@ -25,6 +33,92 @@ public class GroupChallengesAssignerTest extends ChallengesBaseTest {
     public void choco() {
         testChoco();
     }
+    
+    @Test
+    public void testStrange() {
+        HashMap<String, Integer> p = new HashMap<String, Integer>();
+        
+        p.put("16751", 0);
+        p.put("2176", 0);
+
+        p.put("24232", 0);
+        p.put("27393", 0);
+
+        p.put("24553", 0);
+        p.put("27144", 0);
+
+        p.put("25541", 0);
+        p.put("27428", 0);
+
+        p.put("25866", 0);
+        p.put("27270", 0);
+
+        p.put("26588", 0);
+        p.put("27610", 0);
+
+        p.put("27256", 0);
+        p.put("27311", 0);
+
+        p.put("27258", 0);
+        p.put("3276", 0);
+
+        p.put("27752", 1);
+        p.put("27381", 1);
+
+        p.put("27370", 4);
+        p.put("27453", 7);
+
+        p.put("25925", 8);
+        p.put("24060", 8);
+
+        p.put("27454", 8);
+        p.put("24206", 8);
+
+        p.put("25589", 8);
+        p.put("27402", 9);
+
+        p.put("27943", 9);
+        p.put("24471", 9);
+
+        p.put("27418", 9);
+        p.put("24881", 9);
+
+        p.put("27345", 9);
+        p.put("27742", 9);
+
+        GroupChallengesAssigner gca = new GroupChallengesAssigner(cfg, facade);
+
+        gca.reduce(p);
+        gca.chocoModel(p);
+    }
+
+    @Test
+    public void testStrange2() {
+        HashMap<String, Integer> p = new HashMap<String, Integer>();
+
+
+        p.put("27256", 0);
+        p.put("27311", 0);
+
+        p.put("27752", 1);
+        p.put("27381", 1);
+
+        p.put("27370", 4);
+        p.put("27453", 7);
+
+        p.put("25925", 8);
+        p.put("24060", 8);
+
+        p.put("25589", 8);
+        p.put("27402", 9);
+
+        p.put("27943", 9);
+        p.put("24471", 9);
+
+        GroupChallengesAssigner gca = new GroupChallengesAssigner(cfg, facade);
+        gca.chocoModel(p);
+    }
+    
 
     @Test
     public void chocoModel() {
@@ -33,7 +127,7 @@ public class GroupChallengesAssignerTest extends ChallengesBaseTest {
         HashMap<Integer, ArrayList<String>> test = new HashMap<>();
         test.put(1, new ArrayList<String>(Arrays.asList("One", "Two", "Three")));
         test.put(2, new ArrayList<String>(Arrays.asList("Four", "Fixe", "Siv")));
-        gca.chocoModel(test);
+        // gca.chocoModel(test);
     }
 
 

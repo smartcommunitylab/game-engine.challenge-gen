@@ -181,7 +181,7 @@ public class ChallengesConfig {
         return modeConfiguration;
     }
 
-    public static String[] getDefaultMode() {
+    public static String[] getPerfomanceCounters() {
         return defaultMode;
     }
 
