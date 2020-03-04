@@ -740,4 +740,11 @@ public static int rand(int v) {
     public static DateTime parseDate(String s) {
         return sdf.parseDateTime(s);
     }
+
+    public static int findIndex(int arr[], int t)
+    {
+
+        int index = Arrays.binarySearch(arr, t);
+        return (index < 0) ? -1 : index;
+    }
 }

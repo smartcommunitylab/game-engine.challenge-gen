@@ -37,18 +37,36 @@ public class GroupChallengeDTO {
         setChallengePointConcept(pcd);
     }
 
-    public void setReward(String pId1, Double prz1, String pId2, Double prz2, String name, String period, String target) {
+    public void setReward(String pId1, Double prz1, String pId2, Double prz2) {
         RewardDTO rd = new RewardDTO();
         rd.bonusScore.put(pId1, prz1);
         rd.bonusScore.put(pId2, prz2);
 
         PointConceptDTO pcd = new PointConceptDTO();
-        pcd.setName(name);
-        pcd.setPeriod(period);
+        pcd.setName("green leaves");
+        pcd.setPeriod("weekly");
         rd.setCalculationPointConcept(pcd);
 
         PointConceptDTO pcd2 = new PointConceptDTO();
-        pcd2.setName(name);
+        pcd2.setName("green leaves");
+        rd.setTargetPointConcept(pcd2);
+
+        setReward(rd);
+    }
+
+
+    public void setReward(int percentage, int threshdold) {
+        RewardDTO rd = new RewardDTO();
+        rd.setPercentage(percentage);
+        rd.setThreshold(threshdold);
+
+        PointConceptDTO pcd = new PointConceptDTO();
+        pcd.setName("green leaves");
+        pcd.setPeriod("weekly");
+        rd.setCalculationPointConcept(pcd);
+
+        PointConceptDTO pcd2 = new PointConceptDTO();
+        pcd2.setName("green leaves");
         rd.setTargetPointConcept(pcd2);
 
         setReward(rd);

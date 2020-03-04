@@ -50,6 +50,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
     }*/
 
 
+
     @Test
     public void test() {
         RecommendationSystem rs = new RecommendationSystem();
@@ -161,9 +162,6 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
 
         RecommendationSystemStatistics statistics = new RecommendationSystemStatistics();
         statistics.checkAndUpdateStats(facade, date, cfg, "test");
-
-        rscv.prepare(statistics);
-        rscf.prepare(statistics);
 
         Player cnt = facade.getPlayerState(cfg.get("GAME_ID"), player_id);
 

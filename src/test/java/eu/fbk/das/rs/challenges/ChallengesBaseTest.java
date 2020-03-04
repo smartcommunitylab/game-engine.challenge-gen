@@ -1,5 +1,6 @@
 package eu.fbk.das.rs.challenges;
 
+import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemChallengeGeneration;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
 import eu.fbk.das.rs.sortfilter.RecommendationSystemChallengeFilteringAndSorting;
@@ -17,6 +18,7 @@ public class ChallengesBaseTest {
 
 
     protected GamificationEngineRestFacade facade;
+    protected RecommendationSystem rs;
     protected RecommendationSystemConfig cfg;
     protected RecommendationSystemChallengeValuator rscv;
     protected RecommendationSystemChallengeGeneration rscg;
@@ -28,7 +30,7 @@ public class ChallengesBaseTest {
     protected String CONTEXT = "gengine/";
     protected String USERNAME = "long-rovereto";
     protected String PASSWORD = "long_RoVg@me";
-    protected String GAMEID = "5b7a885149c95d50c5f9d442";
+    protected String GAMEID = "5d9353a3f0856342b2dded7f";
     protected String INSERT_CONTEXT = "todo";
     protected String SAVE_ITINERARY = "todo";
     protected String RELEVANT_CUSTOM_DATA = "todo";
@@ -48,11 +50,13 @@ public class ChallengesBaseTest {
         facade = new GamificationEngineRestFacade(cfg.get("HOST"),
                 cfg.get("USERNAME"), cfg.get("PASSWORD"));
 
-        rscv = new RecommendationSystemChallengeValuator(cfg);
+        rs = new RecommendationSystem(cfg);
 
-        rscg = new RecommendationSystemChallengeGeneration(cfg, rscv);
+        rscv = rs.rscv;
 
-        rscf = new RecommendationSystemChallengeFilteringAndSorting(cfg);
+        rscg = rs.rscg;
+
+        rscf = rs.rscf;
     }
 
     @Test

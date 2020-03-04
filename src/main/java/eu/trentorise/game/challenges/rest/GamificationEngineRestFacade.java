@@ -139,6 +139,7 @@ public class GamificationEngineRestFacade {
         pf("Error in post request %s - %s \n", response.getStatus(), response.getStatusInfo());
         p(response);
         p(response.getEntity());
+        p(response.readEntity(String.class));
         return null;
     }
 
@@ -409,7 +410,7 @@ public class GamificationEngineRestFacade {
     }
 
     private WebTarget challengePlayerPath(String gameId, String playerId) {
-        return getTarget().path(DATA).path(gameId).path("player").path(playerId).path("challenges");
+        return getPlayerPath(gameId, playerId, "challenges");
     }
 
     public Set<ChallengeModel> readChallengesModel(String gameId) {
@@ -463,8 +464,7 @@ if (response == null)
         gcd.setChallengeTarget(res.get("target"));
         gcd.setChallengePointConcept(counter, "weekly");
         gcd.setReward(pId1, res.get("player1_prz"),
-                pId2, res.get("player2_prz"),
-                "green leaves", "weekly", "green leaves");
+                pId2, res.get("player2_prz"));
 
         gcd.setOrigin("gca");
         gcd.setState("ASSIGNED");
@@ -472,6 +472,35 @@ if (response == null)
         gcd.setEnd(end.toDate());
 
         return gcd;
+    }
+
+    public Map<String, Object> getCustomDataPlayer(String gameId, String playerId) {
+        if (gameId == null || playerId == null) {
+            throw new IllegalArgumentException("challenge, gameId and playerId cannot be null");
+        }
+        WebTarget target = getCustomDataPath(gameId, playerId);
+        Response response = get(target);
+
+        Map<String, Object> res = response.readEntity(Map.class);
+
+        return res;
+    }
+
+    private WebTarget getCustomDataPath(String gameId, String playerId) {
+        return getPlayerPath(gameId, playerId, "custom");
+    }
+
+    private WebTarget getPlayerPath(String gameId, String playerId, String a) {
+       return  getTarget().path(DATA).path(gameId).path("player").path(playerId).path(a);
+    }
+
+    public boolean setCustomDataPlayer(String gameId, String playerId, Map<String, Object> cs) {
+        if (gameId == null || playerId == null) {
+            throw new IllegalArgumentException("challenge, gameId and playerId cannot be null");
+        }
+        WebTarget target = getCustomDataPath(gameId, playerId);
+        Response response = put(target, cs);
+        return response != null;
     }
 
     public class ChallengeModelSet extends HashSet<ChallengeModel> { }

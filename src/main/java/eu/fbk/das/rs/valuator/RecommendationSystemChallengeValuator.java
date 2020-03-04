@@ -35,11 +35,6 @@ public class RecommendationSystemChallengeValuator {
         dbg(logger, "RecommendationSystemChallengeValuator init complete");
     }
 
-    // Prepare quantiles given statistic
-    public void prepare(RecommendationSystemStatistics stats) {
-        this.stats = stats;
-    }
-
     // Updates a challenge, evaluating its difficulty
     public void valuate(ChallengeDataDTO challenge) {
 
@@ -86,4 +81,7 @@ public class RecommendationSystemChallengeValuator {
 
     }
 
+    public void prepare(RecommendationSystemStatistics stats) {
+        this.stats = stats;
+    }
 }

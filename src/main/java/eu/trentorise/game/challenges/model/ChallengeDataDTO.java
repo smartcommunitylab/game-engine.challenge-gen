@@ -26,6 +26,8 @@ public class ChallengeDataDTO {
     // if no challenge is chosen by the user, it will be given the one with highest priority
     private String priority;
 
+    private boolean hide;
+
     public String getModelName() {
         return modelName;
     }
@@ -119,7 +121,7 @@ public class ChallengeDataDTO {
         Vector<Object> result = new Vector<>();
         result.add(i(getInfo("player")));
         result.add(i(getInfo("playerLevel")));
-        result.add(i(getInfo("id")));
+        result.add(getInfo("id"));
         result.add(getInfo("experiment"));
         result.add(getModelName());
         result.add(getData().get("counterName"));
@@ -127,14 +129,20 @@ public class ChallengeDataDTO {
         result.add(m(getData().get("target")));
         result.add(m(getInfo("improvement")));
         result.add(m(getData().get("difficulty")));
-        result.add(i(getData().get("bonusScore")));
+        result.add(d(getData().get("bonusScore")));
         result.add(getState());
         result.add(getPriority());
 
         result.add(formatDateTime(new DateTime(getStart())));
         result.add(formatDateTime(new DateTime(getEnd())));
+
+        result.add(hide);
         
         return result;
+    }
+
+    private Object d(Object s) {
+        return Double.valueOf(String.valueOf(s));
     }
 
     private Object i(Object s) {
@@ -168,5 +176,17 @@ public class ChallengeDataDTO {
 
     public String printData() {
         return getWriteData().toString().replace("[", "").replace("]", "");
+    }
+
+    public void setHide(boolean b) {
+        hide = b;
+    }
+
+    public boolean getHide() {
+        return hide;
+    }
+
+    public void delData(String s) {
+        this.data.remove(s);
     }
 }

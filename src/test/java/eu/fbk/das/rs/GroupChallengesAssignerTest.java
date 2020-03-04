@@ -1,11 +1,13 @@
 package eu.fbk.das.rs;
 
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
+import eu.trentorise.game.challenges.model.GroupChallengeDTO;
 import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.search.strategy.Search;
 import org.chocosolver.solver.variables.IntVar;
+import org.joda.time.DateTime;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -16,16 +18,27 @@ public class GroupChallengesAssignerTest extends ChallengesBaseTest {
 
     @Test
     public void test() {
-        cfg.put("HOST", "https://dev.smartcommunitylab.it/gamification/");
+        // cfg.put("HOST", "https://dev.smartcommunitylab.it/gamification/");
+        cfg.put("HOST", "https://tn.smartcommunitylab.it/gamification2/");
         facade = new GamificationEngineRestFacade(cfg.get("HOST"),
                 cfg.get("USERNAME"), cfg.get("PASSWORD"));
         GroupChallengesAssigner gca = new GroupChallengesAssigner(cfg, facade);
-        gca.execute();
+
+
+        // gca.execute();
+        DateTime d = new DateTime();
+
+        GroupChallengeDTO gcd = gca.createPerfomanceChallenge("Walk_Km", "7", "225", d.minusDays(3), d.plusDays(3));
+        facade.assignGroupChallenge(gcd, cfg.get("GAME_ID"));
     }
 
     @Test
     public void execute() {
+        cfg.put("HOST", "https://tn.smartcommunitylab.it/gamification2/");
+        facade = new GamificationEngineRestFacade(cfg.get("HOST"),
+                cfg.get("USERNAME"), cfg.get("PASSWORD"));
         GroupChallengesAssigner gca = new GroupChallengesAssigner(cfg, facade);
+
         gca.execute();
     }
 

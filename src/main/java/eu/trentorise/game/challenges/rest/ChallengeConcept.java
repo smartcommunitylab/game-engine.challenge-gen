@@ -1,5 +1,6 @@
 package eu.trentorise.game.challenges.rest;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -14,6 +15,7 @@ import java.util.Map;
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({"name", "modelName", "fields", "start", "end",
         "completed", "dateCompleted", "state", "origin", "priority"})
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class ChallengeConcept {
 
     @JsonProperty("name")
@@ -43,6 +45,9 @@ public class ChallengeConcept {
 
     @JsonProperty("forced")
     private boolean forced;
+
+    @JsonProperty("hide")
+    private boolean hide;
 
     @JsonProperty("stateDate")
     // register of states updates
@@ -127,4 +132,29 @@ public class ChallengeConcept {
     public Map<String, Date> getStateDate() {
         return stateDate;
     }
+
+    public void setOrigin(String origin) {
+        this.origin = origin;
+    }
+
+    public String getOrigin() {
+        return origin;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public boolean getForced() {
+        return forced;
+    }
+
+    public boolean getHide() {
+        return hide;
+    }
+
 }

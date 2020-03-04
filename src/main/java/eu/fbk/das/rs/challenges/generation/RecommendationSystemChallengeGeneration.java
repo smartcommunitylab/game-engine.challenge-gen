@@ -5,7 +5,6 @@ import eu.fbk.das.rs.utils.Pair;
 import eu.fbk.das.rs.valuator.RecommendationSystemChallengeValuator;
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
-import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
 import eu.trentorise.game.challenges.rest.Player;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.apache.logging.log4j.LogManager;
@@ -31,8 +30,7 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
     private RecommendationSystemConfig cfg;
 
     private double lastCounter;
-    private RecommendationSystemStatistics stats;
-    private RecommendationSystem rs;
+
 
     /**
      * Create a new recommandation system challenge generator
@@ -50,6 +48,10 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
     }
 
     public List<ChallengeDataDTO> generate(Player state, String mode, DateTime execDate, RecommendationSystem rs) {
+        return generate(state, mode, execDate, rs, "treatment");
+    }
+
+    public List<ChallengeDataDTO> generate(Player state, String mode, DateTime execDate, RecommendationSystem rs, String exp) {
 
         prepare(execDate, rs);
 
@@ -62,11 +64,16 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
 
         if (currentValue >= 1) {
 
-            int pos = stats.getPosition(mode, currentValue);
+            // int pos = stats.getPosition(mode, currentValue);
 
             // if (pos > 4) {
+            Pair<Double, Double> res;
 
-                Pair<Double, Double> res = forecastMode(state, mode);
+            if ("treatment".equals(exp)) {
+                res = forecastMode(state, mode);
+            } else {
+                res = oldChallengeMode(state, mode);
+            }
                 double target = res.getFirst();
                 double baseline = res.getSecond();
 
@@ -122,13 +129,9 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
         return output;
     }
 
-    private void prepare(DateTime execDate, RecommendationSystem rs) {
-        super.prepare(execDate);
-        this.rs = rs;
-        prefix = f(ChallengesConfig.getChallengeNamePrefix(), rs.getChallengeWeek(execDate));
-    }
-
     private ChallengeDataDTO generatePercentage(Double modeCounter, String mode, double improvementValue) {
+
+        modeCounter = checkMax(modeCounter, mode);
 
         improvementValue = roundTarget(mode, improvementValue);
 
@@ -170,18 +173,23 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
 
     }
 
-    ChallengeDataDTO prepareChallange(String mode) {
+    public ChallengeDataDTO prepareChallange(String mode) {
+        return prepareChallange(mode, mode);
+    }
+
+    public ChallengeDataDTO prepareChallange(String name, String mode) {
 
         ChallengeDataDTO cdd = new ChallengeDataDTO();
         cdd.setInstanceName(f("%s_%s_%s", prefix,
-                mode, UUID.randomUUID()));
+                name, UUID.randomUUID()));
 
         cdd.setStart(startDate.toDate());
         cdd.setEnd(endDate.toDate());
 
         cdd.setData("bonusPointType", "green leaves");
-        cdd.setData("bonusScore", 100);
-        cdd.setData("counterName", mode);
+        cdd.setData("bonusScore", 100.0);
+        if (mode != null)
+            cdd.setData("counterName", mode);
         cdd.setData("periodName", "weekly");
 
         return cdd;
@@ -240,26 +248,39 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
 
         List<ChallengeDataDTO> cha = new ArrayList<>();
 
-        double[] impr = new double[]{-0.1, 0, 0.1};
+        target = roundTarget(mode, target);
 
-        lastCounter = -1;
+        ChallengeDataDTO cdd;
 
-        for (int i = 0; i < 3; i++) {
-
-            target = target + target * impr[i];
-
-            target = checkMax(target, mode);
-
-            ChallengeDataDTO cdd = generatePercentage(baseline, mode, target);
-            if (cdd != null)
-                cha.add(cdd);
-
+        if (target > 0) {
+            cdd = generatePercentage(baseline, mode, target);
+            cha.add(cdd);
         }
 
+        double incr_targer = roundTarget(mode, Math.round(target * 1.1));
+        if (incr_targer == target)
+            incr_targer = target + getDelta(mode);
+        if (incr_targer > 0) {
+            cdd = generatePercentage(baseline, mode, incr_targer);
+            cha.add(cdd);
+        }
 
+        double decr_targer = roundTarget(mode, Math.round(target * 0.9));
+        if (decr_targer == target)
+            decr_targer = target - getDelta(mode);
+        if (decr_targer > 0) {
+            cdd = generatePercentage(baseline, mode, decr_targer);
+            cha.add(cdd);
+        }
 
         return cha;
+    }
 
+    private double getDelta(String mode) {
+        if (mode.equals(ChallengesConfig.GREEN_LEAVES))
+            return 10;
+
+        return 1;
     }
 
 
@@ -315,6 +336,17 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
         }
 
         return i;
+    }
+
+    public Pair<Double, Double> oldChallengeMode(Player state, String counter) {
+
+        DateTime date = lastMonday;
+        Double lastValue = getWeeklyContentMode(state, counter, date);
+
+        double value = lastValue * 1.3;
+
+
+        return new Pair<Double, Double>(value, lastValue);
     }
 
     public Pair<Double, Double> forecastModeSimple(Player state, String counter) {
@@ -390,8 +422,128 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
         return rs.getWeeklyContentMode(state, counter, date);
     }
 
-    // Prepare quantiles given statistic
-    public void prepare(RecommendationSystemStatistics stats) {
-        this.stats = stats;
+    public ChallengeDataDTO getRepetitive(String pId) {
+
+        ChallengeDataDTO rep = prepareChallange("green leaves");
+
+        rep.setModelName("repetitiveBehaviour");
+        rep.setData("periodName", "daily");
+
+        List<LinkedHashMap<String, Object>> last = getLastRepetitiveChallenges(pId);
+
+        int[] targets = {60, 90, 135, 180, 240, 300, 375};
+        int index;
+
+        // check if there was a challenge two weeks ago
+        LinkedHashMap<String, Object> cha = getRepetitiveWeek(last, 14);
+        if (cha != null) {
+            // decide what to do based on result
+            LinkedHashMap<String, Object> fields = (LinkedHashMap<String, Object>) cha.get("fields");
+            double periodTarget = (Double) fields.get("periodTarget");
+            double target = (Double) fields.get("target");
+            int tot = (int) Math.ceil(periodTarget * target);
+            index = findIndex(targets, tot) + 1;
+            if ((boolean) cha.get("completed")) index++; else index--;
+            if (index < 0) index = 0;
+            if (index > 7) index = 7;
+
+        } else {
+            // check if there was a challenge last week
+            cha = getRepetitiveWeek(last, 7);
+            if (cha != null) {
+                index = 1;
+            } else {
+                index = 0;
+            }
+        }
+
+        switch (index) {
+            case 0:
+                rep.setData("periodTarget", 2.0);
+                rep.setData("target", 30.0);
+                break;
+            case 1:
+                rep.setData("periodTarget", 2.0);
+                rep.setData("target", 45.0);
+                break;
+            case 2:
+                rep.setData("periodTarget", 3.0);
+                rep.setData("target", 45.0);
+                break;
+            case 3:
+                rep.setData("periodTarget", 3.0);
+                rep.setData("target", 60.0);
+                break;
+            case 4:
+                rep.setData("periodTarget", 4.0);
+                rep.setData("target", 60.0);
+                break;
+            case 5:
+                rep.setData("periodTarget", 4.0);
+                rep.setData("target", 75.0);
+                break;
+            case 6:
+                rep.setData("periodTarget", 5.0);
+                rep.setData("target", 75.0);
+                break;
+            case 7:
+                rep.setData("periodTarget", 5.0);
+                rep.setData("target", 100.0);
+                break;
+        }
+
+        rep.setData("bonusScore", 100.0 + index *30);
+
+        // TODO baseline dei repetitive
+        // rep.setData("percentage", improvementValue / modeCounter - 1);
+        // rep.setData("baseline", modeCounter);
+        // rep.setInfo("improvement", improvementValue / modeCounter);
+
+        // rscv.valuate(cdd);
+
+
+        rep.setState("assigned");
+        rep.setOrigin("rs");
+        rep.setInfo("id", 0);
+
+        return rep;
+
     }
+
+    private LinkedHashMap<String, Object> getRepetitiveWeek(List<LinkedHashMap<String, Object>> last, int days) {
+
+        DateTime m = jumpToMonday(new DateTime().minusDays(days));
+
+        for (LinkedHashMap<String, Object> cha: last) {
+
+            DateTime start = jumpToMonday(new DateTime(cha.get("start")));
+
+            int v = Math.abs(daysApart(m, start));
+            if (v > 0)
+                continue;
+
+            return cha;
+        }
+
+        return null;
+    }
+
+    private List<LinkedHashMap<String, Object>> getLastRepetitiveChallenges(String pId) {
+
+        List<LinkedHashMap<String, Object>> out = new ArrayList<>();
+
+
+        List<LinkedHashMap<String, Object>> currentChallenges = facade.getChallengesPlayer(cfg.get("GAME_ID"), pId);
+        for (LinkedHashMap<String, Object> cha: currentChallenges) {
+
+            if (!((String) cha.get("modelName")).contains("repetitiveBehaviour"))
+                continue;
+
+            out.add(cha);
+
+        }
+
+        return out;
+    }
+
 }

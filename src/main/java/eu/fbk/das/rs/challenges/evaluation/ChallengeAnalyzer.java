@@ -10,52 +10,64 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.*;
 
 import static eu.fbk.das.rs.utils.Utils.*;
 
 public class ChallengeAnalyzer extends ChallengeDataGuru {
 
+    protected boolean checkIfChosen = true;
     private Map<String, List<Double>> incrByCounter;
     private ArrayList<List<Double>> incrByLvl;
     private ArrayList<Double> incrTot;
 
     // "challenges-2018-11-14-complete.csv", "challenges-2018-11-20-complete.csv", "challenges-2018-11-27-complete.csv"
-    public String[] files = new String[] {"week-15/challenges-2019-02-06-complete.csv"};
+    public String[] files = new String[] {"week-7/challenges-2018-12-12-complete.csv"};
 
     String path = "/home/loskana/Documents/GamifDrive/Trento_Play&Go/challenges/";
     private int next_p;
 
-    String anim = "\\|/|";
+    String anim = "\\|/|-\\";
 
     private int linesTot;
     private int linesCurrent;
 
     private long last_adv;
 
-    private Map<String, Integer> counterChosen;
-    private Map<String, Integer> counterTgt;
+    private Map<String, Map<String, Integer>> counter;
 
     private int cnt;
 
     private Set<String> playersChosen;
     private Set<String> playersAll;
 
+    protected Map<String, List<ChallengeRecord>> challenges;
+
+    private long now;
+
+    private long last;
+
+    protected int weekStart = 1;
+
+    private int weekEnd = 24;
+
     public ChallengeAnalyzer(RecommendationSystemConfig cfg) {
         super(cfg);
     }
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) {
         ChallengeAnalyzer cdg = new ChallengeAnalyzer(new RecommendationSystemConfig());
 
-        // cdg.analyzeSelected();
-        cdg.analyzeAll();
+        cdg.analyzeSelected();
+        // cdg.analyzeAll();
     }
 
-    private void analyzeAll() {
+    protected void analyzeAll() {
         prepare();
+        createFacade();
 
-        for (int i = 16; i < 18; i++) {
+        for (int i = weekStart; i < weekEnd; i++) {
             String n_path = f("%s/week-%d/", path, i);
             File[] listOfFiles = new File(n_path).listFiles();
             if (listOfFiles == null)
@@ -66,29 +78,45 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
         }
     }
 
-    private void analyzeSelected() {
+
+    protected void analyzeSelected() {
         prepare();
+        createFacade();
 
         for (String s: files)
             analyze(path, s);
     }
 
-    private void analyze(String path, String s)  {
+    protected void analyze(String file, String s)  {
 
         p("");
         p(cfg.get("GAME_ID"));
-        p(path + s);
+        p(file + s);
 
         playersAll = new HashSet<>();
         playersChosen = new HashSet<>();
 
         linesTot = 0;
-        countLines(path + s);
+        countLines(file + s);
 
         linesCurrent = 0;
-        analyzeFile(path , s);
+
+        challenges = new HashMap<String, List<ChallengeRecord>>();
+
+        analyzeFile(file , s);
+
+        experiment(file);
 
         output();
+    }
+
+    protected void experiment(String file) {
+        for (String pId: challenges.keySet()) {
+            List<ChallengeRecord> chas = challenges.get(pId);
+            for (ChallengeRecord cha: chas) {
+                experimentChallenge(cha, file);
+            }
+        }
     }
 
     private void countLines(String path) {
@@ -107,7 +135,7 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
         }
     }
 
-    private void output() {
+    protected void output() {
         pf("\n\n DONE!");
 
         pf("\n\n");
@@ -124,6 +152,9 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
         for (String c: incrByCounter.keySet()) {
             pf("# Counter %s: %s\n", c, an(incrByCounter.get(c)));
         }
+
+        pf("\n\n");
+        pf("%.2f\n", counter.get("counterTgtChosen").get("gen") * 1.0 / counter.get("counterTgtProposed").get("gen"));
     }
 
     public static String an(List<Double> ld) {
@@ -141,7 +172,7 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
         }
 
 
-    private void prepare() {
+    protected void prepare() {
         incrTot = new ArrayList<Double>();
         incrByLvl = new ArrayList<List<Double>>();
         incrByCounter = new HashMap<>();
@@ -154,10 +185,9 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
 
         last_adv = System.currentTimeMillis();
 
-        counterTgt = new HashMap<>();
-        counterChosen = new HashMap<>();
+        counter = new HashMap<>();
 
-        facade = new GamificationEngineRestFacade(cfg.get("HOST"), cfg.get("USERNAME"), cfg.get("PASSWORD"));
+        challenges= new HashMap<>();
 
     }
 
@@ -169,9 +199,14 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
             line = reader.readLine();
             while (line != null) {
                 // System.out.println(line);
-                experiment(new ChallengeRecord(line), file);
+                ChallengeRecord cha = new ChallengeRecord(line);
+                if (!challenges.containsKey(cha.pId))
+                    challenges.put(cha.pId, new ArrayList<>(3));
+                challenges.get(cha.pId).add(cha);
                 // read next line
                 line = reader.readLine();
+
+                showAdvancement(cha);
             }
             reader.close();
         } catch (IOException e) {
@@ -179,25 +214,30 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
         }
     }
 
-    private void experiment(ChallengeRecord cr, String file) {
+    private void experimentChallenge(ChallengeRecord cr, String file) {
 
-        showAdvancement(cr);
 
         // Ignore non-target experiments
         // if (!"tgt".equals(cr.exp))
         //     return;
 
-        incr(counterTgt, "gen", file);
+        incr("counterTgt", "gen", file);
 
         playersAll.add(cr.pId);
+
+        if ("tgt".equals(cr.exp))
+            incr("counterTgtProposed", "gen", file);
 
         // Check only challenges that have been chosen (not automatically assigned)
         if (!cr.chosen)
             return;
 
+        if ("tgt".equals(cr.exp))
+            incr("counterTgtChosen", "gen", file);
+
         playersChosen.add(cr.pId);
 
-        incr(counterChosen, "gen", file);
+        incr("counterChosen", "gen", file);
 
         incrTot.add(cr.impr);
 
@@ -210,13 +250,18 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
         incrByCounter.get(cr.counter).add(cr.impr);
     }
 
-    private void incr(Map<String, Integer> counter, String s, String s2) {
-        if (!counter.containsKey(s))
-            counter.put(s, 0);
-        counter.put(s, counter.get(s) +1);
-        if (!counter.containsKey(s2))
-            counter.put(s2, 0);
-        counter.put(s2, counter.get(s2) +1);
+    private void incr(String name, String s, String s2) {
+
+        if (!counter.containsKey(name))
+            counter.put(name, new HashMap<>());
+        Map<String, Integer> counterS = counter.get(name);
+
+        if (!counterS.containsKey(s))
+            counterS.put(s, 0);
+        counterS.put(s, counterS.get(s) +1);
+        if (!counterS.containsKey(s2))
+            counterS.put(s2, 0);
+        counterS.put(s2, counterS.get(s2) +1);
     }
 
     private void showAdvancement(ChallengeRecord cr) {
@@ -232,9 +277,9 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
         long now = System.currentTimeMillis();
         if (now > last_adv + 500) {
             cnt++;
-            if (cnt>3)
+            if (cnt>4)
                 cnt = 0;
-            last_adv = cnt;
+            last_adv = now;
         }
         h += anim.charAt(cnt);
 
@@ -252,24 +297,30 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
 
     }
 
-    private class ChallengeRecord {
+    protected class ChallengeRecord {
 
-        private final String name;
-        private final String pId;
-        private final int lvl;
+        protected final String name;
+        protected final String pId;
+        protected final int lvl;
 
-        private final double baseline;
-        private final double target;
-        private final String counter;
-        private final String model;
-        private final String exp;
-        private final int id;
-        private final double impr;
+        public final double baseline;
+        public final double target;
+        protected final String counter;
+        protected final String model;
+        public final String exp;
+        public final int id;
+        protected final double impr;
+        public final int priority;
+        private final Integer week;
+        public final DateTime start;
+        private final int difficulty;
+        private final int bonus;
+        private final String state;
 
-        private boolean chosen;
-        private boolean completed;
+        public boolean chosen;
+        protected boolean completed;
 
-        private Map<String, Date> stateDate;
+        protected Map<String, Date> stateDate;
 
         public ChallengeRecord(String line) {
             String[] spl = line.split(",");
@@ -285,8 +336,34 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
             baseline = d(spl[ix++]);
             target = d(spl[ix++]);
             impr = d(spl[ix++]);
+            difficulty = n(spl[ix++]);
+            bonus = n(spl[ix++]);
+            state = spl[ix++];
+            priority = n(spl[ix++]);
+            start = dt(spl[ix++]);
 
+            if (checkIfChosen)
             searchChallenge();
+
+            week = getChallengeWeek(start);
+        }
+
+        private DateTime dt(String s) {
+            try {
+                return new DateTime(sdf.parse(s));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            } return null;
+        }
+
+        private int n(String s) {
+            s = s.trim();
+            if ("null".equals(s))
+                return -1;
+            else if (s.contains("."))
+                return (int) d(s);
+            else
+                return i(s);
         }
 
         private String s(String s) {
@@ -294,11 +371,17 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
         }
 
         private double d(String s) {
+            s = s.trim();
+            if ("null".equals(s))
+                return -1;
             return Double.valueOf(s.trim());
         }
 
         private int i(String s) {
-            return Integer.valueOf(s.trim());
+            s = s.trim();
+            if ("null".equals(s))
+                return -1;
+                return Integer.valueOf(s.trim());
         }
 
         private void searchChallenge() {
@@ -340,6 +423,32 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
             return false;
         }
 
+    }
+
+    protected Integer getChallengeWeek(DateTime d) {
+        // get week
+        Integer w = d.getWeekOfWeekyear();
+        if (d.getYear() == 2019)
+            w += 52;
+        w-= 43;
+        return w;
+    }
+
+
+    protected double getPlayerChosen(List<ChallengeRecord> chas) {
+        for (ChallengeRecord cha: chas)
+            if (cha.chosen)
+                return cha.target;
+
+        return -1;
+    }
+
+    protected double getTargetProposed(List<ChallengeRecord> chas) {
+        for (ChallengeRecord cha: chas)
+            if (cha.priority == 2)
+                return cha.target;
+
+        return -1;
     }
 }
 

@@ -1,5 +1,6 @@
 package eu.fbk.das.rs.challenges.evaluation;
 
+import eu.fbk.das.rs.challenges.ChallengeUtil;
 import eu.fbk.das.rs.utils.Utils;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
@@ -11,6 +12,7 @@ import org.joda.time.DateTime;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Writer;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static eu.fbk.das.rs.utils.Utils.*;
@@ -19,10 +21,7 @@ import static eu.fbk.das.rs.utils.Utils.*;
  * This script collects the available data on the challenges assigned during the 2017 edition.
  * The goal is to have a training data for a classifier able to estimate the "likeness" of completion.
  */
-public class ChallengeDataGuru {
-
-    protected final RecommendationSystemConfig cfg;
-    protected GamificationEngineRestFacade facade;
+public class ChallengeDataGuru extends ChallengeUtil  {
 
     private List<Integer> training_model = new ArrayList<>();
     private List<Integer> training_counter = new ArrayList<>();
@@ -45,8 +44,10 @@ public class ChallengeDataGuru {
     private DateTime date;
     private ArrayList<ChallengeDataDTO> l_cha;
 
+    protected SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+
     public ChallengeDataGuru(RecommendationSystemConfig cfg) {
-        this.cfg = cfg;
+        super(cfg);
 
         // all = new HashMap<>();
         cha_completed = new HashSet<>();

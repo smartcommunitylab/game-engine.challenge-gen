@@ -42,18 +42,6 @@ public class RecommendationSystemChallengeFilteringAndSorting {
         dbg(logger, "RecommendationSystemChallengeFilteringAndSorting init complete");
     }
 
-    public void prepare(RecommendationSystemStatistics stats) {
-
-        /* REMOVED LEADERBOARD
-        if (!stats.containsKey(cfg.gLeaves)) {
-            err(logger, "No green leaves leaderboard in statistics!");
-            return;
-        }
-
-        leaderboard = stats.get(cfg.gLeaves);
-        */
-    }
-
     public List<ChallengeDataDTO> filter(List<ChallengeDataDTO> challenges, Player player, DateTime date) {
         this.execDate = date;
 

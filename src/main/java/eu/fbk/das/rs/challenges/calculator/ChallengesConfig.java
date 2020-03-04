@@ -61,7 +61,7 @@ public class ChallengesConfig {
      * --------------------------------------
      */
 
-    public static final  double booster = 1.3;
+    public static final  double booster = 1.4;
     public static final  int week_n = 5;
 
 
@@ -80,7 +80,7 @@ public class ChallengesConfig {
 
     // Transportation mode configuration
     // First, declare call supported modes. Order matters!
-    public static String[] defaultMode = {WALK_KM, BUS_TRIPS, BIKE_KM, TRAIN_TRIPS, GREEN_LEAVES};
+    public static String[] defaultMode = {WALK_KM, BUS_KM, BIKE_KM, TRAIN_KM, GREEN_LEAVES};
     // Second, declare corresponding *_Trips of *_Km modes (i.e. Walk_km =>
     // Walk_Trips), used for try once challenges
     private static final String[] defaultModetrip = {BIKE_TRIPS, WALK_TRIPS,

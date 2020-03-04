@@ -482,6 +482,10 @@ public class ArrayUtils {
         return Arrays.binarySearch(l, a);
     }
 
+    public static int pos(String a, String[] l) {
+        return Arrays.binarySearch(l, a);
+    }
+
     public static int pos(double a, double[] l) {
         return Arrays.binarySearch(l, a);
     }

@@ -1,7 +1,9 @@
 package eu.fbk.das.rs.challenges;
 
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
+import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
+import eu.fbk.das.rs.challenges.generation.RecommendationSystemStatistics;
 import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
 import eu.trentorise.game.challenges.rest.Player;
 import eu.trentorise.game.challenges.rest.PlayerLevel;
@@ -17,42 +19,65 @@ public class ChallengeUtil {
 
     protected GamificationEngineRestFacade facade;
     protected RecommendationSystemConfig cfg;
+    protected RecommendationSystemStatistics stats;
+    protected RecommendationSystem rs;
+
     protected String gameId;
     protected DateTime execDate;
 
-    protected DateTime endDate;
-    protected DateTime startDate;
+    public DateTime endDate;
+    public DateTime startDate;
     protected DateTime lastMonday;
     protected String prefix;
 
     protected int playerLimit = 50;
     protected int minLvl = -1;
 
+    protected String[] counters;
+
     public ChallengeUtil(RecommendationSystemConfig cfg) {
         this.cfg = cfg;
         gameId = cfg.get("GAME_ID");
     }
 
-    protected void setFacade( GamificationEngineRestFacade facade) {
+    protected void createFacade() {
+        facade = new GamificationEngineRestFacade(cfg.get("HOST"), cfg.get("USERNAME"), cfg.get("PASSWORD"));
+    }
+
+    public void setFacade(GamificationEngineRestFacade facade) {
         this.facade = facade;
     }
 
     protected void prepare(DateTime date) {
+        prepare(date, null, null);
+    }
 
-        // Set next monday as start, and next sunday as end
-        int week_day = execDate.getDayOfWeek();
-        int d = (7 - week_day) + 1;
+    public void prepare(DateTime execDate, RecommendationSystem rs) {
+        prepare(execDate, rs, null);
+    }
+
+    public void prepare(DateTime date, RecommendationSystem rs, RecommendationSystemStatistics stats) {
 
         this.execDate = date
                 .withHourOfDay(0)
                 .withMinuteOfHour(0)
                 .withSecondOfMinute(0);
 
+        // Set next monday as start, and next sunday as end
+        int week_day = execDate.getDayOfWeek();
+        int d = (7 - week_day) + 1;
+
         lastMonday = execDate.minusDays(week_day-1).minusDays(7);
 
         startDate = execDate.plusDays(d);
         startDate = startDate.minusDays(2);
         endDate = startDate.plusDays(7);
+
+        counters = ChallengesConfig.getPerfomanceCounters();
+
+        this.rs = rs;
+        this.stats = stats;
+        prefix = f(ChallengesConfig.getChallengeNamePrefix(), rs.getChallengeWeek(execDate));
     }
 
     protected List<String> getPlayers() {
