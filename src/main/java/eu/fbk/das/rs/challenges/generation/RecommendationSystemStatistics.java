@@ -1,6 +1,7 @@
 package eu.fbk.das.rs.challenges.generation;
 
 import com.google.common.math.Quantiles;
+import eu.fbk.das.rs.challenges.ChallengeUtil;
 import eu.fbk.das.rs.utils.ArrayUtils;
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
 import eu.trentorise.game.challenges.rest.*;
@@ -13,7 +14,7 @@ import static eu.fbk.das.rs.utils.Utils.formatDate;
 import static eu.fbk.das.rs.utils.Utils.*;
 import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.fixMode;
 
-public class RecommendationSystemStatistics {
+public class RecommendationSystemStatistics extends ChallengeUtil {
 
     private String STATS_FILENAME = "rs.statistics";
     protected GamificationEngineRestFacade facade;
@@ -22,12 +23,12 @@ public class RecommendationSystemStatistics {
     private String[] l_mode;
     private Map<String, Map<Integer, Double>> quartiles;
     private boolean offline = true;
-    protected RecommendationSystemConfig cfg;
 
     private DateTime lastMonday;
     private String host;
 
-    public RecommendationSystemStatistics() {
+    public RecommendationSystemStatistics(RecommendationSystem rs) {
+        super(rs);
         quartiles = new HashMap<>();
 
         this.l_mode = ArrayUtils.cloneArray(ChallengesConfig.defaultMode);
@@ -36,11 +37,8 @@ public class RecommendationSystemStatistics {
         Arrays.sort(this.l_mode);
     }
 
-    public Map<String, Map<Integer, Double>> checkAndUpdateStats(GamificationEngineRestFacade facade, DateTime date, RecommendationSystemConfig cfg, String host) {
-        this.facade = facade;
-        this.cfg = cfg;
+    public Map<String, Map<Integer, Double>> checkAndUpdateStats(DateTime date) {
         this.execDate = date;
-        this.host = host;
 
         int week_day = execDate.getDayOfWeek();
         int d = (7 - week_day) + 1;
@@ -56,7 +54,7 @@ public class RecommendationSystemStatistics {
 
     private Map<String, Map<Integer, Double>> updateStatsOnline() {
 
-        GameStatisticsSet st = facade.readGameStatistics(cfg.get("GAME_ID"), lastMonday);
+        GameStatisticsSet st = facade.readGameStatistics(rs.gameId, lastMonday);
 
         // GameStatisticsSet st = facade.readGameStatistics(cfg.get("GAME_ID"));
 
@@ -162,7 +160,7 @@ public class RecommendationSystemStatistics {
             stats.put(mode, new ArrayList<Double>());
         }
 
-        Map<String, Player> m_player = facade.readGameState(cfg.get("GAME_ID"));
+        Map<String, Player> m_player = facade.readGameState(rs.gameId);
 
         // update(stats, "24440");
 

@@ -7,7 +7,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import eu.trentorise.game.bean.ExecutionDataDTO;
+
 import eu.trentorise.game.challenges.api.Constants;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import eu.trentorise.game.challenges.model.ChallengeModel;
@@ -321,6 +321,7 @@ public class GamificationEngineRestFacade {
         return false;
     }
 
+    /*
     public boolean saveItinerary(ExecutionDataDTO input) {
         if (input == null) {
             throw new IllegalArgumentException("input cannot be null");
@@ -328,7 +329,7 @@ public class GamificationEngineRestFacade {
         WebTarget target = getTarget().path(EXECUTE);
         Response response = post(target, input);
         return response != null;
-    }
+    }*/
 
     public boolean updateChallengeCustomData(String gameId, String playerId,
                                              Map<String, Object> customData) {
@@ -356,6 +357,7 @@ public class GamificationEngineRestFacade {
         return response != null;
     }
 
+    /*
     public boolean executeAction(ExecutionDataDTO input) {
         if (input == null) {
             throw new IllegalArgumentException("input cannot be null");
@@ -363,7 +365,7 @@ public class GamificationEngineRestFacade {
         WebTarget target = getTarget().path(EXECUTE);
         Response response = post(target, input);
         return response != null;
-    }
+    }*/
 
     public boolean insertChallengeModel(String gameId, ChallengeModel model) {
         if (gameId == null || model == null) {

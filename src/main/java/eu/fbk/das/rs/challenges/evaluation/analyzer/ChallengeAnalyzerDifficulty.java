@@ -1,8 +1,7 @@
 package eu.fbk.das.rs.challenges.evaluation.analyzer;
 
-import eu.fbk.das.rs.challenges.calculator.ChallengesModeConfiguration;
 import eu.fbk.das.rs.challenges.evaluation.ChallengeAnalyzer;
-import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
+import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import org.apache.commons.math3.stat.StatUtils;
 import org.apache.commons.math3.util.FastMath;
 
@@ -14,12 +13,12 @@ public class ChallengeAnalyzerDifficulty extends ChallengeAnalyzer {
 
     private Map<String, List<Double>> cache;
 
-    public ChallengeAnalyzerDifficulty(RecommendationSystemConfig cfg) {
-        super(cfg);
+    public ChallengeAnalyzerDifficulty(RecommendationSystem rs) {
+        super(rs);
     }
 
     public static void main(String[] args) {
-        ChallengeAnalyzerDifficulty cdg = new ChallengeAnalyzerDifficulty(new RecommendationSystemConfig());
+        ChallengeAnalyzerDifficulty cdg = new ChallengeAnalyzerDifficulty(new RecommendationSystem(conf.get("HOST"), conf.get("USER"), conf.get("PASS")));
 
         cdg.analyzeAll();
     }

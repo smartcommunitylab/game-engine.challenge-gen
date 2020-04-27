@@ -1,6 +1,7 @@
 package eu.fbk.das.rs.challenges.evaluation;
 
 import eu.fbk.das.rs.challenges.ChallengeUtil;
+import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import eu.fbk.das.rs.utils.Utils;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
@@ -46,8 +47,8 @@ public class ChallengeDataGuru extends ChallengeUtil  {
 
     protected SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
-    public ChallengeDataGuru(RecommendationSystemConfig cfg) {
-        super(cfg);
+    public ChallengeDataGuru(RecommendationSystem rs) {
+        super(rs);
 
         // all = new HashMap<>();
         cha_completed = new HashSet<>();
@@ -56,7 +57,7 @@ public class ChallengeDataGuru extends ChallengeUtil  {
         // training_label = new ArrayList<>();
     }
 
-    public void generate(String out_path, Map<String, List<ChallengeDataDTO>> challenges, GamificationEngineRestFacade facade, DateTime date, String[] challengeColNames) throws IOException {
+    public void generate(String out_path, Map<String, List<ChallengeDataDTO>> challenges, DateTime date, String[] challengeColNames) throws IOException {
 
         // Read challenge cha_completed list
         //   readCompleted();
@@ -65,7 +66,6 @@ public class ChallengeDataGuru extends ChallengeUtil  {
         // Read challenge assigned list
         //    readAll();
 
-        this.facade = facade;
         this.date = date;
 
         computeData(challenges);
@@ -139,7 +139,7 @@ public class ChallengeDataGuru extends ChallengeUtil  {
         l_cha = new ArrayList<>();
 
         for (String pId : challenges.keySet()) {
-            Player cnt = facade.getPlayerState(cfg.get("GAME_ID"), pId);
+            Player cnt = rs.facade.getPlayerState(rs.gameId, pId);
 
             for (ChallengeDataDTO cha : challenges.get(pId)) {
                 goChallenge(cnt, cha);

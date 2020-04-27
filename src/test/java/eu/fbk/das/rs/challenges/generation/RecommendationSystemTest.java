@@ -53,7 +53,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
 
     @Test
     public void test() {
-        RecommendationSystem rs = new RecommendationSystem();
+        RecommendationSystem rs = new RecommendationSystem(conf.get("HOST"), conf.get("USER"), conf.get("PASS"));
         DateTime date = new DateTime();
         rs.prepare(facade, date);
 
@@ -81,7 +81,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
         else
             date = Utils.stringToDate(d);
 
-        RecommendationSystem rs = new RecommendationSystem();
+        RecommendationSystem rs = new RecommendationSystem(conf.get("HOST"), conf.get("USER"), conf.get("PASS"));
         rs.prepare(facade, date);
 
         Player state = facade.getPlayerState(cfg.get("GAME_ID"), pId);
@@ -96,7 +96,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
         // preparazione
         String pId = "122"; // cfg.get("PLAYER_ID");
 
-        RecommendationSystem rs = new RecommendationSystem();
+        RecommendationSystem rs = new RecommendationSystem(conf.get("HOST"), conf.get("USER"), conf.get("PASS"));
         rs.prepare(facade, new DateTime());
         RecommendationSystemChallengeGeneration rscg = new RecommendationSystemChallengeGeneration(cfg, null);
 
@@ -122,7 +122,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
 
         DateTime date = Utils.stringToDate(cfg.get("DATE"));
 
-        RecommendationSystem rs = new RecommendationSystem();
+        RecommendationSystem rs = new RecommendationSystem(conf.get("HOST"), conf.get("USER"), conf.get("PASS"));
         rs.prepare(facade, date);
 
         List<ChallengeDataDTO> cnt = rs.recommend(player_id, date);
@@ -158,7 +158,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
 
         DateTime date = Utils.stringToDate(cfg.get("DATE"));
 
-        RecommendationSystem rs = new RecommendationSystem();
+        RecommendationSystem rs = new RecommendationSystem(conf.get("HOST"), conf.get("USER"), conf.get("PASS"));
 
         RecommendationSystemStatistics statistics = new RecommendationSystemStatistics();
         statistics.checkAndUpdateStats(facade, date, cfg, "test");

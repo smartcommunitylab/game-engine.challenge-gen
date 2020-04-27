@@ -2,7 +2,6 @@ package eu.fbk.das.rs.challenges.generation;
 
 import eu.fbk.das.rs.challenges.ChallengeUtil;
 import eu.fbk.das.rs.utils.Pair;
-import eu.fbk.das.rs.valuator.RecommendationSystemChallengeValuator;
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import eu.trentorise.game.challenges.rest.Player;
@@ -25,35 +24,19 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
 
     private static final Logger logger = LogManager.getLogger(RecommendationSystem.class);
 
-    private final RecommendationSystemChallengeValuator rscv;
-
-    private RecommendationSystemConfig cfg;
-
     private double lastCounter;
 
-
-    /**
-     * Create a new recommandation system challenge generator
-     */
-    public RecommendationSystemChallengeGeneration(RecommendationSystemConfig configuration, RecommendationSystemChallengeValuator rscv) {
-        super(configuration);
-        if (configuration == null) {
-            throw new IllegalArgumentException(
-                    "Recommandation system cfg must be not null");
-        }
-        this.cfg = configuration;
-        dbg(logger, "RecommendationSystemChallengeGeneration init complete");
-
-        this.rscv = rscv;
+    public RecommendationSystemChallengeGeneration(RecommendationSystem rs) {
+        super(rs);
     }
 
     public List<ChallengeDataDTO> generate(Player state, String mode, DateTime execDate, RecommendationSystem rs) {
-        return generate(state, mode, execDate, rs, "treatment");
+        return generate(state, mode, execDate, "treatment");
     }
 
-    public List<ChallengeDataDTO> generate(Player state, String mode, DateTime execDate, RecommendationSystem rs, String exp) {
+    public List<ChallengeDataDTO> generate(Player state, String mode, DateTime execDate, String exp) {
 
-        prepare(execDate, rs);
+        prepare(execDate);
 
         List<ChallengeDataDTO> output = new ArrayList<>();
 
@@ -117,7 +100,7 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
             cdd.setModelName("absoluteIncrement");
             cdd.setData("target", 1.0);
             cdd.setInfo("improvement", 1.0);
-            rscv.valuate(cdd);
+            rs.rscv.valuate(cdd);
 
             cdd.setData("bonusScore", 100);
 
@@ -151,7 +134,7 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
         cdd.setData("baseline", modeCounter);
         cdd.setInfo("improvement", improvementValue / modeCounter);
 
-        rscv.valuate(cdd);
+        rs.rscv.valuate(cdd);
 
         return cdd;
     }
@@ -227,7 +210,7 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
 
             List<ChallengeDataDTO> challanges = new ArrayList<>();
             for (String mode : ChallengesConfig.getPerfomanceCounters()) {
-                challanges.addAll(generate(cnt, mode, new DateTime(), new RecommendationSystem()));
+                challanges.addAll(generate(cnt, mode, new DateTime(), new RecommendationSystem(conf.get("HOST"), conf.get("USER"), conf.get("PASS"))));
             }
 
             res.put(cnt.getPlayerId(), challanges);
@@ -236,9 +219,9 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
         return res;
     }
 
-    public List<ChallengeDataDTO> forecast(Player state, String mode, DateTime execDate, RecommendationSystem rs) {
+    public List<ChallengeDataDTO> forecast(Player state, String mode, DateTime execDate) {
 
-        prepare(execDate, rs);
+        prepare(execDate);
 
         Pair<Double, Double> res = forecastMode(state, mode);
         double target = res.getFirst();
@@ -533,7 +516,7 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
         List<LinkedHashMap<String, Object>> out = new ArrayList<>();
 
 
-        List<LinkedHashMap<String, Object>> currentChallenges = facade.getChallengesPlayer(cfg.get("GAME_ID"), pId);
+        List<LinkedHashMap<String, Object>> currentChallenges = rs.facade.getChallengesPlayer(rs.gameId, pId);
         for (LinkedHashMap<String, Object> cha: currentChallenges) {
 
             if (!((String) cha.get("modelName")).contains("repetitiveBehaviour"))

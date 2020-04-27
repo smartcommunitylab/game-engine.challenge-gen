@@ -41,42 +41,43 @@ public class RecommendationSystem {
 
     public GamificationEngineRestFacade facade;
     public RecommendationSystemConfig cfg;
-    private Map<String, List<ChallengeDataDTO>> toWriteChallenge = new HashMap<String, List<ChallengeDataDTO>>();
+    public String gameId;
+    public String host;
+
     public RecommendationSystemChallengeGeneration rscg;
     public RecommendationSystemChallengeValuator rscv;
     public RecommendationSystemChallengeFilteringAndSorting rscf;
     private RecommendationSystemStatistics stats;
 
-    private int totPlayers;
-    private int currentPlayer;
-    private GamificationEngineRestFacade copy;
+    public RecommendationSystem(String host, String user, String pass, String gameId) {
+        this.host = host;
+        this.gameId = gameId;
+
+        facade = new GamificationEngineRestFacade(host, user, pass);
+
+        rscv = new RecommendationSystemChallengeValuator();
+        rscg = new RecommendationSystemChallengeGeneration(this);
+        rscf = new RecommendationSystemChallengeFilteringAndSorting();
+        stats = new RecommendationSystemStatistics(this);
+        dbg(logger, "Recommendation System init complete");
+    }
+
+    public RecommendationSystem(RecommendationSystemConfig cfg) {
+        this(cfg.get("HOST"), cfg.get("USERNAME"), cfg.get("PASSWORD"), cfg.get("GAME_ID"));
+    }
 
     public RecommendationSystem() {
         this(new RecommendationSystemConfig());
     }
 
-    public RecommendationSystem(RecommendationSystemConfig configuration) {
-        this.cfg = configuration;
-
-        rscv = new RecommendationSystemChallengeValuator(configuration);
-        rscg = new RecommendationSystemChallengeGeneration(configuration, rscv);
-        rscf = new RecommendationSystemChallengeFilteringAndSorting(
-                configuration);
-        stats = new RecommendationSystemStatistics();
-        dbg(logger, "Recommendation System init complete");
-
-    }
-
     // generate challenges
     public List<ChallengeDataDTO> recommend(String pId, DateTime d) {
 
-        Player state = facade.getPlayerState(cfg.get("GAME_ID"), pId);
-
-        rscg.setFacade(facade);
+        Player state = facade.getPlayerState(gameId, pId);
 
         int lvl = getLevel(state);
 
-        rscg.prepare(d, this);
+        rscg.prepare(d);
 
         String exp = getPlayerExperiment(pId);
 
@@ -354,7 +355,7 @@ public class RecommendationSystem {
         if (max_mode == null || max_value == 0)
             return assignLimit(3, state, execDate);
 
-            List<ChallengeDataDTO> l_cha = rscg.forecast(state, max_mode, execDate, this);
+            List<ChallengeDataDTO> l_cha = rscg.forecast(state, max_mode, execDate);
 
             int ix = 0;
             for(ChallengeDataDTO cha: l_cha) {
@@ -463,7 +464,7 @@ public class RecommendationSystem {
 
         List<ChallengeDataDTO> challanges = new ArrayList<>();
         for (String mode : ChallengesConfig.defaultMode) {
-            List<ChallengeDataDTO> l_cha = rscg.generate(state, mode, d, this, exp);
+            List<ChallengeDataDTO> l_cha = rscg.generate(state, mode, d, exp);
 
             if (l_cha.isEmpty())
                 continue;
@@ -654,12 +655,12 @@ public class RecommendationSystem {
 
     /* fac_body è per facade di testing non ancora passati in produzione */
     public void prepare(GamificationEngineRestFacade facade,  DateTime date, String host) {
+        this.host = host;
         this.facade = facade;
 
-        stats.checkAndUpdateStats(facade, date, cfg, host);
-        rscg.prepare(date, this, stats);
+        stats.checkAndUpdateStats(date);
+        rscg.prepare(date);
         rscv.prepare(stats);
-        rscg.setFacade(facade);
     }
 
     public void prepare(GamificationEngineRestFacade facade, DateTime date) {
@@ -808,4 +809,5 @@ public class RecommendationSystem {
 
         p("done");
     }
+
 }

@@ -4,7 +4,6 @@ import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemStatistics;
-import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
 import eu.trentorise.game.challenges.rest.Player;
 import eu.trentorise.game.challenges.rest.PlayerLevel;
 import org.joda.time.DateTime;
@@ -17,12 +16,8 @@ import static eu.fbk.das.rs.utils.Utils.*;
 
 public class ChallengeUtil {
 
-    protected GamificationEngineRestFacade facade;
-    protected RecommendationSystemConfig cfg;
-    protected RecommendationSystemStatistics stats;
     protected RecommendationSystem rs;
 
-    protected String gameId;
     protected DateTime execDate;
 
     public DateTime endDate;
@@ -35,28 +30,11 @@ public class ChallengeUtil {
 
     protected String[] counters;
 
-    public ChallengeUtil(RecommendationSystemConfig cfg) {
-        this.cfg = cfg;
-        gameId = cfg.get("GAME_ID");
+    public ChallengeUtil(RecommendationSystem rs) {
+        this.rs = rs;
     }
 
-    protected void createFacade() {
-        facade = new GamificationEngineRestFacade(cfg.get("HOST"), cfg.get("USERNAME"), cfg.get("PASSWORD"));
-    }
-
-    public void setFacade(GamificationEngineRestFacade facade) {
-        this.facade = facade;
-    }
-
-    protected void prepare(DateTime date) {
-        prepare(date, null, null);
-    }
-
-    public void prepare(DateTime execDate, RecommendationSystem rs) {
-        prepare(execDate, rs, null);
-    }
-
-    public void prepare(DateTime date, RecommendationSystem rs, RecommendationSystemStatistics stats) {
+    public void prepare(DateTime date) {
 
         this.execDate = date
                 .withHourOfDay(0)
@@ -75,19 +53,17 @@ public class ChallengeUtil {
 
         counters = ChallengesConfig.getPerfomanceCounters();
 
-        this.rs = rs;
-        this.stats = stats;
         prefix = f(ChallengesConfig.getChallengeNamePrefix(), rs.getChallengeWeek(execDate));
     }
 
+
     protected List<String> getPlayers() {
 
-
-        Set<String> players = facade.getGamePlayers(gameId);
+        Set<String> players = rs.facade.getGamePlayers(rs.gameId);
         List<String> playersToConsider = new ArrayList<String>(playerLimit);
         int ix = 0;
         for (String pId: players) {
-            Player p = facade.getPlayerState(gameId, pId);
+            Player p = rs.facade.getPlayerState(rs.gameId, pId);
             int lvl = getLevel(p);
             if (minLvl < 0 || lvl >=  minLvl) {
                 playersToConsider.add(pId);

@@ -2,10 +2,7 @@
 package eu.fbk.das.rs.challenges.evaluation;
 
 import eu.fbk.das.rs.challenges.ChallengeUtil;
-import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
-import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
-import eu.fbk.das.rs.utils.ArrayUtils;
-import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
+import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import eu.trentorise.game.challenges.rest.Player;
 import org.apache.commons.math3.stat.StatUtils;
 import org.apache.commons.math3.util.FastMath;
@@ -29,18 +26,15 @@ public class ImprovementChecker extends ChallengeUtil {
     private HashMap<String, Map<Integer, List<Double>>> weekImpr;
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        ImprovementChecker cdg = new ImprovementChecker(new RecommendationSystemConfig());
+        ImprovementChecker cdg = new ImprovementChecker(new RecommendationSystem(conf.get("HOST"), conf.get("USER"), conf.get("PASS")));
 
         // cdg.analyzeSelected();
         cdg.execute();
     }
 
 
-
-
-    public ImprovementChecker(RecommendationSystemConfig cfg) {
-        super(cfg);
-        setFacade(facade);
+    public ImprovementChecker(RecommendationSystem rs) {
+        super(rs);
 
         playerLimit = 0;
         minLvl = -1;
@@ -53,7 +47,7 @@ public class ImprovementChecker extends ChallengeUtil {
 
         List<String> players = getPlayers();
         for (String pId: players) {
-            Player state = facade.getPlayerState(gameId, pId);
+            Player state = rs.facade.getPlayerState(rs.gameId, pId);
             consider(state);
         }
 
@@ -86,9 +80,6 @@ public class ImprovementChecker extends ChallengeUtil {
 
     public void prepare(DateTime date) {
         super.prepare(date);
-
-        createFacade();
-
         weekImpr = new HashMap<String, Map<Integer, List<Double>>>();
         for (String counter: counters) {
             HashMap<Integer, List<Double>> impr = new HashMap<>();

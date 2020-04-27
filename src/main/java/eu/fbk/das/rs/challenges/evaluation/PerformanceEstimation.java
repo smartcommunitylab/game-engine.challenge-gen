@@ -1,7 +1,7 @@
 package eu.fbk.das.rs.challenges.evaluation;
 
 import eu.fbk.das.rs.challenges.ChallengeUtil;
-import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
+import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import eu.fbk.das.rs.utils.PolynomialRegression;
 import eu.trentorise.game.challenges.rest.Player;
 import org.apache.commons.lang.StringUtils;
@@ -30,22 +30,19 @@ public class PerformanceEstimation extends ChallengeUtil {
     private PrintWriter writer;
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        PerformanceEstimation cdg = new PerformanceEstimation(new RecommendationSystemConfig());
+        PerformanceEstimation cdg = new PerformanceEstimation(new RecommendationSystem(conf.get("HOST"), conf.get("USER"), conf.get("PASS")));
         cdg.execute();
     }
 
-    public PerformanceEstimation(RecommendationSystemConfig cfg) {
-        super(cfg);
-        createFacade();
+    public PerformanceEstimation(RecommendationSystem rs) {
+        super(rs);
 
         playerLimit = 50;
 
     }
 
-    protected void prepare(DateTime date) {
+    public void prepare(DateTime date) {
         super.prepare(date);
-
-        createFacade();
 
         record = new HashMap<>();
         for (String counter: counters) {
@@ -69,7 +66,7 @@ public class PerformanceEstimation extends ChallengeUtil {
         List<String> players = getPlayers();
 
         for (String pId: players) {
-            Player state = facade.getPlayerState(gameId, pId);
+            Player state = rs.facade.getPlayerState(rs.gameId, pId);
             consider(state);
         }
 

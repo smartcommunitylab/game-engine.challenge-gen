@@ -1,5 +1,6 @@
 package eu.fbk.das.rs.valuator;
 
+import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemStatistics;
@@ -24,14 +25,8 @@ public class RecommendationSystemChallengeValuator {
     /**
      * Create a new recommandation system challenge valuator
      */
-    public RecommendationSystemChallengeValuator(RecommendationSystemConfig configuration) {
-        if (configuration == null) {
-            throw new IllegalArgumentException(
-                    "Recommandation system cfg must be not null");
-        }
-
+    public RecommendationSystemChallengeValuator() {
         this.dc = new DifficultyCalculator();
-
         dbg(logger, "RecommendationSystemChallengeValuator init complete");
     }
 

@@ -136,7 +136,7 @@ public class RecommendationSystemChallengeGenerationTest extends ChallengesBaseT
                 .generateAll(gameData);
         // evaluate all challenges
         RecommendationSystemChallengeValuator valuator = new RecommendationSystemChallengeValuator(
-                configuration);
+        );
 
         // Map<String, List<ChallengeDataDTO>> evaluatedChallenges = valuator.valuate(challengeCombinations, gameData);
         Map<String, List<ChallengeDataDTO>> evaluatedChallenges = null;
@@ -198,7 +198,7 @@ public class RecommendationSystemChallengeGenerationTest extends ChallengesBaseT
     public void valuatorNullConfigTest() throws IOException {
         @SuppressWarnings("unused")
         RecommendationSystemChallengeValuator rv = new RecommendationSystemChallengeValuator(
-                null);
+        );
     }
 
     @Test(expected = IllegalArgumentException.class)

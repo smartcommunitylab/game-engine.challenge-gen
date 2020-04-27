@@ -1,9 +1,8 @@
 package eu.fbk.das.rs.challenges.evaluation;
 
-import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
+import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import eu.trentorise.game.challenges.rest.ChallengeConcept;
 import eu.trentorise.game.challenges.rest.Player;
-import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
 import org.joda.time.DateTime;
 
 import java.io.BufferedReader;
@@ -52,12 +51,12 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
 
     private int weekEnd = 24;
 
-    public ChallengeAnalyzer(RecommendationSystemConfig cfg) {
-        super(cfg);
+    public ChallengeAnalyzer(RecommendationSystem rs) {
+        super(rs);
     }
 
     public static void main(String[] args) {
-        ChallengeAnalyzer cdg = new ChallengeAnalyzer(new RecommendationSystemConfig());
+        ChallengeAnalyzer cdg = new ChallengeAnalyzer(new RecommendationSystem(conf.get("HOST"), conf.get("USER"), conf.get("PASS")));
 
         cdg.analyzeSelected();
         // cdg.analyzeAll();
@@ -65,7 +64,6 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
 
     protected void analyzeAll() {
         prepare();
-        createFacade();
 
         for (int i = weekStart; i < weekEnd; i++) {
             String n_path = f("%s/week-%d/", path, i);
@@ -81,7 +79,6 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
 
     protected void analyzeSelected() {
         prepare();
-        createFacade();
 
         for (String s: files)
             analyze(path, s);
@@ -90,7 +87,7 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
     protected void analyze(String file, String s)  {
 
         p("");
-        p(cfg.get("GAME_ID"));
+        p(rs.gameId);
         p(file + s);
 
         playersAll = new HashSet<>();
@@ -386,7 +383,7 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
 
         private void searchChallenge() {
 
-            Player state = facade.getPlayerState(cfg.get("GAME_ID"), pId);
+            Player state = rs.facade.getPlayerState(rs.gameId, pId);
 
             List<ChallengeConcept> l_cha = state.getState().getChallengeConcept();
             if (l_cha != null)

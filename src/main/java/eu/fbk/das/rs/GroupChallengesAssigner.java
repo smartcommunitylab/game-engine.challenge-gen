@@ -28,20 +28,16 @@ import static eu.fbk.das.rs.utils.Utils.*;
 public class GroupChallengesAssigner extends ChallengeUtil {
 
     private final int timelimit;
-    private RecommendationSystem rs;
 
     private String[] groupCha = new String[] {"groupCooperative", "groupCompetitiveTime", "groupCompetitivePerformance"};
 
     private double bcost = 3;
     private List<GroupChallengeDTO> groupChallenges;
 
-    public GroupChallengesAssigner(RecommendationSystemConfig cfg, GamificationEngineRestFacade facade) {
-        super(cfg);
-        setFacade(facade);
+    public GroupChallengesAssigner(RecommendationSystem rs) {
+        super(rs);
 
-        rs = new RecommendationSystem();
-        rs.prepare(facade, new DateTime(), cfg.get("HOST"));
-        prepare(new DateTime(), rs);
+        prepare(new DateTime());
 
         Arrays.sort(groupCha);
 
@@ -65,15 +61,15 @@ public class GroupChallengesAssigner extends ChallengeUtil {
         players = removeNotPartecipating(players);
 
         RecommendationSystemStatistics stats = rs.getStats();
-        rs.facade = facade;
-        stats.checkAndUpdateStats(facade, execDate, cfg, cfg.get("HOST"));
+
+        stats.checkAndUpdateStats(execDate);
 
         String[] modeList = new String[]{ChallengesConfig.WALK_KM, ChallengesConfig.BIKE_KM, ChallengesConfig.GREEN_LEAVES};
 
         HashMap<String, HashMap<String, Double>> playersCounterAssignment = getPlayerCounterAssignment(players, stats, modeList);
 
         TargetPrizeChallengesCalculator tpcc = new TargetPrizeChallengesCalculator();
-        tpcc.prepare(rs, cfg.get("GAME_ID"));
+        tpcc.prepare(rs, rs.gameId);
 
         for (String mode : modeList) {
 
@@ -93,7 +89,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
         }
 
         for (GroupChallengeDTO gcd: groupChallenges) {
-            facade.assignGroupChallenge(gcd, cfg.get("GAME_ID"));
+            rs.facade.assignGroupChallenge(gcd, rs.gameId);
         }
 
     }
@@ -105,7 +101,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
 
             boolean active = false;
 
-            Player player = facade.getPlayerState(cfg.get("GAME_ID"), pId);
+            Player player = rs.facade.getPlayerState(rs.gameId, pId);
 
             for (PointConcept pc : player.getState().getPointConcept()) {
                 if (!pc.getName().equals("green leaves"))
@@ -142,7 +138,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
 
             boolean exists = false;
 
-            List<LinkedHashMap<String, Object>> currentChallenges = facade.getChallengesPlayer(gameId, pId);
+            List<LinkedHashMap<String, Object>> currentChallenges = rs.facade.getChallengesPlayer(rs.gameId, pId);
             for (LinkedHashMap<String, Object> cha: currentChallenges) {
 
                 DateTime existingChaEnd = jumpToMonday(new DateTime(cha.get("end")));
@@ -189,7 +185,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
 
 
 
-            gcd = facade.makeGroupChallengeDTO(
+            gcd = rs.facade.makeGroupChallengeDTO(
                     type, mode, p.getFirst(), p.getSecond(),
                     startDate, endDate, result
             );
@@ -231,7 +227,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
             List<String> aux = new ArrayList<String>();
 
             for (String counter : modeList) {
-                Player pla = facade.getPlayerState(gameId, pId);
+                Player pla = rs.facade.getPlayerState(rs.gameId, pId);
                 Double baseline = getWMABaseline(pla, counter, lastMonday);
                 Map<Integer, Double> quant = stats.getQuantiles(counter);
                 int q = getQuantile(baseline, quant);
@@ -305,7 +301,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
 
         // ASSIGN repetitive behaviour
         ChallengeDataDTO rep = rs.rscg.getRepetitive(pId);
-        facade.assignChallengeToPlayer(rep, gameId, pId);
+        rs.facade.assignChallengeToPlayer(rep, rs.gameId, pId);
 
         return list;
     }

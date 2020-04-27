@@ -1,7 +1,7 @@
 package eu.fbk.das.rs.challenges.evaluation.analyzer;
 
 import eu.fbk.das.rs.challenges.evaluation.ChallengeAnalyzer;
-import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
+import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import eu.trentorise.game.challenges.rest.ChallengeConcept;
 import eu.trentorise.game.challenges.rest.Player;
 import org.joda.time.DateTime;
@@ -16,12 +16,12 @@ public class ChallengeAnalyzerCompletion extends ChallengeAnalyzer {
 
     private Map<Integer, int[]> cache;
 
-    public ChallengeAnalyzerCompletion(RecommendationSystemConfig cfg) {
-        super(cfg);
+    public ChallengeAnalyzerCompletion(RecommendationSystem rs) {
+        super(rs);
     }
 
     public static void main(String[] args) {
-        ChallengeAnalyzerCompletion cdg = new ChallengeAnalyzerCompletion(new RecommendationSystemConfig());
+        ChallengeAnalyzerCompletion cdg = new ChallengeAnalyzerCompletion(new RecommendationSystem(conf.get("HOST"), conf.get("USER"), conf.get("PASS")));
 
         cdg.execute();
     }
@@ -38,13 +38,12 @@ public class ChallengeAnalyzerCompletion extends ChallengeAnalyzer {
     private void execute() {
 
         prepare();
-        createFacade();
 
         int[] l;
 
         List<String> pl = getPlayers();
         for (String pId: pl) {
-            Player player = facade.getPlayerState(cfg.get("GAME_ID"), pId);
+            Player player = rs.facade.getPlayerState(rs.gameId, pId);
             for (ChallengeConcept cha: player.getState().getChallengeConcept()) {
 
                 if (!cha.getModelName().equals("percentageIncrement") && !cha.getModelName().equals("absoluteIncrement"))

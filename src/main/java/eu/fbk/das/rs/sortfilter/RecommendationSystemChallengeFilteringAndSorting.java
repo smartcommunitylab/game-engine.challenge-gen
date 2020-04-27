@@ -20,27 +20,9 @@ public class RecommendationSystemChallengeFilteringAndSorting {
     private static final Logger logger = LogManager
             .getLogger(RecommendationSystemChallengeFilteringAndSorting.class);
 
-    private RecommendationSystemConfig cfg;
-
     private double[] leaderboard;
 
     private DateTime execDate;
-
-    /**
-     * Create a new recommandation system challenge filtering and sorting
-     *
-     * @param configuration
-     * @throws IllegalArgumentException if cfg is null
-     */
-    public RecommendationSystemChallengeFilteringAndSorting(
-            RecommendationSystemConfig configuration) {
-        if (configuration == null) {
-            throw new IllegalArgumentException(
-                    "Recommandation system cfg must be not null");
-        }
-        this.cfg = configuration;
-        dbg(logger, "RecommendationSystemChallengeFilteringAndSorting init complete");
-    }
 
     public List<ChallengeDataDTO> filter(List<ChallengeDataDTO> challenges, Player player, DateTime date) {
         this.execDate = date;

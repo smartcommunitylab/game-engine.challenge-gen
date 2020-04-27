@@ -1,13 +1,11 @@
 package eu.fbk.das.rs;
 
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
-import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
 import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
 import eu.trentorise.game.challenges.rest.Player;
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -21,7 +19,6 @@ import java.util.Set;
 
 import static eu.fbk.das.rs.challenges.ChallengeUtil.getLevel;
 import static eu.fbk.das.rs.utils.Utils.*;
-import static org.junit.Assert.*;
 
 public class TargetPrizeChallengesCalculatorTest extends ChallengesBaseTest {
 
@@ -101,7 +98,7 @@ public class TargetPrizeChallengesCalculatorTest extends ChallengesBaseTest {
 
         gameId = cfg.get("GAME_ID");
 
-        rs = new RecommendationSystem();
+        rs = new RecommendationSystem(conf.get("HOST"), conf.get("USER"), conf.get("PASS"));
         rs.prepare(facade, now);
         tpcc = new TargetPrizeChallengesCalculator();
         tpcc.prepare(rs, gameId);

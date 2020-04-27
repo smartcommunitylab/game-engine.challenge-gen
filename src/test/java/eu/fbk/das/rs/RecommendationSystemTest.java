@@ -24,7 +24,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
 
         cfg.put("GAME_ID", "5d9353a3f0856342b2dded7f");
 
-        rscg.prepare(new DateTime(), new RecommendationSystem());
+        rscg.prepare(new DateTime(), new RecommendationSystem(conf.get("HOST"), conf.get("USER"), conf.get("PASS")));
         ChallengeDataDTO cha = rscg.prepareChallange("survey_prediction");
 
 
@@ -92,7 +92,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
 
         cfg.put("GAME_ID", "5d9353a3f0856342b2dded7f");
 
-        rscg.prepare(new DateTime(), new RecommendationSystem());
+        rscg.prepare(new DateTime(), new RecommendationSystem(conf.get("HOST"), conf.get("USER"), conf.get("PASS")));
         ChallengeDataDTO cha = rscg.prepareChallange("survey_prediction");
 
         cha.setModelName("survey");
@@ -141,7 +141,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
         String pId = "225";
         Player st = facade.getPlayerState(cfg.get("GAME_ID"), pId);
 
-        rscg.prepare(new DateTime().minusDays(7), new RecommendationSystem());
+        rscg.prepare(new DateTime().minusDays(7), new RecommendationSystem(conf.get("HOST"), conf.get("USER"), conf.get("PASS")));
         ChallengeDataDTO cha = rscg.getRepetitive(pId);
 
         // Assign to me
@@ -158,7 +158,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
         cfg.put("HOST", "https://dev.smartcommunitylab.it/gamification-v3/");
         facade = new GamificationEngineRestFacade(cfg.get("HOST"),cfg.get("USERNAME"), cfg.get("PASSWORD"));
 
-        RecommendationSystem rs = new RecommendationSystem();
+        RecommendationSystem rs = new RecommendationSystem(conf.get("HOST"), conf.get("USER"), conf.get("PASS"));
         rs.prepare(facade, new DateTime(), cfg.get("HOST"));
 
         String pId = "225";
