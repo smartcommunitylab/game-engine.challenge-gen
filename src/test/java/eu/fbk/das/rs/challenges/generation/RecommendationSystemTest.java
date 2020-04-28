@@ -166,7 +166,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
         Player cnt = facade.getPlayerState(cfg.get("GAME_ID"), player_id);
 
         // generazione della challenges
-        List<ChallengeDataDTO> l_cha = rscg.generate(cnt, "Walk_Km", date, rs);
+        List<ChallengeDataDTO> l_cha = rscg.generate(cnt, "Walk_Km", date);
 
         p("\n #### GENERATED #### \n");
         for (ChallengeDataDTO cha : l_cha) {

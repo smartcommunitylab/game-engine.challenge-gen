@@ -30,15 +30,13 @@ public class PerformanceEstimation extends ChallengeUtil {
     private PrintWriter writer;
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        PerformanceEstimation cdg = new PerformanceEstimation(new RecommendationSystem(conf.get("HOST"), conf.get("USER"), conf.get("PASS")));
+        PerformanceEstimation cdg = new PerformanceEstimation();
         cdg.execute();
     }
 
-    public PerformanceEstimation(RecommendationSystem rs) {
-        super(rs);
-
+    public PerformanceEstimation() {
+        super();
         playerLimit = 50;
-
     }
 
     public void prepare(DateTime date) {

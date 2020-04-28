@@ -47,6 +47,10 @@ public class ChallengeDataGuru extends ChallengeUtil  {
 
     protected SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
+    public ChallengeDataGuru() {
+        this(new RecommendationSystem ());
+    }
+
     public ChallengeDataGuru(RecommendationSystem rs) {
         super(rs);
 

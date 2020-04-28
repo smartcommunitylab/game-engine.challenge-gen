@@ -51,12 +51,8 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
 
     private int weekEnd = 24;
 
-    public ChallengeAnalyzer(RecommendationSystem rs) {
-        super(rs);
-    }
-
     public static void main(String[] args) {
-        ChallengeAnalyzer cdg = new ChallengeAnalyzer(new RecommendationSystem(conf.get("HOST"), conf.get("USER"), conf.get("PASS")));
+        ChallengeAnalyzer cdg = new ChallengeAnalyzer();
 
         cdg.analyzeSelected();
         // cdg.analyzeAll();

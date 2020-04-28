@@ -1,16 +1,13 @@
 package eu.fbk.das.rs;
 
-import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
 import eu.fbk.das.rs.challenges.ChallengeUtil;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
-import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemStatistics;
 import eu.fbk.das.rs.utils.ArrayUtils;
 import eu.fbk.das.rs.utils.Pair;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import eu.trentorise.game.challenges.model.GroupChallengeDTO;
 import eu.trentorise.game.challenges.rest.ChallengeConcept;
-import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
 import eu.trentorise.game.challenges.rest.Player;
 import eu.trentorise.game.challenges.rest.PointConcept;
 import org.chocosolver.solver.Model;
@@ -19,7 +16,6 @@ import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.variables.IntVar;
 import org.joda.time.DateTime;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.getWeeklyContentMode;
@@ -33,6 +29,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
 
     private double bcost = 3;
     private List<GroupChallengeDTO> groupChallenges;
+    private Set<String> modelTypes;
 
     public GroupChallengesAssigner(RecommendationSystem rs) {
         super(rs);
@@ -46,15 +43,13 @@ public class GroupChallengesAssigner extends ChallengeUtil {
         minLvl = 4;
     }
 
-    public void execute() {
+    public List<GroupChallengeDTO> execute(Set<String> players, Set<String> modelTypes, String assignmentType) {
 
         groupChallenges = new ArrayList<>();
 
-        String type = "groupCompetitiveTime";
+        // String type = "groupCompetitiveTime";
         // String type = "groupCooperative";
        //  String type = "groupCompetitivePerformance";
-
-        List<String> players = getPlayers();
 
         players = removeAlreadyPlaying(players);
 
@@ -62,16 +57,15 @@ public class GroupChallengesAssigner extends ChallengeUtil {
 
         RecommendationSystemStatistics stats = rs.getStats();
 
+        // TODO CHECK
         stats.checkAndUpdateStats(execDate);
 
-        String[] modeList = new String[]{ChallengesConfig.WALK_KM, ChallengesConfig.BIKE_KM, ChallengesConfig.GREEN_LEAVES};
-
-        HashMap<String, HashMap<String, Double>> playersCounterAssignment = getPlayerCounterAssignment(players, stats, modeList);
+        HashMap<String, HashMap<String, Double>> playersCounterAssignment = getPlayerCounterAssignment(players, stats, modelTypes);
 
         TargetPrizeChallengesCalculator tpcc = new TargetPrizeChallengesCalculator();
         tpcc.prepare(rs, rs.gameId);
 
-        for (String mode : modeList) {
+        for (String mode : modelTypes) {
 
             // Make sure they are all even
             Map<String, Double> res = checkEven(playersCounterAssignment.get(mode));
@@ -84,18 +78,15 @@ public class GroupChallengesAssigner extends ChallengeUtil {
             pairs.addAll(reduced);
 
             for (Pair<String, String> p: pairs) {
-                prepareGroupChallenge(type, tpcc, mode, p);
+                prepareGroupChallenge(assignmentType, tpcc, mode, p);
             }
         }
 
-        for (GroupChallengeDTO gcd: groupChallenges) {
-            rs.facade.assignGroupChallenge(gcd, rs.gameId);
-        }
-
+        return groupChallenges;
     }
 
-    private List<String> removeNotPartecipating(List<String> pl) {
-        List<String> players = new ArrayList<>();
+    private Set<String> removeNotPartecipating(Set<String> pl) {
+        Set<String> players = new HashSet<>();
 
         for (String pId: pl) {
 
@@ -121,8 +112,8 @@ public class GroupChallengesAssigner extends ChallengeUtil {
     }
 
     // remove players that already have a group challenge assigned
-    private List<String> removeAlreadyPlaying(List<String> pl) {
-        List<String> players = new ArrayList<>();
+    private Set<String> removeAlreadyPlaying(Set<String> pl) {
+        Set<String> players = new HashSet<>();
 
         DateTime nextMonday = jumpToMonday(new DateTime().plusDays(7));
 
@@ -214,7 +205,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
         return gcd;
     }
 
-    private HashMap<String, HashMap<String, Double>> getPlayerCounterAssignment(List<String> players, RecommendationSystemStatistics stats, String[] modeList) {
+    private HashMap<String, HashMap<String, Double>> getPlayerCounterAssignment(Set<String> players, RecommendationSystemStatistics stats, Set<String> modeList) {
 
         HashMap<String, HashMap<String, Double>> playersToConsider = new HashMap<String, HashMap<String, Double>>();
 

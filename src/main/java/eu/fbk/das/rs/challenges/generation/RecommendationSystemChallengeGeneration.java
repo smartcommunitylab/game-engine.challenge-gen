@@ -30,7 +30,7 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
         super(rs);
     }
 
-    public List<ChallengeDataDTO> generate(Player state, String mode, DateTime execDate, RecommendationSystem rs) {
+    public List<ChallengeDataDTO> generate(Player state, String mode, DateTime execDate) {
         return generate(state, mode, execDate, "treatment");
     }
 
@@ -210,7 +210,7 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
 
             List<ChallengeDataDTO> challanges = new ArrayList<>();
             for (String mode : ChallengesConfig.getPerfomanceCounters()) {
-                challanges.addAll(generate(cnt, mode, new DateTime(), new RecommendationSystem(conf.get("HOST"), conf.get("USER"), conf.get("PASS"))));
+                challanges.addAll(generate(cnt, mode, new DateTime()));
             }
 
             res.put(cnt.getPlayerId(), challanges);

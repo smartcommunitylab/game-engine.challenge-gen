@@ -3,17 +3,15 @@ package eu.fbk.das.innowee;
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 import eu.trentorise.game.challenges.rest.Player;
 import eu.trentorise.game.challenges.rest.PointConcept;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-
 import org.joda.time.DateTime;
-import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.junit.Test;
@@ -21,7 +19,6 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.*;
 
-import static com.jayway.jsonpath.JsonPath.parse;
 import static eu.fbk.das.rs.utils.Utils.*;
 
 public class InnoWeeAnalyze extends ChallengesBaseTest {

@@ -19,12 +19,8 @@ public class ChallengeAnalyzerTgtChoice extends ChallengeAnalyzer {
     private Map<String, Integer> c_chosen_exp;
     private Map<String, Integer> c_proposed_exp;
 
-    public ChallengeAnalyzerTgtChoice(RecommendationSystem rs) {
-        super(rs);
-    }
-
     public static void main(String[] args) {
-        ChallengeAnalyzerTgtChoice cdg = new ChallengeAnalyzerTgtChoice(new RecommendationSystem(conf.get("HOST"), conf.get("USER"), conf.get("PASS")));
+        ChallengeAnalyzerTgtChoice cdg = new ChallengeAnalyzerTgtChoice();
 
         cdg.analyzeSelected();
     }

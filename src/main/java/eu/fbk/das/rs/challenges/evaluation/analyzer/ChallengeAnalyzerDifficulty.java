@@ -13,12 +13,8 @@ public class ChallengeAnalyzerDifficulty extends ChallengeAnalyzer {
 
     private Map<String, List<Double>> cache;
 
-    public ChallengeAnalyzerDifficulty(RecommendationSystem rs) {
-        super(rs);
-    }
-
     public static void main(String[] args) {
-        ChallengeAnalyzerDifficulty cdg = new ChallengeAnalyzerDifficulty(new RecommendationSystem(conf.get("HOST"), conf.get("USER"), conf.get("PASS")));
+        ChallengeAnalyzerDifficulty cdg = new ChallengeAnalyzerDifficulty();
 
         cdg.analyzeAll();
     }

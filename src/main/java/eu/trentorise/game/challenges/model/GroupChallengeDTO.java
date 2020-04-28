@@ -1,5 +1,7 @@
 package eu.trentorise.game.challenges.model;
 
+import org.joda.time.DateTime;
+
 import java.util.*;
 
 import static eu.fbk.das.rs.utils.Utils.p;
@@ -266,6 +268,14 @@ public class GroupChallengeDTO {
 
     public void setChallengeTarget(double challengeTarget) {
         this.challengeTarget = challengeTarget;
+    }
+
+    public void setStart(DateTime start) {
+        setStart(start.toDate());
+    }
+
+    public void setEnd(DateTime end) {
+        setEnd(end.toDate());
     }
 
 }

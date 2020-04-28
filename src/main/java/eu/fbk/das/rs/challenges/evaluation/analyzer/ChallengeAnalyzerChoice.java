@@ -16,12 +16,8 @@ public class ChallengeAnalyzerChoice extends ChallengeAnalyzer {
 
     int[] l;
 
-    public ChallengeAnalyzerChoice(RecommendationSystem rs) {
-        super(rs);
-    }
-
     public static void main(String[] args) {
-        ChallengeAnalyzerChoice cdg = new ChallengeAnalyzerChoice(new RecommendationSystem(conf.get("HOST"), conf.get("USER"), conf.get("PASS")));
+        ChallengeAnalyzerChoice cdg = new ChallengeAnalyzerChoice();
 
         cdg.analyzeAll();
     }

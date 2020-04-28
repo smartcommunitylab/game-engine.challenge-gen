@@ -30,6 +30,10 @@ public class ChallengeUtil {
 
     protected String[] counters;
 
+    public ChallengeUtil() {
+        this(new RecommendationSystem());
+    }
+
     public ChallengeUtil(RecommendationSystem rs) {
         this.rs = rs;
     }

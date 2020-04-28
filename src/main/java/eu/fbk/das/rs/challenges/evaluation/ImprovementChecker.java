@@ -26,16 +26,15 @@ public class ImprovementChecker extends ChallengeUtil {
     private HashMap<String, Map<Integer, List<Double>>> weekImpr;
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        ImprovementChecker cdg = new ImprovementChecker(new RecommendationSystem(conf.get("HOST"), conf.get("USER"), conf.get("PASS")));
+        ImprovementChecker cdg = new ImprovementChecker();
 
         // cdg.analyzeSelected();
         cdg.execute();
     }
 
 
-    public ImprovementChecker(RecommendationSystem rs) {
-        super(rs);
-
+    public ImprovementChecker() {
+        super();
         playerLimit = 0;
         minLvl = -1;
     }

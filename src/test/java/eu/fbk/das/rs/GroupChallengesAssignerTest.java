@@ -39,7 +39,7 @@ public class GroupChallengesAssignerTest extends ChallengesBaseTest {
                 cfg.get("USERNAME"), cfg.get("PASSWORD"));
         GroupChallengesAssigner gca = new GroupChallengesAssigner(cfg, facade);
 
-        gca.execute();
+        gca.execute(players, modelType);
     }
 
     @Test

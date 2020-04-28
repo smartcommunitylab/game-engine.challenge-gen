@@ -16,12 +16,8 @@ public class ChallengeAnalyzerCompletion extends ChallengeAnalyzer {
 
     private Map<Integer, int[]> cache;
 
-    public ChallengeAnalyzerCompletion(RecommendationSystem rs) {
-        super(rs);
-    }
-
     public static void main(String[] args) {
-        ChallengeAnalyzerCompletion cdg = new ChallengeAnalyzerCompletion(new RecommendationSystem(conf.get("HOST"), conf.get("USER"), conf.get("PASS")));
+        ChallengeAnalyzerCompletion cdg = new ChallengeAnalyzerCompletion();
 
         cdg.execute();
     }
