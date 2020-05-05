@@ -53,9 +53,8 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
 
     @Test
     public void test() {
-        RecommendationSystem rs = new RecommendationSystem(conf.get("HOST"), conf.get("USER"), conf.get("PASS"));
+        RecommendationSystem rs = new RecommendationSystem();
         DateTime date = new DateTime();
-        rs.prepare(facade, date);
 
         Map<String, Player> res = facade.readGameState(cfg.get("GAME_ID"));
         for (String pId: res.keySet()) {
@@ -81,8 +80,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
         else
             date = Utils.stringToDate(d);
 
-        RecommendationSystem rs = new RecommendationSystem(conf.get("HOST"), conf.get("USER"), conf.get("PASS"));
-        rs.prepare(facade, date);
+        RecommendationSystem rs = new RecommendationSystem();
 
         Player state = facade.getPlayerState(cfg.get("GAME_ID"), pId);
 
@@ -96,9 +94,8 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
         // preparazione
         String pId = "122"; // cfg.get("PLAYER_ID");
 
-        RecommendationSystem rs = new RecommendationSystem(conf.get("HOST"), conf.get("USER"), conf.get("PASS"));
-        rs.prepare(facade, new DateTime());
-        RecommendationSystemChallengeGeneration rscg = new RecommendationSystemChallengeGeneration(cfg, null);
+        RecommendationSystem rs = new RecommendationSystem();
+        RecommendationSystemChallengeGeneration rscg = new RecommendationSystemChallengeGeneration(rs);
 
         DateTime start = Utils.parseDateTime("26/10/2018 00:00");
         DateTime end = Utils.parseDateTime("28/10/2018 23:59");
@@ -122,10 +119,9 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
 
         DateTime date = Utils.stringToDate(cfg.get("DATE"));
 
-        RecommendationSystem rs = new RecommendationSystem(conf.get("HOST"), conf.get("USER"), conf.get("PASS"));
-        rs.prepare(facade, date);
+        RecommendationSystem rs = new RecommendationSystem();
 
-        List<ChallengeDataDTO> cnt = rs.recommend(player_id, date);
+        List<ChallengeDataDTO> cnt = rs.recommend(player_id, null, null);
 
         for (ChallengeDataDTO cd : cnt) {
             p(cd);
@@ -158,10 +154,10 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
 
         DateTime date = Utils.stringToDate(cfg.get("DATE"));
 
-        RecommendationSystem rs = new RecommendationSystem(conf.get("HOST"), conf.get("USER"), conf.get("PASS"));
+        RecommendationSystem rs = new RecommendationSystem();
 
-        RecommendationSystemStatistics statistics = new RecommendationSystemStatistics();
-        statistics.checkAndUpdateStats(facade, date, cfg, "test");
+        RecommendationSystemStatistics statistics = new RecommendationSystemStatistics(rs);
+        statistics.checkAndUpdateStats(date);
 
         Player cnt = facade.getPlayerState(cfg.get("GAME_ID"), player_id);
 

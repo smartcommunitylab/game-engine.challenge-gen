@@ -98,8 +98,8 @@ public class TargetPrizeChallengesCalculatorTest extends ChallengesBaseTest {
 
         gameId = cfg.get("GAME_ID");
 
-        rs = new RecommendationSystem(conf.get("HOST"), conf.get("USER"), conf.get("PASS"));
-        rs.prepare(facade, now);
+        rs = new RecommendationSystem(cfg);
+
         tpcc = new TargetPrizeChallengesCalculator();
         tpcc.prepare(rs, gameId);
 

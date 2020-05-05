@@ -12,16 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.getChallengeWeek;
 import static eu.fbk.das.rs.utils.Utils.*;
 
 public class ChallengeUtil {
 
     protected RecommendationSystem rs;
 
-    protected DateTime execDate;
-
-    public DateTime endDate;
-    public DateTime startDate;
     protected DateTime lastMonday;
     protected String prefix;
 
@@ -38,26 +35,14 @@ public class ChallengeUtil {
         this.rs = rs;
     }
 
-    public void prepare(DateTime date) {
+    public void prepare(DateTime d) {
+        prepare(getChallengeWeek(d));
+    }
 
-        this.execDate = date
-                .withHourOfDay(0)
-                .withMinuteOfHour(0)
-                .withSecondOfMinute(0);
-
-        // Set next monday as start, and next sunday as end
-        int week_day = execDate.getDayOfWeek();
-        int d = (7 - week_day) + 1;
-
-        lastMonday = execDate.minusDays(week_day-1).minusDays(7);
-
-        startDate = execDate.plusDays(d);
-        startDate = startDate.minusDays(2);
-        endDate = startDate.plusDays(7);
-
+    public void prepare(int challengeWeek) {
         counters = ChallengesConfig.getPerfomanceCounters();
 
-        prefix = f(ChallengesConfig.getChallengeNamePrefix(), rs.getChallengeWeek(execDate));
+        prefix = f(ChallengesConfig.getChallengeNamePrefix(), challengeWeek);
     }
 
 

@@ -14,6 +14,7 @@ import java.io.PrintWriter;
 import java.util.*;
 
 import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.getWeeklyContentMode;
+import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.getChallengeWeek;
 import static eu.fbk.das.rs.utils.Utils.*;
 import static org.chocosolver.util.tools.ArrayUtils.sort;
 
@@ -40,7 +41,7 @@ public class PerformanceEstimation extends ChallengeUtil {
     }
 
     public void prepare(DateTime date) {
-        super.prepare(date);
+        super.prepare(getChallengeWeek(date));
 
         record = new HashMap<>();
         for (String counter: counters) {

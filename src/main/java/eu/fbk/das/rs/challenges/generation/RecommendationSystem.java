@@ -71,17 +71,65 @@ public class RecommendationSystem {
     }
 
     // generate challenges
-    public List<ChallengeDataDTO> recommend(String pId, DateTime d) {
+    public List<ChallengeDataDTO> recommend(String pId, Map<String, String> creationRules, Map<String, Object> challengeValues) {
+
+        int chaWeek = (Integer) challengeValues.get("challengeWeek");
+        DateTime execDate = (DateTime) challengeValues.get("exec");
+
+        stats.checkAndUpdateStats(execDate);
+        rscv.prepare(stats);
+        rscg.prepare(chaWeek);
 
         Player state = facade.getPlayerState(gameId, pId);
-
         int lvl = getLevel(state);
 
-        rscg.prepare(d);
-
+        // TODO check, serve ancora?
         String exp = getPlayerExperiment(pId);
 
-        List<ChallengeDataDTO> cha = generation2019(pId, state, d, lvl, exp);
+        // OLD method
+        // List<ChallengeDataDTO> cha = generation2019(pId, state, d, lvl, exp);
+
+       List<ChallengeDataDTO> cha = generationRule(pId, state, execDate, lvl, creationRules, exp);
+
+        for (ChallengeDataDTO c: cha) {
+            c.setInfo("playerLevel", lvl);
+            c.setInfo("player", pId);
+            c.setInfo("experiment", exp);
+
+            c.setHide(true);
+        }
+
+        return cha;
+
+    }
+
+    private List<ChallengeDataDTO> generationRule(String pId, Player state, DateTime d, int lvl, Map<String, String> creationRules, String exp) {
+        String rule = creationRules.get(String.valueOf(lvl));
+        if (rule == null) rule = creationRules.get("other");
+
+        if ("empty".equals(rule))
+            return new ArrayList<>();
+
+        List<ChallengeDataDTO> s = new ArrayList<>();
+        ChallengeDataDTO g = rscg.getRepetitive(pId);
+        s.add(g);
+
+        if ("fixedOne".equals(rule))
+            s.addAll(getAssigned(state, d, 1, exp));
+        else if ("choiceTwo".equals(rule))
+            s.addAll(assignLimit(2, state, d, exp));
+        else if ("choiceThree".equals(rule))
+            s.addAll(assignLimit(3, state, d, exp));
+        else
+            s.clear();
+
+        return s;
+
+    }
+
+
+    private List<ChallengeDataDTO> generation2019(String pId, Player state, DateTime d, int lvl, String exp) {
+
 
         // If level high enough, additionally choose to perform experiment
         /*
@@ -101,20 +149,6 @@ public class RecommendationSystem {
 
         // return recommendAll(state, d);
 
-        for (ChallengeDataDTO c: cha) {
-            c.setInfo("playerLevel", lvl);
-            c.setInfo("player", pId);
-            c.setInfo("experiment", exp);
-
-            c.setHide(true);
-        }
-
-        return cha;
-
-    }
-
-
-    private List<ChallengeDataDTO> generation2019(String pId, Player state, DateTime d, int lvl, String exp) {
 
         // if level is 0, none
         if (lvl == 0)
@@ -476,12 +510,12 @@ public class RecommendationSystem {
         return rscf.filter(challanges, state, d);
     }
 
-    public int getChallengeWeek(DateTime d) {
+    public static int getChallengeWeek(DateTime d) {
         int s = getChallengeDay(d);
         return (s/7) +1;
     }
 
-    public int getChallengeDay(DateTime d) {
+    public static int getChallengeDay(DateTime d) {
         return daysApart(d, parseDate("29/10/2018"));
     }
 
@@ -651,20 +685,6 @@ public class RecommendationSystem {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    /* fac_body è per facade di testing non ancora passati in produzione */
-    public void prepare(GamificationEngineRestFacade facade,  DateTime date, String host) {
-        this.host = host;
-        this.facade = facade;
-
-        stats.checkAndUpdateStats(date);
-        rscg.prepare(date);
-        rscv.prepare(stats);
-    }
-
-    public void prepare(GamificationEngineRestFacade facade, DateTime date) {
-        prepare(facade, date, "test");
     }
 
     public RecommendationSystemStatistics getStats() {

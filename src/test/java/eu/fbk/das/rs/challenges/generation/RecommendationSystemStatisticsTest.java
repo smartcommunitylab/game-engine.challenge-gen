@@ -1,5 +1,6 @@
 package eu.fbk.das.rs.challenges.generation;
 
+import eu.fbk.das.api.RecommenderSystemAPI;
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 import eu.fbk.das.rs.utils.Utils;
 import org.joda.time.DateTime;
@@ -15,10 +16,9 @@ public class RecommendationSystemStatisticsTest extends ChallengesBaseTest {
 
     @Test
     public void generate() {
-
-        RecommendationSystemStatistics rss = new RecommendationSystemStatistics();
+        RecommendationSystem rs = new RecommendationSystem();
+;        RecommendationSystemStatistics rss = new RecommendationSystemStatistics(rs);
         rss.facade = facade;
-        rss.cfg = cfg;
 
         DateTime today = new DateTime();
         for (int i = 10; i >= 0; i--) {

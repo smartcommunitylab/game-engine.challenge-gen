@@ -13,6 +13,7 @@ import org.joda.time.DateTime;
 import java.util.*;
 
 import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.*;
+import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.getChallengeWeek;
 import static eu.fbk.das.rs.utils.Utils.*;
 
 
@@ -36,7 +37,7 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
 
     public List<ChallengeDataDTO> generate(Player state, String mode, DateTime execDate, String exp) {
 
-        prepare(execDate);
+        prepare(getChallengeWeek(execDate));
 
         List<ChallengeDataDTO> output = new ArrayList<>();
 
@@ -166,9 +167,6 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
         cdd.setInstanceName(f("%s_%s_%s", prefix,
                 name, UUID.randomUUID()));
 
-        cdd.setStart(startDate.toDate());
-        cdd.setEnd(endDate.toDate());
-
         cdd.setData("bonusPointType", "green leaves");
         cdd.setData("bonusScore", 100.0);
         if (mode != null)
@@ -221,7 +219,7 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
 
     public List<ChallengeDataDTO> forecast(Player state, String mode, DateTime execDate) {
 
-        prepare(execDate);
+        prepare(getChallengeWeek(execDate));
 
         Pair<Double, Double> res = forecastMode(state, mode);
         double target = res.getFirst();

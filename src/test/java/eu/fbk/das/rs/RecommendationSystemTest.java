@@ -2,10 +2,12 @@ package eu.fbk.das.rs;
 
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
+import eu.fbk.das.rs.challenges.generation.RecommendationSystemChallengeGeneration;
 import eu.trentorise.game.challenges.model.ChallengeDataDTO;
 import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
 import eu.trentorise.game.challenges.rest.Player;
 import org.joda.time.DateTime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.*;
@@ -14,20 +16,23 @@ import static eu.fbk.das.rs.utils.Utils.p;
 
 public class RecommendationSystemTest extends ChallengesBaseTest {
 
+    @Before
+    public void test() {
+        // prod
+        cfg.put("HOST", "https://tn.smartcommunitylab.it/gamification2/");
+        cfg.put("GAME_ID", "5d9353a3f0856342b2dded7f");
+
+        rs = new RecommendationSystem(cfg);
+
+        rscg = new RecommendationSystemChallengeGeneration(rs);
+        rscg.prepare(new DateTime());
+        facade = rs.facade;
+    }
+
     @Test
     public void assignSurveyTest() {
 
-        // prod
-        cfg.put("HOST", "https://tn.smartcommunitylab.it/gamification2/");
-         facade = new GamificationEngineRestFacade(cfg.get("HOST"),
-                 cfg.get("USERNAME"), cfg.get("PASSWORD"));
-
-        cfg.put("GAME_ID", "5d9353a3f0856342b2dded7f");
-
-        rscg.prepare(new DateTime(), new RecommendationSystem(conf.get("HOST"), conf.get("USER"), conf.get("PASS")));
         ChallengeDataDTO cha = rscg.prepareChallange("survey_prediction");
-
-
         cha.setStart(new DateTime());
         cha.setModelName("survey");
         cha.setData("surveyType", "evaluation");
@@ -54,14 +59,6 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
     public void assignReccomendationAll() {
         String l = "new_recommend";
 
-        cfg.put("HOST", "https://tn.smartcommunitylab.it/gamification2/");
-        facade = new GamificationEngineRestFacade(cfg.get("HOST"),
-                cfg.get("USERNAME"), cfg.get("PASSWORD"));
-
-        cfg.put("GAME_ID", "5d9353a3f0856342b2dded7f");
-
-        rscg.prepare(new DateTime(), rs);
-
         assignReccomendation(l, "19092");
 
         Map<String, Player> res = facade.readGameState(cfg.get("GAME_ID"));
@@ -86,13 +83,6 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
     @Test
     public void assignEvaluation() {
 
-        cfg.put("HOST", "https://tn.smartcommunitylab.it/gamification2/");
-        facade = new GamificationEngineRestFacade(cfg.get("HOST"),
-                cfg.get("USERNAME"), cfg.get("PASSWORD"));
-
-        cfg.put("GAME_ID", "5d9353a3f0856342b2dded7f");
-
-        rscg.prepare(new DateTime(), new RecommendationSystem(conf.get("HOST"), conf.get("USER"), conf.get("PASS")));
         ChallengeDataDTO cha = rscg.prepareChallange("survey_prediction");
 
         cha.setModelName("survey");
@@ -131,17 +121,8 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
     @Test
     public void assignRepetitiveTest() {
 
-        cfg.put("HOST", "https://dev.smartcommunitylab.it/gamification-v3/");
-        facade = new GamificationEngineRestFacade(cfg.get("HOST"),cfg.get("USERNAME"), cfg.get("PASSWORD"));
-
-        rscg.setFacade(facade);
-
-        cfg.put("GAME_ID", "5d9353a3f0856342b2dded7f");
-
         String pId = "225";
         Player st = facade.getPlayerState(cfg.get("GAME_ID"), pId);
-
-        rscg.prepare(new DateTime().minusDays(7), new RecommendationSystem(conf.get("HOST"), conf.get("USER"), conf.get("PASS")));
         ChallengeDataDTO cha = rscg.getRepetitive(pId);
 
         // Assign to me
@@ -154,12 +135,6 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
 
     @Test
     public void assignRecommendFriend() {
-
-        cfg.put("HOST", "https://dev.smartcommunitylab.it/gamification-v3/");
-        facade = new GamificationEngineRestFacade(cfg.get("HOST"),cfg.get("USERNAME"), cfg.get("PASSWORD"));
-
-        RecommendationSystem rs = new RecommendationSystem(conf.get("HOST"), conf.get("USER"), conf.get("PASS"));
-        rs.prepare(facade, new DateTime(), cfg.get("HOST"));
 
         String pId = "225";
         List<ChallengeDataDTO> s = new ArrayList<>();

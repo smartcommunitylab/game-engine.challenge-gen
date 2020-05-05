@@ -13,6 +13,7 @@ import java.util.*;
 
 import static com.google.common.math.DoubleMath.mean;
 import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.getWeeklyContentMode;
+import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.getChallengeWeek;
 import static eu.fbk.das.rs.utils.Utils.p;
 import static eu.fbk.das.rs.utils.Utils.pf;
 
@@ -78,7 +79,7 @@ public class ImprovementChecker extends ChallengeUtil {
     }
 
     public void prepare(DateTime date) {
-        super.prepare(date);
+        super.prepare(getChallengeWeek(date));
         weekImpr = new HashMap<String, Map<Integer, List<Double>>>();
         for (String counter: counters) {
             HashMap<Integer, List<Double>> impr = new HashMap<>();

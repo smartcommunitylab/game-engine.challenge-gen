@@ -33,12 +33,9 @@ public class RecommendationSystemChallengeGenerationTest extends ChallengesBaseT
 
     @Before
     public void setup() {
-        facade = new GamificationEngineRestFacade(HOST + CONTEXT,
-                USERNAME, PASSWORD);
-        configuration = new RecommendationSystemConfig();
         now = new DateTime();
-
-        rcg = new RecommendationSystemChallengeGeneration(configuration, null);
+        rs = new RecommendationSystem();
+        rcg = new RecommendationSystemChallengeGeneration(rs);
     }
 
     @Test
@@ -179,33 +176,6 @@ public class RecommendationSystemChallengeGenerationTest extends ChallengesBaseT
         ChallengesConfig rc = new ChallengesConfig();
         assertTrue(!rc.isUserfiltering()
                 || (rc.isUserfiltering() && rc.getPlayerIds().size() > 2));
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void recommendationSystemWriteNullChallenges() throws IOException {
-        RecommendationSystem rs = new RecommendationSystem(configuration);
-        rs.writeToFile(null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void generatorNullConfigTest() throws IOException {
-        @SuppressWarnings("unused")
-        RecommendationSystemChallengeGeneration rg = new RecommendationSystemChallengeGeneration(
-                null, null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void valuatorNullConfigTest() throws IOException {
-        @SuppressWarnings("unused")
-        RecommendationSystemChallengeValuator rv = new RecommendationSystemChallengeValuator(
-        );
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void valuatorSortConfigTest() throws IOException {
-        @SuppressWarnings("unused")
-        RecommendationSystemChallengeFilteringAndSorting rs = new RecommendationSystemChallengeFilteringAndSorting(
-                null);
     }
 
     @Test

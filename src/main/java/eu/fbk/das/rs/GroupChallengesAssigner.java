@@ -19,6 +19,7 @@ import org.joda.time.DateTime;
 import java.util.*;
 
 import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.getWeeklyContentMode;
+import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.getChallengeWeek;
 import static eu.fbk.das.rs.utils.Utils.*;
 
 public class GroupChallengesAssigner extends ChallengeUtil {
@@ -31,10 +32,14 @@ public class GroupChallengesAssigner extends ChallengeUtil {
     private List<GroupChallengeDTO> groupChallenges;
     private Set<String> modelTypes;
 
+    private DateTime execDate;
+    private DateTime startDate;
+    private DateTime endDate;
+
     public GroupChallengesAssigner(RecommendationSystem rs) {
         super(rs);
 
-        prepare(new DateTime());
+        prepare(getChallengeWeek(new DateTime()));
 
         Arrays.sort(groupCha);
 
@@ -43,7 +48,11 @@ public class GroupChallengesAssigner extends ChallengeUtil {
         minLvl = 4;
     }
 
-    public List<GroupChallengeDTO> execute(Set<String> players, Set<String> modelTypes, String assignmentType) {
+    public List<GroupChallengeDTO> execute(Set<String> players, Set<String> modelTypes, String assignmentType, Map<String, Object> challengeValues) {
+
+        execDate = (DateTime) challengeValues.get("exec");
+        startDate = (DateTime) challengeValues.get("start");
+        endDate = (DateTime) challengeValues.get("end");
 
         groupChallenges = new ArrayList<>();
 

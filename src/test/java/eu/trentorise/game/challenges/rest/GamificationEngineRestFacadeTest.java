@@ -87,6 +87,7 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
         assertTrue(res);
     }
 
+    /*
     @Test
     public void saveItineraryTest() {
         ExecutionDataDTO input = new ExecutionDataDTO();
@@ -99,8 +100,9 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
         boolean result = facade.saveItinerary(input);
 
         assertTrue(result);
-    }
+    } */
 
+    /*
     @Test
     public void saveUsersItineraryLoadedFromFile() throws IOException {
         // create input
@@ -121,7 +123,7 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
 
             assertTrue(result);
         }
-    }
+    } */
 
     @Test
     public void printGameStatus() throws FileNotFoundException, IOException {
