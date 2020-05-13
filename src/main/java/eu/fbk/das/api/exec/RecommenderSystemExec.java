@@ -11,6 +11,11 @@ import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.getChalle
 // Chiama recommender system per generazione settimanale
 public class RecommenderSystemExec {
 
+    String host = "http://localhost:8010/gamification/";
+    String user = "long-rovereto";
+    String pass = "test";
+    String gameId = "5b7a885149c95d50c5f9d442";
+
     protected RecommenderSystemAPI api;
     protected HashMap<String, String> conf;
     protected DateTime execDate;
@@ -20,7 +25,7 @@ public class RecommenderSystemExec {
 
     public void prepare() {
         api = new RecommenderSystemImpl();
-        conf = new HashMap<String, String>() {{ put("host", ""); put("user", ""); put("pass", ""); put("gameId", "");}};
+        conf = new HashMap<String, String>() {{ put("host", host); put("user", user); put("pass", pass); put("gameId", gameId);}};
 
         execDate = new DateTime()
                 .withHourOfDay(0)
