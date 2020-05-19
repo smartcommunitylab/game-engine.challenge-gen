@@ -1,11 +1,9 @@
 package eu.fbk.das.rs.sortfilter;
 
-import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
-import eu.fbk.das.rs.challenges.generation.RecommendationSystemStatistics;
-import eu.trentorise.game.challenges.model.ChallengeDataDTO;
-import eu.trentorise.game.challenges.rest.Player;
-import eu.trentorise.game.challenges.rest.PointConcept;
+import eu.trentorise.game.model.PointConcept;
+import it.smartcommunitylab.model.ChallengeAssignmentDTO;
+import it.smartcommunitylab.model.PlayerStateDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
@@ -24,17 +22,17 @@ public class RecommendationSystemChallengeFilteringAndSorting {
 
     private DateTime execDate;
 
-    public List<ChallengeDataDTO> filter(List<ChallengeDataDTO> challenges, Player player, DateTime date) {
+    public List<it.smartcommunitylab.model.ChallengeAssignmentDTO> filter(List<it.smartcommunitylab.model.ChallengeAssignmentDTO> challenges, it.smartcommunitylab.model.PlayerStateDTO player, DateTime date) {
         this.execDate = date;
 
-        List<ChallengeDataDTO> result = new ArrayList<ChallengeDataDTO>();
+        List<it.smartcommunitylab.model.ChallengeAssignmentDTO> result = new ArrayList<ChallengeAssignmentDTO>();
 
         /* REMOVED LEADERBOARD
         List<ChallengeDataDTO> improvingLeaderboard = new ArrayList<ChallengeDataDTO>();
         List<ChallengeDataDTO> notImprovingLeaderboard = new ArrayList<ChallengeDataDTO>();
         */
 
-        for (ChallengeDataDTO challenge : challenges) {
+        for (ChallengeAssignmentDTO challenge : challenges) {
             Double baseline = (Double) challenge.getData().get("baseline");
             Double target = 0.0;
             if (challenge.getData().get("target") instanceof Integer) {
@@ -114,7 +112,7 @@ public class RecommendationSystemChallengeFilteringAndSorting {
         return result;
     }
 
-    private int findPosition(double[] leaderboard, Player player) {
+    private int findPosition(double[] leaderboard, PlayerStateDTO player) {
         double score = 0;
         for (PointConcept pc : player.getState().getPointConcept()) {
             if (!pc.getName().equals(ChallengesConfig.gLeaves))
@@ -131,17 +129,17 @@ public class RecommendationSystemChallengeFilteringAndSorting {
         return pos;
     }
 
-    public Map<String, List<ChallengeDataDTO>> filterAndSort(
-            Map<String, List<ChallengeDataDTO>> evaluatedChallenges,
+    public Map<String, List<ChallengeAssignmentDTO>> filterAndSort(
+            Map<String, List<ChallengeAssignmentDTO>> evaluatedChallenges,
             List<LeaderboardPosition> leaderboard) {
-        Map<String, List<ChallengeDataDTO>> result = new HashMap<String, List<ChallengeDataDTO>>();
+        Map<String, List<ChallengeAssignmentDTO>> result = new HashMap<String, List<ChallengeAssignmentDTO>>();
         Double wi = 0.0;
         for (String playerId : evaluatedChallenges.keySet()) {
             // creating two list for the challenges that can improve the player
             // in the leader board and not improving
-            List<ChallengeDataDTO> improvingLeaderboard = new ArrayList<ChallengeDataDTO>();
-            List<ChallengeDataDTO> notImprovingLeaderboard = new ArrayList<ChallengeDataDTO>();
-            for (ChallengeDataDTO challenge : evaluatedChallenges.get(playerId)) {
+            List<ChallengeAssignmentDTO> improvingLeaderboard = new ArrayList<ChallengeAssignmentDTO>();
+            List<ChallengeAssignmentDTO> notImprovingLeaderboard = new ArrayList<ChallengeAssignmentDTO>();
+            for (ChallengeAssignmentDTO challenge : evaluatedChallenges.get(playerId)) {
                 Double baseline = (Double) challenge.getData().get("baseline");
                 Double target = 0.0;
                 if (challenge.getData().get("target") instanceof Integer) {
@@ -192,7 +190,7 @@ public class RecommendationSystemChallengeFilteringAndSorting {
             }
             // make some initialization for result data structure
             if (result.get(playerId) == null) {
-                result.put(playerId, new ArrayList<ChallengeDataDTO>());
+                result.put(playerId, new ArrayList<ChallengeAssignmentDTO>());
             }
             // sorting both lists
             Collections
@@ -240,20 +238,20 @@ public class RecommendationSystemChallengeFilteringAndSorting {
         return null;
     }
 
-    public Map<String, List<ChallengeDataDTO>> removeDuplicates(
-            Map<String, List<ChallengeDataDTO>> filteredChallenges) {
-        List<ChallengeDataDTO> challengeIdToRemove = new ArrayList<ChallengeDataDTO>();
+    public Map<String, List<ChallengeAssignmentDTO>> removeDuplicates(
+            Map<String, List<ChallengeAssignmentDTO>> filteredChallenges) {
+        List<ChallengeAssignmentDTO> challengeIdToRemove = new ArrayList<ChallengeAssignmentDTO>();
         for (String key : filteredChallenges.keySet()) {
 
-            Iterator<ChallengeDataDTO> iter = filteredChallenges.get(key)
+            Iterator<ChallengeAssignmentDTO> iter = filteredChallenges.get(key)
                     .iterator();
             while (iter.hasNext()) {
-                ChallengeDataDTO dto = iter.next();
-                Iterator<ChallengeDataDTO> innerIter = filteredChallenges.get(
+                ChallengeAssignmentDTO dto = iter.next();
+                Iterator<ChallengeAssignmentDTO> innerIter = filteredChallenges.get(
                         key).iterator();
                 int count = 0;
                 while (innerIter.hasNext()) {
-                    ChallengeDataDTO idto = innerIter.next();
+                    ChallengeAssignmentDTO idto = innerIter.next();
 
                     if (dto.getModelName().equals(idto.getModelName())
                             && dto.getData().get("counterName")

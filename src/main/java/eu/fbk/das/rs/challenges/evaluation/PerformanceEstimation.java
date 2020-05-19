@@ -1,9 +1,8 @@
 package eu.fbk.das.rs.challenges.evaluation;
 
 import eu.fbk.das.rs.challenges.ChallengeUtil;
-import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import eu.fbk.das.rs.utils.PolynomialRegression;
-import eu.trentorise.game.challenges.rest.Player;
+import it.smartcommunitylab.model.PlayerStateDTO;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 
@@ -65,7 +64,7 @@ public class PerformanceEstimation extends ChallengeUtil {
         List<String> players = getPlayers();
 
         for (String pId: players) {
-            Player state = rs.facade.getPlayerState(rs.gameId, pId);
+            PlayerStateDTO state = rs.facade.getPlayerState(rs.gameId, pId);
             consider(state);
         }
 
@@ -151,7 +150,7 @@ public class PerformanceEstimation extends ChallengeUtil {
         // test all other methods?
     }
 
-    private void consider(Player state) {
+    private void consider(PlayerStateDTO state) {
 
         for (String counter: counters) {
 

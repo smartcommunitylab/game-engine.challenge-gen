@@ -3,7 +3,7 @@ package eu.fbk.das.rs;
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
-import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
+import eu.fbk.das.GamificationEngineRestFacade;
 import eu.trentorise.game.challenges.rest.Player;
 import org.joda.time.DateTime;
 import org.junit.Before;

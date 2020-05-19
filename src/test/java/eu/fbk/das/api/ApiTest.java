@@ -1,6 +1,6 @@
 package eu.fbk.das.api;
 
-import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
+import eu.fbk.das.GamificationEngineRestFacade;
 import org.junit.Before;
 import org.junit.Test;
 

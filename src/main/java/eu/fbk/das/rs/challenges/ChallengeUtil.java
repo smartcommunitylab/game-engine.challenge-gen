@@ -2,10 +2,9 @@ package eu.fbk.das.rs.challenges;
 
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
-import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
-import eu.fbk.das.rs.challenges.generation.RecommendationSystemStatistics;
-import eu.trentorise.game.challenges.rest.Player;
-import eu.trentorise.game.challenges.rest.PlayerLevel;
+
+import it.smartcommunitylab.model.PlayerStateDTO;
+import it.smartcommunitylab.model.ext.PlayerLevel;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
@@ -49,10 +48,9 @@ public class ChallengeUtil {
     protected List<String> getPlayers() {
 
         Set<String> players = rs.facade.getGamePlayers(rs.gameId);
-        List<String> playersToConsider = new ArrayList<String>(playerLimit);
-        int ix = 0;
+        List<String> playersToConsider = new ArrayList<>(playerLimit);
         for (String pId: players) {
-            Player p = rs.facade.getPlayerState(rs.gameId, pId);
+            PlayerStateDTO p = rs.facade.getPlayerState(rs.gameId, pId);
             int lvl = getLevel(p);
             if (minLvl < 0 || lvl >=  minLvl) {
                 playersToConsider.add(pId);
@@ -63,7 +61,7 @@ public class ChallengeUtil {
         return playersToConsider;
     }
 
-    public static int getLevel(Player state) {
+    public static int getLevel(PlayerStateDTO state) {
 
         // check the level of the player
         List<PlayerLevel> lvls = state.getLevels();

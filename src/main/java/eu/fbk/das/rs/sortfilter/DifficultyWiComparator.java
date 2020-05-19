@@ -1,13 +1,13 @@
 package eu.fbk.das.rs.sortfilter;
 
-import eu.trentorise.game.challenges.model.ChallengeDataDTO;
+import it.smartcommunitylab.model.ChallengeAssignmentDTO;
 
 import java.util.Comparator;
 
-public class DifficultyWiComparator implements Comparator<ChallengeDataDTO> {
+public class DifficultyWiComparator implements Comparator<ChallengeAssignmentDTO> {
 
     @Override
-    public int compare(ChallengeDataDTO o1, ChallengeDataDTO o2) {
+    public int compare(ChallengeAssignmentDTO o1, ChallengeAssignmentDTO o2) {
         // sorting the challenges based on less difficulty and WI
         int difficulty1 = (int) o1.getData().get("difficulty");
         int difficulty2 = (int) o2.getData().get("difficulty");

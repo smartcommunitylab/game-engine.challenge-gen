@@ -1,5 +1,6 @@
 package eu.fbk.das.rs;
 
+import eu.fbk.das.GamificationEngineRestFacade;
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 import eu.trentorise.game.challenges.rest.*;
 import org.joda.time.DateTime;

@@ -2,14 +2,18 @@ package eu.fbk.das.api;
 
 import eu.fbk.das.rs.GroupChallengesAssigner;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
-import eu.trentorise.game.challenges.model.ChallengeDataDTO;
-import eu.trentorise.game.challenges.model.GroupChallengeDTO;
+
+import it.smartcommunitylab.model.ChallengeAssignmentDTO;
+import it.smartcommunitylab.model.GroupChallengeDTO;
+import it.smartcommunitylab.model.RewardDTO;
 import org.joda.time.DateTime;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static eu.fbk.das.GamificationEngineRestFacade.jodaToOffset;
 
 public class RecommenderSystemImpl implements RecommenderSystemAPI {
 
@@ -39,7 +43,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 
         for (String pId: players) {
             // prepare
-            ChallengeDataDTO cha = rs.rscg.prepareChallange(modelType);
+            ChallengeAssignmentDTO cha = rs.rscg.prepareChallange(modelType);
             // set challenge model
             cha.setModelName(modelType);
             // set data
@@ -59,9 +63,9 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
         prepare(conf, playerSet);
 
         for (String pId: players) {
-            List<ChallengeDataDTO> challenges = rs.recommend(pId, creationRules, challengeValues);
+            List<ChallengeAssignmentDTO> challenges = rs.recommend(pId, creationRules, challengeValues);
 
-            for (ChallengeDataDTO cha: challenges) {
+            for (ChallengeAssignmentDTO cha: challenges) {
                 // set data
                 dataCha(cha, challengeValues);
                 // set reward;
@@ -94,19 +98,20 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
         return false;
     }
 
-    private void dataCha(ChallengeDataDTO cha, Map<String, Object> challengeValues) {
+    private void dataCha(ChallengeAssignmentDTO cha, Map<String, Object> challengeValues) {
         for (String k: challengeValues.keySet()) {
             Object v = challengeValues.get(k);
-            if ("start".equals(k)) cha.setStart(new DateTime(v));
-            else if ("end".equals(k)) cha.setEnd(new DateTime(v));
+            if ("start".equals(k)) cha.setStart(jodaToOffset( (DateTime) v));
+            else if ("end".equals(k)) cha.setStart(jodaToOffset( (DateTime) v));
             else if ("hide".equals(k)) cha.setHide((Boolean) v);
             else {
+                Object data = cha.getData();
                 cha.setData(k, v);
             }
         }
     }
 
-    private void reward(ChallengeDataDTO cha, Map<String, String> rewards) {
+    private void reward(ChallengeAssignmentDTO cha, Map<String, String> rewards) {
         String scoreType = rewards.get("scoreType");
         String calcType = rewards.get("calcType");
         String calcValue = rewards.get("calcValue");
@@ -139,8 +144,8 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
     private void dataGroup(GroupChallengeDTO gcd, Map<String, Object> challengeValues) {
         for (String k : challengeValues.keySet()) {
             Object v = challengeValues.get(k);
-            if ("start".equals(k)) gcd.setStart(new DateTime(v));
-            else if ("end".equals(k)) gcd.setEnd(new DateTime(v));
+            if ("start".equals(k)) gcd.setStart(jodaToOffset(new DateTime(v)));
+            else if ("end".equals(k)) gcd.setEnd(jodaToOffset(new DateTime(v)));
             // else String v = challengeValues.get(k);
             // else cha.setData(k, v);
         }
@@ -153,8 +158,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
         String maxValue = rewards.get("maxValue");
 
         // TODO COME INSERIRE INFO SCORE TYPE
-
-        GroupChallengeDTO.RewardDTO rew = gcd.getReward();
+        RewardDTO rew = gcd.getReward();
         Map<String, Double> bs = rew.getBonusScore();
 
         Double v = Double.parseDouble(calcValue);

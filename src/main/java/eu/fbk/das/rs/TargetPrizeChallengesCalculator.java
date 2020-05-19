@@ -5,15 +5,14 @@ import eu.fbk.das.rs.challenges.calculator.DifficultyCalculator;
 
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import eu.fbk.das.rs.utils.Pair;
-import eu.trentorise.game.challenges.rest.Player;
-import eu.trentorise.game.challenges.rest.GameStatisticsSet;
-import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
-import eu.trentorise.game.challenges.rest.PointConcept;
-import eu.trentorise.game.model.GameStatistics;
+import eu.fbk.das.GamificationEngineRestFacade;
+import it.smartcommunitylab.model.GameStatistics;
+import it.smartcommunitylab.model.PlayerStateDTO;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.joda.time.DateTime;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.*;
@@ -104,7 +103,7 @@ public class TargetPrizeChallengesCalculator {
 
     private Pair<Double, Double> getForecast(String nm, String pId, Map<String, Double> res,  String counter) {
 
-        Player state = facade.getPlayerState(gameId, pId);
+        PlayerStateDTO state = facade.getPlayerState(gameId, pId);
 
         Pair<Double, Double> forecast = forecastMode(state, counter);
 
@@ -162,10 +161,10 @@ public class TargetPrizeChallengesCalculator {
         return rs.getStats().getQuantiles(counter);
     }
 
-    private Map<Integer, Double> getQuantiles(String gameId, String counter) {
+    private Map<String, Double> getQuantiles(String gameId, String counter) {
 
         // Da sistemare richiesta per dati della settimana precedente, al momento non presenti
-        GameStatisticsSet stats = facade.readGameStatistics(gameId, lastMonday, counter);
+        List<GameStatistics> stats = facade.readGameStatistics(gameId, lastMonday, counter);
         if (stats == null || stats.isEmpty()) {
             pf("Nope \n");
             return null;
@@ -186,7 +185,7 @@ public class TargetPrizeChallengesCalculator {
         dc = new DifficultyCalculator();
     }
 
-    private Pair<Double, Double> forecastMode(Player state, String counter) {
+    private Pair<Double, Double> forecastMode(PlayerStateDTO state, String counter) {
 
         // Check date of registration, decide which method to use
         int week_playing = getWeekPlaying(state, counter);
@@ -202,7 +201,7 @@ public class TargetPrizeChallengesCalculator {
     }
 
     // Weighted moving average
-    private Pair<Double, Double> forecastWMA(int v, Player state, String counter) {
+    private Pair<Double, Double> forecastWMA(int v, PlayerStateDTO state, String counter) {
 
         DateTime date = lastMonday;
 
@@ -224,7 +223,7 @@ public class TargetPrizeChallengesCalculator {
         return new Pair<Double, Double>(pv, baseline);
     }
 
-    private int getWeekPlaying(Player state, String counter) {
+    private int getWeekPlaying(PlayerStateDTO state, String counter) {
 
         DateTime date = lastMonday;
         int i = 0;
@@ -240,7 +239,7 @@ public class TargetPrizeChallengesCalculator {
         return i;
     }
 
-    public Pair<Double, Double> forecastModeSimple(Player state, String counter) {
+    public Pair<Double, Double> forecastModeSimple(PlayerStateDTO state, String counter) {
 
         DateTime date = lastMonday;
         Double currentValue = getWeeklyContentMode(state, counter, date);
@@ -261,7 +260,7 @@ public class TargetPrizeChallengesCalculator {
     }
 
     // old approach
-    private Pair<Double, Double> forecastOld(Map<String, Double> res, String nm, Player state, String counter) {
+    private Pair<Double, Double> forecastOld(Map<String, Double> res, String nm, PlayerStateDTO state, String counter) {
 
         // Last 3 values?
         int v = 3;

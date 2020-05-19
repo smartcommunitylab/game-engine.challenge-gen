@@ -3,11 +3,10 @@ package eu.fbk.das.rs.challenges.evaluation;
 import eu.fbk.das.rs.challenges.ChallengeUtil;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import eu.fbk.das.rs.utils.Utils;
-import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
-import eu.trentorise.game.challenges.model.ChallengeDataDTO;
-import eu.trentorise.game.challenges.rest.Player;
-import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
-import eu.trentorise.game.challenges.rest.PointConcept;
+import it.smartcommunitylab.model.ChallengeAssignmentDTO;
+import it.smartcommunitylab.model.PlayerStateDTO;
+import it.smartcommunitylab.model.ext.GameConcept;
+import it.smartcommunitylab.model.ext.PointConcept;
 import org.joda.time.DateTime;
 
 import java.io.BufferedReader;
@@ -43,7 +42,7 @@ public class ChallengeDataGuru extends ChallengeUtil  {
     int datum_length = 206;
     private int datum_start;
     private DateTime date;
-    private ArrayList<ChallengeDataDTO> l_cha;
+    private ArrayList<ChallengeAssignmentDTO> l_cha;
 
     protected SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
@@ -61,7 +60,7 @@ public class ChallengeDataGuru extends ChallengeUtil  {
         // training_label = new ArrayList<>();
     }
 
-    public void generate(String out_path, Map<String, List<ChallengeDataDTO>> challenges, DateTime date, String[] challengeColNames) throws IOException {
+    public void generate(String out_path, Map<String, List<ChallengeAssignmentDTO>> challenges, DateTime date, String[] challengeColNames) throws IOException {
 
         // Read challenge cha_completed list
         //   readCompleted();
@@ -109,7 +108,7 @@ public class ChallengeDataGuru extends ChallengeUtil  {
 
 
         for (int i = 0; i < training_data.size(); i++) {
-            wf(wr, "%s,", l_cha.get(i).printData());
+            wf(wr, "%s,", l_cha.get(i));
             wf(wr, "%s\n", Utils.joinArray(training_data.get(i), ","));
             wr.flush();
         }
@@ -138,14 +137,14 @@ public class ChallengeDataGuru extends ChallengeUtil  {
 
     }
 
-    private void computeData(Map<String, List<ChallengeDataDTO>> challenges) {
+    private void computeData(Map<String, List<ChallengeAssignmentDTO>> challenges) {
 
         l_cha = new ArrayList<>();
 
         for (String pId : challenges.keySet()) {
-            Player cnt = rs.facade.getPlayerState(rs.gameId, pId);
+            PlayerStateDTO cnt = rs.facade.getPlayerState(rs.gameId, pId);
 
-            for (ChallengeDataDTO cha : challenges.get(pId)) {
+            for (ChallengeAssignmentDTO cha : challenges.get(pId)) {
                 goChallenge(cnt, cha);
 
                 l_cha.add(cha);
@@ -189,7 +188,7 @@ public class ChallengeDataGuru extends ChallengeUtil  {
         }
     }
 
-    private void goChallenge(Player user, ChallengeDataDTO cha) {
+    private void goChallenge(PlayerStateDTO user, ChallengeAssignmentDTO cha) {
 
         String cId = cha.getInstanceName();
 
@@ -211,7 +210,7 @@ public class ChallengeDataGuru extends ChallengeUtil  {
         computeDatum(cha, user);
     }
 
-    private void computeDatum(ChallengeDataDTO cha, Player user) {
+    private void computeDatum(ChallengeAssignmentDTO cha, PlayerStateDTO user) {
         double[] datum = new double[datum_length];
         int ix = 0;
 
@@ -261,7 +260,7 @@ public class ChallengeDataGuru extends ChallengeUtil  {
                 try {
                     d = date.minusDays(7 * i);
                     // p(Utils.printDate(d));
-                    Double a = pc.getPeriodScore("weekly", d);
+                    Double a = pc.getPeriodScore("weekly", d.getMillis());
                     datum[ix++] = a;
                 } catch (Exception e) {
                     p(e);
@@ -273,7 +272,7 @@ public class ChallengeDataGuru extends ChallengeUtil  {
                 d = date.minusDays(i);
                 // p(Utils.printDate(d));
                 try {
-                    datum[ix++] = pc.getPeriodScore("daily", d);
+                    datum[ix++] = pc.getPeriodScore("daily", d.getMillis());
                 } catch (Exception e) {
                     p(e);
                 }
@@ -292,11 +291,11 @@ public class ChallengeDataGuru extends ChallengeUtil  {
         training_counter.add(ix_counter);
     }
 
-    private PointConcept getPointConcept(String s, Player user) {
-        for (PointConcept pc2 : user.getState().getPointConcept()) {
-            if (pc2.getName().equals(s)) {
-                return pc2;
+    private PointConcept getPointConcept(String s, PlayerStateDTO state) {
 
+        for (GameConcept pc2 : state.getState().get("PointConcept")) {
+            if (pc2.getName().equals(s)) {
+                return (PointConcept) pc2;
             }
 
         }
@@ -305,7 +304,7 @@ public class ChallengeDataGuru extends ChallengeUtil  {
         return null;
     }
 
-    private Object getField(ChallengeDataDTO cha, String s) {
+    private Object getField(ChallengeAssignmentDTO cha, String s) {
         return cha.getData().get(s);
     }
 

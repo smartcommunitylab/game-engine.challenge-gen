@@ -5,14 +5,17 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import eu.fbk.das.GamificationEngineRestFacade;
 import eu.fbk.das.rs.utils.Utils;
 import eu.fbk.das.rs.sortfilter.RecommendationSystemChallengeFilteringAndSorting;
 import eu.fbk.das.rs.valuator.RecommendationSystemChallengeValuator;
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
-import eu.trentorise.game.challenges.model.ChallengeDataDTO;
-import eu.trentorise.game.challenges.rest.*;
-import eu.trentorise.game.challenges.util.ExcelUtil;
 
+import it.smartcommunitylab.model.ChallengeAssignmentDTO;
+import it.smartcommunitylab.model.ChallengeConcept;
+import it.smartcommunitylab.model.PlayerStateDTO;
+import it.smartcommunitylab.model.ext.GameConcept;
+import it.smartcommunitylab.model.ext.PointConcept;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,8 +31,10 @@ import org.joda.time.format.DateTimeFormatter;
 import java.io.*;
 import java.util.*;
 
+import static eu.fbk.das.GamificationEngineRestFacade.jodaToOffset;
 import static eu.fbk.das.rs.challenges.ChallengeUtil.getLevel;
 import static eu.fbk.das.rs.utils.Utils.*;
+import static it.smartcommunitylab.model.ChallengeConcept.StateEnum.COMPLETED;
 
 /**
  * Recommandation System main class, requires running Gamification Engine in
@@ -71,7 +76,7 @@ public class RecommendationSystem {
     }
 
     // generate challenges
-    public List<ChallengeDataDTO> recommend(String pId, Map<String, String> creationRules, Map<String, Object> challengeValues) {
+    public List<ChallengeAssignmentDTO> recommend(String pId, Map<String, String> creationRules, Map<String, Object> challengeValues) {
 
         int chaWeek = (Integer) challengeValues.get("challengeWeek");
         DateTime execDate = (DateTime) challengeValues.get("exec");
@@ -80,18 +85,18 @@ public class RecommendationSystem {
         rscv.prepare(stats);
         rscg.prepare(chaWeek);
 
-        Player state = facade.getPlayerState(gameId, pId);
+        PlayerStateDTO state = facade.getPlayerState(gameId, pId);
         int lvl = getLevel(state);
 
         // TODO check, serve ancora?
         String exp = getPlayerExperiment(pId);
 
         // OLD method
-        // List<ChallengeDataDTO> cha = generation2019(pId, state, d, lvl, exp);
+        // List<ChallengeAssignmentDTO> cha = generation2019(pId, state, d, lvl, exp);
 
-       List<ChallengeDataDTO> cha = generationRule(pId, state, execDate, lvl, creationRules, exp);
+       List<ChallengeAssignmentDTO> cha = generationRule(pId, state, execDate, lvl, creationRules, exp);
 
-        for (ChallengeDataDTO c: cha) {
+        for (ChallengeAssignmentDTO c: cha) {
             c.setInfo("playerLevel", lvl);
             c.setInfo("player", pId);
             c.setInfo("experiment", exp);
@@ -103,15 +108,15 @@ public class RecommendationSystem {
 
     }
 
-    private List<ChallengeDataDTO> generationRule(String pId, Player state, DateTime d, int lvl, Map<String, String> creationRules, String exp) {
+    private List<ChallengeAssignmentDTO> generationRule(String pId, PlayerStateDTO state, DateTime d, int lvl, Map<String, String> creationRules, String exp) {
         String rule = creationRules.get(String.valueOf(lvl));
         if (rule == null) rule = creationRules.get("other");
 
         if ("empty".equals(rule))
             return new ArrayList<>();
 
-        List<ChallengeDataDTO> s = new ArrayList<>();
-        ChallengeDataDTO g = rscg.getRepetitive(pId);
+        List<ChallengeAssignmentDTO> s = new ArrayList<>();
+        ChallengeAssignmentDTO g = rscg.getRepetitive(pId);
         s.add(g);
 
         if ("fixedOne".equals(rule))
@@ -128,18 +133,18 @@ public class RecommendationSystem {
     }
 
 
-    private List<ChallengeDataDTO> generation2019(String pId, Player state, DateTime d, int lvl, String exp) {
+    private List<ChallengeAssignmentDTO> generation2019(String pId, PlayerStateDTO state, DateTime d, int lvl, String exp) {
 
 
         // If level high enough, additionally choose to perform experiment
         /*
         if (Utils.randChance(0.2))
-            for (ChallengeDataDTO c: cha) {
+            for (ChallengeAssignmentDTO c: cha) {
                 c.setInfo("experiment", "tgt");
             }
             */
 
-        //List<ChallengeDataDTO> cha = assignLimit(3, state, d);
+        //List<ChallengeAssignmentDTO> cha = assignLimit(3, state, d);
 
         // cha = assignLimit(3, state, d);
 
@@ -154,12 +159,12 @@ public class RecommendationSystem {
         if (lvl == 0)
             return new ArrayList<>();
 
-        List<ChallengeDataDTO> s = new ArrayList<>();
+        List<ChallengeAssignmentDTO> s = new ArrayList<>();
         assignSurveyPrediction(pId, s);
         assignSurveyEvaluation(pId, s);
         assignRecommendFriend(pId, s);
 
-        ChallengeDataDTO g = rscg.getRepetitive(pId);
+        ChallengeAssignmentDTO g = rscg.getRepetitive(pId);
 
         // if level is 1, assign two fixed
         if (lvl == 1) {
@@ -187,14 +192,14 @@ public class RecommendationSystem {
 
     }
 
-    public void assignRecommendFriend(String pId, List<ChallengeDataDTO> s) {
+    public void assignRecommendFriend(String pId, List<ChallengeAssignmentDTO> s) {
 
         String l = "first_recommend";
 
         if (existsAssignedChallenge(pId, l)) return;
 
-        ChallengeDataDTO cha = rscg.prepareChallange(l, "Recommendations");
-        cha.setStart(new DateTime());
+        ChallengeAssignmentDTO cha = rscg.prepareChallange(l, "Recommendations");
+        cha.setStart(jodaToOffset(new DateTime()));
         cha.setModelName("absoluteIncrement");
         cha.setData("target", 1.0);
         cha.setData("bonusScore", 200.0);
@@ -202,21 +207,21 @@ public class RecommendationSystem {
     }
 
     private boolean existsAssignedChallenge(String pId, String l) {
-        List<LinkedHashMap<String, Object>> currentChallenges = facade.getChallengesPlayer(cfg.get("GAME_ID"), pId);
-        for (LinkedHashMap<String, Object> cha: currentChallenges) {
-            if (((String) cha.get("name")).contains(l))
+        List<ChallengeConcept> currentChallenges = facade.getChallengesPlayer(cfg.get("GAME_ID"), pId);
+        for (ChallengeConcept cha: currentChallenges) {
+            if (cha.getName().contains(l))
                 return true;
         }
         return  false;
     }
 
     private boolean existsAssignedSurvey(String pId, String l) {
-        List<LinkedHashMap<String, Object>> currentChallenges = facade.getChallengesPlayer(cfg.get("GAME_ID"), pId);
-        for (LinkedHashMap<String, Object> cha: currentChallenges) {
-            if (!("survey".equals(cha.get("modelName"))))
+        List<ChallengeConcept> currentChallenges = facade.getChallengesPlayer(cfg.get("GAME_ID"), pId);
+        for (ChallengeConcept cha: currentChallenges) {
+            if (!("survey".equals(cha.getModelName())))
                 continue;
 
-            Map<String, Object> f = (Map<String, Object>) cha.get("fields");
+            Map<String, Object> f = (Map<String, Object>) cha.getFields();
             String sv = (String) f.get("surveyType");
 
             if (l.equals(sv))
@@ -227,20 +232,19 @@ public class RecommendationSystem {
 
 
     private boolean existsAssignedAnCompletedSurvey(String pId, String l) {
-        List<LinkedHashMap<String, Object>> currentChallenges = facade.getChallengesPlayer(cfg.get("GAME_ID"), pId);
-        for (LinkedHashMap<String, Object> cha: currentChallenges) {
-            if (!("survey".equals(cha.get("modelName"))))
+        List<ChallengeConcept> currentChallenges = facade.getChallengesPlayer(cfg.get("GAME_ID"), pId);
+        for (ChallengeConcept cha: currentChallenges) {
+            if (!("survey".equals(cha.getModelName())))
                 continue;
 
-            Map<String, Object> f = (Map<String, Object>) cha.get("fields");
+            Map<String, Object> f = (Map<String, Object>) cha.getFields();
             String sv = (String) f.get("surveyType");
 
             if (!l.equals(sv))
                 continue;
 
-            String c = (String) cha.get("state");
-
-            if (!"COMPLETED".equals(c))
+            // if (!"COMPLETED".equals(c))
+            if (cha.getState() != COMPLETED)
                 continue;
 
             return true;
@@ -253,7 +257,7 @@ public class RecommendationSystem {
         return (String) cs.get("exp");
     }
 
-    private void assignSurveyEvaluation(String pId, List<ChallengeDataDTO> s) {
+    private void assignSurveyEvaluation(String pId, List<ChallengeAssignmentDTO> s) {
 
         String l = "evaluation";
 
@@ -279,11 +283,11 @@ public class RecommendationSystem {
 
         // ADD NEW CHALLENGE SURVEY PREDICTION HERE
 
-        ChallengeDataDTO cha = rscg.prepareChallange("survey_" + l);
+        ChallengeAssignmentDTO cha = rscg.prepareChallange("survey_" + l);
 
         DateTime dt = new DateTime();
 
-        cha.setStart(dt);
+        cha.setStart(jodaToOffset(dt));
 
         cha.setModelName("survey");
         cha.setData("surveyType", l);
@@ -302,7 +306,7 @@ public class RecommendationSystem {
                 bonusPointType */
     }
 
-    private void assignSurveyPrediction(String pId, List<ChallengeDataDTO> s) {
+    private void assignSurveyPrediction(String pId, List<ChallengeAssignmentDTO> s) {
 
         String l = "prediction";
 
@@ -310,7 +314,7 @@ public class RecommendationSystem {
 
         // ADD NEW CHALLENGE SURVEY PREDICTION HERE
 
-        ChallengeDataDTO cha = rscg.prepareChallange("survey_" + l);
+        ChallengeAssignmentDTO cha = rscg.prepareChallange("survey_" + l);
 
         DateTime dt = new DateTime();
 
@@ -334,7 +338,7 @@ public class RecommendationSystem {
     }
 
 
-    private List<ChallengeDataDTO> firstWeeks(Player state, DateTime d, int lvl) {
+    private List<ChallengeAssignmentDTO> firstWeeks(PlayerStateDTO state, DateTime d, int lvl) {
 
         if (lvl <= 0)
             return new ArrayList<>();
@@ -343,7 +347,7 @@ public class RecommendationSystem {
             return getAssigned(state, d, 1);
     }
 
-    private List<ChallengeDataDTO> oldWeeks(Player state, DateTime d, int lvl) {
+    private List<ChallengeAssignmentDTO> oldWeeks(PlayerStateDTO state, DateTime d, int lvl) {
 
         // if level is 0, none
         if (lvl == 0)
@@ -360,7 +364,7 @@ public class RecommendationSystem {
         // See if we want to perform tests 
 
         if (Utils.randChance(0.7)) {
-            List<ChallengeDataDTO> res = assignForecast(state, d);
+            List<ChallengeAssignmentDTO> res = assignForecast(state, d);
             if (res != null && res.size() == 3)
                 return  res;
         }
@@ -369,7 +373,7 @@ public class RecommendationSystem {
     }
 
     // cerca di prevedere obiettivo, fornisce stime diverse di punteggio
-    protected List<ChallengeDataDTO> assignForecast(Player state, DateTime execDate) {
+    protected List<ChallengeAssignmentDTO> assignForecast(PlayerStateDTO state, DateTime execDate) {
 
         String max_mode = null;
         int max_pos = -1;
@@ -389,10 +393,10 @@ public class RecommendationSystem {
         if (max_mode == null || max_value == 0)
             return assignLimit(3, state, execDate);
 
-            List<ChallengeDataDTO> l_cha = rscg.forecast(state, max_mode, execDate);
+            List<ChallengeAssignmentDTO> l_cha = rscg.forecast(state, max_mode, execDate);
 
             int ix = 0;
-            for(ChallengeDataDTO cha: l_cha) {
+            for(ChallengeAssignmentDTO cha: l_cha) {
 
                 if (cha == null)
                     p("ciao");
@@ -410,26 +414,26 @@ public class RecommendationSystem {
                 ix++;
             }
 
-        List<ChallengeDataDTO> new_l_cha = rscf.filter(l_cha, state, execDate);
+        List<ChallengeAssignmentDTO> new_l_cha = rscf.filter(l_cha, state, execDate);
 
         return new_l_cha;
 
     }
 
-    private List<ChallengeDataDTO> getAssigned(Player state, DateTime d, int num) {
+    private List<ChallengeAssignmentDTO> getAssigned(PlayerStateDTO state, DateTime d, int num) {
         return getAssigned(state, d, num, "treatment");
     }
 
-    private List<ChallengeDataDTO> getAssigned(Player state, DateTime d, int num, String exp) {
-        List<ChallengeDataDTO> list = recommendAll(state, d, exp);
+    private List<ChallengeAssignmentDTO> getAssigned(PlayerStateDTO state, DateTime d, int num, String exp) {
+        List<ChallengeAssignmentDTO> list = recommendAll(state, d, exp);
         if (list == null || list.isEmpty())
             return null;
 
-        ArrayList<ChallengeDataDTO> res = new ArrayList<ChallengeDataDTO>();
+        ArrayList<ChallengeAssignmentDTO> res = new ArrayList<ChallengeAssignmentDTO>();
 
         for (int ix = 0; ix < num && ix < list.size(); ix ++) {
 
-            ChallengeDataDTO chosen = list.get(ix);
+            ChallengeAssignmentDTO chosen = list.get(ix);
 
             chosen.setState("assigned");
             chosen.setOrigin("rs");
@@ -442,21 +446,21 @@ public class RecommendationSystem {
 
     }
 
-    protected List<ChallengeDataDTO> assignLimit(int limit, Player state, DateTime d) {
+    protected List<ChallengeAssignmentDTO> assignLimit(int limit, PlayerStateDTO state, DateTime d) {
         return assignLimit(limit, state, d, "treatment");
     }
 
-    protected List<ChallengeDataDTO> assignLimit(int limit, Player state, DateTime d, String exp) {
+    protected List<ChallengeAssignmentDTO> assignLimit(int limit, PlayerStateDTO state, DateTime d, String exp) {
 
-        List<ChallengeDataDTO> list = recommendAll(state, d, exp);
+        List<ChallengeAssignmentDTO> list = recommendAll(state, d, exp);
         if (list == null || list.isEmpty())
             return null;
 
         Set<String> modes = new HashSet<>();
 
-        ArrayList<ChallengeDataDTO> res = new ArrayList<>();
-        ChallengeDataDTO cha = list.get(0);
-        cha.setPriority("2");
+        ArrayList<ChallengeAssignmentDTO> res = new ArrayList<>();
+        ChallengeAssignmentDTO cha = list.get(0);
+        cha.setPriority(2);
         res.add(cha);
         String counter = (String) cha.getData().get("counterName");
         modes.add(counter);
@@ -473,14 +477,14 @@ public class RecommendationSystem {
                 if (modes.contains(counter))
                     continue;
                 modes.add(counter);
-                cha.setPriority("1");
+                cha.setPriority(1);
                 cha.setInfo("id", i+1);
                 res.add(cha);
                 found = true;
             }
         }
 
-        for (ChallengeDataDTO cdd: res) {
+        for (ChallengeAssignmentDTO cdd: res) {
             // cdd.setInfo("experiment", "cho");
             cdd.setOrigin("rs");
             cdd.setState("proposed");
@@ -490,15 +494,15 @@ public class RecommendationSystem {
 
     }
 
-    public List<ChallengeDataDTO> recommendAll(Player state, DateTime d) {
+    public List<ChallengeAssignmentDTO> recommendAll(PlayerStateDTO state, DateTime d) {
         return recommendAll(state, d, "treatment");
     }
 
-    public List<ChallengeDataDTO> recommendAll(Player state, DateTime d, String exp) {
+    public List<ChallengeAssignmentDTO> recommendAll(PlayerStateDTO state, DateTime d, String exp) {
 
-        List<ChallengeDataDTO> challanges = new ArrayList<>();
+        List<ChallengeAssignmentDTO> challanges = new ArrayList<>();
         for (String mode : ChallengesConfig.defaultMode) {
-            List<ChallengeDataDTO> l_cha = rscg.generate(state, mode, d, exp);
+            List<ChallengeAssignmentDTO> l_cha = rscg.generate(state, mode, d, exp);
 
             if (l_cha.isEmpty())
                 continue;
@@ -520,7 +524,7 @@ public class RecommendationSystem {
     }
 
     /*
-    public Map<String, List<ChallengeDataDTO>> recommendation(
+    public Map<String, List<ChallengeAssignmentDTO>> recommendation(
             List<Player> gameData, DateTime start, DateTime end)
             throws NullPointerException {
 
@@ -529,7 +533,7 @@ public class RecommendationSystem {
             throw new IllegalArgumentException("gameData must be not null");
         }
         List<Player> listofContent = new ArrayList<Player>();
-        for (Player c : gameData) {
+        for (PlayerStateDTO c : gameData) {
             if (cfg.isUserfiltering()) {
                 if (cfg.getPlayerIds().contains(c.getPlayerId())) {
                     listofContent.add(c);
@@ -539,11 +543,11 @@ public class RecommendationSystem {
             }
         }
         dbg(logger, "Generating challenges");
-        Map<String, List<ChallengeDataDTO>> challengeCombinations = rscg
+        Map<String, List<ChallengeAssignmentDTO>> challengeCombinations = rscg
                 .generate(listofContent, start, end);
 
-        // Map<String, List<ChallengeDataDTO>> evaluatedChallenges = rscv.valuate(challengeCombinations, listofContent);
-        Map<String, List<ChallengeDataDTO>> evaluatedChallenges = null;
+        // Map<String, List<ChallengeAssignmentDTO>> evaluatedChallenges = rscv.valuate(challengeCombinations, listofContent);
+        Map<String, List<ChallengeAssignmentDTO>> evaluatedChallenges = null;
 
 
         // build a leaderboard, for now is the current, to be parameterized for
@@ -558,7 +562,7 @@ public class RecommendationSystem {
 
         // rscf
         dbg(logger, "Filtering challenges");
-        Map<String, List<ChallengeDataDTO>> filteredChallenges = rscf
+        Map<String, List<ChallengeAssignmentDTO>> filteredChallenges = rscf
                 .filterAndSort(evaluatedChallenges, leaderboard);
 
         filteredChallenges = rscf.removeDuplicates(filteredChallenges);
@@ -572,13 +576,13 @@ public class RecommendationSystem {
                 count.put(key, 0);
             }
             if (toWriteChallenge.get(key) == null) {
-                toWriteChallenge.put(key, new ArrayList<ChallengeDataDTO>());
+                toWriteChallenge.put(key, new ArrayList<ChallengeAssignmentDTO>());
             }
 
             // filter used modes
             List<String> usedModes = new ArrayList<String>();
 
-            for (ChallengeDataDTO dto : filteredChallenges.get(key)) {
+            for (ChallengeAssignmentDTO dto : filteredChallenges.get(key)) {
 
                 if (cfg.isSelecttoptwo()) {
                     if (count.get(key) < 2) {
@@ -610,7 +614,7 @@ public class RecommendationSystem {
     /*
     private List<LeaderboardPosition> buildLeaderBoard(List<Player> gameData) {
         List<LeaderboardPosition> result = new ArrayList<LeaderboardPosition>();
-        for (Player content : gameData) {
+        for (PlayerStateDTO content : gameData) {
             for (PointConcept pc : content.getState().getPointConcept()) {
                 if (pc.getName().equals("green leaves")) {
                     Integer score = (int) Math.round(pc
@@ -630,7 +634,7 @@ public class RecommendationSystem {
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public void writeToFile(Map<String, List<ChallengeDataDTO>> toWriteChallenge)
+    public void writeToFile(Map<String, List<ChallengeAssignmentDTO>> toWriteChallenge)
             throws FileNotFoundException, IOException {
         if (toWriteChallenge == null) {
             throw new IllegalArgumentException(
@@ -654,7 +658,7 @@ public class RecommendationSystem {
         int rowIndex = 1;
 
         for (String key : toWriteChallenge.keySet()) {
-            for (ChallengeDataDTO dto : toWriteChallenge.get(key)) {
+            for (ChallengeAssignmentDTO dto : toWriteChallenge.get(key)) {
                 Row row = sheet.createRow(rowIndex);
                 sheet = ExcelUtil.buildRow(cfg, sheet, row, key, dto);
                 rowIndex++;
@@ -691,23 +695,24 @@ public class RecommendationSystem {
         return stats;
     }
 
-    public Double getWeeklyContentMode(Player cnt, String mode, DateTime execDate) {
+    public Double getWeeklyContentMode(PlayerStateDTO cnt, String mode, DateTime execDate) {
         return getContentMode(cnt, "weekly", mode, execDate);
     }
 
 
-    public Double getDailyContentMode(Player cnt, String mode, DateTime execDate) {
+    public Double getDailyContentMode(PlayerStateDTO cnt, String mode, DateTime execDate) {
         return getContentMode(cnt, "daily", mode, execDate);
     }
 
-    public Double getContentMode(Player cnt, String period, String mode, DateTime execDate) {
-        for (PointConcept pc : cnt.getState().getPointConcept()) {
+    public Double getContentMode(PlayerStateDTO state, String period, String mode, DateTime execDate) {
+        for (GameConcept gc : state.getState().get("PointConcept")) {
+            PointConcept pc = (PointConcept) gc;
 
             String m = pc.getName();
             if (!m.equals(mode))
                 continue;
 
-            return pc.getPeriodScore(period, execDate);
+            return pc.getPeriodScore(period, execDate.getMillis());
         }
 
         return 0.0;
@@ -722,7 +727,7 @@ public class RecommendationSystem {
 
         /*
         for (String pId: playerIds) {
-            Player state = facade.getPlayerState(cfg.get("GAME_ID"), pId);
+            PlayerStateDTO state = facade.getPlayerState(cfg.get("GAME_ID"), pId);
             int lvl = getLevel(state);
 
             if (lvl == 0) {
@@ -788,13 +793,14 @@ public class RecommendationSystem {
                 continue;
             }
 
-            Player state = facade.getPlayerState(cfg.get("GAME_ID"), pId);
+            PlayerStateDTO state = facade.getPlayerState(cfg.get("GAME_ID"), pId);
 
             int lvl = getLevel(state);
             if (lvl <= 1) continue;
 
             double green_leaves = -1;
-            for (PointConcept pt: state.getState().getPointConcept()) {
+            for (GameConcept gc: state.getState().get("PointConcept")) {
+                PointConcept pt = (PointConcept) gc;
                 if ("green leaves".equals(pt.getName()))
                     green_leaves = pt.getScore();
             }

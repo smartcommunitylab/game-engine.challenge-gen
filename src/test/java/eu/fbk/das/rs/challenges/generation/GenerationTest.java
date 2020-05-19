@@ -13,7 +13,7 @@ import eu.trentorise.game.challenges.model.ChallengeDataInternalDto;
 import eu.trentorise.game.challenges.model.ChallengeModel;
 import eu.trentorise.game.challenges.model.ChallengeType;
 import eu.trentorise.game.challenges.rest.Player;
-import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
+import eu.fbk.das.GamificationEngineRestFacade;
 import eu.trentorise.game.challenges.util.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;

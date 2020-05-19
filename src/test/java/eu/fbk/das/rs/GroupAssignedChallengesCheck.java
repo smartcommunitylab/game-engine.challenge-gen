@@ -2,7 +2,7 @@ package eu.fbk.das.rs;
 
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 import eu.trentorise.game.challenges.rest.ChallengeConcept;
-import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
+import eu.fbk.das.GamificationEngineRestFacade;
 import eu.trentorise.game.challenges.rest.Player;
 import eu.trentorise.game.challenges.rest.PointConcept;
 import org.joda.time.DateTime;
@@ -10,7 +10,6 @@ import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import static eu.fbk.das.rs.utils.Utils.*;
 import static eu.fbk.das.rs.utils.Utils.parseDate;

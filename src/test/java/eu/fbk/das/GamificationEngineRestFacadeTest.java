@@ -1,12 +1,10 @@
-package eu.trentorise.game.challenges.rest;
+package eu.fbk.das;
 
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
-import eu.trentorise.game.bean.ExecutionDataDTO;
+
 import eu.trentorise.game.challenges.api.Constants;
 import eu.trentorise.game.challenges.model.GroupChallengeDTO;
-import eu.trentorise.game.challenges.util.ConverterUtil;
 import eu.trentorise.game.challenges.util.ExcelUtil;
-import eu.trentorise.game.challenges.util.JourneyData;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;

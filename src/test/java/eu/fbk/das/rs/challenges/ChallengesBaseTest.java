@@ -7,7 +7,7 @@ import eu.fbk.das.rs.sortfilter.RecommendationSystemChallengeFilteringAndSorting
 import eu.fbk.das.rs.valuator.RecommendationSystemChallengeValuator;
 import eu.trentorise.game.challenges.rest.ChallengeConcept;
 import eu.trentorise.game.challenges.rest.Player;
-import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
+import eu.fbk.das.GamificationEngineRestFacade;
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;

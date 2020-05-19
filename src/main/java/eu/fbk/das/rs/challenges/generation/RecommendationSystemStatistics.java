@@ -1,10 +1,14 @@
 package eu.fbk.das.rs.challenges.generation;
 
 import com.google.common.math.Quantiles;
+import eu.fbk.das.GamificationEngineRestFacade;
 import eu.fbk.das.rs.challenges.ChallengeUtil;
 import eu.fbk.das.rs.utils.ArrayUtils;
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
-import eu.trentorise.game.challenges.rest.*;
+import eu.trentorise.game.model.PointConcept;
+import it.smartcommunitylab.model.GameStatistics;
+import it.smartcommunitylab.model.PlayerStateDTO;
+import it.smartcommunitylab.model.ext.GameConcept;
 import org.joda.time.DateTime;
 
 import java.io.*;
@@ -54,9 +58,11 @@ public class RecommendationSystemStatistics extends ChallengeUtil {
 
     private Map<String, Map<Integer, Double>> updateStatsOnline() {
 
-        GameStatisticsSet st = facade.readGameStatistics(rs.gameId, lastMonday);
+        List<GameStatistics> st = facade.readGameStatistics(rs.gameId, lastMonday);
 
         // GameStatisticsSet st = facade.readGameStatistics(cfg.get("GAME_ID"));
+
+        // TODO FIX
 
         return  null;
     }
@@ -160,12 +166,13 @@ public class RecommendationSystemStatistics extends ChallengeUtil {
             stats.put(mode, new ArrayList<Double>());
         }
 
-        Map<String, Player> m_player = facade.readGameState(rs.gameId);
+        Set <String> m_player = facade.getGamePlayers(rs.gameId);
 
         // update(stats, "24440");
 
-        for (String pId: m_player.keySet()) {
-            update(stats, m_player.get(pId));
+        for (String pId: m_player) {
+            PlayerStateDTO st = facade.getPlayerState(rs.gameId, pId);
+            update(stats, st);
         }
 
         /*
@@ -206,9 +213,9 @@ public class RecommendationSystemStatistics extends ChallengeUtil {
         return q;
     }
 
-    private void update(HashMap<String, List<Double>> stats, Player cnt) {
+    private void update(HashMap<String, List<Double>> stats, PlayerStateDTO cnt) {
 
-        State st = cnt.getState();
+        Map<String, Set<GameConcept>> st = cnt.getState();
 
         // p(st.getPointConcept());
 

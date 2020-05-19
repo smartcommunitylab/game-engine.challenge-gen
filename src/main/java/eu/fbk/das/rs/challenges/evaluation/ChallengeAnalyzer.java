@@ -1,8 +1,7 @@
 package eu.fbk.das.rs.challenges.evaluation;
 
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
-import eu.trentorise.game.challenges.rest.ChallengeConcept;
-import eu.trentorise.game.challenges.rest.Player;
+import it.smartcommunitylab.model.PlayerStateDTO;
 import org.joda.time.DateTime;
 
 import java.io.BufferedReader;
@@ -379,7 +378,7 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
 
         private void searchChallenge() {
 
-            Player state = rs.facade.getPlayerState(rs.gameId, pId);
+            PlayerStateDTO state = rs.facade.getPlayerState(rs.gameId, pId);
 
             List<ChallengeConcept> l_cha = state.getState().getChallengeConcept();
             if (l_cha != null)

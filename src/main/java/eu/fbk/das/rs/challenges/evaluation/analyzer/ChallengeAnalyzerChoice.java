@@ -1,8 +1,7 @@
 package eu.fbk.das.rs.challenges.evaluation.analyzer;
 
 import eu.fbk.das.rs.challenges.evaluation.ChallengeAnalyzer;
-import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
-import eu.trentorise.game.challenges.rest.Player;
+import it.smartcommunitylab.model.PlayerStateDTO;
 import org.joda.time.DateTime;
 
 import java.util.*;
@@ -34,7 +33,7 @@ public class ChallengeAnalyzerChoice extends ChallengeAnalyzer {
 
         for (String pId : challenges.keySet()) {
 
-            Player player = rs.facade.getPlayerState(rs.gameId, pId);
+            PlayerStateDTO player = rs.facade.getPlayerState(rs.gameId, pId);
 
             List<ChallengeRecord> chas = challenges.get(pId);
 

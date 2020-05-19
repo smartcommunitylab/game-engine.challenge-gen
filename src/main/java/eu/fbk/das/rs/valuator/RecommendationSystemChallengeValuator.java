@@ -1,11 +1,9 @@
 package eu.fbk.das.rs.valuator;
 
-import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
-import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemStatistics;
 import eu.fbk.das.rs.challenges.calculator.DifficultyCalculator;
-import eu.trentorise.game.challenges.model.ChallengeDataDTO;
+import it.smartcommunitylab.model.ChallengeAssignmentDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -31,7 +29,7 @@ public class RecommendationSystemChallengeValuator {
     }
 
     // Updates a challenge, evaluating its difficulty
-    public void valuate(ChallengeDataDTO challenge) {
+    public void valuate(ChallengeAssignmentDTO challenge) {
 
         String counterName = (String) challenge.getData().get("counterName");
 

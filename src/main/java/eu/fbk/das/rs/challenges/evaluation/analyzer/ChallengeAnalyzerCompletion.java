@@ -2,8 +2,7 @@ package eu.fbk.das.rs.challenges.evaluation.analyzer;
 
 import eu.fbk.das.rs.challenges.evaluation.ChallengeAnalyzer;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
-import eu.trentorise.game.challenges.rest.ChallengeConcept;
-import eu.trentorise.game.challenges.rest.Player;
+import it.smartcommunitylab.model.PlayerStateDTO;
 import org.joda.time.DateTime;
 
 import java.util.*;
@@ -39,7 +38,7 @@ public class ChallengeAnalyzerCompletion extends ChallengeAnalyzer {
 
         List<String> pl = getPlayers();
         for (String pId: pl) {
-            Player player = rs.facade.getPlayerState(rs.gameId, pId);
+            PlayerStateDTO player = rs.facade.getPlayerState(rs.gameId, pId);
             for (ChallengeConcept cha: player.getState().getChallengeConcept()) {
 
                 if (!cha.getModelName().equals("percentageIncrement") && !cha.getModelName().equals("absoluteIncrement"))

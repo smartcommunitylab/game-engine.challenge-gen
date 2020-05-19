@@ -5,11 +5,10 @@ import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemStatistics;
 import eu.fbk.das.rs.utils.ArrayUtils;
 import eu.fbk.das.rs.utils.Pair;
-import eu.trentorise.game.challenges.model.ChallengeDataDTO;
-import eu.trentorise.game.challenges.model.GroupChallengeDTO;
-import eu.trentorise.game.challenges.rest.ChallengeConcept;
-import eu.trentorise.game.challenges.rest.Player;
-import eu.trentorise.game.challenges.rest.PointConcept;
+import eu.trentorise.game.model.core.GameConcept;
+import it.smartcommunitylab.model.ChallengeAssignmentDTO;
+import it.smartcommunitylab.model.GroupChallengeDTO;
+import it.smartcommunitylab.model.PlayerStateDTO;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.Solver;
@@ -101,9 +100,12 @@ public class GroupChallengesAssigner extends ChallengeUtil {
 
             boolean active = false;
 
-            Player player = rs.facade.getPlayerState(rs.gameId, pId);
+            PlayerStateDTO player = rs.facade.getPlayerState(rs.gameId, pId);
 
-            for (PointConcept pc : player.getState().getPointConcept()) {
+            Set<it.smartcommunitylab.model.ext.GameConcept> scores =
+                    player.getState().get("PointConcept");
+
+            for (GameConcept pc : scores) {
                 if (!pc.getName().equals("green leaves"))
                     continue;
 
@@ -256,7 +258,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
         return playersToConsider;
     }
 
-    private boolean hasGroupChallenge(Player state, String counter) {
+    private boolean hasGroupChallenge(PlayerStateDTO state, String counter) {
         for (ChallengeConcept cha: state.getState().getChallengeConcept()) {
            DateTime start = new DateTime(cha.getStart());
 
@@ -300,13 +302,13 @@ public class GroupChallengesAssigner extends ChallengeUtil {
         pf("Assigning repetitive to: %s \n", pId);
 
         // ASSIGN repetitive behaviour
-        ChallengeDataDTO rep = rs.rscg.getRepetitive(pId);
+        ChallengeAssignmentDTO rep = rs.rscg.getRepetitive(pId);
         rs.facade.assignChallengeToPlayer(rep, rs.gameId, pId);
 
         return list;
     }
 
-    private Double getWMABaseline(Player state, String counter, DateTime lastMonday) {
+    private Double getWMABaseline(PlayerStateDTO state, String counter, DateTime lastMonday) {
 
         DateTime date = lastMonday;
         int v = 5;
