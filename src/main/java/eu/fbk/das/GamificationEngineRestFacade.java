@@ -239,6 +239,23 @@ public class GamificationEngineRestFacade {
         return OffsetDateTime.ofInstant(instant, ZoneOffset.ofTotalSeconds(offsetSeconds));
     }
 
+    public Map<String, Object> getCustomDataPlayer(String gameId, String pId) {
+        try {
+            return playerApi.readCustomDataUsingGET(gameId, pId);
+        } catch (ApiException e) {
+            apiErr(e);
+            return null;
+        }
+    }
+
+    public void setCustomDataPlayer(String gameId, String pId, Map<String, Object> cs) {
+        try {
+            playerApi.updateCustomDataUsingPUT1(gameId, pId, cs);
+        } catch (ApiException e) {
+            apiErr(e);
+        }
+    }
+
     /*
     public Map<String, Object> getCustomDataPlayer(String gameId, String playerId) {
         if (gameId == null || playerId == null) {

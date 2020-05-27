@@ -58,12 +58,12 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
     }
 
     @Override
-    public boolean createSingleChallengeWeekly(Map<String, String> conf, Map<String, String> creationRules, Map<String, Object> challengeValues, String playerSet, Map<String, String> rewards) {
+    public boolean createSingleChallengeWeekly(Map<String, String> conf, Set<String> modelTypes, Map<String, String> creationRules, Map<String, Object> challengeValues, String playerSet, Map<String, String> rewards) {
 
         prepare(conf, playerSet);
 
         for (String pId: players) {
-            List<ChallengeExpandedDTO> challenges = rs.recommend(pId, creationRules, challengeValues);
+            List<ChallengeExpandedDTO> challenges = rs.recommend(pId, modelTypes, creationRules, challengeValues);
 
             for (ChallengeExpandedDTO cha: challenges) {
                 // set data

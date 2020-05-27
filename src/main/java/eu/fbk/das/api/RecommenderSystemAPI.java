@@ -19,13 +19,14 @@ public interface RecommenderSystemAPI {
     /**
      *
      * @param conf keys: host / user / pass / gameId
+     * @param modelTypes: transportation modes to be evaluated for the challenge
      * @param creationRules assigns to each level (key) a creation rule (value): empty / fixedOne / choiceTwo / choiceThree
      * @param challengeValues keys: start / end / challengeWeek / execDate (required), hide (optional)
      * @param playerSet values: all / list of ids - comma separated
      * @param rewards keys: scoreType / calcType (fixed, bonus, booster) / calcValue / maxValue
      * @return success of operation
      */
-    public boolean createSingleChallengeWeekly(Map<String, String> conf, Map<String, String> creationRules, Map<String, Object> challengeValues,  String playerSet, Map<String, String> rewards);
+    public boolean createSingleChallengeWeekly(Map<String, String> conf, Set<String> modelTypes, Map<String, String> creationRules, Map<String, Object> challengeValues,  String playerSet, Map<String, String> rewards);
 
     /**
      *

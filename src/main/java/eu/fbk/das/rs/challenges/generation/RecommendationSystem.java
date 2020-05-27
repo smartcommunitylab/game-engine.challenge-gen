@@ -1,10 +1,5 @@
 package eu.fbk.das.rs.challenges.generation;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import eu.fbk.das.GamificationEngineRestFacade;
 import eu.fbk.das.model.ChallengeExpandedDTO;
 import eu.fbk.das.rs.utils.Utils;
@@ -17,13 +12,8 @@ import it.smartcommunitylab.model.ChallengeConcept;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.ext.GameConcept;
 import it.smartcommunitylab.model.ext.PointConcept;
-import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.format.DateTimeFormat;
@@ -54,6 +44,8 @@ public class RecommendationSystem {
     public RecommendationSystemChallengeValuator rscv;
     public RecommendationSystemChallengeFilteringAndSorting rscf;
     private RecommendationSystemStatistics stats;
+    
+    private Set<String> modelTypes;
 
     public RecommendationSystem(String host, String user, String pass, String gameId) {
         this.host = host;
@@ -77,7 +69,7 @@ public class RecommendationSystem {
     }
 
     // generate challenges
-    public List<ChallengeExpandedDTO> recommend(String pId, Map<String, String> creationRules, Map<String, Object> challengeValues) {
+    public List<ChallengeExpandedDTO> recommend(String pId, Set<String> modelTypes,  Map<String, String> creationRules, Map<String, Object> challengeValues) {
 
         int chaWeek = (Integer) challengeValues.get("challengeWeek");
         DateTime execDate = (DateTime) challengeValues.get("exec");
@@ -85,6 +77,8 @@ public class RecommendationSystem {
         stats.checkAndUpdateStats(execDate);
         rscv.prepare(stats);
         rscg.prepare(chaWeek);
+        
+        this.modelTypes = modelTypes;
 
         PlayerStateDTO state = facade.getPlayerState(gameId, pId);
         int lvl = getLevel(state);
@@ -380,7 +374,7 @@ public class RecommendationSystem {
         int max_pos = -1;
         Double max_value = 0.0;
 
-        for (String mode : ChallengesConfig.defaultMode) {
+        for (String mode : modelTypes) {
             Double modeValue = getWeeklyContentMode(state, mode, execDate);
             int pos = stats.getPosition(mode, modeValue);
 
@@ -502,7 +496,7 @@ public class RecommendationSystem {
     public List<ChallengeExpandedDTO> recommendAll(PlayerStateDTO state, DateTime d, String exp) {
 
         List<ChallengeExpandedDTO> challanges = new ArrayList<>();
-        for (String mode : ChallengesConfig.defaultMode) {
+        for (String mode : modelTypes) {
             List<ChallengeExpandedDTO> l_cha = rscg.generate(state, mode, d, exp);
 
             if (l_cha.isEmpty())
