@@ -1,5 +1,6 @@
 package eu.fbk.das.rs.valuator;
 
+import eu.fbk.das.model.ChallengeExpandedDTO;
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemStatistics;
 import eu.fbk.das.rs.challenges.calculator.DifficultyCalculator;
@@ -29,9 +30,9 @@ public class RecommendationSystemChallengeValuator {
     }
 
     // Updates a challenge, evaluating its difficulty
-    public void valuate(ChallengeAssignmentDTO challenge) {
+    public void valuate(ChallengeExpandedDTO challenge) {
 
-        String counterName = (String) challenge.getData().get("counterName");
+        String counterName = (String) challenge.getData("counterName");
 
         boolean found = false;
         for (String mode : ChallengesConfig.defaultMode)
@@ -45,8 +46,8 @@ public class RecommendationSystemChallengeValuator {
 
         switch (challenge.getModelName()) {
             case "percentageIncrement":
-                Double baseline = (Double) challenge.getData().get("baseline");
-                Double target = (Double) challenge.getData().get("target");
+                Double baseline = (Double) challenge.getData("baseline");
+                Double target = (Double) challenge.getData("target");
 
                 if (baseline == 0 || target == 0)
                     p("eh");
@@ -55,17 +56,17 @@ public class RecommendationSystemChallengeValuator {
                         baseline, target);
                 // + ", target=" + target + " difficulty="
                 // + difficulty);
-                challenge.getData().put("difficulty", difficulty);
+                challenge.setData("difficulty", difficulty);
 
-                double d = (double) challenge.getData().get("percentage");
+                double d = (double) challenge.getData("percentage");
 
                 int prize = dc.calculatePrize(difficulty, d, counterName);
-                challenge.getData().put("bonusScore", prize);
+                challenge.setData("bonusScore", prize);
                 break;
             case "absoluteIncrement":
-                challenge.getData().put("difficulty", DifficultyCalculator.MEDIUM);
+                challenge.setData("difficulty", DifficultyCalculator.MEDIUM);
                 int tryOnceBonus = (int) dc.getTryOnceBonus(counterName);
-                challenge.getData().put("bonusScore", tryOnceBonus);
+                challenge.setData("bonusScore", tryOnceBonus);
                 break;
             default:
                 err(logger, "Unknown model for the challenge: %s!", challenge.getModelName());

@@ -1,10 +1,11 @@
 package eu.fbk.das.rs.challenges.generation;
 
+import eu.fbk.das.model.ChallengeExpandedDTO;
 import eu.fbk.das.rs.challenges.ChallengeUtil;
 import eu.fbk.das.rs.utils.Pair;
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
-
-import it.smartcommunitylab.model.ChallengeAssignmentDTO;
+;
+import it.smartcommunitylab.model.ChallengeConcept;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.apache.logging.log4j.LogManager;
@@ -32,15 +33,15 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
         super(rs);
     }
 
-    public List<ChallengeAssignmentDTO> generate(PlayerStateDTO state, String mode, DateTime execDate) {
+    public List<ChallengeExpandedDTO> generate(PlayerStateDTO state, String mode, DateTime execDate) {
         return generate(state, mode, execDate, "treatment");
     }
 
-    public List<ChallengeAssignmentDTO> generate(PlayerStateDTO state, String mode, DateTime execDate, String exp) {
+    public List<ChallengeExpandedDTO> generate(PlayerStateDTO state, String mode, DateTime execDate, String exp) {
 
         prepare(getChallengeWeek(execDate));
 
-        List<ChallengeAssignmentDTO> output = new ArrayList<>();
+        List<ChallengeExpandedDTO> output = new ArrayList<>();
 
         Double currentValue = rs.getWeeklyContentMode(state, mode, lastMonday);
         currentValue  = round(currentValue, 1);
@@ -64,7 +65,7 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
 
                 target = checkMax(target, mode);
 
-            ChallengeAssignmentDTO cdd = generatePercentage(baseline, mode, target);
+            ChallengeExpandedDTO cdd = generatePercentage(baseline, mode, target);
                 if (cdd != null)
                     output.add(cdd);
 
@@ -81,7 +82,7 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
 
                     improvementValue = checkMax(improvementValue, mode);
 
-                    ChallengeAssignmentDTO cdd = generatePercentage(currentValue, mode, improvementValue);
+                    ChallengeExpandedDTO cdd = generatePercentage(currentValue, mode, improvementValue);
                     if (cdd != null)
                         output.add(cdd);
 
@@ -97,7 +98,7 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
             // if (cfg.isDefaultMode(mode)) {
 
             // build a try once
-            ChallengeAssignmentDTO cdd = prepareChallange(mode);
+            ChallengeExpandedDTO cdd = prepareChallange(mode);
 
             cdd.setModelName("absoluteIncrement");
             cdd.setData("target", 1.0);
@@ -114,7 +115,7 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
         return output;
     }
 
-    private ChallengeAssignmentDTO generatePercentage(Double modeCounter, String mode, double improvementValue) {
+    private ChallengeExpandedDTO generatePercentage(Double modeCounter, String mode, double improvementValue) {
 
         modeCounter = checkMax(modeCounter, mode);
 
@@ -128,7 +129,7 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
 
         lastCounter = improvementValue;
 
-        ChallengeAssignmentDTO cdd = prepareChallange(mode);
+        ChallengeExpandedDTO cdd = prepareChallange(mode);
 
         cdd.setModelName("percentageIncrement");
         cdd.setData("target", improvementValue);
@@ -158,13 +159,13 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
 
     }
 
-    public ChallengeAssignmentDTO prepareChallange(String mode) {
+    public ChallengeExpandedDTO prepareChallange(String mode) {
         return prepareChallange(mode, mode);
     }
 
-    public ChallengeAssignmentDTO prepareChallange(String name, String mode) {
+    public ChallengeExpandedDTO prepareChallange(String name, String mode) {
 
-        ChallengeAssignmentDTO cdd = new ChallengeAssignmentDTO();
+        ChallengeExpandedDTO cdd = new ChallengeExpandedDTO();
         cdd.setInstanceName(f("%s_%s_%s", prefix,
                 name, UUID.randomUUID()));
 
@@ -201,13 +202,13 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
     } */
 
 
-    public Map<String, List<ChallengeAssignmentDTO>> generateAll(List<PlayerStateDTO> data) {
+    public Map<String, List<ChallengeExpandedDTO>> generateAll(List<PlayerStateDTO> data) {
 
-        Map<String, List<ChallengeAssignmentDTO>> res = new HashMap<>();
+        Map<String, List<ChallengeExpandedDTO>> res = new HashMap<>();
 
         for (PlayerStateDTO cnt: data) {
 
-            List<ChallengeAssignmentDTO> challanges = new ArrayList<>();
+            List<ChallengeExpandedDTO> challanges = new ArrayList<>();
             for (String mode : ChallengesConfig.getPerfomanceCounters()) {
                 challanges.addAll(generate(cnt, mode, new DateTime()));
             }
@@ -218,7 +219,7 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
         return res;
     }
 
-    public List<ChallengeAssignmentDTO> forecast(PlayerStateDTO state, String mode, DateTime execDate) {
+    public List<ChallengeExpandedDTO> forecast(PlayerStateDTO state, String mode, DateTime execDate) {
 
         prepare(getChallengeWeek(execDate));
 
@@ -228,11 +229,11 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
 
         // p(forecastValue);
 
-        List<ChallengeAssignmentDTO> cha = new ArrayList<>();
+        List<ChallengeExpandedDTO> cha = new ArrayList<>();
 
         target = roundTarget(mode, target);
 
-        ChallengeAssignmentDTO cdd;
+        ChallengeExpandedDTO cdd;
 
         if (target > 0) {
             cdd = generatePercentage(baseline, mode, target);
@@ -404,28 +405,28 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
         return rs.getWeeklyContentMode(state, counter, date);
     }
 
-    public ChallengeAssignmentDTO getRepetitive(String pId) {
+    public ChallengeExpandedDTO getRepetitive(String pId) {
 
-        ChallengeAssignmentDTO rep = prepareChallange("green leaves");
+        ChallengeExpandedDTO rep = prepareChallange("green leaves");
 
         rep.setModelName("repetitiveBehaviour");
         rep.setData("periodName", "daily");
 
-        List<LinkedHashMap<String, Object>> last = getLastRepetitiveChallenges(pId);
+        List<ChallengeConcept> last = getLastRepetitiveChallenges(pId);
 
         int[] targets = {60, 90, 135, 180, 240, 300, 375};
         int index;
 
         // check if there was a challenge two weeks ago
-        LinkedHashMap<String, Object> cha = getRepetitiveWeek(last, 14);
+        ChallengeConcept cha = getRepetitiveWeek(last, 14);
         if (cha != null) {
             // decide what to do based on result
-            LinkedHashMap<String, Object> fields = (LinkedHashMap<String, Object>) cha.get("fields");
+            Map<String, Object> fields = (Map<String, Object>) cha.getFields();
             double periodTarget = (Double) fields.get("periodTarget");
             double target = (Double) fields.get("target");
             int tot = (int) Math.ceil(periodTarget * target);
             index = findIndex(targets, tot) + 1;
-            if ((boolean) cha.get("completed")) index++; else index--;
+            if (cha.isCompleted()) index++; else index--;
             if (index < 0) index = 0;
             if (index > 7) index = 7;
 
@@ -492,13 +493,13 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
 
     }
 
-    private LinkedHashMap<String, Object> getRepetitiveWeek(List<LinkedHashMap<String, Object>> last, int days) {
+    private ChallengeConcept getRepetitiveWeek(List<ChallengeConcept> last, int days) {
 
         DateTime m = jumpToMonday(new DateTime().minusDays(days));
 
-        for (LinkedHashMap<String, Object> cha: last) {
+        for (ChallengeConcept cha: last) {
 
-            DateTime start = jumpToMonday(new DateTime(cha.get("start")));
+            DateTime start = jumpToMonday(new DateTime(cha.getStart()));
 
             int v = Math.abs(daysApart(m, start));
             if (v > 0)
@@ -510,15 +511,15 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
         return null;
     }
 
-    private List<LinkedHashMap<String, Object>> getLastRepetitiveChallenges(String pId) {
+    private List<ChallengeConcept> getLastRepetitiveChallenges(String pId) {
 
-        List<LinkedHashMap<String, Object>> out = new ArrayList<>();
+        List<ChallengeConcept> out = new ArrayList<>();
 
 
-        List<LinkedHashMap<String, Object>> currentChallenges = rs.facade.getChallengesPlayer(rs.gameId, pId);
-        for (LinkedHashMap<String, Object> cha: currentChallenges) {
+        List<ChallengeConcept> currentChallenges = rs.facade.getChallengesPlayer(rs.gameId, pId);
+        for (ChallengeConcept cha: currentChallenges) {
 
-            if (!((String) cha.get("modelName")).contains("repetitiveBehaviour"))
+            if (!((String) cha.getModelName()).contains("repetitiveBehaviour"))
                 continue;
 
             out.add(cha);

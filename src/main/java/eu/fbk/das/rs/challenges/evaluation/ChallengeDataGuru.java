@@ -1,5 +1,6 @@
 package eu.fbk.das.rs.challenges.evaluation;
 
+import eu.fbk.das.model.ChallengeExpandedDTO;
 import eu.fbk.das.rs.challenges.ChallengeUtil;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import eu.fbk.das.rs.utils.Utils;
@@ -60,7 +61,7 @@ public class ChallengeDataGuru extends ChallengeUtil  {
         // training_label = new ArrayList<>();
     }
 
-    public void generate(String out_path, Map<String, List<ChallengeAssignmentDTO>> challenges, DateTime date, String[] challengeColNames) throws IOException {
+    public void generate(String out_path, Map<String, List<ChallengeExpandedDTO>> challenges, DateTime date, String[] challengeColNames) throws IOException {
 
         // Read challenge cha_completed list
         //   readCompleted();
@@ -137,14 +138,14 @@ public class ChallengeDataGuru extends ChallengeUtil  {
 
     }
 
-    private void computeData(Map<String, List<ChallengeAssignmentDTO>> challenges) {
+    private void computeData(Map<String, List<ChallengeExpandedDTO>> challenges) {
 
         l_cha = new ArrayList<>();
 
         for (String pId : challenges.keySet()) {
             PlayerStateDTO cnt = rs.facade.getPlayerState(rs.gameId, pId);
 
-            for (ChallengeAssignmentDTO cha : challenges.get(pId)) {
+            for (ChallengeExpandedDTO cha : challenges.get(pId)) {
                 goChallenge(cnt, cha);
 
                 l_cha.add(cha);
@@ -188,7 +189,7 @@ public class ChallengeDataGuru extends ChallengeUtil  {
         }
     }
 
-    private void goChallenge(PlayerStateDTO user, ChallengeAssignmentDTO cha) {
+    private void goChallenge(PlayerStateDTO user, ChallengeExpandedDTO cha) {
 
         String cId = cha.getInstanceName();
 
@@ -210,7 +211,7 @@ public class ChallengeDataGuru extends ChallengeUtil  {
         computeDatum(cha, user);
     }
 
-    private void computeDatum(ChallengeAssignmentDTO cha, PlayerStateDTO user) {
+    private void computeDatum(ChallengeExpandedDTO cha, PlayerStateDTO user) {
         double[] datum = new double[datum_length];
         int ix = 0;
 
@@ -304,8 +305,8 @@ public class ChallengeDataGuru extends ChallengeUtil  {
         return null;
     }
 
-    private Object getField(ChallengeAssignmentDTO cha, String s) {
-        return cha.getData().get(s);
+    private Object getField(ChallengeExpandedDTO cha, String s) {
+        return cha.getData(s);
     }
 
     private double parse(String s) {

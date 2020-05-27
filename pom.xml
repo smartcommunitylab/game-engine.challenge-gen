@@ -172,7 +172,7 @@
         <dependency>
             <groupId>it.smartcommunitylab.gamification</groupId>
             <artifactId>gamification-java-client</artifactId>
-            <version>2.0.1</version>
+            <version>2.2.0</version>
         </dependency>
         <dependency>
             <groupId>joda-time</groupId>
@@ -225,28 +225,7 @@
                             </archive>
                         </configuration>
                     </plugin>
-                    <plugin>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <version>2.5.3</version>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>src/main/assembly/generator.xml</descriptor>
-                            </descriptors>
-                            <archive>
-                                <manifest>
-                                    <mainClass>${generator.mainClass}</mainClass>
-                                </manifest>
-                            </archive>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
+
                 </plugins>
             </build>
         </profile>
@@ -268,28 +247,6 @@
                                 </manifest>
                             </archive>
                         </configuration>
-                    </plugin>
-                    <plugin>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <version>2.5.3</version>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>src/main/assembly/uploader.xml</descriptor>
-                            </descriptors>
-                            <archive>
-                                <manifest>
-                                    <mainClass>${uploader.mainClass}</mainClass>
-                                </manifest>
-                            </archive>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                            </execution>
-                        </executions>
                     </plugin>
                 </plugins>
             </build>

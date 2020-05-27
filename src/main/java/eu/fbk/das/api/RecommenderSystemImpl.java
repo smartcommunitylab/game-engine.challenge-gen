@@ -1,9 +1,9 @@
 package eu.fbk.das.api;
 
+import eu.fbk.das.model.ChallengeExpandedDTO;
 import eu.fbk.das.rs.GroupChallengesAssigner;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 
-import it.smartcommunitylab.model.ChallengeAssignmentDTO;
 import it.smartcommunitylab.model.GroupChallengeDTO;
 import it.smartcommunitylab.model.RewardDTO;
 import org.joda.time.DateTime;
@@ -43,7 +43,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 
         for (String pId: players) {
             // prepare
-            ChallengeAssignmentDTO cha = rs.rscg.prepareChallange(modelType);
+            ChallengeExpandedDTO cha = rs.rscg.prepareChallange(modelType);
             // set challenge model
             cha.setModelName(modelType);
             // set data
@@ -63,9 +63,9 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
         prepare(conf, playerSet);
 
         for (String pId: players) {
-            List<ChallengeAssignmentDTO> challenges = rs.recommend(pId, creationRules, challengeValues);
+            List<ChallengeExpandedDTO> challenges = rs.recommend(pId, creationRules, challengeValues);
 
-            for (ChallengeAssignmentDTO cha: challenges) {
+            for (ChallengeExpandedDTO cha: challenges) {
                 // set data
                 dataCha(cha, challengeValues);
                 // set reward;
@@ -98,11 +98,11 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
         return false;
     }
 
-    private void dataCha(ChallengeAssignmentDTO cha, Map<String, Object> challengeValues) {
+    private void dataCha(ChallengeExpandedDTO cha, Map<String, Object> challengeValues) {
         for (String k: challengeValues.keySet()) {
             Object v = challengeValues.get(k);
-            if ("start".equals(k)) cha.setStart(jodaToOffset( (DateTime) v));
-            else if ("end".equals(k)) cha.setStart(jodaToOffset( (DateTime) v));
+            if ("start".equals(k)) cha.setStart((DateTime) v);
+            else if ("end".equals(k)) cha.setStart((DateTime) v);
             else if ("hide".equals(k)) cha.setHide((Boolean) v);
             else {
                 Object data = cha.getData();
@@ -111,7 +111,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
         }
     }
 
-    private void reward(ChallengeAssignmentDTO cha, Map<String, String> rewards) {
+    private void reward(ChallengeExpandedDTO cha, Map<String, String> rewards) {
         String scoreType = rewards.get("scoreType");
         String calcType = rewards.get("calcType");
         String calcValue = rewards.get("calcValue");
@@ -121,12 +121,12 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 
         // if fixed reward, simply set it
         if ("fixed".equals(calcType)) {
-            cha.getData().put("bonusScore", calcValue);
+            cha.setData("bonusScore", calcValue);
             return;
         }
         // otherwise use Evaluator
         rs.rscv.valuate(cha);
-        Double r = (Double)cha.getData().get("bonusScore");
+        Double r = (Double)cha.getData("bonusScore");
         // check if we have to increment reward
         if ("bonus".equals(calcType)) {
             r += Double.parseDouble(calcValue);
@@ -138,7 +138,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
             r = Math.min(r, Double.parseDouble(maxValue));
         }
 
-        cha.getData().put("bonusScore", r);
+        cha.setData("bonusScore", r);
     }
 
     private void dataGroup(GroupChallengeDTO gcd, Map<String, Object> challengeValues) {
