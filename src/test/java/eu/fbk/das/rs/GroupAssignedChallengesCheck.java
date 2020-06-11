@@ -6,14 +6,18 @@ import eu.fbk.das.GamificationEngineRestFacade;
 
 
 import it.smartcommunitylab.model.PlayerStateDTO;
+import it.smartcommunitylab.model.ext.ChallengeConcept;
 import it.smartcommunitylab.model.ext.GameConcept;
+import it.smartcommunitylab.model.ext.PointConcept;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import static eu.fbk.das.rs.challenges.ChallengeUtil.getPeriodScore;
 import static eu.fbk.das.rs.utils.Utils.*;
 import static eu.fbk.das.rs.utils.Utils.parseDate;
 
@@ -29,9 +33,9 @@ public class GroupAssignedChallengesCheck extends ChallengesBaseTest {
         PlayerStateDTO player = facade.getPlayerState(cfg.get("GAME_ID"), "28593");
 
         Set<GameConcept> scores =  player.getState().get("ChallengeConcept");
-        for (GameConcept cha : scores) {
+        for (GameConcept gc : scores) {
+            ChallengeConcept chal = (ChallengeConcept) gc;
 
-            /* TODO FIX
             String nm = chal.getModelName();
 
             int w = daysApart(new DateTime(chal.getStart()), parseDate("29/10/2018"));
@@ -42,7 +46,7 @@ public class GroupAssignedChallengesCheck extends ChallengesBaseTest {
 
             p(chal);
             p(nm);
-*/
+
         }
 
 
@@ -59,9 +63,9 @@ public class GroupAssignedChallengesCheck extends ChallengesBaseTest {
         for (String pId: facade.getGamePlayers(cfg.get("GAME_ID"))) {
             PlayerStateDTO player = facade.getPlayerState(cfg.get("GAME_ID"), pId);
             Set<GameConcept> scores =  player.getState().get("ChallengeConcept");
-            for (GameConcept cha : scores) {
+            for (GameConcept gc : scores) {
+                ChallengeConcept chal = (ChallengeConcept) gc;
 
-            /* TODO FIX
                 String nm = chal.getModelName();
 
                 if (!nm.contains("group"))
@@ -84,7 +88,7 @@ public class GroupAssignedChallengesCheck extends ChallengesBaseTest {
                 incr(cont, f("%s-%d-%s", chal.getOrigin(), w, "compl"), chal.getState().equals("COMPLETED"));
 
                 p(chal.getState());
-                */
+
 
             }
         }
@@ -117,21 +121,19 @@ public class GroupAssignedChallengesCheck extends ChallengesBaseTest {
 
     }
 
-    private boolean scoredGreenLeaves(PlayerStateDTO player, Long day) {
+    private boolean scoredGreenLeaves(PlayerStateDTO player, Date day) {
 
         Set<GameConcept> scores =  player.getState().get("PointConcept");
-        for (GameConcept pc : scores) {
+        for (GameConcept gc : scores) {
+            PointConcept pc = (PointConcept) gc;
 
-            /* TODO FIX
             if (!pc.getName().equals("green leaves"))
                 continue;
 
-            Double sc = pc.getPeriodScore("weekly", new DateTime(day));
+            Double sc = getPeriodScore(pc,"weekly", new DateTime(day));
 
             if (sc < 100)
                 return false;
-
-             */
         }
 
         return true;

@@ -186,7 +186,7 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
     private Double getScore(PlayerStateDTO content, String points, Long moment) {
         for (PointConcept pc : content.getState().getPointConcept()) {
             if (pc.getName().equalsIgnoreCase(points)) {
-                return pc.getPeriodScore("weekly", moment);
+                return getPeriodScore(pc,"weekly", moment);
             }
         }
         return null;

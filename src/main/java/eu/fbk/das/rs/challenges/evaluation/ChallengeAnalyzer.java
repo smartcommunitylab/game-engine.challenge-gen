@@ -2,6 +2,7 @@ package eu.fbk.das.rs.challenges.evaluation;
 
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import it.smartcommunitylab.model.PlayerStateDTO;
+import it.smartcommunitylab.model.ext.ChallengeConcept;
 import it.smartcommunitylab.model.ext.GameConcept;
 import org.joda.time.DateTime;
 
@@ -383,14 +384,14 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
 
             Set<GameConcept> l_cha = state.getState().get("ChallengeConcept");
             if (l_cha != null)
-            for (GameConcept cha: l_cha ) {
+            for (GameConcept gc: l_cha ) {
+                    ChallengeConcept cha = (ChallengeConcept) gc;
                 if (!cha.getName().equals(name))
                     continue;
 
-                /*
+
                 chosen = checkChosen(cha.getStateDate());
                 completed = cha.isCompleted();
-                */
 
                 return;
             }
@@ -399,8 +400,8 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
             completed = false;
         }
 
-        private boolean checkChosen(Map<String, Date> stateDate) {
-            for (String k: stateDate.keySet()) {
+        private boolean checkChosen(Map<ChallengeConcept.ChallengeState, Date> stateDate) {
+            for (ChallengeConcept.ChallengeState k: stateDate.keySet()) {
                 if (!k.equals("ASSIGNED"))
                     continue;
 

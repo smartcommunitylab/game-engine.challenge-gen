@@ -5,6 +5,7 @@ import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 
 import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.ext.PlayerLevel;
+import it.smartcommunitylab.model.ext.PointConcept;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
@@ -93,7 +94,7 @@ public class ChallengeUtil {
         return 0;
     }
 
-
-
-
+    public static double getPeriodScore(PointConcept pc, String w, DateTime dt) {
+        return pc.getPeriodScore(w, dt.getMillis() / 1000);
+    }
 }

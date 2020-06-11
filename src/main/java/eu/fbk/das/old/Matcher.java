@@ -1,5 +1,6 @@
 package eu.fbk.das.old;
 
+import it.smartcommunitylab.model.ext.BadgeCollectionConcept;
 import it.smartcommunitylab.model.ext.GameConcept;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.ext.PointConcept;
@@ -145,9 +146,8 @@ public class Matcher {
         Set<GameConcept> bdc = user.getState().get("BadgeCollectionConcept");
 
             // find right badge collection
-            for (GameConcept bc : bdc) {
-                /*
-                TODO FIX
+            for (GameConcept gc : bdc) {
+                    BadgeCollectionConcept bc = (BadgeCollectionConcept) gc;
 
                 if (bc.getName().equalsIgnoreCase(challenge.getGoalType())) {
                     if (criteria.contains("size")) {
@@ -172,8 +172,6 @@ public class Matcher {
 
             }
 
-                 */
-        }
         return false;
     }
 

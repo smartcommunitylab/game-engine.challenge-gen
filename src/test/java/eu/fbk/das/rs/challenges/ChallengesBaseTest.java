@@ -8,6 +8,7 @@ import eu.fbk.das.rs.valuator.RecommendationSystemChallengeValuator;
 
 import eu.fbk.das.GamificationEngineRestFacade;
 import it.smartcommunitylab.model.PlayerStateDTO;
+import it.smartcommunitylab.model.ext.ChallengeConcept;
 import it.smartcommunitylab.model.ext.GameConcept;
 import org.joda.time.LocalDate;
 import org.junit.Before;
@@ -66,10 +67,11 @@ public class ChallengesBaseTest {
     public void test() {
         PlayerStateDTO res = facade.getPlayerState(cfg.get("GAME_ID"), "25706");
         Set<GameConcept> scores =  res.getState().get("ChallengeConcept");
-        for (GameConcept cha : scores) {
+        for (GameConcept gc : scores) {
+            ChallengeConcept cha = (ChallengeConcept) gc;
             p(cha.getName());
-          // TODO FIX
-            //  p(cha.getStateDate());
+
+            p(cha.getStateDate());
         }
     }
 

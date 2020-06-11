@@ -29,18 +29,18 @@ public class RandomTest extends ChallengesBaseTest {
 
             PlayerStateDTO pl = facade.getPlayerState(cfg.get("GAME_ID"), pId);
 
-            Map<ChallengeConcept, Long> cache = new HashMap<ChallengeConcept, Long>();
+            Map<ChallengeConcept, Date> cache = new HashMap<>();
 
             Set<GameConcept> scores =  pl.getState().get("ChallengeConcept");
-            for (GameConcept cha : scores) {
-                // TODO FIX
-                //  cache.put(cha, cha.getStart());
+                for (GameConcept gc : scores) {
+                    ChallengeConcept cha = (ChallengeConcept) gc;
+                cache.put(cha, cha.getStart());
             }
 
             cache = Utils.sortByValues(cache);
 
             for ( ChallengeConcept cha : cache.keySet()) {
-                long start = cache.get(cha);
+                Date start = cache.get(cha);
                 pf("%s %s %s %s\n", new DateTime(start), cha.getName(), cha.getModelName(), cha.getFields().get("counterName"));
                 if (cha.getModelName().equals("groupCompetitivePerformance")) {
                     count++;

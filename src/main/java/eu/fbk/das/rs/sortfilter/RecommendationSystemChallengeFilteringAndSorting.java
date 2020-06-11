@@ -2,16 +2,17 @@ package eu.fbk.das.rs.sortfilter;
 
 import eu.fbk.das.model.ChallengeExpandedDTO;
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
-import eu.trentorise.game.model.PointConcept;
 
 import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.ext.GameConcept;
+import it.smartcommunitylab.model.ext.PointConcept;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 
 import java.util.*;
 
+import static eu.fbk.das.rs.challenges.ChallengeUtil.getPeriodScore;
 import static eu.fbk.das.rs.utils.ArrayUtils.pos;
 import static eu.fbk.das.rs.utils.Utils.dbg;
 
@@ -118,11 +119,11 @@ public class RecommendationSystemChallengeFilteringAndSorting {
         double score = 0;
         Set<GameConcept> scores =  player.getState().get("PointConcept");
         for (GameConcept gc : scores) {
+            PointConcept pc = (PointConcept) gc;
             if (!gc.getName().equals(ChallengesConfig.gLeaves))
                 continue;
 
-            // TODO PC
-            // score = pc.getPeriodScore("weekly", execDate.getMillis() / 1000);
+            score = getPeriodScore(pc, "weekly", execDate);
         }
 
         int pos = pos(score, leaderboard);

@@ -24,6 +24,7 @@ import java.util.*;
 
 import static eu.fbk.das.GamificationEngineRestFacade.jodaToOffset;
 import static eu.fbk.das.rs.challenges.ChallengeUtil.getLevel;
+import static eu.fbk.das.rs.challenges.ChallengeUtil.getPeriodScore;
 import static eu.fbk.das.rs.utils.Utils.*;
 import static it.smartcommunitylab.model.ChallengeConcept.StateEnum.COMPLETED;
 
@@ -705,7 +706,7 @@ public class RecommendationSystem {
             if (!m.equals(mode))
                 continue;
 
-            return pc.getPeriodScore(period, execDate.getMillis());
+            return getPeriodScore(pc,period, execDate);
         }
 
         return 0.0;

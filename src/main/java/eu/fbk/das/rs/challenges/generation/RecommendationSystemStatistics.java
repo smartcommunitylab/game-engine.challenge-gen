@@ -5,10 +5,10 @@ import eu.fbk.das.GamificationEngineRestFacade;
 import eu.fbk.das.rs.challenges.ChallengeUtil;
 import eu.fbk.das.rs.utils.ArrayUtils;
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
-import eu.trentorise.game.model.PointConcept;
 import it.smartcommunitylab.model.GameStatistics;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.ext.GameConcept;
+import it.smartcommunitylab.model.ext.PointConcept;
 import org.joda.time.DateTime;
 
 import java.io.*;
@@ -218,24 +218,22 @@ public class RecommendationSystemStatistics extends ChallengeUtil {
         Map<String, Set<GameConcept>> st = cnt.getState();
 
         Set<GameConcept> scores =  cnt.getState().get("PointConcept");
-        for (GameConcept pc : scores) {
+        for (GameConcept gc : scores) {
+            PointConcept pc = (PointConcept) gc;
 
             String m = fixMode(pc.getName());
 
-            /*
-            if (pc.getName().equals(cfg.gLeaves)) {
-                stats.get(cfg.gLeaves).add(pc.getPeriodScore("weekly", execDate.getTime()));
-            }*/
+            if (pc.getName().equals(ChallengesConfig.gLeaves)) {
+                stats.get(ChallengesConfig.gLeaves).add(getPeriodScore(pc,"weekly", execDate));
+            }
 
             if (!ArrayUtils.find(m, l_mode))
                 continue;
 
-            // TODO PC
-            /*
-            Double score = pc.getPeriodScore("weekly", lastMonday);
+            Double score = getPeriodScore(pc,"weekly", lastMonday);
             if (score > 0)
                 stats.get(m).add(score);
-                */
+
         }
     }
 

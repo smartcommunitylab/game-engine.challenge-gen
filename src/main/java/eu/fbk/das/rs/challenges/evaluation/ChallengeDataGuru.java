@@ -261,7 +261,7 @@ public class ChallengeDataGuru extends ChallengeUtil  {
                 try {
                     d = date.minusDays(7 * i);
                     // p(Utils.printDate(d));
-                    Double a = pc.getPeriodScore("weekly", d.getMillis());
+                    Double a = getPeriodScore(pc,"weekly", d);
                     datum[ix++] = a;
                 } catch (Exception e) {
                     p(e);
@@ -273,7 +273,7 @@ public class ChallengeDataGuru extends ChallengeUtil  {
                 d = date.minusDays(i);
                 // p(Utils.printDate(d));
                 try {
-                    datum[ix++] = pc.getPeriodScore("daily", d.getMillis());
+                    datum[ix++] = getPeriodScore(pc,"daily", d);
                 } catch (Exception e) {
                     p(e);
                 }

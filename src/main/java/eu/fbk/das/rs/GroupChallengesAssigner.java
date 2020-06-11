@@ -6,7 +6,10 @@ import eu.fbk.das.rs.challenges.generation.RecommendationSystemStatistics;
 import eu.fbk.das.rs.utils.ArrayUtils;
 import eu.fbk.das.rs.utils.Pair;
 import it.smartcommunitylab.model.*;
+
 import it.smartcommunitylab.model.ext.GameConcept;
+import it.smartcommunitylab.model.ext.PointConcept;
+import it.smartcommunitylab.model.ext.ChallengeConcept;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.Solver;
@@ -104,18 +107,16 @@ public class GroupChallengesAssigner extends ChallengeUtil {
             Set<GameConcept> scores =
                     player.getState().get("PointConcept");
 
-            for (GameConcept pc : scores) {
+            for (GameConcept gc : scores) {
+                PointConcept pc = (PointConcept) gc;
                 if (!pc.getName().equals("green leaves"))
                     continue;
 
-                // TODO FIX
-                /*
-                Double sc = pc.getPeriodScore("weekly", new DateTime());
+                Double sc = getPeriodScore(pc,"weekly", new DateTime());
 
                 if (sc > 20)
                     active = true;
 
-                 */
             }
 
             if (active)
@@ -143,8 +144,8 @@ public class GroupChallengesAssigner extends ChallengeUtil {
 
             boolean exists = false;
 
-            List<ChallengeConcept> currentChallenges = rs.facade.getChallengesPlayer(rs.gameId, pId);
-            for (ChallengeConcept cha: currentChallenges) {
+            List<it.smartcommunitylab.model.ChallengeConcept> currentChallenges = rs.facade.getChallengesPlayer(rs.gameId, pId);
+            for (it.smartcommunitylab.model.ChallengeConcept cha: currentChallenges) {
 
                 DateTime existingChaEnd = jumpToMonday(new DateTime(cha.getEnd()));
 
@@ -278,16 +279,15 @@ public class GroupChallengesAssigner extends ChallengeUtil {
 
     private boolean hasGroupChallenge(PlayerStateDTO state, String counter) {
         Set<GameConcept> scores =  state.getState().get("ChallengeConcept");
-        for (GameConcept cha : scores) {
-
-            /* TODO FIX
+        for (GameConcept gc : scores) {
+           ChallengeConcept cha = (ChallengeConcept) gc;
            DateTime start = new DateTime(cha.getStart());
 
            if (start.getWeekOfWeekyear() != execDate.getWeekOfWeekyear())
                continue;
 
             String s = cha.getModelName();
-            Map<String, Object> fields = cha.getFields();
+            Map<String, Object> fields = (Map<String, Object>) cha.getFields();
 
             if (!ArrayUtils.find(s, groupCha))
                 continue;
@@ -305,7 +305,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
 
                return true;
 
-             */
+
         }
 
         return false;

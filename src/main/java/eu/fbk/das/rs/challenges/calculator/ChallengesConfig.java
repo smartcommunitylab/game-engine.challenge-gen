@@ -8,6 +8,8 @@ import org.joda.time.DateTime;
 import java.util.List;
 import java.util.Set;
 
+import static eu.fbk.das.rs.challenges.ChallengeUtil.getPeriodScore;
+
 
 /**
  * Challenges configuration main class
@@ -240,7 +242,7 @@ public class ChallengesConfig {
             if (!m.equals(mode))
                 continue;
 
-            return pc.getPeriodScore("weekly", execDate.getMillis());
+            return getPeriodScore(pc,"weekly", execDate);
         }
 
         return 0.0;
