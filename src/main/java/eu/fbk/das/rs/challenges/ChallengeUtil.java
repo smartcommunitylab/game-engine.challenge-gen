@@ -80,7 +80,7 @@ public class ChallengeUtil {
                     return i;
 
 
-            pf("Could not decode value %s of player level %s \n", lvl.getLevelValue(), lvl);
+            pf("Could not decode value %s of PlayerStateDTO level %s \n", lvl.getLevelValue(), lvl);
 
             return -1;
 

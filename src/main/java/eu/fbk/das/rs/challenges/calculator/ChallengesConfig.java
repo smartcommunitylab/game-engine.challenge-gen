@@ -90,7 +90,7 @@ public class ChallengesConfig {
     // defining different improvement percentage 10%,20%, etc.
     private static final Double[] percentage = {0.1, 0.2, 0.3, 0.4};
 
-    // default user player id
+    // default user PlayerStateDTO id
     private static List<String> playerIds;
 
     // recommendation system configuration

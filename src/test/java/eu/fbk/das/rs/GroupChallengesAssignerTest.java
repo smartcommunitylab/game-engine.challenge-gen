@@ -2,7 +2,7 @@ package eu.fbk.das.rs;
 
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
-import eu.trentorise.game.challenges.model.GroupChallengeDTO;
+import it.smartcommunitylab.model.GroupChallengeDTO;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.search.strategy.Search;

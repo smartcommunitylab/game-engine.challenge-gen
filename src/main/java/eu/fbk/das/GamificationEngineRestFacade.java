@@ -5,6 +5,7 @@ import it.smartcommunitylab.ApiClient;
 import it.smartcommunitylab.ApiException;
 import it.smartcommunitylab.basic.api.GameControllerApi;
 import it.smartcommunitylab.basic.api.PlayerControllerApi;
+
 import it.smartcommunitylab.model.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -254,6 +255,15 @@ public class GamificationEngineRestFacade {
         } catch (ApiException e) {
             apiErr(e);
         }
+    }
+
+    public Map<String, PlayerStateDTO> readGameState(String gameId) {
+        Set<String> players = getGamePlayers(gameId);
+        Map<String, PlayerStateDTO> res = new HashMap<>();
+        for (String pId: players) {
+            res.put(pId, getPlayerState(gameId, pId));
+        }
+        return res;
     }
 
     /*

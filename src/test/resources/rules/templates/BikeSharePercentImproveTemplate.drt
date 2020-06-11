@@ -12,7 +12,7 @@ package eu.trentorise.game.model
 /* Parameters for the template:
 ch_ID = unique Challenge ID (ALWAYS!): obtained via UUID
 ch_mode    NOTE! not used for bikesharing mode
-ch_player = unique Player ID 
+ch_PlayerStateDTO = unique PlayerStateDTO ID
 ch_point_type
 */
 

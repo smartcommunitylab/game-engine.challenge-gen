@@ -5,12 +5,15 @@ import eu.fbk.das.rs.challenges.generation.RecommendationSystemChallengeGenerati
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
 import eu.fbk.das.rs.sortfilter.RecommendationSystemChallengeFilteringAndSorting;
 import eu.fbk.das.rs.valuator.RecommendationSystemChallengeValuator;
-import eu.trentorise.game.challenges.rest.ChallengeConcept;
-import eu.trentorise.game.challenges.rest.Player;
+
 import eu.fbk.das.GamificationEngineRestFacade;
+import it.smartcommunitylab.model.PlayerStateDTO;
+import it.smartcommunitylab.model.ext.GameConcept;
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Set;
 
 import static eu.fbk.das.rs.utils.Utils.p;
 
@@ -61,10 +64,12 @@ public class ChallengesBaseTest {
 
     @Test
     public void test() {
-        Player res = facade.getPlayerState(cfg.get("GAME_ID"), "25706");
-        for (ChallengeConcept cha: res.getState().getChallengeConcept()) {
+        PlayerStateDTO res = facade.getPlayerState(cfg.get("GAME_ID"), "25706");
+        Set<GameConcept> scores =  res.getState().get("ChallengeConcept");
+        for (GameConcept cha : scores) {
             p(cha.getName());
-            p(cha.getStateDate());
+          // TODO FIX
+            //  p(cha.getStateDate());
         }
     }
 

@@ -1,10 +1,12 @@
 package eu.fbk.das.rs;
 
+import eu.fbk.das.model.ChallengeExpandedDTO;
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemChallengeGeneration;
-import eu.trentorise.game.challenges.model.ChallengeDataDTO;
-import eu.trentorise.game.challenges.rest.Player;
+
+
+import it.smartcommunitylab.model.PlayerStateDTO;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +33,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
     @Test
     public void assignSurveyTest() {
 
-        ChallengeDataDTO cha = rscg.prepareChallange("survey_prediction");
+        ChallengeExpandedDTO cha = rscg.prepareChallange("survey_prediction");
         cha.setStart(new DateTime());
         cha.setModelName("survey");
         cha.setData("surveyType", "evaluation");
@@ -54,21 +56,9 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
 
     }
 
-    @Test
-    public void assignReccomendationAll() {
-        String l = "new_recommend";
-
-        assignReccomendation(l, "19092");
-
-        Map<String, Player> res = facade.readGameState(cfg.get("GAME_ID"));
-        for (String pId: res.keySet()) {
-
-            assignReccomendation(l, pId);
-        }
-    }
 
     private void assignReccomendation(String l, String pId) {
-        ChallengeDataDTO cha = rscg.prepareChallange(l, "Recommendations");
+        ChallengeExpandedDTO cha = rscg.prepareChallange(l, "Recommendations");
         cha.setStart(new DateTime());
         cha.setModelName("absoluteIncrement");
         cha.setData("target", 1.0);
@@ -82,7 +72,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
     @Test
     public void assignEvaluation() {
 
-        ChallengeDataDTO cha = rscg.prepareChallange("survey_prediction");
+        ChallengeExpandedDTO cha = rscg.prepareChallange("survey_prediction");
 
         cha.setModelName("survey");
         cha.setData("surveyType", "evaluation");
@@ -121,8 +111,9 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
     public void assignRepetitiveTest() {
 
         String pId = "225";
-        Player st = facade.getPlayerState(cfg.get("GAME_ID"), pId);
-        ChallengeDataDTO cha = rscg.getRepetitive(pId);
+        PlayerStateDTO st = facade.getPlayerState(cfg.get("GAME_ID"), pId);
+
+        ChallengeExpandedDTO cha = rscg.getRepetitive(pId);
 
         // Assign to me
         boolean success = facade.assignChallengeToPlayer(cha, cfg.get("GAME_ID"), pId);
@@ -136,9 +127,9 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
     public void assignRecommendFriend() {
 
         String pId = "225";
-        List<ChallengeDataDTO> s = new ArrayList<>();
+        List<ChallengeExpandedDTO> s = new ArrayList<>();
         rs.assignRecommendFriend(pId, s);
-        ChallengeDataDTO cha = s.get(0);
+        ChallengeExpandedDTO cha = s.get(0);
 
         // Assign to me
         boolean success = facade.assignChallengeToPlayer(cha, cfg.get("GAME_ID"), pId);

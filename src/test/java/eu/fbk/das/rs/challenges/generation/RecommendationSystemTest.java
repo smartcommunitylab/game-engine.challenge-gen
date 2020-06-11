@@ -1,12 +1,12 @@
 package eu.fbk.das.rs.challenges.generation;
 
 
+import eu.fbk.das.model.ChallengeExpandedDTO;
 import eu.fbk.das.rs.utils.Utils;
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
-import eu.trentorise.game.challenges.model.ChallengeDataDTO;
-import eu.trentorise.game.challenges.rest.ChallengeConcept;
-import eu.trentorise.game.challenges.rest.Player;
 
+
+import it.smartcommunitylab.model.PlayerStateDTO;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
@@ -33,7 +33,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
 
         RecommendationSystemChallengeGeneration rscg = new RecommendationSystemChallengeGeneration(cfg, null);
 
-        Player state = facade.getPlayerState(cfg.get("GAME_ID"), pId);
+        PlayerStateDTO state = facade.getPlayerState(cfg.get("GAME_ID"), pId);
 
         forecast(rscg, 10.0, 9.0);
         forecast(rscg, 10.0, 11.0);
@@ -50,24 +50,6 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
     }*/
 
 
-
-    @Test
-    public void test() {
-        RecommendationSystem rs = new RecommendationSystem();
-        DateTime date = new DateTime();
-
-        Map<String, Player> res = facade.readGameState(cfg.get("GAME_ID"));
-        for (String pId: res.keySet()) {
-
-            Player cnt = res.get(pId);
-            for (ChallengeConcept cha: cnt.getState().getChallengeConcept()) {
-                Long end = cha.getEnd();
-                p(end - 1541635200);
-            }
-
-        }
-    }
-
     @Test
     public void testRecommendationForecast() {
         // preparazione
@@ -82,11 +64,11 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
 
         RecommendationSystem rs = new RecommendationSystem();
 
-        Player state = facade.getPlayerState(cfg.get("GAME_ID"), pId);
+        PlayerStateDTO state = facade.getPlayerState(cfg.get("GAME_ID"), pId);
 
-        List<ChallengeDataDTO> l_cha = rs.assignForecast(state, date);
+        List<ChallengeExpandedDTO> l_cha = rs.assignForecast(state, date);
 
-        List<ChallengeDataDTO> l_cha_2 = rs.assignLimit(3, state, date);
+        List<ChallengeExpandedDTO> l_cha_2 = rs.assignLimit(3, state, date);
     }
 
     @Test
@@ -100,7 +82,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
         DateTime start = Utils.parseDateTime("26/10/2018 00:00");
         DateTime end = Utils.parseDateTime("28/10/2018 23:59");
 
-        ChallengeDataDTO cdd = rscg.prepareChallange("Walk_Km");
+        ChallengeExpandedDTO cdd = rscg.prepareChallange("Walk_Km");
         cdd.setModelName("absoluteIncrement");
         cdd.setData("target", 7);
 
@@ -121,19 +103,17 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
 
         RecommendationSystem rs = new RecommendationSystem();
 
-        List<ChallengeDataDTO> cnt = rs.recommend(player_id, null, null);
-
-        for (ChallengeDataDTO cd : cnt) {
+        List<ChallengeExpandedDTO> cnt = rs.recommend(player_id, null, null, null);
+        for (ChallengeExpandedDTO cd : cnt) {
             p(cd);
         }
     }
 
     @Test
-    // After change of player state adding player level, check of compatibility
+    // After change of PlayerStateDTO state adding PlayerStateDTO level, check of compatibility
     public void testGetPlayerState() {
 
-        Player c = facade.getPlayerState("5b7a885149c95d50c5f9d442", "8");
-
+        PlayerStateDTO c = facade.getPlayerState("5b7a885149c95d50c5f9d442", "8");
         p(c.getPlayerId());
     }
 
@@ -159,33 +139,33 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
         RecommendationSystemStatistics statistics = new RecommendationSystemStatistics(rs);
         statistics.checkAndUpdateStats(date);
 
-        Player cnt = facade.getPlayerState(cfg.get("GAME_ID"), player_id);
+        PlayerStateDTO cnt = facade.getPlayerState(cfg.get("GAME_ID"), player_id);
 
         // generazione della challenges
-        List<ChallengeDataDTO> l_cha = rscg.generate(cnt, "Walk_Km", date);
+        List<ChallengeExpandedDTO> l_cha = rscg.generate(cnt, "Walk_Km", date);
 
         p("\n #### GENERATED #### \n");
-        for (ChallengeDataDTO cha : l_cha) {
+        for (ChallengeExpandedDTO cha : l_cha) {
             p(cha);
         }
 
         // rivalutazione della challenges
-        for (ChallengeDataDTO cha : l_cha) {
+        for (ChallengeExpandedDTO cha : l_cha) {
             rscv.valuate(cha);
         }
 
         p("\n #### VALUATED #### \n");
 
-        for (ChallengeDataDTO cha : l_cha) {
+        for (ChallengeExpandedDTO cha : l_cha) {
             p(cha);
         }
 
         // filtraggio delle challenges
-        List<ChallengeDataDTO> filtered_cha = rscf.filter(l_cha, cnt, date);
+        List<ChallengeExpandedDTO> filtered_cha = rscf.filter(l_cha, cnt, date);
 
         p("\n #### FILTERED #### \n");
 
-        for (ChallengeDataDTO cha : filtered_cha) {
+        for (ChallengeExpandedDTO cha : filtered_cha) {
             p(cha);
         }
     }

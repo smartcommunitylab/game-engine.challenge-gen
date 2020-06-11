@@ -77,7 +77,7 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
                     // define a temporary variable to save the improvement
                     double tmpValueimprovment = ChallengesConfig.getPercentage()[i] * currentValue;
 
-                    // define a variable that the player should improve its mode
+                    // define a variable that the PlayerStateDTO should improve its mode
                     double improvementValue = tmpValueimprovment + currentValue;
 
                     improvementValue = checkMax(improvementValue, mode);
@@ -182,7 +182,7 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
 /*
     private HashMap<String, HashMap<String, Double>> buildModeValues(
             HashMap<String, HashMap<String, Double>> modeValues,
-            HashMap<String, Double> playerScore, Player content) {
+            HashMap<String, Double> playerScore, PlayerStateDTO content) {
         // retrieving the players' last week data "weekly"
         for (int i = 0; i < cfg.getPerfomanceCounters().length; i++) {
 

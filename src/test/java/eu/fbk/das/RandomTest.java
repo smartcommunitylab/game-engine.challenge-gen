@@ -1,11 +1,10 @@
 package eu.fbk.das;
 
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
-import eu.fbk.das.rs.utils.ArrayUtils;
 import eu.fbk.das.rs.utils.Utils;
-import eu.trentorise.game.challenges.model.ChallengeDataDTO;
-import eu.trentorise.game.challenges.rest.ChallengeConcept;
-import eu.trentorise.game.challenges.rest.Player;
+import it.smartcommunitylab.model.PlayerStateDTO;
+import it.smartcommunitylab.model.ext.ChallengeConcept;
+import it.smartcommunitylab.model.ext.GameConcept;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
@@ -28,12 +27,14 @@ public class RandomTest extends ChallengesBaseTest {
 
             int count = 0;
 
-            Player pl = facade.getPlayerState(cfg.get("GAME_ID"), pId);
+            PlayerStateDTO pl = facade.getPlayerState(cfg.get("GAME_ID"), pId);
 
             Map<ChallengeConcept, Long> cache = new HashMap<ChallengeConcept, Long>();
 
-            for (ChallengeConcept cha : pl.getState().getChallengeConcept()) {
-                cache.put(cha, cha.getStart());
+            Set<GameConcept> scores =  pl.getState().get("ChallengeConcept");
+            for (GameConcept cha : scores) {
+                // TODO FIX
+                //  cache.put(cha, cha.getStart());
             }
 
             cache = Utils.sortByValues(cache);

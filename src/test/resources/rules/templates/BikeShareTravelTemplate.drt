@@ -12,7 +12,7 @@ package eu.trentorise.game.model
 /* Parameters for the template
 ch_ID = unique Challenge ID (ALWAYS!): obtained via UUID
 ch_mode   NOTE! not used for Bike Sharing
-ch_player = unique Player ID - for now simply Object.toString()
+ch_PlayerStateDTO = unique PlayerStateDTO ID - for now simply Object.toString()
 ch_point_type
 */
 
@@ -34,7 +34,7 @@ CustomData to have   []=used by
 template TravelModeTemplate
 
 rule "ch_@{ch_ID}_trace"
-/* Player @{ch_player}: fai almeno viaggi in @{ch_mode} e vinci @{ch_point_type} */
+/* PlayerStateDTO @{ch_player}: fai almeno viaggi in @{ch_mode} e vinci @{ch_point_type} */
 lock-on-active
 when
 	/* check for valid bike sharing trip*/ 

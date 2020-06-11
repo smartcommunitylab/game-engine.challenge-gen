@@ -2,10 +2,8 @@ package eu.fbk.das;
 
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 
-import eu.trentorise.game.challenges.api.Constants;
-import eu.trentorise.game.challenges.model.GroupChallengeDTO;
-import eu.trentorise.game.challenges.util.ExcelUtil;
-
+import it.smartcommunitylab.model.GroupChallengeDTO;
+import it.smartcommunitylab.model.PlayerStateDTO;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -44,13 +42,6 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
     public void setup() {
         facade = new GamificationEngineRestFacade(HOST, USERNAME,
                 PASSWORD);
-        facade.verbosity = 1;
-    }
-
-    @Test
-    public void gameReadGameStateTest() {
-        Map<String, Player> result = facade.readGameState(GAMEID);
-        assertTrue(result != null && !result.isEmpty());
     }
 
     @Test
@@ -61,28 +52,8 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
 
     @Test
     public void getPlayerStateTest() {
-        Player content = facade.getPlayerState(GAMEID, USERID);
+        PlayerStateDTO content = facade.getPlayerState(GAMEID, USERID);
         assertTrue(content != null);
-    }
-
-    @Test
-    public void gameReadGameStateTest1() {
-        Map<String, Player> result = facade.readGameState(GAMEID);
-        assertTrue(result != null && !result.get(0).getState().getBadgeCollectionConcept().isEmpty());
-    }
-
-    @Test
-    public void gameInsertRuleTest() {
-        // define rule
-        InsertedRuleDto rule = new InsertedRuleDto();
-        rule.setContent("/* */");
-        rule.setName("sampleRule");
-        // insert rule
-        InsertedRuleDto result = facade.insertGameRule(GAMEID, rule);
-        assertTrue(result != null && !result.getId().isEmpty());
-        // delete inserted rule
-        boolean res = facade.deleteGameRule(GAMEID, result.getId());
-        assertTrue(res);
     }
 
     /*
@@ -122,7 +93,7 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
             assertTrue(result);
         }
     } */
-
+/*
     @Test
     public void printGameStatus() throws FileNotFoundException, IOException {
         Map<String, Player> result = facade.readGameState(GAMEID);
@@ -135,7 +106,7 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
 
         toWrite.append("PLAYER_ID;SCORE_GREEN_LEAVES;" + customNames + "\n");
         for (String pId: result.keySet()) {
-            Player content = result.get(pId);
+            PlayerStateDTO content = result.get(pId);
             toWrite.append(content.getPlayerId() + ";"
                     + getScore(content, "green leaves", true, false) + ";" // false,
                     // false
@@ -151,7 +122,7 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
         assertTrue(result != null && !toWrite.toString().isEmpty());
     }
 
-    private String getCustomData(Player content, boolean weekly) {
+    private String getCustomData(PlayerStateDTO content, boolean weekly) {
         String result = "";
         List<PointConcept> concepts = content.getState().getPointConcept();
         Collections.sort(concepts, new Comparator<PointConcept>() {
@@ -174,7 +145,7 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
         return result;
     }
 
-    private String getCustomDataForWeek(Player content, int w) {
+    private String getCustomDataForWeek(PlayerStateDTO content, int w) {
         String result = "";
         List<PointConcept> concepts = content.getState().getPointConcept();
         Collections.sort(concepts, new Comparator<PointConcept>() {
@@ -197,7 +168,7 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
         return result;
     }
 
-    private Double getScore(Player content, String points, boolean previous, boolean total) {
+    private Double getScore(PlayerStateDTO content, String points, boolean previous, boolean total) {
         for (PointConcept pc : content.getState().getPointConcept()) {
             if (pc.getName().equalsIgnoreCase(points)) {
                 if (total) {
@@ -212,7 +183,7 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
         return null;
     }
 
-    private Double getScore(Player content, String points, Long moment) {
+    private Double getScore(PlayerStateDTO content, String points, Long moment) {
         for (PointConcept pc : content.getState().getPointConcept()) {
             if (pc.getName().equalsIgnoreCase(points)) {
                 return pc.getPeriodScore("weekly", moment);
@@ -236,7 +207,7 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
                         + "\n");
 
         for (String pId: result.keySet()) {
-            Player user = result.get(pId);
+            PlayerStateDTO user = result.get(pId);
             // if (getScore(user, "green leaves", false, true) > 0) {
             for (ChallengeConcept cc : user.getState().getChallengeConcept()) {
                 toWrite.append(user.getPlayerId() + ";");
@@ -281,7 +252,7 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
 
         System.out.println("PLAYER_ID;TOTAL_SCORE");
         for (String pId: result.keySet()) {
-            Player user = result.get(pId);
+            PlayerStateDTO user = result.get(pId);
             // if (ids.contains(user.getPlayerId())) {
             // if (user.getPlayerId().equals("24823")) {
             // System.out.println();
@@ -303,12 +274,6 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
     }
 
     @Test
-    /**
-     * Print an excel file, for every week, the status for all players
-     *
-     * @throws FileNotFoundException
-     * @throws IOException
-     */
     public void finalGameStatus() throws FileNotFoundException, IOException {
         Map<String, Player> result = facade.readGameState(GAMEID);
 
@@ -332,7 +297,7 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
             int rowIndex = 1;
 
             for (String pId: result.keySet()) {
-                Player user = result.get(pId);
+                PlayerStateDTO user = result.get(pId);
                 if (existInWeek(user, w)) {
                     Row row = sheet.createRow(rowIndex);
                     sheet = ExcelUtil.buildRow(user.getPlayerId(), getCustomDataForWeek(user, w),
@@ -348,7 +313,8 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
         logger.info("written finalGameStatus.xlsx");
     }
 
-    private boolean existInWeek(Player user, int w) {
+
+    private boolean existInWeek(PlayerStateDTO user, int w) {
         for (PointConcept pc : user.getState().getPointConcept()) {
             if (pc.getName().equals("green leaves")) {
                 try {
@@ -362,7 +328,7 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
             }
         }
         return false;
-    }
+    } */
 
     @Test
     public void assignGroupChallenge() {
@@ -379,7 +345,7 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
 
         GroupChallengeDTO gcd = facade.makeGroupChallengeDTO(
                 "groupCompetitiveTime", "Walk_Km", "225", "7",
-               start, end, res
+                start, end, res
         );
 
         facade.assignGroupChallenge(gcd, GAMEID);

@@ -1,20 +1,21 @@
 package eu.fbk.das.rs.sortfilter;
 
 
+import eu.fbk.das.model.ChallengeExpandedDTO;
 import it.smartcommunitylab.model.ChallengeAssignmentDTO;
 
 import java.util.Comparator;
 
-public class DifficultyPrizeComparator implements Comparator<ChallengeAssignmentDTO> {
+public class DifficultyPrizeComparator implements Comparator<ChallengeExpandedDTO> {
 
     @Override
-    public int compare(ChallengeAssignmentDTO o1, ChallengeAssignmentDTO o2) {
-        int difficulty1 = (int) o1.getData().get("difficulty");
-        int difficulty2 = (int) o2.getData().get("difficulty");
-        int bonusScore1 = (int) o1.getData().get("bonusScore");
-        int bonusScore2 = (int) o2.getData().get("bonusScore");
-        Double wi1 = (Double) o1.getData().get("wi");
-        Double wi2 = (Double) o2.getData().get("wi");
+    public int compare(ChallengeExpandedDTO o1, ChallengeExpandedDTO o2) {
+        int difficulty1 = (int) o1.getData("difficulty");
+        int difficulty2 = (int) o2.getData("difficulty");
+        int bonusScore1 = (int) o1.getData("bonusScore");
+        int bonusScore2 = (int) o2.getData("bonusScore");
+        Double wi1 = (Double) o1.getData("wi");
+        Double wi2 = (Double) o2.getData("wi");
 
         if (difficulty1 < difficulty2) {
             return -1;

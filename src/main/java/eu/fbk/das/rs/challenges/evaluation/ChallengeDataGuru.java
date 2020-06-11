@@ -333,7 +333,7 @@ public class ChallengeDataGuru extends ChallengeUtil  {
 
     private class ChallengeDt {
 
-        private String pId;  // player id
+        private String pId;  // PlayerStateDTO id
 
         private String cntT;  // challenge type
 

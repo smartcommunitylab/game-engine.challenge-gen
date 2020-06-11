@@ -1,7 +1,11 @@
 package eu.fbk.das.api.exec;
 
+import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
+
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class RecommenderSystemWeekly extends RecommenderSystemExec {
 
@@ -19,7 +23,12 @@ public class RecommenderSystemWeekly extends RecommenderSystemExec {
         creationRules.put("3", "choiceThree");
         creationRules.put("other", "choiceThree");
 
-        api.createSingleChallengeWeekly(conf, creationRules, challengeValues, "all", reward);
+        Set<String> modelTypes = new HashSet<>();
+        modelTypes.add(ChallengesConfig.BIKE_KM);
+        modelTypes.add(ChallengesConfig.WALK_KM);
+        modelTypes.add(ChallengesConfig.GREEN_LEAVES);
+
+        api.createSingleChallengeWeekly(conf, modelTypes, creationRules, challengeValues, "all", reward);
     }
 
 }

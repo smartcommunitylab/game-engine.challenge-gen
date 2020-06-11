@@ -1,8 +1,9 @@
 package eu.fbk.das.rs;
 
+import eu.fbk.das.model.ChallengeExpandedDTO;
 import eu.fbk.das.rs.sortfilter.DifficultyPrizeComparator;
 import eu.fbk.das.rs.challenges.calculator.DifficultyCalculator;
-import eu.trentorise.game.challenges.model.ChallengeDataDTO;
+
 import org.junit.Test;
 
 import java.util.*;
@@ -105,8 +106,8 @@ public class DifficultyCalculatorTest {
 
     @Test
     public void difficultyPrizeComparatorTest() {
-        List<ChallengeDataDTO> test = new ArrayList<ChallengeDataDTO>();
-        ChallengeDataDTO first = new ChallengeDataDTO();
+        List<ChallengeExpandedDTO> test = new ArrayList<ChallengeExpandedDTO>();
+        ChallengeExpandedDTO first = new ChallengeExpandedDTO();
 
         first.setInstanceName("Instance1");
         first.setData("difficulty", 3);
@@ -114,7 +115,7 @@ public class DifficultyCalculatorTest {
         first.setData("wi", 100.0);
         test.add(first);
 
-        ChallengeDataDTO second = new ChallengeDataDTO();
+        ChallengeExpandedDTO second = new ChallengeExpandedDTO();
         second.setInstanceName("Instance2");
         second.setData("difficulty", 1);
         second.setData("bonusScore", 200.0);

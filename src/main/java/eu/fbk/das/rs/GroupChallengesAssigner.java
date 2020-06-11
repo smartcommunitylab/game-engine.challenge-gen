@@ -5,10 +5,8 @@ import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemStatistics;
 import eu.fbk.das.rs.utils.ArrayUtils;
 import eu.fbk.das.rs.utils.Pair;
-import eu.trentorise.game.model.core.GameConcept;
-import it.smartcommunitylab.model.ChallengeAssignmentDTO;
-import it.smartcommunitylab.model.GroupChallengeDTO;
-import it.smartcommunitylab.model.PlayerStateDTO;
+import it.smartcommunitylab.model.*;
+import it.smartcommunitylab.model.ext.GameConcept;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.Solver;
@@ -17,6 +15,7 @@ import org.joda.time.DateTime;
 
 import java.util.*;
 
+import static eu.fbk.das.GamificationEngineRestFacade.jodaToOffset;
 import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.getWeeklyContentMode;
 import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.getChallengeWeek;
 import static eu.fbk.das.rs.utils.Utils.*;
@@ -102,17 +101,21 @@ public class GroupChallengesAssigner extends ChallengeUtil {
 
             PlayerStateDTO player = rs.facade.getPlayerState(rs.gameId, pId);
 
-            Set<it.smartcommunitylab.model.ext.GameConcept> scores =
+            Set<GameConcept> scores =
                     player.getState().get("PointConcept");
 
             for (GameConcept pc : scores) {
                 if (!pc.getName().equals("green leaves"))
                     continue;
 
+                // TODO FIX
+                /*
                 Double sc = pc.getPeriodScore("weekly", new DateTime());
 
                 if (sc > 20)
                     active = true;
+
+                 */
             }
 
             if (active)
@@ -140,12 +143,12 @@ public class GroupChallengesAssigner extends ChallengeUtil {
 
             boolean exists = false;
 
-            List<LinkedHashMap<String, Object>> currentChallenges = rs.facade.getChallengesPlayer(rs.gameId, pId);
-            for (LinkedHashMap<String, Object> cha: currentChallenges) {
+            List<ChallengeConcept> currentChallenges = rs.facade.getChallengesPlayer(rs.gameId, pId);
+            for (ChallengeConcept cha: currentChallenges) {
 
-                DateTime existingChaEnd = jumpToMonday(new DateTime(cha.get("end")));
+                DateTime existingChaEnd = jumpToMonday(new DateTime(cha.getEnd()));
 
-                String s = (String) cha.get("modelName");
+                String s = (String) cha.getModelName();
                 if (!s.contains("group"))
                     continue;
 
@@ -202,16 +205,31 @@ public class GroupChallengesAssigner extends ChallengeUtil {
 
         GroupChallengeDTO gcd = new GroupChallengeDTO();
         gcd.setChallengeModelName("groupCompetitivePerformance");
-        gcd.addAttendee(pId1, "GUEST");
-        gcd.addAttendee(pId2, "GUEST");
 
-        gcd.setChallengePointConcept(counter, "weekly");
-        gcd.setReward(50, 250);
+        List<AttendeeDTO> attendee = new ArrayList<>();
+        AttendeeDTO att1 = new AttendeeDTO();
+        att1.setRole("GUEST");
+        att1.setPlayerId(pId1);
+        attendee.add(att1);
+        AttendeeDTO att2 = new AttendeeDTO();
+        att2.setRole("GUEST");
+        att2.setPlayerId(pId2);
+        attendee.add(att2);
+        gcd.setAttendees(attendee);
+
+        PointConceptDTO pc = new PointConceptDTO();
+        pc.setName(counter);
+        pc.setPeriod("weekly");
+        gcd.setChallengePointConcept(pc);
+
+        // TODO FIX
+        // RewardDTO rw = new RewardDTO();
+        // rw.setBonusScore(250);
 
         gcd.setOrigin("gca");
         gcd.setState("ASSIGNED");
-        gcd.setStart(start.toDate());
-        gcd.setEnd(end.toDate());
+        gcd.setStart(jodaToOffset(start));
+        gcd.setEnd(jodaToOffset(end));
 
         return gcd;
     }
@@ -229,7 +247,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
             List<String> aux = new ArrayList<String>();
 
             for (String counter : modeList) {
-                Player pla = rs.facade.getPlayerState(rs.gameId, pId);
+                PlayerStateDTO pla = rs.facade.getPlayerState(rs.gameId, pId);
                 Double baseline = getWMABaseline(pla, counter, lastMonday);
                 Map<Integer, Double> quant = stats.getQuantiles(counter);
                 int q = getQuantile(baseline, quant);
@@ -259,7 +277,10 @@ public class GroupChallengesAssigner extends ChallengeUtil {
     }
 
     private boolean hasGroupChallenge(PlayerStateDTO state, String counter) {
-        for (ChallengeConcept cha: state.getState().getChallengeConcept()) {
+        Set<GameConcept> scores =  state.getState().get("ChallengeConcept");
+        for (GameConcept cha : scores) {
+
+            /* TODO FIX
            DateTime start = new DateTime(cha.getStart());
 
            if (start.getWeekOfWeekyear() != execDate.getWeekOfWeekyear())
@@ -283,6 +304,8 @@ public class GroupChallengesAssigner extends ChallengeUtil {
             // p(fields.keySet());
 
                return true;
+
+             */
         }
 
         return false;
@@ -450,7 +473,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
 
     }
 
-    // Get string array with all player IDs combined (make sure it's even)
+    // Get string array with all PlayerStateDTO IDs combined (make sure it's even)
     private String[] getActualPlayers(HashMap<Integer, ArrayList<String>> playerQuantile) {
         HashSet<String> playersToConsider = new HashSet<>();
         for (int i = 0; i < 10; i++) {

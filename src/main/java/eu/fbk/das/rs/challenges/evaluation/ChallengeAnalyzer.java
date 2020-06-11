@@ -2,6 +2,7 @@ package eu.fbk.das.rs.challenges.evaluation;
 
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import it.smartcommunitylab.model.PlayerStateDTO;
+import it.smartcommunitylab.model.ext.GameConcept;
 import org.joda.time.DateTime;
 
 import java.io.BufferedReader;
@@ -380,14 +381,16 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
 
             PlayerStateDTO state = rs.facade.getPlayerState(rs.gameId, pId);
 
-            List<ChallengeConcept> l_cha = state.getState().getChallengeConcept();
+            Set<GameConcept> l_cha = state.getState().get("ChallengeConcept");
             if (l_cha != null)
-            for (ChallengeConcept cha: l_cha ) {
+            for (GameConcept cha: l_cha ) {
                 if (!cha.getName().equals(name))
                     continue;
 
+                /*
                 chosen = checkChosen(cha.getStateDate());
                 completed = cha.isCompleted();
+                */
 
                 return;
             }

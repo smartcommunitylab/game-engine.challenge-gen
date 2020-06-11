@@ -11,7 +11,7 @@ package eu.trentorise.game.model
 /* Parameters for the template
 ch_ID = unique Challenge ID (ALWAYS!): obtained via UUID
 ch_badge_collection = badge collection to observe for updates
-ch_player = unique Player ID 
+ch_PlayerStateDTO = unique PlayerStateDTO ID
 ch_point_type
 */
 
@@ -38,7 +38,7 @@ when
 	Player( $playerId : id == '@{ch_player}')
 	$c : CustomData($now : System.currentTimeMillis(), this['ch_@{ch_ID}_startChTs'] <= $now, this['ch_@{ch_ID}_endChTs'] > $now, $counter : this['ch_@{ch_ID}_counter'])
 then
-	log ("Badge Collection for Player " + $playerId + " updated with: " + $b.toString());
+	log ("Badge Collection for PlayerStateDTO " + $playerId + " updated with: " + $b.toString());
 	if ($counter == null) {
 		$c.put("ch_@{ch_ID}_counter", 1);
 	} else {

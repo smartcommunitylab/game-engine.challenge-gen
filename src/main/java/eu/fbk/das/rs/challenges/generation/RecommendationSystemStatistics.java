@@ -217,9 +217,8 @@ public class RecommendationSystemStatistics extends ChallengeUtil {
 
         Map<String, Set<GameConcept>> st = cnt.getState();
 
-        // p(st.getPointConcept());
-
-        for (PointConcept pc : st.getPointConcept()) {
+        Set<GameConcept> scores =  cnt.getState().get("PointConcept");
+        for (GameConcept pc : scores) {
 
             String m = fixMode(pc.getName());
 
@@ -231,9 +230,12 @@ public class RecommendationSystemStatistics extends ChallengeUtil {
             if (!ArrayUtils.find(m, l_mode))
                 continue;
 
+            // TODO PC
+            /*
             Double score = pc.getPeriodScore("weekly", lastMonday);
             if (score > 0)
                 stats.get(m).add(score);
+                */
         }
     }
 

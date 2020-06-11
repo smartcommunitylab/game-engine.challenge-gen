@@ -1,6 +1,8 @@
 package eu.fbk.das.api;
 
 import eu.fbk.das.GamificationEngineRestFacade;
+import it.smartcommunitylab.model.PlayerStateDTO;
+import it.smartcommunitylab.model.ext.GameConcept;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -25,8 +27,17 @@ public class ApiTest {
     @Test
     public void baseTest() {
         Set<String> ps = facade.getGamePlayers(gameId);
-        for (String pId: ps)
+        String analyze = "";
+        for (String pId: ps) {
             p(pId);
+            analyze = pId;
+        }
+
+        PlayerStateDTO player = facade.getPlayerState(gameId, analyze);
+        Set<GameConcept> scores =  player.getState().get("PointConcept");
+        for (GameConcept gc : scores) {
+            p(gc);
+        }
     }
 
     @Test

@@ -4,7 +4,8 @@ import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
 import eu.fbk.das.GamificationEngineRestFacade;
-import eu.trentorise.game.challenges.rest.Player;
+
+import it.smartcommunitylab.model.PlayerStateDTO;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -64,7 +65,7 @@ public class TargetPrizeChallengesCalculatorTest extends ChallengesBaseTest {
         for (String pId: players) {
              if (ix++ > 100)
                break;
-            Player p = facade.getPlayerState(gameId, pId);
+            PlayerStateDTO p = facade.getPlayerState(gameId, pId);
             int lvl = getLevel(p);
             if (lvl >= 3)
                 playersToConsider.add(pId);

@@ -11,7 +11,7 @@ package eu.trentorise.game.model
 
 /* Parameters for the template
 ch_ID = unique Challenge ID (ALWAYS!): obtained via UUID
-ch_player = unique Player ID - for now simply Object.toString()
+ch_PlayerStateDTO = unique PlayerStateDTO ID - for now simply Object.toString()
 ch_point_type
 */
 

@@ -1,8 +1,10 @@
 package eu.fbk.das.innowee;
 
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
-import eu.trentorise.game.challenges.rest.Player;
-import eu.trentorise.game.challenges.rest.PointConcept;
+
+
+import it.smartcommunitylab.model.PlayerStateDTO;
+import it.smartcommunitylab.model.ext.GameConcept;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
@@ -470,9 +472,11 @@ public class InnoWeeAnalyze extends ChallengesBaseTest {
         p("\n");
 
         for (String pId: res) {
-            Player st = facade.getPlayerState(gameId, pId);
+            PlayerStateDTO st = facade.getPlayerState(gameId, pId);
             String[] values = new String[3];
-            for (PointConcept pc: st.getState().getPointConcept()) {
+            Set<GameConcept> scores =  st.getState().get("PointConcept");
+            for (GameConcept pc : scores) {
+                /* TODO FIX
                 // p(pc.getName());
                 int pos = pos(pc.getName(), keys);
                 if (pos < 0)
@@ -481,6 +485,7 @@ public class InnoWeeAnalyze extends ChallengesBaseTest {
                 PointConcept.Period aux = pc.getPeriod(period);
 
                 values[pos] = f("%.2f", pc.getScore());
+                */
             }
 
             pf("%s,%s\n", pId, String.join(",", values));

@@ -5,6 +5,7 @@ import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
 import eu.trentorise.game.model.PointConcept;
 
 import it.smartcommunitylab.model.PlayerStateDTO;
+import it.smartcommunitylab.model.ext.GameConcept;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
@@ -29,8 +30,8 @@ public class RecommendationSystemChallengeFilteringAndSorting {
         List<ChallengeExpandedDTO> result = new ArrayList<ChallengeExpandedDTO>();
 
         /* REMOVED LEADERBOARD
-        List<ChallengeDataDTO> improvingLeaderboard = new ArrayList<ChallengeDataDTO>();
-        List<ChallengeDataDTO> notImprovingLeaderboard = new ArrayList<ChallengeDataDTO>();
+        List<ChallengeExpandedDTO> improvingLeaderboard = new ArrayList<ChallengeExpandedDTO>();
+        List<ChallengeExpandedDTO> notImprovingLeaderboard = new ArrayList<ChallengeExpandedDTO>();
         */
 
         for (ChallengeExpandedDTO challenge : challenges) {
@@ -58,7 +59,7 @@ public class RecommendationSystemChallengeFilteringAndSorting {
             // improvement percentage
             double wi = percentageImprovment * weight;
             challenge.setData("wi", wi);
-            // finding the position of the player in the leader board
+            // finding the position of the PlayerStateDTO in the leader board
 
 
             /* REMOVED LEADERBOARD
@@ -115,11 +116,13 @@ public class RecommendationSystemChallengeFilteringAndSorting {
 
     private int findPosition(double[] leaderboard, PlayerStateDTO player) {
         double score = 0;
-        for (PointConcept pc : player.getState().getPointConcept()) {
-            if (!pc.getName().equals(ChallengesConfig.gLeaves))
+        Set<GameConcept> scores =  player.getState().get("PointConcept");
+        for (GameConcept gc : scores) {
+            if (!gc.getName().equals(ChallengesConfig.gLeaves))
                 continue;
 
-            score = pc.getPeriodScore("weekly", execDate.getMillis() / 1000);
+            // TODO PC
+            // score = pc.getPeriodScore("weekly", execDate.getMillis() / 1000);
         }
 
         int pos = pos(score, leaderboard);
@@ -170,7 +173,7 @@ public class RecommendationSystemChallengeFilteringAndSorting {
                 // improvement percentage
                 wi = percentageImprovment * weight;
                 challenge.setData("wi", wi);
-                // finding the position of the player in the leader board
+                // finding the position of the PlayerStateDTO in the leader board
                 LeaderboardPosition position = findPosition(leaderboard,
                         playerId);
                 if (position.getIndex() == 0) {
