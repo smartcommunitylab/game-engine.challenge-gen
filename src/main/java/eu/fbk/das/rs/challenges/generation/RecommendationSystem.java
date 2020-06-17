@@ -1,17 +1,28 @@
 package eu.fbk.das.rs.challenges.generation;
 
-import eu.fbk.das.GamificationEngineRestFacade;
-import eu.fbk.das.model.ChallengeExpandedDTO;
-import eu.fbk.das.rs.utils.Utils;
-import eu.fbk.das.rs.sortfilter.RecommendationSystemChallengeFilteringAndSorting;
-import eu.fbk.das.rs.valuator.RecommendationSystemChallengeValuator;
-import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
+import static eu.fbk.das.GamificationEngineRestFacade.jodaToOffset;
+import static eu.fbk.das.rs.challenges.ChallengeUtil.getLevel;
+import static eu.fbk.das.rs.challenges.ChallengeUtil.getPeriodScore;
+import static eu.fbk.das.rs.utils.Utils.daysApart;
+import static eu.fbk.das.rs.utils.Utils.dbg;
+import static eu.fbk.das.rs.utils.Utils.p;
+import static eu.fbk.das.rs.utils.Utils.parseDate;
+import static eu.fbk.das.rs.utils.Utils.sortByValuesList;
+import static it.smartcommunitylab.model.ChallengeConcept.StateEnum.COMPLETED;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 
-import it.smartcommunitylab.model.ChallengeConcept;
-import it.smartcommunitylab.model.PlayerStateDTO;
-import it.smartcommunitylab.model.ext.GameConcept;
-import it.smartcommunitylab.model.ext.PointConcept;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
@@ -19,14 +30,15 @@ import org.joda.time.Days;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import java.io.*;
-import java.util.*;
-
-import static eu.fbk.das.GamificationEngineRestFacade.jodaToOffset;
-import static eu.fbk.das.rs.challenges.ChallengeUtil.getLevel;
-import static eu.fbk.das.rs.challenges.ChallengeUtil.getPeriodScore;
-import static eu.fbk.das.rs.utils.Utils.*;
-import static it.smartcommunitylab.model.ChallengeConcept.StateEnum.COMPLETED;
+import eu.fbk.das.GamificationEngineRestFacade;
+import eu.fbk.das.model.ChallengeExpandedDTO;
+import eu.fbk.das.rs.sortfilter.RecommendationSystemChallengeFilteringAndSorting;
+import eu.fbk.das.rs.utils.Utils;
+import eu.fbk.das.rs.valuator.RecommendationSystemChallengeValuator;
+import it.smartcommunitylab.model.ChallengeConcept;
+import it.smartcommunitylab.model.PlayerStateDTO;
+import it.smartcommunitylab.model.ext.GameConcept;
+import it.smartcommunitylab.model.ext.PointConcept;
 
 /**
  * Recommandation System main class, requires running Gamification Engine in
@@ -73,8 +85,8 @@ public class RecommendationSystem {
     public List<ChallengeExpandedDTO> recommend(String pId, Set<String> modelTypes,  Map<String, String> creationRules, Map<String, Object> challengeValues) {
 
         int chaWeek = (Integer) challengeValues.get("challengeWeek");
-        DateTime execDate = (DateTime) challengeValues.get("exec");
-
+        Date execDateParam = (Date) challengeValues.get("exec");
+        DateTime execDate = new DateTime(execDateParam.getTime());
         stats.checkAndUpdateStats(execDate);
         rscv.prepare(stats);
         rscg.prepare(chaWeek);
