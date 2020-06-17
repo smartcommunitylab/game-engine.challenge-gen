@@ -1,22 +1,33 @@
 package eu.fbk.das.rs.challenges.generation;
 
-import eu.fbk.das.model.ChallengeExpandedDTO;
-import eu.fbk.das.rs.challenges.ChallengeUtil;
-import eu.fbk.das.rs.utils.Pair;
-import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
-;
-import it.smartcommunitylab.model.ChallengeConcept;
-import it.smartcommunitylab.model.PlayerStateDTO;
+import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.booster;
+import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.roundTarget;
+import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.week_n;
+import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.getChallengeWeek;
+import static eu.fbk.das.rs.utils.Utils.daysApart;
+import static eu.fbk.das.rs.utils.Utils.equal;
+import static eu.fbk.das.rs.utils.Utils.f;
+import static eu.fbk.das.rs.utils.Utils.findIndex;
+import static eu.fbk.das.rs.utils.Utils.jumpToMonday;
+import static eu.fbk.das.rs.utils.Utils.round;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 
-import java.util.*;
-
-import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.*;
-import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.getChallengeWeek;
-import static eu.fbk.das.rs.utils.Utils.*;
+import eu.fbk.das.model.ChallengeExpandedDTO;
+import eu.fbk.das.rs.challenges.ChallengeUtil;
+import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
+import eu.fbk.das.rs.utils.Pair;
+import it.smartcommunitylab.model.ChallengeConcept;
+import it.smartcommunitylab.model.PlayerStateDTO;
 
 
 /**
