@@ -1,12 +1,13 @@
 package eu.fbk.das.api.exec;
 
-import eu.fbk.das.api.RecommenderSystemAPI;
-import eu.fbk.das.api.RecommenderSystemImpl;
-import org.joda.time.DateTime;
+import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.getChallengeWeek;
 
 import java.util.HashMap;
 
-import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.getChallengeWeek;
+import org.joda.time.DateTime;
+
+import eu.fbk.das.api.RecommenderSystemAPI;
+import eu.fbk.das.api.RecommenderSystemImpl;
 
 // Chiama recommender system per generazione settimanale
 public class RecommenderSystemExec {
@@ -45,7 +46,7 @@ public class RecommenderSystemExec {
         challengeValues = new HashMap<String, Object>();
         challengeValues.put("start", String.valueOf(startDate.getMillis() / 1000));
         challengeValues.put("end", String.valueOf(startDate.getMillis() / 1000));
-        challengeValues.put("exec", String.valueOf(execDate.getMillis() / 1000));
+        challengeValues.put("exec", execDate.toDate());
         challengeValues.put("periodName", "weekly");
 
         challengeValues.put("challengeWeek", getChallengeWeek(execDate));
