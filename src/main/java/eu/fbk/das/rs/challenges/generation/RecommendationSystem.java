@@ -72,6 +72,7 @@ public class RecommendationSystem {
     // generate challenges
     public List<ChallengeExpandedDTO> recommend(String pId, Set<String> modelTypes,  Map<String, String> creationRules, Map<String, Object> challengeValues) {
 
+        // TODO put correct challengeweek? leave like this? it's an information only for us, after all
         int chaWeek = (Integer) challengeValues.get("challengeWeek");
         DateTime execDate = (DateTime) challengeValues.get("exec");
 

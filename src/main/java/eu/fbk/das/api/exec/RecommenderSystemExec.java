@@ -11,7 +11,7 @@ import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.getChalle
 // Chiama recommender system per generazione settimanale
 public class RecommenderSystemExec {
 
-    String host = "http://localhost:8010/gamification/";
+    String host = "http://localhost:8010/gamification";
     String user = "long-rovereto";
     String pass = "test";
     String gameId = "5b7a885149c95d50c5f9d442";
