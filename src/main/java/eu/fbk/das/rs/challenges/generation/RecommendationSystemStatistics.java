@@ -21,7 +21,6 @@ import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.fixMode;
 public class RecommendationSystemStatistics extends ChallengeUtil {
 
     private String STATS_FILENAME = "rs.statistics";
-    protected GamificationEngineRestFacade facade;
 
     protected DateTime execDate;
     private String[] l_mode;
@@ -58,7 +57,7 @@ public class RecommendationSystemStatistics extends ChallengeUtil {
 
     private Map<String, Map<Integer, Double>> updateStatsOnline() {
 
-        List<GameStatistics> st = facade.readGameStatistics(rs.gameId, lastMonday);
+        List<GameStatistics> st = rs.facade.readGameStatistics(rs.gameId, lastMonday);
 
         // GameStatisticsSet st = facade.readGameStatistics(cfg.get("GAME_ID"));
 
@@ -166,12 +165,12 @@ public class RecommendationSystemStatistics extends ChallengeUtil {
             stats.put(mode, new ArrayList<Double>());
         }
 
-        Set <String> m_player = facade.getGamePlayers(rs.gameId);
+        Set <String> m_player = rs.facade.getGamePlayers(rs.gameId);
 
         // update(stats, "24440");
 
         for (String pId: m_player) {
-            PlayerStateDTO st = facade.getPlayerState(rs.gameId, pId);
+            PlayerStateDTO st = rs.facade.getPlayerState(rs.gameId, pId);
             update(stats, st);
         }
 

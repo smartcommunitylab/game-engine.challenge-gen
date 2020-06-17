@@ -18,7 +18,6 @@ public class RecommendationSystemStatisticsTest extends ChallengesBaseTest {
     public void generate() {
         RecommendationSystem rs = new RecommendationSystem();
 ;        RecommendationSystemStatistics rss = new RecommendationSystemStatistics(rs);
-        rss.facade = facade;
 
         DateTime today = new DateTime();
         for (int i = 10; i >= 0; i--) {
