@@ -1,22 +1,38 @@
 package eu.fbk.das.rs.challenges.generation;
 
+import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.fixMode;
+import static eu.fbk.das.rs.utils.Utils.daysApart;
+import static eu.fbk.das.rs.utils.Utils.formatDate;
+import static eu.fbk.das.rs.utils.Utils.getReader;
+import static eu.fbk.das.rs.utils.Utils.getWriter;
+import static eu.fbk.das.rs.utils.Utils.logExp;
+import static eu.fbk.das.rs.utils.Utils.p;
+import static eu.fbk.das.rs.utils.Utils.stringToDate;
+import static eu.fbk.das.rs.utils.Utils.wf;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.joda.time.DateTime;
+
 import com.google.common.math.Quantiles;
-import eu.fbk.das.GamificationEngineRestFacade;
+
 import eu.fbk.das.rs.challenges.ChallengeUtil;
-import eu.fbk.das.rs.utils.ArrayUtils;
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
-import it.smartcommunitylab.model.GameStatistics;
+import eu.fbk.das.rs.utils.ArrayUtils;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.ext.GameConcept;
 import it.smartcommunitylab.model.ext.PointConcept;
-import org.joda.time.DateTime;
-
-import java.io.*;
-import java.util.*;
-
-import static eu.fbk.das.rs.utils.Utils.formatDate;
-import static eu.fbk.das.rs.utils.Utils.*;
-import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.fixMode;
 
 public class RecommendationSystemStatistics extends ChallengeUtil {
 
@@ -40,6 +56,11 @@ public class RecommendationSystemStatistics extends ChallengeUtil {
         Arrays.sort(this.l_mode);
     }
 
+    public RecommendationSystemStatistics(RecommendationSystem rs, boolean takeOnlineStats) {
+        this(rs);
+        offline = !takeOnlineStats;
+    }
+
     public Map<String, Map<Integer, Double>> checkAndUpdateStats(DateTime date) {
         this.execDate = date;
 
@@ -55,15 +76,25 @@ public class RecommendationSystemStatistics extends ChallengeUtil {
 
     }
 
+    private Map<Integer,Double> convert(Map<String,Double> statsData) {
+        Map<Integer,Double> data = new HashMap<>();
+        for(String key : statsData.keySet()) {
+            data.put(Integer.valueOf(key), statsData.get(key));
+        }
+        return data;
+    }
+
     private Map<String, Map<Integer, Double>> updateStatsOnline() {
-
-        List<GameStatistics> st = rs.facade.readGameStatistics(rs.gameId, lastMonday);
-
-        // GameStatisticsSet st = facade.readGameStatistics(cfg.get("GAME_ID"));
-
-        // TODO FIX
-
-        return  null;
+        Map<String, Map<Integer, Double>> stats = new HashMap<>();
+        for (String pointConceptName : ChallengesConfig.defaultMode) {
+            Map<Integer, Double> statsData =
+                    rs.facade.readGameStatistics(rs.gameId, lastMonday, pointConceptName).stream()
+                            .map(data -> convert(data.getQuantiles())).findFirst()
+                            .orElse(emptyQuartiles());
+            stats.put(fixMode(pointConceptName), statsData);
+        }
+        quartiles = stats;
+        return stats;
     }
 
     private Map<String, Map<Integer, Double>> updateStatsOffline() {

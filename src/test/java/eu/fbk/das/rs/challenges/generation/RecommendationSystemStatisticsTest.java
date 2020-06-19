@@ -1,23 +1,24 @@
 package eu.fbk.das.rs.challenges.generation;
 
-import eu.fbk.das.api.RecommenderSystemAPI;
-import eu.fbk.das.rs.challenges.ChallengesBaseTest;
-import eu.fbk.das.rs.utils.Utils;
-import org.joda.time.DateTime;
-import org.junit.Test;
+import static eu.fbk.das.rs.utils.Utils.p;
+import static eu.fbk.das.rs.utils.Utils.pf;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 import java.util.Map;
 
-import static eu.fbk.das.rs.utils.Utils.p;
-import static eu.fbk.das.rs.utils.Utils.pf;
-import static org.junit.Assert.*;
+import org.joda.time.DateTime;
+import org.junit.Test;
+
+import eu.fbk.das.rs.challenges.ChallengesBaseTest;
+import eu.fbk.das.rs.utils.Utils;
 
 public class RecommendationSystemStatisticsTest extends ChallengesBaseTest {
 
     @Test
     public void generate() {
         RecommendationSystem rs = new RecommendationSystem();
-;        RecommendationSystemStatistics rss = new RecommendationSystemStatistics(rs);
+        RecommendationSystemStatistics rss = new RecommendationSystemStatistics(rs);
 
         DateTime today = new DateTime();
         for (int i = 10; i >= 0; i--) {
@@ -35,7 +36,16 @@ public class RecommendationSystemStatisticsTest extends ChallengesBaseTest {
             Map<String, Map<Integer, Double>> qua = rss.updateStats();
             p(qua.get("walk_km"));
         }
+    }
 
+    @Test
+    public void test_online_statistics() {
+        RecommendationSystemStatistics rss = new RecommendationSystemStatistics(rs,true);
+        DateTime date = new DateTime(2020,2,10,10,0);
+        rss.checkAndUpdateStats(date);
+        Map<Integer, Double> greenLeavesQuantiles = rss.getQuantiles("green leaves");
+        assertThat(greenLeavesQuantiles.get(0), is(Double.valueOf(6.0)));
+        assertThat(greenLeavesQuantiles.get(1), is(Double.valueOf(53.9)));
     }
 
 }
