@@ -16,6 +16,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -46,6 +47,10 @@ public class RecommendationSystemStatistics extends ChallengeUtil {
     private DateTime lastMonday;
     private String host;
 
+    private Map<String, Map<String, Map<Integer, Double>>> cache;
+    private SimpleDateFormat dateFormat;
+    private String lastMondayKey;
+
     public RecommendationSystemStatistics(RecommendationSystem rs) {
         super(rs);
         quartiles = new HashMap<>();
@@ -54,6 +59,8 @@ public class RecommendationSystemStatistics extends ChallengeUtil {
         for (int i = 0; i < l_mode.length; i++)
             l_mode[i] = fixMode(l_mode[i]);
         Arrays.sort(this.l_mode);
+
+        cache = new HashMap<>();
     }
 
     public RecommendationSystemStatistics(RecommendationSystem rs, boolean takeOnlineStats) {
@@ -68,6 +75,9 @@ public class RecommendationSystemStatistics extends ChallengeUtil {
         int d = (7 - week_day) + 1;
 
         lastMonday = execDate.minusDays(week_day-1).minusDays(7);
+        dateFormat = new SimpleDateFormat("yyyy-mm-dd");
+        lastMondayKey = dateFormat.format(lastMonday);
+        if (cache.containsKey(lastMondayKey)) return cache.get(lastMondayKey);
 
         if (offline)
             return updateStatsOffline();
@@ -94,6 +104,9 @@ public class RecommendationSystemStatistics extends ChallengeUtil {
             stats.put(fixMode(pointConceptName), statsData);
         }
         quartiles = stats;
+
+        cache.put(lastMondayKey, quartiles);
+
         return stats;
     }
 
@@ -102,6 +115,8 @@ public class RecommendationSystemStatistics extends ChallengeUtil {
 
         if (quartiles == null)
             quartiles = updateStats();
+
+        cache.put(lastMondayKey, quartiles);
 
         return quartiles;
 

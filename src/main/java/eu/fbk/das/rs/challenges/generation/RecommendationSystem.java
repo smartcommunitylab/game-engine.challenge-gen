@@ -73,7 +73,7 @@ public class RecommendationSystem {
         rscv = new RecommendationSystemChallengeValuator();
         rscg = new RecommendationSystemChallengeGeneration(this);
         rscf = new RecommendationSystemChallengeFilteringAndSorting();
-        stats = new RecommendationSystemStatistics(this);
+        stats = new RecommendationSystemStatistics(this, true);
         dbg(logger, "Recommendation System init complete");
     }
 
