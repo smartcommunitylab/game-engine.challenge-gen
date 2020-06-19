@@ -95,6 +95,6 @@ public class ChallengeUtil {
     }
 
     public static double getPeriodScore(PointConcept pc, String w, DateTime dt) {
-        return pc.getPeriodScore(w, dt.getMillis() / 1000);
+        return pc.getPeriodScore(w, dt.getMillis());
     }
 }

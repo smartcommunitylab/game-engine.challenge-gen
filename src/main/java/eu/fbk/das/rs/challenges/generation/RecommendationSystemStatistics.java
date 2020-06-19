@@ -164,6 +164,7 @@ public class RecommendationSystemStatistics extends ChallengeUtil {
         for (String mode : l_mode) {
             stats.put(mode, new ArrayList<Double>());
         }
+        stats.put(ChallengesConfig.gLeaves, new ArrayList<Double>());
 
         Set <String> m_player = rs.facade.getGamePlayers(rs.gameId);
 
@@ -213,8 +214,6 @@ public class RecommendationSystemStatistics extends ChallengeUtil {
     }
 
     private void update(HashMap<String, List<Double>> stats, PlayerStateDTO cnt) {
-
-        Map<String, Set<GameConcept>> st = cnt.getState();
 
         Set<GameConcept> scores =  cnt.getState().get("PointConcept");
         for (GameConcept gc : scores) {

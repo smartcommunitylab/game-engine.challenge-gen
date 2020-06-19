@@ -48,10 +48,12 @@ public class RecommendationSystem {
 
     private static final Logger logger = LogManager.getLogger(RecommendationSystem.class);
 
+
     public GamificationEngineRestFacade facade;
-    public RecommendationSystemConfig cfg;
     public String gameId;
     public String host;
+    public String user;
+    public String pass;
 
     public RecommendationSystemChallengeGeneration rscg;
     public RecommendationSystemChallengeValuator rscv;
@@ -62,6 +64,8 @@ public class RecommendationSystem {
 
     public RecommendationSystem(String host, String user, String pass, String gameId) {
         this.host = host;
+        this.user = user;
+        this.pass = pass;
         this.gameId = gameId;
 
         facade = new GamificationEngineRestFacade(host, user, pass);
@@ -216,7 +220,7 @@ public class RecommendationSystem {
     }
 
     private boolean existsAssignedChallenge(String pId, String l) {
-        List<ChallengeConcept> currentChallenges = facade.getChallengesPlayer(cfg.get("GAME_ID"), pId);
+        List<ChallengeConcept> currentChallenges = facade.getChallengesPlayer(gameId, pId);
         for (ChallengeConcept cha: currentChallenges) {
             if (cha.getName().contains(l))
                 return true;
@@ -225,7 +229,7 @@ public class RecommendationSystem {
     }
 
     private boolean existsAssignedSurvey(String pId, String l) {
-        List<ChallengeConcept> currentChallenges = facade.getChallengesPlayer(cfg.get("GAME_ID"), pId);
+        List<ChallengeConcept> currentChallenges = facade.getChallengesPlayer(gameId, pId);
         for (ChallengeConcept cha: currentChallenges) {
             if (!("survey".equals(cha.getModelName())))
                 continue;
@@ -241,7 +245,7 @@ public class RecommendationSystem {
 
 
     private boolean existsAssignedAnCompletedSurvey(String pId, String l) {
-        List<ChallengeConcept> currentChallenges = facade.getChallengesPlayer(cfg.get("GAME_ID"), pId);
+        List<ChallengeConcept> currentChallenges = facade.getChallengesPlayer(gameId, pId);
         for (ChallengeConcept cha: currentChallenges) {
             if (!("survey".equals(cha.getModelName())))
                 continue;
@@ -262,7 +266,7 @@ public class RecommendationSystem {
     }
 
     private String getPlayerExperiment(String pId) {
-        Map<String, Object> cs = facade.getCustomDataPlayer(cfg.get("GAME_ID"), pId);
+        Map<String, Object> cs = facade.getCustomDataPlayer(gameId, pId);
         return (String) cs.get("exp");
     }
 
@@ -270,7 +274,7 @@ public class RecommendationSystem {
 
         String l = "evaluation";
 
-        Map<String, Object> cs = facade.getCustomDataPlayer(cfg.get("GAME_ID"), pId);
+        Map<String, Object> cs = facade.getCustomDataPlayer(gameId, pId);
 
         int w = this.getChallengeWeek(new DateTime());
 
@@ -734,21 +738,21 @@ public class RecommendationSystem {
 
         /*
         for (String pId: playerIds) {
-            PlayerStateDTO state = facade.getPlayerState(cfg.get("GAME_ID"), pId);
+            PlayerStateDTO state = facade.getPlayerState(gameId, pId);
             int lvl = getLevel(state);
 
             if (lvl == 0) {
                 Map<String, Object> cs = new HashMap<String, Object>();
-                facade.setCustomDataPlayer(cfg.get("GAME_ID"), pId, cs);
+                facade.setCustomDataPlayer(gameId, pId, cs);
                 continue;
             }
 
-            Map<String, Object> cs = facade.getCustomDataPlayer(cfg.get("GAME_ID"), pId);
+            Map<String, Object> cs = facade.getCustomDataPlayer(gameId, pId);
             String exp = (String) cs.get("exp");
             if (exp == null) continue;
 
             cs.put("exp-start", this.getChallengeWeek(new DateTime()));
-            facade.setCustomDataPlayer(cfg.get("GAME_ID"), pId, cs);
+            facade.setCustomDataPlayer(gameId, pId, cs);
         }*/
 
         BufferedReader csvReader = null;
@@ -782,7 +786,7 @@ public class RecommendationSystem {
         int w = this.getChallengeWeek(new DateTime());
 
         for (String pId: playerIds) {
-            Map<String, Object> cs = facade.getCustomDataPlayer(cfg.get("GAME_ID"), pId);
+            Map<String, Object> cs = facade.getCustomDataPlayer(gameId, pId);
 
             if (cs == null)
                 cs = new HashMap<String, Object>();
@@ -794,13 +798,13 @@ public class RecommendationSystem {
                 int dw =  w - (Integer) cs.get("exp-start");
                 if (dw >= 3 && ! exp.equals("treatment")) {
                     cs.put("exp", "treatment");
-                    facade.setCustomDataPlayer(cfg.get("GAME_ID"), pId, cs);
+                    facade.setCustomDataPlayer(gameId, pId, cs);
                 }
 
                 continue;
             }
 
-            PlayerStateDTO state = facade.getPlayerState(cfg.get("GAME_ID"), pId);
+            PlayerStateDTO state = facade.getPlayerState(gameId, pId);
 
             int lvl = getLevel(state);
             if (lvl <= 1) continue;
@@ -828,7 +832,7 @@ public class RecommendationSystem {
 
         for (String pId: sortByValuesList(toEvaluate)) {
 
-            Map<String, Object> cs = facade.getCustomDataPlayer(cfg.get("GAME_ID"), pId);
+            Map<String, Object> cs = facade.getCustomDataPlayer(gameId, pId);
 
             String exp = "treatment";
             if (control) exp = "control";
@@ -837,7 +841,7 @@ public class RecommendationSystem {
             cs.put("exp", exp);
             cs.put("exp-start", this.getChallengeWeek(new DateTime()));
 
-            facade.setCustomDataPlayer(cfg.get("GAME_ID"), pId, cs);
+            facade.setCustomDataPlayer(gameId, pId, cs);
         }
 
         p("done");
