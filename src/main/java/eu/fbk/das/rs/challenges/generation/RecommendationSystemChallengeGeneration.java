@@ -54,7 +54,7 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
 
         List<ChallengeExpandedDTO> output = new ArrayList<>();
 
-        Double currentValue = rs.getWeeklyContentMode(state, mode, lastMonday);
+        Double currentValue = rs.getWeeklyContentMode(state, mode, rs.lastMonday);
         currentValue  = round(currentValue, 1);
 
         lastCounter = -1.0;
@@ -284,7 +284,7 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
         int week_playing = getWeekPlaying(state, counter);
 
         if (week_playing == 1) {
-            Double baseline = getWeeklyContentMode(state, counter, lastMonday);
+            Double baseline = getWeeklyContentMode(state, counter, rs.lastMonday);
             return new Pair<Double, Double>(baseline*booster, baseline);
         } else if (week_playing == 2) {
             return forecastModeSimple(state, counter);
@@ -296,7 +296,7 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
     // Weighted moving average
     private Pair<Double, Double> forecastWMA(int v, PlayerStateDTO state, String counter) {
 
-        DateTime date = lastMonday;
+        DateTime date = rs.lastMonday;
 
         double den = 0;
         double num = 0;
@@ -318,7 +318,7 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
 
     private int getWeekPlaying(PlayerStateDTO state, String counter) {
 
-        DateTime date = lastMonday;
+        DateTime date = rs.lastMonday;
         int i = 0;
         while (i < 100) {
             // weight * value
@@ -334,7 +334,7 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
 
     public Pair<Double, Double> oldChallengeMode(PlayerStateDTO state, String counter) {
 
-        DateTime date = lastMonday;
+        DateTime date = rs.lastMonday;
         Double lastValue = getWeeklyContentMode(state, counter, date);
 
         double value = lastValue * 1.3;
@@ -345,7 +345,7 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
 
     public Pair<Double, Double> forecastModeSimple(PlayerStateDTO state, String counter) {
 
-        DateTime date = lastMonday;
+        DateTime date = rs.lastMonday;
         Double currentValue = getWeeklyContentMode(state, counter, date);
         date = date.minusDays(7);
         Double lastValue = getWeeklyContentMode(state, counter, date);
@@ -374,7 +374,7 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
         int v = 3;
         double[][] d = new double[v][];
 
-        DateTime date = lastMonday;
+        DateTime date = rs.lastMonday;
 
         double wma = 0;
         int wma_d = 0;

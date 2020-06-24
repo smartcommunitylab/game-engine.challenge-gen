@@ -1,11 +1,8 @@
 package eu.fbk.das.api.exec;
 
-import eu.fbk.das.api.RecommenderSystemAPI;
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
-import org.joda.time.DateTime;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,6 +21,6 @@ public class RecommenderSystemGroup extends RecommenderSystemExec {
         // String challengeType = "groupCompetitiveTime";
         // String challengeType = "groupCompetitivePerformance"
 
-        api.createCoupleChallengeWeekly(conf, modeList, challengeType, challengeValues, "all", reward);
+        api.createCoupleChallengeWeekly(conf, modeList, challengeType, config, "all", reward);
     }
 }

@@ -2,12 +2,16 @@ package eu.fbk.das.api.exec;
 
 import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.getChallengeWeek;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.TimeZone;
 
 import org.joda.time.DateTime;
 
 import eu.fbk.das.api.RecommenderSystemAPI;
 import eu.fbk.das.api.RecommenderSystemImpl;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 
 // Chiama recommender system per generazione settimanale
 public class RecommenderSystemExec {
@@ -20,7 +24,7 @@ public class RecommenderSystemExec {
     protected RecommenderSystemAPI api;
     protected HashMap<String, String> conf;
     protected DateTime execDate;
-    protected HashMap<String, Object> challengeValues;
+    protected HashMap<String, Object> config;
     protected HashMap<String, String> reward;
 
 
@@ -36,20 +40,18 @@ public class RecommenderSystemExec {
         // Set next monday as start, and next sunday as end
         int week_day = execDate.getDayOfWeek();
         int d = (7 - week_day) + 1;
-
-        DateTime lastMonday = execDate.minusDays(week_day - 1).minusDays(7);
-
         DateTime startDate = execDate.plusDays(d);
         startDate = startDate.minusDays(2);
-        DateTime endDate = startDate.plusDays(7);
 
-        challengeValues = new HashMap<String, Object>();
-        challengeValues.put("start", String.valueOf(startDate.getMillis() / 1000));
-        challengeValues.put("end", String.valueOf(startDate.getMillis() / 1000));
-        challengeValues.put("exec", execDate.toDate());
-        challengeValues.put("periodName", "weekly");
+        DateTimeFormatter fmt = ISODateTimeFormat.dateTimeNoMillis();
 
-        challengeValues.put("challengeWeek", getChallengeWeek(execDate));
+        config = new HashMap<String, Object>();
+        config.put("start", fmt.print(startDate));
+        config.put("duration", "7d");
+        config.put("exec", execDate.toDate());
+        config.put("periodName", "weekly");
+
+        config.put("challengeWeek", getChallengeWeek(execDate));
 
         reward = new HashMap<>();
         reward.put("scoreType", "green leaves");

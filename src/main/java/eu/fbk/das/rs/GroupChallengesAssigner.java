@@ -249,7 +249,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
 
             for (String counter : modeList) {
                 PlayerStateDTO pla = rs.facade.getPlayerState(rs.gameId, pId);
-                Double baseline = getWMABaseline(pla, counter, lastMonday);
+                Double baseline = getWMABaseline(pla, counter, execDate);
                 Map<Integer, Double> quant = stats.getQuantiles(counter);
                 int q = getQuantile(baseline, quant);
                 if (q == -1) {

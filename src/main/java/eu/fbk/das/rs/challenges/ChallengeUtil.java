@@ -18,8 +18,7 @@ import static eu.fbk.das.rs.utils.Utils.*;
 public class ChallengeUtil {
 
     protected RecommendationSystem rs;
-
-    protected DateTime lastMonday;
+    
     protected String prefix;
 
     protected int playerLimit = 50;

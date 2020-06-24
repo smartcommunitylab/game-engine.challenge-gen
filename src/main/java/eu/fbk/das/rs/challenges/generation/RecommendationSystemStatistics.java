@@ -16,7 +16,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -34,6 +33,8 @@ import eu.fbk.das.rs.utils.ArrayUtils;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.ext.GameConcept;
 import it.smartcommunitylab.model.ext.PointConcept;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 public class RecommendationSystemStatistics extends ChallengeUtil {
 
@@ -48,7 +49,6 @@ public class RecommendationSystemStatistics extends ChallengeUtil {
     private String host;
 
     private Map<String, Map<String, Map<Integer, Double>>> cache;
-    private SimpleDateFormat dateFormat;
     private String lastMondayKey;
 
     public RecommendationSystemStatistics(RecommendationSystem rs) {
@@ -75,8 +75,8 @@ public class RecommendationSystemStatistics extends ChallengeUtil {
         int d = (7 - week_day) + 1;
 
         lastMonday = execDate.minusDays(week_day-1).minusDays(7);
-        dateFormat = new SimpleDateFormat("yyyy-mm-dd");
-        lastMondayKey = dateFormat.format(lastMonday);
+        DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
+        lastMondayKey = fmt.print(lastMonday);
         if (cache.containsKey(lastMondayKey)) return cache.get(lastMondayKey);
 
         if (offline)

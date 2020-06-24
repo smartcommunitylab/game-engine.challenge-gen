@@ -24,6 +24,7 @@ public class ImprovementChecker extends ChallengeUtil {
     int v = 3;
 
     private HashMap<String, Map<Integer, List<Double>>> weekImpr;
+    private DateTime date;
 
     public static void main(String[] args) throws IOException, InterruptedException {
         ImprovementChecker cdg = new ImprovementChecker();
@@ -87,6 +88,7 @@ public class ImprovementChecker extends ChallengeUtil {
             }
             weekImpr.put(counter, impr);
         }
+        this.date = date;
     }
 
     private void consider(PlayerStateDTO state) {
@@ -94,8 +96,6 @@ public class ImprovementChecker extends ChallengeUtil {
         for (String counter: counters) {
 
             double[] perf = new double[week];
-
-            DateTime date = lastMonday;
 
             for (int ix = week -1; ix > 0; ix--) {
                 // weight * value

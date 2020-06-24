@@ -1,11 +1,9 @@
 package eu.fbk.das.api.exec;
 
+import eu.fbk.das.model.ChallengeExpandedDTO;
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class RecommenderSystemWeekly extends RecommenderSystemExec {
 
@@ -13,7 +11,7 @@ public class RecommenderSystemWeekly extends RecommenderSystemExec {
         new RecommenderSystemWeekly().go();
     }
 
-    private void go() {
+    public List<ChallengeExpandedDTO> go() {
         prepare();
 
         Map<String, String> creationRules = new HashMap<>();
@@ -27,8 +25,13 @@ public class RecommenderSystemWeekly extends RecommenderSystemExec {
         modelTypes.add(ChallengesConfig.BIKE_KM);
         modelTypes.add(ChallengesConfig.WALK_KM);
         modelTypes.add(ChallengesConfig.GREEN_LEAVES);
+        modelTypes.add(ChallengesConfig.BUS_KM);
+        modelTypes.add(ChallengesConfig.TRAIN_KM);
 
-        api.createSingleChallengeWeekly(conf, modelTypes, creationRules, challengeValues, "all", reward);
+        String players = "1069";
+        // String players = "all";
+
+        return api.createSingleChallengeWeekly(conf, modelTypes, creationRules, config, players, reward);
     }
 
 }

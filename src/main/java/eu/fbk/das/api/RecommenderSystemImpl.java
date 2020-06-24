@@ -8,10 +8,7 @@ import it.smartcommunitylab.model.GroupChallengeDTO;
 import it.smartcommunitylab.model.RewardDTO;
 import org.joda.time.DateTime;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static eu.fbk.das.GamificationEngineRestFacade.jodaToOffset;
 
@@ -36,10 +33,12 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
     }
 
     @Override
-    public boolean createSingleChallengeUnaTantum(Map<String, String> conf, String modelType, Map<String, Object> challengeValues,
-                                                  String playerSet, Map<String, String> rewards) {
+    public List<ChallengeExpandedDTO> createSingleChallengeUnaTantum(Map<String, String> conf, String modelType, Map<String, Object> config,
+                                                                     String playerSet, Map<String, String> rewards) {
 
         prepare(conf, playerSet);
+
+        List<ChallengeExpandedDTO> chas = new ArrayList<>();
 
         for (String pId: players) {
             // prepare
@@ -47,68 +46,87 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
             // set challenge model
             cha.setModelName(modelType);
             // set data
-            dataCha(cha, challengeValues);
+            dataCha(cha, config);
             // set reward;
             reward(cha, rewards);
 
-            rs.facade.assignChallengeToPlayer(cha, rs.gameId, pId);
+            cha.setInfo("gameId", rs.gameId);
+            cha.setInfo("pId", pId);
+            chas.add(cha);
         }
 
-        return false;
+        return chas;
     }
 
     @Override
-    public boolean createSingleChallengeWeekly(Map<String, String> conf, Set<String> modelTypes, Map<String, String> creationRules, Map<String, Object> challengeValues, String playerSet, Map<String, String> rewards) {
+    public List<ChallengeExpandedDTO> createSingleChallengeWeekly(Map<String, String> conf, Set<String> modelTypes, Map<String, String> creationRules, Map<String, Object> config, String playerSet, Map<String, String> rewards) {
 
         prepare(conf, playerSet);
 
+        List<ChallengeExpandedDTO> chas = new ArrayList<>();
+
         for (String pId: players) {
-            List<ChallengeExpandedDTO> challenges = rs.recommend(pId, modelTypes, creationRules, challengeValues);
+            List<ChallengeExpandedDTO> challenges = rs.recommend(pId, modelTypes, creationRules, config);
 
             for (ChallengeExpandedDTO cha: challenges) {
                 // set data
-                dataCha(cha, challengeValues);
+                dataCha(cha, config);
                 // set reward;
                 reward(cha, rewards);
 
-                rs.facade.assignChallengeToPlayer(cha, rs.gameId, pId);
+                cha.setInfo("gameId", rs.gameId);
+                cha.setInfo("pId", pId);
+                chas.add(cha);
             }
         }
 
-        return false;
+        return chas;
     }
 
     @Override
-    public boolean createCoupleChallengeWeekly(Map<String, String> conf, Set<String> modelTypes, String assignmentType, Map<String, Object> challengeValues, String playerSet, Map<String, String> rewards) {
+    public List<GroupChallengeDTO> createCoupleChallengeWeekly(Map<String, String> conf, Set<String> modelTypes, String assignmentType, Map<String, Object> config, String playerSet, Map<String, String> rewards) {
 
         prepare(conf, playerSet);
 
+        List<GroupChallengeDTO> chas = new ArrayList<>();
+
         GroupChallengesAssigner gca = new GroupChallengesAssigner(rs);
-        List<GroupChallengeDTO> groupChallenges = gca.execute(players, modelTypes, assignmentType, challengeValues);
+        List<GroupChallengeDTO> groupChallenges = gca.execute(players, modelTypes, assignmentType, config);
 
         for (GroupChallengeDTO gcd: groupChallenges) {
             // set data
-            dataGroup(gcd, challengeValues);
+            dataGroup(gcd, config);
             // set reward;
             rewardGroup(gcd, rewards);
-            // assign
-            rs.facade.assignGroupChallenge(gcd, rs.gameId);
+
+            chas.add(gcd);
         }
 
-        return false;
+        return chas;
     }
 
-    private void dataCha(ChallengeExpandedDTO cha, Map<String, Object> challengeValues) {
-        for (String k: challengeValues.keySet()) {
-            Object v = challengeValues.get(k);
-            if ("start".equals(k)) cha.setStart((DateTime) v);
-            else if ("end".equals(k)) cha.setStart((DateTime) v);
-            else if ("hide".equals(k)) cha.setHide((Boolean) v);
-            else {
-                Object data = cha.getData();
-                cha.setData(k, v);
+    @Override
+    public boolean assignSingleChallenge(ChallengeExpandedDTO cha) {
+        String gameId = (String) cha.getInfo("gameId");
+        String pId = (String) cha.getInfo("pId");
+        return rs.facade.assignChallengeToPlayer(cha, gameId, pId);
+    }
+
+    // assign group challenge rs.facade.assignGroupChallenge(gcd, rs.gameId);
+
+    private void dataCha(ChallengeExpandedDTO cha, Map<String, Object> config) {
+        for (String k: config.keySet()) {
+            Object v = config.get(k);
+            if ("start".equals(k) || "duration".equals(k)) continue;
+            if ("hide".equals(k)) {
+                cha.setHide((Boolean) v);
+                continue;
             }
+
+            cha.setData(k, v);
         }
+
+        cha.setDates(config.get("start"), config.get("duration"));
     }
 
     private void reward(ChallengeExpandedDTO cha, Map<String, String> rewards) {
@@ -121,7 +139,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 
         // if fixed reward, simply set it
         if ("fixed".equals(calcType)) {
-            cha.setData("bonusScore", calcValue);
+            cha.setData("bonusScore", Double.parseDouble(calcValue));
             return;
         }
         // otherwise use Evaluator

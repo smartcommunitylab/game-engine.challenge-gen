@@ -48,6 +48,9 @@ public class RecommendationSystem {
 
     private static final Logger logger = LogManager.getLogger(RecommendationSystem.class);
 
+    public DateTime lastMonday;
+    private DateTime execDate;
+    private Integer chaWeek;
 
     public GamificationEngineRestFacade facade;
     public String gameId;
@@ -88,14 +91,8 @@ public class RecommendationSystem {
     // generate challenges
     public List<ChallengeExpandedDTO> recommend(String pId, Set<String> modelTypes,  Map<String, String> creationRules, Map<String, Object> challengeValues) {
 
-        // TODO put correct challengeweek? leave like this? it's an information only for us, after all
-        int chaWeek = (Integer) challengeValues.get("challengeWeek");
-        Date execDateParam = (Date) challengeValues.get("exec");
-        DateTime execDate = new DateTime(execDateParam.getTime());
-        stats.checkAndUpdateStats(execDate);
-        rscv.prepare(stats);
-        rscg.prepare(chaWeek);
-        
+        prepare(challengeValues);
+
         this.modelTypes = modelTypes;
 
         PlayerStateDTO state = facade.getPlayerState(gameId, pId);
@@ -119,6 +116,20 @@ public class RecommendationSystem {
 
         return cha;
 
+    }
+
+    private void prepare(Map<String, Object> challengeValues) {
+        // TODO put correct challengeweek? leave like this? it's an information only for us, after all
+        chaWeek = (Integer) challengeValues.get("challengeWeek");
+        Date execDateParam = (Date) challengeValues.get("exec");
+        execDate = new DateTime(execDateParam.getTime());
+        // Set next monday as start, and next sunday as end
+        int week_day = execDate.getDayOfWeek();
+        int d = (7 - week_day) + 1;
+        lastMonday = execDate.minusDays(week_day-1).minusDays(7);
+        stats.checkAndUpdateStats(execDate);
+        rscv.prepare(stats);
+        rscg.prepare(chaWeek);
     }
 
     private List<ChallengeExpandedDTO> generationRule(String pId, PlayerStateDTO state, DateTime d, int lvl, Map<String, String> creationRules, String exp) {

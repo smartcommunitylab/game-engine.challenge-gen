@@ -60,12 +60,12 @@ public class RecommendationSystemChallengeValuator {
 
                 double d = (double) challenge.getData("percentage");
 
-                int prize = dc.calculatePrize(difficulty, d, counterName);
+                double prize = dc.calculatePrize(difficulty, d, counterName);
                 challenge.setData("bonusScore", prize);
                 break;
             case "absoluteIncrement":
                 challenge.setData("difficulty", DifficultyCalculator.MEDIUM);
-                int tryOnceBonus = (int) dc.getTryOnceBonus(counterName);
+                double tryOnceBonus = dc.getTryOnceBonus(counterName);
                 challenge.setData("bonusScore", tryOnceBonus);
                 break;
             default:

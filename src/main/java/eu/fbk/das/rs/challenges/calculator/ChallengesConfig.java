@@ -31,11 +31,11 @@ public class ChallengesConfig {
     // default modes
     private static final String NO_CAR_TRIPS = "NoCar_Trips";
     public static final String BIKE_KM = "Bike_Km";
-    private static final String BUS_KM = "Bus_Km";
+    public static final String BUS_KM = "Bus_Km";
     private static final String BIKE_SHARING_TRIPS = "BikeSharing_Trips";
     private static final String WALK_TRIPS = "Walk_Trips";
     private static final String BIKE_TRIPS = "Bike_Trips";
-    private static final String TRAIN_KM = "Train_Km";
+    public static final String TRAIN_KM = "Train_Km";
     public static final String BUS_TRIPS = "Bus_Trips";
     public static final String TRAIN_TRIPS = "Train_Trips";
     private static final String ZERO_IMPACT_TRIPS = "ZeroImpact_Trips";

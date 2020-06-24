@@ -2,7 +2,11 @@ package eu.fbk.das.model;
 
 import it.smartcommunitylab.model.ChallengeAssignmentDTO;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
+import org.threeten.bp.DateTimeUtils;
 
+import java.time.OffsetDateTime;
 import java.util.*;
 
 import static eu.fbk.das.GamificationEngineRestFacade.jodaToOffset;
@@ -14,7 +18,9 @@ public class ChallengeExpandedDTO extends ChallengeAssignmentDTO {
     protected Map<String, Object> info;
 
     public ChallengeExpandedDTO() {
+        super();
         info = new HashMap<>();
+        setData(new HashMap<>());
     }
 
     public void setInfo(String k, Object v) {
@@ -36,14 +42,6 @@ public class ChallengeExpandedDTO extends ChallengeAssignmentDTO {
     public Object getData(String k) {
         Map<String, Object> d = (Map<String, Object>) this.getData();
         return d.get(k);
-    }
-
-    public void setStart(DateTime dt) {
-        setStart(jodaToOffset(dt));
-    }
-
-    private void setEnd(DateTime dt) {
-        setEnd(jodaToOffset(dt));
     }
 
     public Vector<Object> getDisplayData() {
@@ -121,5 +119,29 @@ public class ChallengeExpandedDTO extends ChallengeAssignmentDTO {
     public boolean hasData(String k) {
         Map<String, Object> d = (Map<String, Object>) this.getData();
         return d.containsKey(k);
+    }
+
+    public void setStart(DateTime dt) {
+        setStart(jodaToOffset(dt));
+    }
+
+    private void setEnd(DateTime dt) {
+        setEnd(jodaToOffset(dt));
+    }
+
+    public void setDates(Object start, Object duration) {
+        if (start == null || duration == null) {
+            p("NULL START / DURATION!");
+            return;
+        }
+
+        try {
+            DateTimeFormatter fmt = ISODateTimeFormat.dateTimeNoMillis();
+            DateTime dt = fmt.parseDateTime((String) start);
+            // TODO settare end in base a duration
+            setStart(dt);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

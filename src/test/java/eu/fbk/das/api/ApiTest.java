@@ -1,13 +1,17 @@
 package eu.fbk.das.api;
 
 import eu.fbk.das.GamificationEngineRestFacade;
+import eu.fbk.das.api.exec.RecommenderSystemWeekly;
+import eu.fbk.das.model.ChallengeExpandedDTO;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.ext.GameConcept;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.List;
 import java.util.Set;
 
+import static eu.fbk.das.rs.utils.Utils.f;
 import static eu.fbk.das.rs.utils.Utils.p;
 
 public class ApiTest {
@@ -41,7 +45,10 @@ public class ApiTest {
     }
 
     @Test
-    public void singleAssign() {
-
+    public void weekCreate() {
+        RecommenderSystemWeekly rsw = new RecommenderSystemWeekly();
+        List<ChallengeExpandedDTO> chas = rsw.go();
+        for(ChallengeExpandedDTO ch: chas)
+            p(ch);
     }
 }

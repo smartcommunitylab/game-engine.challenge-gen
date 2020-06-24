@@ -28,6 +28,7 @@ public class PerformanceEstimation extends ChallengeUtil {
     private Map<String, List<Double>> method_error;
     private List<Double> counter_error;
     private PrintWriter writer;
+    private DateTime date;
 
     public static void main(String[] args) throws IOException, InterruptedException {
         PerformanceEstimation cdg = new PerformanceEstimation();
@@ -55,6 +56,7 @@ public class PerformanceEstimation extends ChallengeUtil {
             e.printStackTrace();
         }
 
+        this.date = date;
     }
 
     public void execute() {
@@ -157,7 +159,6 @@ public class PerformanceEstimation extends ChallengeUtil {
             double[] perf = new double[week];
             String[] out = new String[week];
 
-            DateTime date = lastMonday;
             double sum = 0;
 
 
