@@ -8,10 +8,10 @@ import java.util.*;
 public class RecommenderSystemWeekly extends RecommenderSystemExec {
 
     public static void main(String[] args) {
-        new RecommenderSystemWeekly().go();
+        new RecommenderSystemWeekly().go(null);
     }
 
-    public List<ChallengeExpandedDTO> go() {
+    public List<ChallengeExpandedDTO> go(String players) {
         prepare();
 
         Map<String, String> creationRules = new HashMap<>();
@@ -28,8 +28,8 @@ public class RecommenderSystemWeekly extends RecommenderSystemExec {
         modelTypes.add(ChallengesConfig.BUS_KM);
         modelTypes.add(ChallengesConfig.TRAIN_KM);
 
-        String players = "1069";
-        // String players = "all";
+        if (players == null)
+            players = "all";
 
         return api.createSingleChallengeWeekly(conf, modelTypes, creationRules, config, players, reward);
     }
