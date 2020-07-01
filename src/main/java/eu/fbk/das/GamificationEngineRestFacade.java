@@ -21,7 +21,6 @@ import it.smartcommunitylab.ApiException;
 import it.smartcommunitylab.basic.api.GameControllerApi;
 import it.smartcommunitylab.basic.api.PlayerControllerApi;
 import it.smartcommunitylab.model.AttendeeDTO;
-import it.smartcommunitylab.model.ChallengeAssignmentDTO;
 import it.smartcommunitylab.model.ChallengeConcept;
 import it.smartcommunitylab.model.GameStatistics;
 import it.smartcommunitylab.model.GroupChallengeDTO;
@@ -32,6 +31,7 @@ import it.smartcommunitylab.model.Projection;
 import it.smartcommunitylab.model.RawSearchQuery;
 import it.smartcommunitylab.model.RewardDTO;
 import it.smartcommunitylab.model.WrapperQuery;
+import it.smartcommunitylab.model.ext.ChallengeAssignmentDTO;
 
 public class GamificationEngineRestFacade {
 

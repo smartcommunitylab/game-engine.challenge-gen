@@ -1,13 +1,11 @@
 package eu.fbk.das.rs.challenges.generation;
 
-import static eu.fbk.das.GamificationEngineRestFacade.jodaToOffset;
 import static eu.fbk.das.rs.challenges.ChallengeUtil.getLevel;
 import static eu.fbk.das.rs.challenges.ChallengeUtil.getPeriodScore;
 import static eu.fbk.das.rs.utils.Utils.daysApart;
 import static eu.fbk.das.rs.utils.Utils.dbg;
 import static eu.fbk.das.rs.utils.Utils.p;
 import static eu.fbk.das.rs.utils.Utils.parseDate;
-import static eu.fbk.das.rs.utils.Utils.sortByValuesList;
 import static it.smartcommunitylab.model.ChallengeConcept.StateEnum.COMPLETED;
 
 import java.io.BufferedReader;
@@ -20,7 +18,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
@@ -223,7 +220,7 @@ public class RecommendationSystem {
         if (existsAssignedChallenge(pId, l)) return;
 
         ChallengeExpandedDTO cha = rscg.prepareChallange(l, "Recommendations");
-        cha.setStart(jodaToOffset(new DateTime()));
+        cha.setStart(new DateTime().toDate());
         cha.setModelName("absoluteIncrement");
         cha.setData("target", 1.0);
         cha.setData("bonusScore", 200.0);
@@ -311,7 +308,7 @@ public class RecommendationSystem {
 
         DateTime dt = new DateTime();
 
-        cha.setStart(jodaToOffset(dt));
+        cha.setStart(dt.toDate());
 
         cha.setModelName("survey");
         cha.setData("surveyType", l);
@@ -342,7 +339,7 @@ public class RecommendationSystem {
 
         DateTime dt = new DateTime();
 
-        cha.setStart(dt);
+        cha.setStart(dt.toDate());
 
         cha.setModelName("survey");
         cha.setData("surveyType", l);

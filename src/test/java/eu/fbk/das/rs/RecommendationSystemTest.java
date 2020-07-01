@@ -1,19 +1,21 @@
 package eu.fbk.das.rs;
 
-import eu.fbk.das.model.ChallengeExpandedDTO;
-import eu.fbk.das.rs.challenges.ChallengesBaseTest;
-import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
-import eu.fbk.das.rs.challenges.generation.RecommendationSystemChallengeGeneration;
+import static eu.fbk.das.rs.utils.Utils.p;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import it.smartcommunitylab.model.PlayerStateDTO;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.*;
-
-import static eu.fbk.das.rs.utils.Utils.p;
+import eu.fbk.das.model.ChallengeExpandedDTO;
+import eu.fbk.das.rs.challenges.ChallengesBaseTest;
+import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
+import eu.fbk.das.rs.challenges.generation.RecommendationSystemChallengeGeneration;
+import it.smartcommunitylab.model.PlayerStateDTO;
 
 public class RecommendationSystemTest extends ChallengesBaseTest {
 
@@ -34,7 +36,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
     public void assignSurveyTest() {
 
         ChallengeExpandedDTO cha = rscg.prepareChallange("survey_prediction");
-        cha.setStart(new DateTime());
+        cha.setStart(new DateTime().toDate());
         cha.setModelName("survey");
         cha.setData("surveyType", "evaluation");
         // cha.setData("surveyType", "prediction");
@@ -59,7 +61,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
 
     private void assignReccomendation(String l, String pId) {
         ChallengeExpandedDTO cha = rscg.prepareChallange(l, "Recommendations");
-        cha.setStart(new DateTime());
+        cha.setStart(new DateTime().toDate());
         cha.setModelName("absoluteIncrement");
         cha.setData("target", 1.0);
         cha.setData("bonusScore", 100.0);
@@ -81,7 +83,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
         cha.delData("counterName");
         cha.delData("periodName");
 
-        cha.setStart(new DateTime());
+        cha.setStart(new DateTime().toDate());
 
         Set<String> playerIds = facade.getGamePlayers(cfg.get("GAME_ID"));
 

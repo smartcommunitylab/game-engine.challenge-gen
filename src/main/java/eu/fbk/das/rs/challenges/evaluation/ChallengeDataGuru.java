@@ -1,22 +1,32 @@
 package eu.fbk.das.rs.challenges.evaluation;
 
-import eu.fbk.das.model.ChallengeExpandedDTO;
-import eu.fbk.das.rs.challenges.ChallengeUtil;
-import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
-import eu.fbk.das.rs.utils.Utils;
-import it.smartcommunitylab.model.ChallengeAssignmentDTO;
-import it.smartcommunitylab.model.PlayerStateDTO;
-import it.smartcommunitylab.model.ext.GameConcept;
-import it.smartcommunitylab.model.ext.PointConcept;
-import org.joda.time.DateTime;
+import static eu.fbk.das.rs.utils.Utils.joinArray;
+import static eu.fbk.das.rs.utils.Utils.p;
+import static eu.fbk.das.rs.utils.Utils.pf;
+import static eu.fbk.das.rs.utils.Utils.stringToDate;
+import static eu.fbk.das.rs.utils.Utils.wf;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import static eu.fbk.das.rs.utils.Utils.*;
+import org.joda.time.DateTime;
+
+import eu.fbk.das.model.ChallengeExpandedDTO;
+import eu.fbk.das.rs.challenges.ChallengeUtil;
+import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
+import eu.fbk.das.rs.utils.Utils;
+import it.smartcommunitylab.model.PlayerStateDTO;
+import it.smartcommunitylab.model.ext.ChallengeAssignmentDTO;
+import it.smartcommunitylab.model.ext.GameConcept;
+import it.smartcommunitylab.model.ext.PointConcept;
 
 /**
  * This script collects the available data on the challenges assigned during the 2017 edition.

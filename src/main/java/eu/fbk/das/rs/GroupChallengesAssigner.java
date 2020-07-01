@@ -1,27 +1,44 @@
 package eu.fbk.das.rs;
 
-import eu.fbk.das.rs.challenges.ChallengeUtil;
-import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
-import eu.fbk.das.rs.challenges.generation.RecommendationSystemStatistics;
-import eu.fbk.das.rs.utils.ArrayUtils;
-import eu.fbk.das.rs.utils.Pair;
-import it.smartcommunitylab.model.*;
+import static eu.fbk.das.GamificationEngineRestFacade.jodaToOffset;
+import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.getWeeklyContentMode;
+import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.getChallengeWeek;
+import static eu.fbk.das.rs.utils.Utils.daysApart;
+import static eu.fbk.das.rs.utils.Utils.f;
+import static eu.fbk.das.rs.utils.Utils.jumpToMonday;
+import static eu.fbk.das.rs.utils.Utils.p;
+import static eu.fbk.das.rs.utils.Utils.pf;
+import static eu.fbk.das.rs.utils.Utils.rand;
+import static eu.fbk.das.rs.utils.Utils.sortByValues;
 
-import it.smartcommunitylab.model.ext.GameConcept;
-import it.smartcommunitylab.model.ext.PointConcept;
-import it.smartcommunitylab.model.ext.ChallengeConcept;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.variables.IntVar;
 import org.joda.time.DateTime;
 
-import java.util.*;
-
-import static eu.fbk.das.GamificationEngineRestFacade.jodaToOffset;
-import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.getWeeklyContentMode;
-import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.getChallengeWeek;
-import static eu.fbk.das.rs.utils.Utils.*;
+import eu.fbk.das.rs.challenges.ChallengeUtil;
+import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
+import eu.fbk.das.rs.challenges.generation.RecommendationSystemStatistics;
+import eu.fbk.das.rs.utils.ArrayUtils;
+import eu.fbk.das.rs.utils.Pair;
+import it.smartcommunitylab.model.AttendeeDTO;
+import it.smartcommunitylab.model.GroupChallengeDTO;
+import it.smartcommunitylab.model.PlayerStateDTO;
+import it.smartcommunitylab.model.PointConceptDTO;
+import it.smartcommunitylab.model.ext.ChallengeAssignmentDTO;
+import it.smartcommunitylab.model.ext.ChallengeConcept;
+import it.smartcommunitylab.model.ext.GameConcept;
+import it.smartcommunitylab.model.ext.PointConcept;
 
 public class GroupChallengesAssigner extends ChallengeUtil {
 

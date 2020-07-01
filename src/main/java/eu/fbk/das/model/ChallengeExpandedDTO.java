@@ -1,17 +1,22 @@
 package eu.fbk.das.model;
 
-import it.smartcommunitylab.model.ChallengeAssignmentDTO;
-import org.joda.time.DateTime;
-import org.threeten.bp.OffsetDateTime;
-import org.threeten.bp.Period;
-import org.threeten.bp.format.DateTimeFormatter;
-
-
-import java.util.*;
-
-import static eu.fbk.das.GamificationEngineRestFacade.jodaToOffset;
 import static eu.fbk.das.rs.utils.Utils.formatDateTime;
 import static eu.fbk.das.rs.utils.Utils.p;
+
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.IllegalFormatConversionException;
+import java.util.Map;
+import java.util.Vector;
+
+import org.joda.time.DateTime;
+import org.joda.time.format.ISODateTimeFormat;
+
+import it.smartcommunitylab.model.ext.ChallengeAssignmentDTO;
 
 public class ChallengeExpandedDTO extends ChallengeAssignmentDTO {
 
@@ -107,23 +112,11 @@ public class ChallengeExpandedDTO extends ChallengeAssignmentDTO {
         return getWriteData().toString().replace("[", "").replace("]", "");
     }
 
-    public void setEnd(Date date) {
-        setEnd(new DateTime(date));
-    }
-
-
     public boolean hasData(String k) {
         Map<String, Object> d = (Map<String, Object>) this.getData();
         return d.containsKey(k);
     }
 
-    public void setStart(DateTime dt) {
-        setStart(jodaToOffset(dt));
-    }
-
-    private void setEnd(DateTime dt) {
-        setEnd(jodaToOffset(dt));
-    }
 
     public void setDates(Object start, Object duration) {
         if (start == null || duration == null) {
@@ -132,17 +125,17 @@ public class ChallengeExpandedDTO extends ChallengeAssignmentDTO {
         }
 
         try {
-            OffsetDateTime st = OffsetDateTime.parse((CharSequence) start, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-            setStart(st);
+            Date startDate =
+                    ISODateTimeFormat.dateTimeNoMillis().parseDateTime((String) start).toDate();
+            setStart(startDate);
             String periodAsIsoFormat = "P" + ((String) duration).toUpperCase();
             Period p = Period.parse(periodAsIsoFormat);
-            setEnd(st.plus(p));
+            LocalDateTime endDateTime =
+                    new Timestamp(startDate.getTime()).toLocalDateTime().plus(p);
+            Date endDate = Date.from(endDateTime.atZone(ZoneId.systemDefault()).toInstant());
+            setEnd(endDate);
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public void setStart(Date date) {
-        setStart(new DateTime(date));
     }
 }
