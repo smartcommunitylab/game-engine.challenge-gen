@@ -2,11 +2,11 @@ package eu.fbk.das.model;
 
 import it.smartcommunitylab.model.ChallengeAssignmentDTO;
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
-import org.threeten.bp.DateTimeUtils;
+import org.threeten.bp.OffsetDateTime;
+import org.threeten.bp.Period;
+import org.threeten.bp.format.DateTimeFormatter;
 
-import java.time.OffsetDateTime;
+
 import java.util.*;
 
 import static eu.fbk.das.GamificationEngineRestFacade.jodaToOffset;
@@ -107,10 +107,6 @@ public class ChallengeExpandedDTO extends ChallengeAssignmentDTO {
         return getWriteData().toString().replace("[", "").replace("]", "");
     }
 
-    public void setStart(Date date) {
-        setStart(new DateTime(date));
-    }
-
     public void setEnd(Date date) {
         setEnd(new DateTime(date));
     }
@@ -136,12 +132,17 @@ public class ChallengeExpandedDTO extends ChallengeAssignmentDTO {
         }
 
         try {
-            DateTimeFormatter fmt = ISODateTimeFormat.dateTimeNoMillis();
-            DateTime dt = fmt.parseDateTime((String) start);
-            // TODO settare end in base a duration
-            setStart(dt);
+            OffsetDateTime st = OffsetDateTime.parse((CharSequence) start, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+            setStart(st);
+            String periodAsIsoFormat = "P" + ((String) duration).toUpperCase();
+            Period p = Period.parse(periodAsIsoFormat);
+            setEnd(st.plus(p));
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void setStart(Date date) {
+        setStart(new DateTime(date));
     }
 }

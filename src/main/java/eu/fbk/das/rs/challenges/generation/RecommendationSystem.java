@@ -795,7 +795,7 @@ public class RecommendationSystem {
         int i = 0;
 
         int w = this.getChallengeWeek(new DateTime());
-
+/*
         for (String pId: playerIds) {
             Map<String, Object> cs = facade.getCustomDataPlayer(gameId, pId);
 
@@ -856,6 +856,8 @@ public class RecommendationSystem {
         }
 
         p("done");
+        *
+ */
     }
 
 }
