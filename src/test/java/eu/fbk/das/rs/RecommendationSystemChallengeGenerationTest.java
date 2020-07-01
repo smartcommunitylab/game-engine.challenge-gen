@@ -1,18 +1,13 @@
 package eu.fbk.das.rs;
 
+import eu.fbk.das.GamificationEngineRestFacade;
 import eu.fbk.das.model.ChallengeExpandedDTO;
+import eu.fbk.das.rs.challenges.ChallengesBaseTest;
+import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemChallengeGeneration;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
-import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
-import eu.fbk.das.rs.challenges.calculator.DifficultyCalculator;
-import eu.fbk.das.rs.valuator.RecommendationSystemChallengeValuator;
-import eu.fbk.das.rs.challenges.ChallengesBaseTest;
-
-
-import eu.fbk.das.GamificationEngineRestFacade;
 import it.smartcommunitylab.model.PlayerStateDTO;
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.junit.Before;

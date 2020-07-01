@@ -1,10 +1,9 @@
 package eu.fbk.das.rs;
 
+import eu.fbk.das.GamificationEngineRestFacade;
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
-import eu.fbk.das.GamificationEngineRestFacade;
-
 import it.smartcommunitylab.model.PlayerStateDTO;
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -19,7 +18,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static eu.fbk.das.rs.challenges.ChallengeUtil.getLevel;
-import static eu.fbk.das.rs.utils.Utils.*;
+import static eu.fbk.das.rs.utils.Utils.wf;
 
 public class TargetPrizeChallengesCalculatorTest extends ChallengesBaseTest {
 

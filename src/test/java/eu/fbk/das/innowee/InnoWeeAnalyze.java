@@ -1,8 +1,6 @@
 package eu.fbk.das.innowee;
 
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
-
-
 import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.ext.GameConcept;
 import it.smartcommunitylab.model.ext.PointConcept;

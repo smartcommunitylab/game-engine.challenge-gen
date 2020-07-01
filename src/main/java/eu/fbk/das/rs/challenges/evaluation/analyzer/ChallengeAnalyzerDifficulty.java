@@ -1,11 +1,13 @@
 package eu.fbk.das.rs.challenges.evaluation.analyzer;
 
 import eu.fbk.das.rs.challenges.evaluation.ChallengeAnalyzer;
-import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import org.apache.commons.math3.stat.StatUtils;
 import org.apache.commons.math3.util.FastMath;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import static eu.fbk.das.rs.utils.Utils.pf;
 

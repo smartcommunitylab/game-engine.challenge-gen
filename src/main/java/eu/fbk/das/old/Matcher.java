@@ -1,12 +1,11 @@
 package eu.fbk.das.old;
 
+import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.ext.BadgeCollectionConcept;
 import it.smartcommunitylab.model.ext.GameConcept;
-import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.ext.PointConcept;
 import org.apache.commons.lang.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -19,7 +18,7 @@ import static eu.fbk.das.rs.utils.Utils.dbg;
 
 public class Matcher {
 
-    private static final Logger logger = LogManager.getLogger(Matcher.class);
+    private static final Logger logger = Logger.getLogger(Matcher.class);
     private static final String[] operators = {"&&"};
     private static final String[] comparisonOperator = {"==", "<=", ">=", "<",
             ">"};

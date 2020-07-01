@@ -6,9 +6,7 @@ import eu.fbk.das.GamificationEngineRestFacade;
 import eu.fbk.das.model.ChallengeExpandedDTO;
 import org.apache.commons.cli.*;
 import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.core.util.Constants;
 
-import javax.ws.rs.ProcessingException;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -139,7 +137,7 @@ public class UploaderTool {
             try {
                 r = challengeAssignFacade.assignChallengeToPlayer(ch,
                         gameId, String.valueOf(ch.getInfo("player")));
-            } catch (ProcessingException e) {
+            } catch (Exception e) {
                 msg = "Error on uploading challenge on gamification engine "
                         + e.getMessage();
                 System.out.println(msg);

@@ -1,7 +1,7 @@
 package eu.fbk.das.old;
 
-import it.smartcommunitylab.model.ext.GameConcept;
 import it.smartcommunitylab.model.PlayerStateDTO;
+import it.smartcommunitylab.model.ext.GameConcept;
 import it.smartcommunitylab.model.ext.PointConcept;
 
 import java.util.Set;

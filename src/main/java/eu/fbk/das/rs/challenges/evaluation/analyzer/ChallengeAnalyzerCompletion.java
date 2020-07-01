@@ -1,16 +1,17 @@
 package eu.fbk.das.rs.challenges.evaluation.analyzer;
 
 import eu.fbk.das.rs.challenges.evaluation.ChallengeAnalyzer;
-import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.ext.ChallengeConcept;
 import it.smartcommunitylab.model.ext.GameConcept;
 import org.joda.time.DateTime;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.getWeeklyContentMode;
-import static eu.fbk.das.rs.utils.Utils.p;
 import static eu.fbk.das.rs.utils.Utils.pf;
 
 public class ChallengeAnalyzerCompletion extends ChallengeAnalyzer {

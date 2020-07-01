@@ -2,12 +2,10 @@ package eu.fbk.das.rs.sortfilter;
 
 import eu.fbk.das.model.ChallengeExpandedDTO;
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
-
 import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.ext.GameConcept;
 import it.smartcommunitylab.model.ext.PointConcept;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 
 import java.util.*;
@@ -18,7 +16,7 @@ import static eu.fbk.das.rs.utils.Utils.dbg;
 
 public class RecommendationSystemChallengeFilteringAndSorting {
 
-    private static final Logger logger = LogManager
+    private static final Logger logger = Logger
             .getLogger(RecommendationSystemChallengeFilteringAndSorting.class);
 
     private double[] leaderboard;

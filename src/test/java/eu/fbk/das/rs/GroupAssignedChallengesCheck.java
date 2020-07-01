@@ -1,10 +1,7 @@
 package eu.fbk.das.rs;
 
-import eu.fbk.das.rs.challenges.ChallengesBaseTest;
-
 import eu.fbk.das.GamificationEngineRestFacade;
-
-
+import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.ext.ChallengeConcept;
 import it.smartcommunitylab.model.ext.GameConcept;
@@ -19,7 +16,6 @@ import java.util.Set;
 
 import static eu.fbk.das.rs.challenges.ChallengeUtil.getPeriodScore;
 import static eu.fbk.das.rs.utils.Utils.*;
-import static eu.fbk.das.rs.utils.Utils.parseDate;
 
 public class GroupAssignedChallengesCheck extends ChallengesBaseTest {
 

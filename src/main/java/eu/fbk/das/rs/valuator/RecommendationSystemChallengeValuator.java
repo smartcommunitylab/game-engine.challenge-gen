@@ -6,8 +6,7 @@ import static eu.fbk.das.rs.utils.Utils.p;
 
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import eu.fbk.das.model.ChallengeExpandedDTO;
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
@@ -17,7 +16,7 @@ import eu.fbk.das.rs.challenges.generation.RecommendationSystemStatistics;
 public class RecommendationSystemChallengeValuator {
 
     private static final Logger logger =
-            LogManager.getLogger(RecommendationSystemChallengeValuator.class);
+            Logger.getLogger(RecommendationSystemChallengeValuator.class);
 
     private final DifficultyCalculator dc;
 

@@ -1,7 +1,7 @@
 package eu.fbk.das.rs;
 
-import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 import eu.fbk.das.GamificationEngineRestFacade;
+import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 import org.junit.Test;
 
 import java.util.Map;

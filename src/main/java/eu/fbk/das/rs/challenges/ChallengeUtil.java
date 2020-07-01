@@ -2,7 +2,6 @@ package eu.fbk.das.rs.challenges;
 
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
-
 import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.ext.PlayerLevel;
 import it.smartcommunitylab.model.ext.PointConcept;

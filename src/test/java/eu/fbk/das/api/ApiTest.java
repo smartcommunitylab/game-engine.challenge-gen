@@ -11,7 +11,6 @@ import org.junit.Test;
 import java.util.List;
 import java.util.Set;
 
-import static eu.fbk.das.rs.utils.Utils.f;
 import static eu.fbk.das.rs.utils.Utils.p;
 
 public class ApiTest {

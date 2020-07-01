@@ -1,7 +1,5 @@
 package eu.fbk.das.innowee;
 
-import org.junit.Test;
-
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;

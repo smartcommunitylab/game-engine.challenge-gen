@@ -9,8 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.threeten.bp.Instant;
 import org.threeten.bp.OffsetDateTime;
@@ -37,7 +36,7 @@ public class GamificationEngineRestFacade {
 
     // API: https://dev.smartcommunitylab.it/gamification/swagger-ui.html
 
-    private static final Logger logger = LogManager
+    private static final Logger logger = Logger
             .getLogger(GamificationEngineRestFacade.class);
 
     private final PlayerControllerApi playerApi;
