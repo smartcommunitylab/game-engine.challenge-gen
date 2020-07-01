@@ -3,7 +3,6 @@ package eu.fbk.das.api;
 import eu.fbk.das.model.ChallengeExpandedDTO;
 import eu.fbk.das.rs.GroupChallengesAssigner;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
-
 import it.smartcommunitylab.model.GroupChallengeDTO;
 import it.smartcommunitylab.model.RewardDTO;
 import org.joda.time.DateTime;

@@ -2,11 +2,9 @@ package eu.fbk.das.rs.valuator;
 
 import eu.fbk.das.model.ChallengeExpandedDTO;
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
-import eu.fbk.das.rs.challenges.generation.RecommendationSystemStatistics;
 import eu.fbk.das.rs.challenges.calculator.DifficultyCalculator;
-import it.smartcommunitylab.model.ChallengeAssignmentDTO;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import eu.fbk.das.rs.challenges.generation.RecommendationSystemStatistics;
+import org.apache.log4j.Logger;
 
 import java.util.Map;
 
@@ -15,7 +13,7 @@ import static eu.fbk.das.rs.utils.Utils.*;
 public class RecommendationSystemChallengeValuator {
 
     private static final Logger logger =
-            LogManager.getLogger(RecommendationSystemChallengeValuator.class);
+            Logger.getLogger(RecommendationSystemChallengeValuator.class);
 
     private final DifficultyCalculator dc;
 

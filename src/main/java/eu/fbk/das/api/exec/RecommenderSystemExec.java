@@ -1,17 +1,14 @@
 package eu.fbk.das.api.exec;
 
-import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.getChallengeWeek;
-
-import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.TimeZone;
-
-import org.joda.time.DateTime;
-
 import eu.fbk.das.api.RecommenderSystemAPI;
 import eu.fbk.das.api.RecommenderSystemImpl;
+import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+
+import java.util.HashMap;
+
+import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.getChallengeWeek;
 
 // Chiama recommender system per generazione settimanale
 public class RecommenderSystemExec {

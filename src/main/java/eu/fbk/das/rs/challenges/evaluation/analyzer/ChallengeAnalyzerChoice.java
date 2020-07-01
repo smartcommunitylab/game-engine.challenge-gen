@@ -4,7 +4,9 @@ import eu.fbk.das.rs.challenges.evaluation.ChallengeAnalyzer;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import org.joda.time.DateTime;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.getWeeklyContentMode;
 import static eu.fbk.das.rs.utils.Utils.pf;

@@ -6,7 +6,6 @@ import org.threeten.bp.OffsetDateTime;
 import org.threeten.bp.Period;
 import org.threeten.bp.format.DateTimeFormatter;
 
-
 import java.util.*;
 
 import static eu.fbk.das.GamificationEngineRestFacade.jodaToOffset;

@@ -2,9 +2,7 @@ package eu.fbk.das.old;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.util.Constants;
+import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.util.HashMap;
@@ -19,7 +17,7 @@ import static eu.fbk.das.rs.utils.Utils.dbg;
  */
 public final class ChallengeRulesLoader {
 
-    private static final Logger logger = LogManager.getLogger(ChallengeRulesLoader.class);
+    private static final Logger logger = Logger.getLogger(ChallengeRulesLoader.class);
 
     private static final String[] COLUMNS = {"NAME", "TYPE", "GOAL_TYPE", "TARGET", "BONUS",
             "POINT_TYPE", "PERIOD_NAME", "PERIOD_TARGET", "DIFFICULTY", "BASELINE_VARIABLE",

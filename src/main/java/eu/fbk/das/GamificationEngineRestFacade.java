@@ -1,43 +1,26 @@
 
 package eu.fbk.das;
 
-import static eu.fbk.das.rs.utils.Utils.p;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import it.smartcommunitylab.ApiClient;
+import it.smartcommunitylab.ApiException;
+import it.smartcommunitylab.basic.api.GameControllerApi;
+import it.smartcommunitylab.basic.api.PlayerControllerApi;
+import it.smartcommunitylab.model.*;
+import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.threeten.bp.Instant;
 import org.threeten.bp.OffsetDateTime;
 import org.threeten.bp.ZoneOffset;
 
-import it.smartcommunitylab.ApiClient;
-import it.smartcommunitylab.ApiException;
-import it.smartcommunitylab.basic.api.GameControllerApi;
-import it.smartcommunitylab.basic.api.PlayerControllerApi;
-import it.smartcommunitylab.model.AttendeeDTO;
-import it.smartcommunitylab.model.ChallengeAssignmentDTO;
-import it.smartcommunitylab.model.ChallengeConcept;
-import it.smartcommunitylab.model.GameStatistics;
-import it.smartcommunitylab.model.GroupChallengeDTO;
-import it.smartcommunitylab.model.PagePlayerStateDTO;
-import it.smartcommunitylab.model.PlayerStateDTO;
-import it.smartcommunitylab.model.PointConceptDTO;
-import it.smartcommunitylab.model.Projection;
-import it.smartcommunitylab.model.RawSearchQuery;
-import it.smartcommunitylab.model.RewardDTO;
-import it.smartcommunitylab.model.WrapperQuery;
+import java.util.*;
+
+import static eu.fbk.das.rs.utils.Utils.p;
 
 public class GamificationEngineRestFacade {
 
     // API: https://dev.smartcommunitylab.it/gamification/swagger-ui.html
 
-    private static final Logger logger = LogManager
+    private static final Logger logger = Logger
             .getLogger(GamificationEngineRestFacade.class);
 
     private final PlayerControllerApi playerApi;

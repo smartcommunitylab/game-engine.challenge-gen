@@ -6,10 +6,9 @@ import eu.fbk.das.rs.challenges.generation.RecommendationSystemStatistics;
 import eu.fbk.das.rs.utils.ArrayUtils;
 import eu.fbk.das.rs.utils.Pair;
 import it.smartcommunitylab.model.*;
-
+import it.smartcommunitylab.model.ext.ChallengeConcept;
 import it.smartcommunitylab.model.ext.GameConcept;
 import it.smartcommunitylab.model.ext.PointConcept;
-import it.smartcommunitylab.model.ext.ChallengeConcept;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.Solver;

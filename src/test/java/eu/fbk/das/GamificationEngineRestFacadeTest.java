@@ -1,34 +1,22 @@
 package eu.fbk.das;
 
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
-
 import it.smartcommunitylab.model.GroupChallengeDTO;
 import it.smartcommunitylab.model.PlayerStateDTO;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Set;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
 
-    private static final Logger logger = LogManager.getLogger(GamificationEngineRestFacadeTest.class);
+    private static final Logger logger = Logger.getLogger(GamificationEngineRestFacadeTest.class);
     private static final String USERID = "24440";
 
     private GamificationEngineRestFacade facade;

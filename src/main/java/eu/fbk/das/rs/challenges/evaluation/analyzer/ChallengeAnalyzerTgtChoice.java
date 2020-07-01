@@ -1,7 +1,6 @@
 package eu.fbk.das.rs.challenges.evaluation.analyzer;
 
 import eu.fbk.das.rs.challenges.evaluation.ChallengeAnalyzer;
-import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 
 import java.util.HashMap;
 import java.util.List;

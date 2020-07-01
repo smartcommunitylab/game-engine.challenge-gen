@@ -1,8 +1,7 @@
 package eu.fbk.das.rs.utils;
 
 import gnu.trove.list.array.TIntArrayList;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.format.DateTimeFormat;
@@ -21,7 +20,7 @@ public class Utils {
 
     static Random r = new Random(System.currentTimeMillis());
 
-    private static final Logger log = LogManager.getLogger(
+    private static final Logger log = Logger.getLogger(
             Utils.class.getName());
 
     public static String rmExt(String str) {

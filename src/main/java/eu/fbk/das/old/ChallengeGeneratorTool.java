@@ -3,7 +3,6 @@ package eu.fbk.das.old;
 import eu.fbk.das.GamificationEngineRestFacade;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import org.apache.commons.cli.*;
-import org.apache.logging.log4j.core.util.Constants;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;

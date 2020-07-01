@@ -1,15 +1,13 @@
 package eu.fbk.das.old;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import eu.fbk.das.model.ChallengeExpandedDTO;
-import it.smartcommunitylab.model.ext.GameConcept;
 import it.smartcommunitylab.model.PlayerStateDTO;
+import it.smartcommunitylab.model.ext.GameConcept;
 import it.smartcommunitylab.model.ext.PointConcept;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -22,7 +20,7 @@ import static eu.fbk.das.rs.utils.Utils.dbg;
  */
 public class ChallengesRulesGenerator {
 
-    private static final Logger logger = LogManager.getLogger(ChallengeRulesLoader.class);
+    private static final Logger logger = Logger.getLogger(ChallengeRulesLoader.class);
     private static final int challengeLimitNumber = 2;
 
     private ChallengeInstanceFactory factory;

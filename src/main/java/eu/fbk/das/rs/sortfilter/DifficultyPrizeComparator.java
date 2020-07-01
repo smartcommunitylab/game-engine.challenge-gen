@@ -2,7 +2,6 @@ package eu.fbk.das.rs.sortfilter;
 
 
 import eu.fbk.das.model.ChallengeExpandedDTO;
-import it.smartcommunitylab.model.ChallengeAssignmentDTO;
 
 import java.util.Comparator;
 

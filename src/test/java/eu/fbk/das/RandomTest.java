@@ -8,7 +8,10 @@ import it.smartcommunitylab.model.ext.GameConcept;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import static eu.fbk.das.rs.utils.Utils.p;
 import static eu.fbk.das.rs.utils.Utils.pf;

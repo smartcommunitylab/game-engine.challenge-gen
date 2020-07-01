@@ -2,9 +2,9 @@ package eu.fbk.das.old;
 
 
 import eu.fbk.das.model.ChallengeExpandedDTO;
+import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.ext.BadgeCollectionConcept;
 import it.smartcommunitylab.model.ext.GameConcept;
-import it.smartcommunitylab.model.PlayerStateDTO;
 
 import java.util.Date;
 import java.util.Map;

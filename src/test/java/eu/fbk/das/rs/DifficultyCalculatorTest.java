@@ -1,9 +1,8 @@
 package eu.fbk.das.rs;
 
 import eu.fbk.das.model.ChallengeExpandedDTO;
-import eu.fbk.das.rs.sortfilter.DifficultyPrizeComparator;
 import eu.fbk.das.rs.challenges.calculator.DifficultyCalculator;
-
+import eu.fbk.das.rs.sortfilter.DifficultyPrizeComparator;
 import org.junit.Test;
 
 import java.util.*;

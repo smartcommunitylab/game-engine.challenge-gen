@@ -10,8 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static eu.fbk.das.rs.utils.Utils.*;
-import static eu.fbk.das.rs.utils.Utils.p;
+import static eu.fbk.das.rs.utils.Utils.pf;
 
 public class CostAssigner {
 

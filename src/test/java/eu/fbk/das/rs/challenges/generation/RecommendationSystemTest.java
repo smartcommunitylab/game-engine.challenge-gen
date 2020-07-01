@@ -2,17 +2,14 @@ package eu.fbk.das.rs.challenges.generation;
 
 
 import eu.fbk.das.model.ChallengeExpandedDTO;
-import eu.fbk.das.rs.utils.Utils;
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
-
-
+import eu.fbk.das.rs.utils.Utils;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import static eu.fbk.das.rs.utils.ArrayUtils.pos;

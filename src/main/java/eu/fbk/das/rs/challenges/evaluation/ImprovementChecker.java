@@ -10,10 +10,8 @@ import org.joda.time.DateTime;
 import java.io.IOException;
 import java.util.*;
 
-import static com.google.common.math.DoubleMath.mean;
 import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.getWeeklyContentMode;
 import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.getChallengeWeek;
-import static eu.fbk.das.rs.utils.Utils.p;
 import static eu.fbk.das.rs.utils.Utils.pf;
 
 // Checks the rate of improvement between each week

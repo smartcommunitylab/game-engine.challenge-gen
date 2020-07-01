@@ -4,14 +4,15 @@ import eu.fbk.das.model.ChallengeExpandedDTO;
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemChallengeGeneration;
-
-
 import it.smartcommunitylab.model.PlayerStateDTO;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static eu.fbk.das.rs.utils.Utils.p;
 
