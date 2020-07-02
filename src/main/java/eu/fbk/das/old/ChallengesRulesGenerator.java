@@ -1,6 +1,5 @@
 package eu.fbk.das.old;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.fbk.das.model.ChallengeExpandedDTO;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.ext.GameConcept;
@@ -201,13 +200,13 @@ public class ChallengesRulesGenerator {
     }
 
     public void writeChallengesToFile() throws IOException {
-        // write json file
+        /*// write json file
         ObjectMapper mapper = new ObjectMapper();
         //
         IOUtils.write(mapper.writeValueAsString(challenges), oout);
         dbg(logger,
                 "ChallengesRulesGenerator - completed - written challenges " + challenges.size());
-        closeStream();
+        closeStream();*/
     }
 
     /**

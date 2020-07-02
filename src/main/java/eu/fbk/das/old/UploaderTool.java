@@ -1,7 +1,5 @@
 package eu.fbk.das.old;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import eu.fbk.das.GamificationEngineRestFacade;
 import eu.fbk.das.model.ChallengeExpandedDTO;
 import org.apache.commons.cli.*;
@@ -100,11 +98,12 @@ public class UploaderTool {
                 + " for file " + input;
         System.out.println(msg);
         log += msg + Constants.LINE_SEPARATOR;
+        List<ChallengeExpandedDTO> challenges = null;
         // read input file
-        ObjectMapper mapper = new ObjectMapper();
+        /* ObjectMapper mapper = new ObjectMapper();
         TypeFactory typeFactory = mapper.getTypeFactory();
         String jsonString;
-        List<ChallengeExpandedDTO> challenges = null;
+
         try {
             jsonString = IOUtils.toString(new FileInputStream(input));
             challenges = mapper.readValue(jsonString, typeFactory
@@ -115,7 +114,7 @@ public class UploaderTool {
             msg = "Error in reading input file for uploader " + input;
             log += msg + Constants.LINE_SEPARATOR;
             return log;
-        }
+        } */
         msg = "Read challenges " + challenges.size();
 
         int tot = 0;
