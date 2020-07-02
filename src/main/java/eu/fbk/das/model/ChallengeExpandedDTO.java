@@ -126,7 +126,8 @@ public class ChallengeExpandedDTO extends ChallengeAssignmentDTO {
 
         try {
             Date startDate =
-                    ISODateTimeFormat.dateTimeNoMillis().parseDateTime((String) start).toDate();
+                    ISODateTimeFormat.dateTimeNoMillis().parseLocalDateTime((String) start)
+                            .toDate();
             setStart(startDate);
             String periodAsIsoFormat = "P" + ((String) duration).toUpperCase();
             Period p = Period.parse(periodAsIsoFormat);
