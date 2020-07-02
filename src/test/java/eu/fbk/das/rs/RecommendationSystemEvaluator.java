@@ -43,7 +43,7 @@ public class RecommendationSystemEvaluator extends ChallengesBaseTest {
         facade = new GamificationEngineRestFacade(cfg.get("HOST"),
                 cfg.get("USERNAME"), cfg.get("PASSWORD"));
 
-        Set<String> players = facade.getGamePlayers(cfg.get("GAME_ID"));
+        Set<String> players = facade.getGamePlayers(cfg.get("gameId"));
 
         analyzeChallengePlayers(players);
 
@@ -83,7 +83,7 @@ public class RecommendationSystemEvaluator extends ChallengesBaseTest {
         weekResult = new HashMap<>();
 
         for (String pId: players) {
-            PlayerStateDTO player = facade.getPlayerState(cfg.get("GAME_ID"), pId);
+            PlayerStateDTO player = facade.getPlayerState(cfg.get("gameId"), pId);
             Integer ix = null;
             Map<String, Double> old = new HashMap<>();
             for (int w = startW; w <= endW; w++ ) {
@@ -117,7 +117,7 @@ public class RecommendationSystemEvaluator extends ChallengesBaseTest {
         weekResult = new HashMap<>();
 
         for (String pId: players) {
-            PlayerStateDTO player = facade.getPlayerState(cfg.get("GAME_ID"), pId);
+            PlayerStateDTO player = facade.getPlayerState(cfg.get("gameId"), pId);
             Integer ix = null;
             for (int w = startW; w <= endW; w++ ) {
 
@@ -144,7 +144,7 @@ public class RecommendationSystemEvaluator extends ChallengesBaseTest {
 
         for (String pId: players) {
 
-            PlayerStateDTO player = facade.getPlayerState(cfg.get("GAME_ID"), pId);
+            PlayerStateDTO player = facade.getPlayerState(cfg.get("gameId"), pId);
             Map<String, Set<GameConcept>> st = player.getState();
 
             int startWeek = getStartWeek(player);

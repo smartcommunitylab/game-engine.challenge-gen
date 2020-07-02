@@ -13,12 +13,10 @@ import static eu.fbk.das.GamificationEngineRestFacade.jodaToOffset;
 
 public class RecommenderSystemImpl implements RecommenderSystemAPI {
 
-    private RecommendationSystem rs;
+    private static RecommendationSystem rs;
     private Set<String> players;
 
-    private void prepare(Map<String, String> conf, String playerSet) {
-
-        this.rs = new RecommendationSystem(conf.get("host"), conf.get("user"), conf.get("pass"), conf.get("gameId"));
+    private void prepare(String playerSet) {
 
         if ("all".equals(playerSet))
             players = rs.facade.getGamePlayers(rs.gameId);
@@ -31,11 +29,29 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 
     }
 
+
+
+    private void checkUpdateRs(Map<String, String> conf) {
+        String host = conf.get("host");
+        String user = conf.get("user");
+        String pass = conf.get("pass");
+        String gameId = conf.get("gameId");
+
+        boolean create = rs == null;
+        if (!create) {
+            create = !(rs.host.equals(host) && rs.user.equals(user) && rs.pass.equals(pass) && rs.gameId.equals(gameId));
+        }
+
+        if (create)
+            this.rs = new RecommendationSystem(host, user, pass, gameId);
+    }
+
     @Override
     public List<ChallengeExpandedDTO> createSingleChallengeUnaTantum(Map<String, String> conf, String modelType, Map<String, Object> config,
                                                                      String playerSet, Map<String, String> rewards) {
 
-        prepare(conf, playerSet);
+        checkUpdateRs(conf);
+        prepare(playerSet);
 
         List<ChallengeExpandedDTO> chas = new ArrayList<>();
 
@@ -60,7 +76,8 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
     @Override
     public List<ChallengeExpandedDTO> createSingleChallengeWeekly(Map<String, String> conf, Set<String> modelTypes, Map<String, String> creationRules, Map<String, Object> config, String playerSet, Map<String, String> rewards) {
 
-        prepare(conf, playerSet);
+        checkUpdateRs(conf);
+        prepare(playerSet);
 
         List<ChallengeExpandedDTO> chas = new ArrayList<>();
 
@@ -85,7 +102,8 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
     @Override
     public List<GroupChallengeDTO> createCoupleChallengeWeekly(Map<String, String> conf, Set<String> modelTypes, String assignmentType, Map<String, Object> config, String playerSet, Map<String, String> rewards) {
 
-        prepare(conf, playerSet);
+        checkUpdateRs(conf);
+        prepare(playerSet);
 
         List<GroupChallengeDTO> chas = new ArrayList<>();
 
@@ -105,7 +123,8 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
     }
 
     @Override
-    public boolean assignSingleChallenge(ChallengeExpandedDTO cha) {
+    public boolean assignSingleChallenge(Map<String, String> conf, ChallengeExpandedDTO cha) {
+        checkUpdateRs(conf);
         String gameId = (String) cha.getInfo("gameId");
         String pId = (String) cha.getInfo("pId");
         return rs.facade.assignChallengeToPlayer(cha, gameId, pId);

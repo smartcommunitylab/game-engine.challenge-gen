@@ -3,6 +3,7 @@ package eu.fbk.das.api;
 import eu.fbk.das.model.ChallengeExpandedDTO;
 import it.smartcommunitylab.model.GroupChallengeDTO;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,5 +45,5 @@ public interface RecommenderSystemAPI {
      */
     public List<GroupChallengeDTO> createCoupleChallengeWeekly(Map<String, String> conf, Set<String> modelTypes, String assignmentType, Map<String, Object> config, String playerSet, Map<String, String> rewards);
 
-    public boolean assignSingleChallenge(ChallengeExpandedDTO cha);
+    public boolean assignSingleChallenge(Map<String, String> conf, ChallengeExpandedDTO cha);
 }

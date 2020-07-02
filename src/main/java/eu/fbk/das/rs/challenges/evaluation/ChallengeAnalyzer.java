@@ -170,7 +170,7 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
         incrByLvl = new ArrayList<List<Double>>();
         incrByCounter = new HashMap<>();
 
-        // playersTot = facade.getGamePlayers(cfg.get("GAME_ID"));
+        // playersTot = facade.getGamePlayers(cfg.get("gameId"));
         // playersDone = new HashSet<String>();
         next_p = 0;
 

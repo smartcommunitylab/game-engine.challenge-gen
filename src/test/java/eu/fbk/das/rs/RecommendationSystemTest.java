@@ -48,11 +48,11 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
 
 
         // MIO ID
-            // boolean success = facade.assignChallengeToPlayer(cha, cfg.get("GAME_ID"), "28540");
+            // boolean success = facade.assignChallengeToPlayer(cha, cfg.get("gameId"), "28540");
 
-        boolean success = facade.assignChallengeToPlayer(cha, cfg.get("GAME_ID"), "3");
+        boolean success = facade.assignChallengeToPlayer(cha, cfg.get("gameId"), "3");
 
-        // boolean success = facade.assignChallengeToPlayer(cha, cfg.get("GAME_ID"), "4");
+        // boolean success = facade.assignChallengeToPlayer(cha, cfg.get("gameId"), "4");
 
         p(success);
 
@@ -66,7 +66,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
         cha.setData("target", 1.0);
         cha.setData("bonusScore", 100.0);
 
-        boolean state = facade.assignChallengeToPlayer(cha, cfg.get("GAME_ID"), pId);
+        boolean state = facade.assignChallengeToPlayer(cha, cfg.get("gameId"), pId);
         p(pId);
         p(state);
     }
@@ -85,12 +85,12 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
 
         cha.setStart(new DateTime().toDate());
 
-        Set<String> playerIds = facade.getGamePlayers(cfg.get("GAME_ID"));
+        Set<String> playerIds = facade.getGamePlayers(cfg.get("gameId"));
 
         int w = this.rs.getChallengeWeek(new DateTime());
 
         for (String pId: playerIds) {
-            Map<String, Object> cs = facade.getCustomDataPlayer(cfg.get("GAME_ID"), pId);
+            Map<String, Object> cs = facade.getCustomDataPlayer(cfg.get("gameId"), pId);
 
             if (cs == null)
                 continue;
@@ -105,7 +105,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
 
             p(pId);
 
-           // boolean success = facade.assignChallengeToPlayer(cha, cfg.get("GAME_ID"), pId);
+           // boolean success = facade.assignChallengeToPlayer(cha, cfg.get("gameId"), pId);
             }
     }
 
@@ -113,13 +113,13 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
     public void assignRepetitiveTest() {
 
         String pId = "225";
-        PlayerStateDTO st = facade.getPlayerState(cfg.get("GAME_ID"), pId);
+        PlayerStateDTO st = facade.getPlayerState(cfg.get("gameId"), pId);
 
         ChallengeExpandedDTO cha = rscg.getRepetitive(pId);
 
         // Assign to me
-        boolean success = facade.assignChallengeToPlayer(cha, cfg.get("GAME_ID"), pId);
-        // boolean success = facade.assignChallengeToPlayer(cha, cfg.get("GAME_ID"), "4");
+        boolean success = facade.assignChallengeToPlayer(cha, cfg.get("gameId"), pId);
+        // boolean success = facade.assignChallengeToPlayer(cha, cfg.get("gameId"), "4");
 
         p(success);
 
@@ -134,8 +134,8 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
         ChallengeExpandedDTO cha = s.get(0);
 
         // Assign to me
-        boolean success = facade.assignChallengeToPlayer(cha, cfg.get("GAME_ID"), pId);
-        // boolean success = facade.assignChallengeToPlayer(cha, cfg.get("GAME_ID"), "4");
+        boolean success = facade.assignChallengeToPlayer(cha, cfg.get("gameId"), pId);
+        // boolean success = facade.assignChallengeToPlayer(cha, cfg.get("gameId"), "4");
 
         p(success);
 

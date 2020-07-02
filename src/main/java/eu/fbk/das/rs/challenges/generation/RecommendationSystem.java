@@ -73,11 +73,11 @@ public class RecommendationSystem {
         rscg = new RecommendationSystemChallengeGeneration(this);
         rscf = new RecommendationSystemChallengeFilteringAndSorting();
         stats = new RecommendationSystemStatistics(this, true);
-        dbg(logger, "Recommendation System init complete");
+         // dbg(logger, "Recommendation System init complete");
     }
 
     public RecommendationSystem(RecommendationSystemConfig cfg) {
-        this(cfg.get("HOST"), cfg.get("USERNAME"), cfg.get("PASSWORD"), cfg.get("GAME_ID"));
+        this(cfg.get("HOST"), cfg.get("USERNAME"), cfg.get("PASSWORD"), cfg.get("gameId"));
     }
 
     public RecommendationSystem() {

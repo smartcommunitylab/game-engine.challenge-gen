@@ -46,7 +46,7 @@ public class ApiTest {
     @Test
     public void weekCreate() {
         RecommenderSystemWeekly rsw = new RecommenderSystemWeekly();
-        List<ChallengeExpandedDTO> chas = rsw.go("1069");
+        List<ChallengeExpandedDTO> chas = rsw.go(null, "1069");
         for(ChallengeExpandedDTO ch: chas)
             p(ch);
     }

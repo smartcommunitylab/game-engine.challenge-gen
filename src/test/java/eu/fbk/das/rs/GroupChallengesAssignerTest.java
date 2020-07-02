@@ -35,7 +35,7 @@ public class GroupChallengesAssignerTest extends ChallengesBaseTest {
         DateTime d = new DateTime();
 
         GroupChallengeDTO gcd = gca.createPerfomanceChallenge("Walk_Km", "7", "225", d.minusDays(3), d.plusDays(3));
-        facade.assignGroupChallenge(gcd, cfg.get("GAME_ID"));
+        facade.assignGroupChallenge(gcd, cfg.get("gameId"));
     }
 
     @Test

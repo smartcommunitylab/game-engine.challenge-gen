@@ -26,7 +26,7 @@ public class GroupAssignedChallengesCheck extends ChallengesBaseTest {
         facade = new GamificationEngineRestFacade(cfg.get("HOST"),
                 cfg.get("USERNAME"), cfg.get("PASSWORD"));
 
-        PlayerStateDTO player = facade.getPlayerState(cfg.get("GAME_ID"), "28593");
+        PlayerStateDTO player = facade.getPlayerState(cfg.get("gameId"), "28593");
 
         Set<GameConcept> scores =  player.getState().get("ChallengeConcept");
         for (GameConcept gc : scores) {
@@ -56,8 +56,8 @@ public class GroupAssignedChallengesCheck extends ChallengesBaseTest {
 
         Map<String, Integer> cont = new HashMap<>();
 
-        for (String pId: facade.getGamePlayers(cfg.get("GAME_ID"))) {
-            PlayerStateDTO player = facade.getPlayerState(cfg.get("GAME_ID"), pId);
+        for (String pId: facade.getGamePlayers(cfg.get("gameId"))) {
+            PlayerStateDTO player = facade.getPlayerState(cfg.get("gameId"), pId);
             Set<GameConcept> scores =  player.getState().get("ChallengeConcept");
             for (GameConcept gc : scores) {
                 ChallengeConcept chal = (ChallengeConcept) gc;

@@ -8,11 +8,12 @@ import java.util.*;
 public class RecommenderSystemWeekly extends RecommenderSystemExec {
 
     public static void main(String[] args) {
-        new RecommenderSystemWeekly().go(null);
+        new RecommenderSystemWeekly().go(null, null);
     }
 
-    public List<ChallengeExpandedDTO> go(String players) {
+    public List<ChallengeExpandedDTO> go(Map<String, String> conf, String players) {
         prepare();
+        if (conf == null) conf = this.conf;
 
         Map<String, String> creationRules = new HashMap<>();
         creationRules.put("0", "empty");
@@ -34,4 +35,17 @@ public class RecommenderSystemWeekly extends RecommenderSystemExec {
         return api.createSingleChallengeWeekly(conf, modelTypes, creationRules, config, players, reward);
     }
 
+    public boolean upload(Map<String, String> conf, ChallengeExpandedDTO cha) {
+        if (conf == null) conf = this.conf;
+        return api.assignSingleChallenge(conf, cha);
+    }
+
+    public boolean exec(Map<String, String> conf, String players) {
+        List<ChallengeExpandedDTO> chas = go(conf, players);
+        boolean res = true;
+        for(ChallengeExpandedDTO cha: chas) {
+            res = res & upload(conf, cha);
+        }
+        return res;
+    }
 }

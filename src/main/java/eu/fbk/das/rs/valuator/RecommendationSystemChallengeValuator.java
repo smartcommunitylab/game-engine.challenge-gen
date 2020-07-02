@@ -27,7 +27,7 @@ public class RecommendationSystemChallengeValuator {
      */
     public RecommendationSystemChallengeValuator() {
         this.dc = new DifficultyCalculator();
-        dbg(logger, "RecommendationSystemChallengeValuator init complete");
+        // dbg(logger, "RecommendationSystemChallengeValuator init complete");
     }
 
     // Updates a challenge, evaluating its difficulty

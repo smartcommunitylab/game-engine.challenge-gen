@@ -64,7 +64,7 @@ public class ChallengesBaseTest {
 
     @Test
     public void test() {
-        PlayerStateDTO res = facade.getPlayerState(cfg.get("GAME_ID"), "25706");
+        PlayerStateDTO res = facade.getPlayerState(cfg.get("gameId"), "25706");
         Set<GameConcept> scores =  res.getState().get("ChallengeConcept");
         for (GameConcept gc : scores) {
             ChallengeConcept cha = (ChallengeConcept) gc;
