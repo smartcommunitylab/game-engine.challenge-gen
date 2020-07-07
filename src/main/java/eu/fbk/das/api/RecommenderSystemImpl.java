@@ -127,6 +127,8 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
         checkUpdateRs(conf);
         String gameId = (String) cha.getInfo("gameId");
         String pId = (String) cha.getInfo("pId");
+        for (String s: new String[]{"exec", "challengeWeek"})
+            cha.delData(s);
         return rs.facade.assignChallengeToPlayer(cha, gameId, pId);
     }
 

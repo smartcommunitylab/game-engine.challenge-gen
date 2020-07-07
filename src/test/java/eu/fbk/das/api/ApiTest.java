@@ -8,6 +8,7 @@ import it.smartcommunitylab.model.ext.GameConcept;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -21,10 +22,16 @@ public class ApiTest {
     String gameId = "5b7a885149c95d50c5f9d442";
 
     private GamificationEngineRestFacade facade;
+    private HashMap<String, String> conf;
 
     @Before
     public void prepare() {
         facade = new GamificationEngineRestFacade(host, user, pass);
+        conf = new HashMap<String, String>();
+        conf.put("host", host);
+        conf.put("user", user);
+        conf.put("pass", pass);
+        conf.put("gameId", gameId);
     }
 
     @Test
@@ -46,8 +53,6 @@ public class ApiTest {
     @Test
     public void weekCreate() {
         RecommenderSystemWeekly rsw = new RecommenderSystemWeekly();
-        List<ChallengeExpandedDTO> chas = rsw.go(null, "1069");
-        for(ChallengeExpandedDTO ch: chas)
-            p(ch);
+        rsw.exec(conf, "1069");
     }
 }

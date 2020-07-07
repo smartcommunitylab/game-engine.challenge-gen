@@ -10,12 +10,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.joda.time.DateTime;
 
@@ -34,6 +29,7 @@ import it.smartcommunitylab.model.ext.PointConcept;
  */
 public class ChallengeDataGuru extends ChallengeUtil  {
 
+    private Map<String, String> conf;
     private List<Integer> training_model = new ArrayList<>();
     private List<Integer> training_counter = new ArrayList<>();
 
@@ -58,7 +54,12 @@ public class ChallengeDataGuru extends ChallengeUtil  {
     protected SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
     public ChallengeDataGuru() {
+        this(new HashMap<>());
+    }
+
+    public ChallengeDataGuru(Map<String, String> conf) {
         this(new RecommendationSystem ());
+        this.conf = conf;
     }
 
     public ChallengeDataGuru(RecommendationSystem rs) {
@@ -153,7 +154,7 @@ public class ChallengeDataGuru extends ChallengeUtil  {
         l_cha = new ArrayList<>();
 
         for (String pId : challenges.keySet()) {
-            PlayerStateDTO cnt = rs.facade.getPlayerState(rs.gameId, pId);
+            PlayerStateDTO cnt = rs.facade.getPlayerState(conf.get("gameId"), pId);
 
             for (ChallengeExpandedDTO cha : challenges.get(pId)) {
                 goChallenge(cnt, cha);
