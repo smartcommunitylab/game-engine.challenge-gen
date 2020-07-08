@@ -3,7 +3,6 @@ package eu.fbk.das.rs.challenges.generation;
 import static eu.fbk.das.rs.challenges.ChallengeUtil.getLevel;
 import static eu.fbk.das.rs.challenges.ChallengeUtil.getPeriodScore;
 import static eu.fbk.das.rs.utils.Utils.daysApart;
-import static eu.fbk.das.rs.utils.Utils.dbg;
 import static eu.fbk.das.rs.utils.Utils.p;
 import static eu.fbk.das.rs.utils.Utils.parseDate;
 import static it.smartcommunitylab.model.ChallengeConcept.StateEnum.COMPLETED;
@@ -18,9 +17,19 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.format.DateTimeFormat;
@@ -762,30 +771,25 @@ public class RecommendationSystem {
             facade.setCustomDataPlayer(gameId, pId, cs);
         }*/
 
-        BufferedReader csvReader = null;
         // System.out.println("Working Directory = " + System.getProperty("user.dir"));
         Map<String, Integer> daysPlayed = new HashMap<>();
-        try {
-            csvReader = new BufferedReader(new FileReader("firstGameActions.csv"));
-            String row;
-            while ((row = csvReader.readLine()) != null) {
-                String[] data = row.split(",");
-
-                DateTimeFormatter formatter = DateTimeFormat.forPattern("dd-MM-yyyy HH:mm:ss");
-                DateTime dt = formatter.parseDateTime(data[1]);
-
-                int am = Days.daysBetween(dt, new DateTime()).getDays();
+        FirstActionAnalyzer firstActionAnalyzer =
+                new OfflineFirstActionAnalyzer("firstGameActions.csv");
+        // final String ELASTIC_URL = "";
+        // final String ELASTIC_USER = "";
+        // final String ELASTIC_PWD = "";
+        // final String GAME_ID = "";
+        // FirstActionAnalyzer firstActionAnalyzer =
+        // new OnlineFirstActionAnalyzer(ELASTIC_URL, ELASTIC_USER, ELASTIC_PWD, GAME_ID);
+        for (String playerId : playerIds) {
+            Optional<DateTime> dt = firstActionAnalyzer.firstActionDate(playerId);
+            dt.ifPresent(date -> {
+                int am = Days.daysBetween(date, new DateTime()).getDays();
 
                 if (am > 0 && am < 100)
-                    daysPlayed.put(data[0], am);
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+                    daysPlayed.put(playerId, am);
+            });
         }
-
-
         Map<String, Double> toEvaluate = new HashMap<>();
 
         int i = 0;
@@ -855,5 +859,87 @@ public class RecommendationSystem {
         *
  */
     }
+
+    private interface FirstActionAnalyzer {
+        Optional<DateTime> firstActionDate(String playerId);
+    }
+
+    private class OfflineFirstActionAnalyzer implements FirstActionAnalyzer {
+        private Map<String, DateTime> actionsDates = new HashMap<>();
+
+        public OfflineFirstActionAnalyzer(String dataFilePath) {
+            try {
+                BufferedReader csvReader = new BufferedReader(new FileReader(dataFilePath));
+                String row;
+                while ((row = csvReader.readLine()) != null) {
+                    String[] data = row.split(",");
+
+                    DateTimeFormatter formatter = DateTimeFormat.forPattern("dd-MM-yyyy HH:mm:ss");
+                    DateTime dt = formatter.parseDateTime(data[1]);
+                    actionsDates.put(data[0], dt);
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public Optional<DateTime> firstActionDate(String playerId) {
+            return Optional.ofNullable(actionsDates.get(playerId));
+        }
+    }
+
+
+    private class OnlineFirstActionAnalyzer implements FirstActionAnalyzer {
+        final private Client client;
+        final private static String serviceUrlTemplate =
+                "%s/gamification-stats-%s-*/_search?size=1";
+        final private static String bodyTemplate =
+                "" + "{\"sort\" : [" + "{ \"executionTime\" : {\"order\" : \"asc\"} }" + "],"
+                        + "\"query\": {" + "\"bool\": {" + "\"must\" : ["
+                        + "{ \"match\" : {\"actionName\" : \"save_itinerary\"} },"
+                        + "{ \"bool\" : {\"should\" : [{ \"match\" : {\"actionName\" : \"save_itinerary\"} }, { \"match\" : {\"actionName\" : \"start_survey_complete\"} } ] } },"
+                        + "{ \"match\" : {\"playerId\" : \"%s\"} } " + "]" + "}" + "}" + "}";
+
+        final private String serviceUrl;
+
+        final private Pattern executionTimePattern;
+
+        public OnlineFirstActionAnalyzer(String serviceUrl, String username, String password,
+                String gameId) {
+            HttpAuthenticationFeature authentication =
+                    HttpAuthenticationFeature.basic(username, password);
+            client = ClientBuilder.newClient();
+            client.register(authentication);
+            this.serviceUrl = String.format(serviceUrlTemplate, serviceUrl, gameId);
+            executionTimePattern = Pattern.compile("\"executionTime\":\"(\\d+)\"");
+        }
+
+        @Override
+        public Optional<DateTime> firstActionDate(String playerId) {
+            final String body = String.format(bodyTemplate, playerId);
+
+            Response response = client.target(serviceUrl).request(MediaType.APPLICATION_JSON)
+                    .post(Entity.json(body));
+
+            if (response.getStatus() == 200) {
+                return extractExecutionTime(response.readEntity(String.class));
+            } else {
+                return Optional.empty();
+            }
+        }
+
+        private Optional<DateTime> extractExecutionTime(String response) {
+            Matcher matchers = executionTimePattern.matcher(response);
+            if (matchers.find()) {
+                return Optional.of(new DateTime(Long.valueOf(matchers.group(1))));
+            } else {
+                return Optional.empty();
+            }
+        }
+    }
+
 
 }
