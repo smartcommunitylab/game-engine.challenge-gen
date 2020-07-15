@@ -2,6 +2,7 @@ package eu.fbk.das.api;
 
 import eu.fbk.das.GamificationEngineRestFacade;
 import eu.fbk.das.api.exec.RecommenderSystemGroup;
+import eu.fbk.das.api.exec.RecommenderSystemTantum;
 import eu.fbk.das.api.exec.RecommenderSystemWeekly;
 import eu.fbk.das.model.ChallengeExpandedDTO;
 import it.smartcommunitylab.model.PlayerStateDTO;
@@ -71,4 +72,12 @@ public class ApiTest {
 
         rsw.exec(conf, "all", challengeType);
     }
+
+    @Test
+    public void testSingle() {
+        RecommenderSystemTantum rsw = new RecommenderSystemTantum();
+
+        rsw.exec(conf, "1069", "challengeType");
+    }
+
 }

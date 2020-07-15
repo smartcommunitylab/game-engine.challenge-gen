@@ -3,7 +3,9 @@ package eu.fbk.das.api.exec;
 import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.getChallengeWeek;
 
 import java.util.HashMap;
+import java.util.Map;
 
+import eu.fbk.das.model.ChallengeExpandedDTO;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
@@ -55,4 +57,9 @@ public class RecommenderSystemExec {
         reward.put("scoreType", "green leaves");
     }
 
+    public boolean upload(Map<String, String> conf, ChallengeExpandedDTO cha) {
+        if (conf == null) conf = this.conf;
+
+        return api.assignSingleChallenge(conf, cha);
+    }
 }
