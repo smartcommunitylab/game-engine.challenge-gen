@@ -1,5 +1,6 @@
 package eu.fbk.das.api;
 
+import eu.fbk.das.model.GroupExpandedDTO;
 import eu.fbk.das.model.ChallengeExpandedDTO;
 import eu.fbk.das.rs.GroupChallengesAssigner;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
@@ -28,7 +29,6 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
         }
 
     }
-
 
 
     private void checkUpdateRs(Map<String, String> conf) {
@@ -76,6 +76,9 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
     @Override
     public List<ChallengeExpandedDTO> createSingleChallengeWeekly(Map<String, String> conf, Set<String> modelTypes, Map<String, String> creationRules, Map<String, Object> config, String playerSet, Map<String, String> rewards) {
 
+        if (playerSet == null || "".equals(playerSet))
+            playerSet = "all";
+
         checkUpdateRs(conf);
         prepare(playerSet);
 
@@ -100,17 +103,23 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
     }
 
     @Override
-    public List<GroupChallengeDTO> createCoupleChallengeWeekly(Map<String, String> conf, Set<String> modelTypes, String assignmentType, Map<String, Object> config, String playerSet, Map<String, String> rewards) {
+    public List<GroupExpandedDTO> createCoupleChallengeWeekly(Map<String, String> conf, Set<String> modelTypes, String assignmentType, Map<String, Object> config, String playerSet, Map<String, String> rewards) {
+
+        if (playerSet == null || "".equals(playerSet))
+            playerSet = "all";
+
+        if (assignmentType == null || "".equals(assignmentType))
+            assignmentType = "groupCooperative";
 
         checkUpdateRs(conf);
         prepare(playerSet);
 
-        List<GroupChallengeDTO> chas = new ArrayList<>();
+        List<GroupExpandedDTO> chas = new ArrayList<>();
 
         GroupChallengesAssigner gca = new GroupChallengesAssigner(rs);
-        List<GroupChallengeDTO> groupChallenges = gca.execute(players, modelTypes, assignmentType, config);
+        List<GroupExpandedDTO> groupChallenges = gca.execute(players, modelTypes, assignmentType, config);
 
-        for (GroupChallengeDTO gcd: groupChallenges) {
+        for (GroupExpandedDTO gcd: groupChallenges) {
             // set data
             dataGroup(gcd, config);
             // set reward;
@@ -130,6 +139,13 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
         for (String s: new String[]{"exec", "challengeWeek"})
             cha.delData(s);
         return rs.facade.assignChallengeToPlayer(cha, gameId, pId);
+    }
+
+    @Override
+    public boolean assignGroupChallenge(Map<String, String> conf, GroupExpandedDTO cha) {
+        checkUpdateRs(conf);
+        String gameId = (String) cha.getInfo("gameId");
+        return rs.facade.assignGroupChallenge(cha, gameId);
     }
 
     // assign group challenge rs.facade.assignGroupChallenge(gcd, rs.gameId);
@@ -199,7 +215,9 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
         RewardDTO rew = gcd.getReward();
         Map<String, Double> bs = rew.getBonusScore();
 
-        Double v = Double.parseDouble(calcValue);
+        Double v = 0.0;
+        if (calcValue != null)
+            v = Double.parseDouble(calcValue);
 
         for (String pId: bs.keySet()) {
             Double r = bs.get(pId);

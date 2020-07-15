@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import eu.fbk.das.model.GroupExpandedDTO;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.Solver;
@@ -47,7 +48,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
     private String[] groupCha = new String[] {"groupCooperative", "groupCompetitiveTime", "groupCompetitivePerformance"};
 
     private double bcost = 3;
-    private List<GroupChallengeDTO> groupChallenges;
+    private List<GroupExpandedDTO> groupChallenges;
     private Set<String> modelTypes;
 
     private DateTime execDate;
@@ -66,11 +67,11 @@ public class GroupChallengesAssigner extends ChallengeUtil {
         minLvl = 4;
     }
 
-    public List<GroupChallengeDTO> execute(Set<String> players, Set<String> modelTypes, String assignmentType, Map<String, Object> challengeValues) {
+    public List<GroupExpandedDTO> execute(Set<String> players, Set<String> modelTypes, String assignmentType, Map<String, Object> challengeValues) {
 
-        execDate = (DateTime) challengeValues.get("exec");
-        startDate = (DateTime) challengeValues.get("start");
-        endDate = (DateTime) challengeValues.get("end");
+        execDate = new DateTime(challengeValues.get("exec"));
+        startDate = new DateTime(challengeValues.get("start"));
+        endDate = new DateTime(challengeValues.get("end"));
 
         groupChallenges = new ArrayList<>();
 
@@ -105,7 +106,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
             pairs.addAll(reduced);
 
             for (Pair<String, String> p: pairs) {
-                prepareGroupChallenge(assignmentType, tpcc, mode, p);
+                prepareGroupChallenge(assignmentType, tpcc, mode, p, rs.gameId);
             }
         }
 
@@ -191,9 +192,9 @@ public class GroupChallengesAssigner extends ChallengeUtil {
         return playersQuant;
     }
 
-    private void prepareGroupChallenge(String type, TargetPrizeChallengesCalculator tpcc, String mode, Pair<String, String> p) {
+    private void prepareGroupChallenge(String type, TargetPrizeChallengesCalculator tpcc, String mode, Pair<String, String> p, String gameId) {
 
-        GroupChallengeDTO gcd;
+        GroupExpandedDTO gcd;
         if (type.equals("groupCompetitivePerformance"))
             gcd = createPerfomanceChallenge(mode, p.getFirst(),  p.getSecond(),
                     startDate, endDate);
@@ -214,14 +215,16 @@ public class GroupChallengesAssigner extends ChallengeUtil {
             );
         }
 
+        gcd.setInfo("gameId", gameId);
+
         groupChallenges.add(gcd);
 
 
     }
 
-    protected GroupChallengeDTO createPerfomanceChallenge(String counter, String pId1, String pId2, DateTime start, DateTime end) {
+    protected GroupExpandedDTO createPerfomanceChallenge(String counter, String pId1, String pId2, DateTime start, DateTime end) {
 
-        GroupChallengeDTO gcd = new GroupChallengeDTO();
+        GroupExpandedDTO gcd = new GroupExpandedDTO();
         gcd.setChallengeModelName("groupCompetitivePerformance");
 
         List<AttendeeDTO> attendee = new ArrayList<>();

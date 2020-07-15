@@ -233,16 +233,19 @@ public class ChallengesConfig {
 
     public static Double getWeeklyContentMode(PlayerStateDTO state, String mode, DateTime execDate) {
 
+        try {
+            for (GameConcept gc : state.getState().get("PointConcept")) {
 
-        for (GameConcept gc : state.getState().get("PointConcept")) {
+                PointConcept pc = (PointConcept) gc;
 
-            PointConcept pc = (PointConcept) gc;
+                String m = pc.getName();
+                if (!m.equals(mode))
+                    continue;
 
-            String m = pc.getName();
-            if (!m.equals(mode))
-                continue;
-
-            return getPeriodScore(pc,"weekly", execDate);
+                return getPeriodScore(pc, "weekly", execDate);
+            }
+        } catch (IllegalArgumentException e) {
+            return -1.0;
         }
 
         return 0.0;

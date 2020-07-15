@@ -37,10 +37,13 @@ public class RecommenderSystemWeekly extends RecommenderSystemExec {
 
     public boolean upload(Map<String, String> conf, ChallengeExpandedDTO cha) {
         if (conf == null) conf = this.conf;
+
         return api.assignSingleChallenge(conf, cha);
     }
 
     public boolean exec(Map<String, String> conf, String players) {
+        if (conf == null) conf = this.conf;
+
         List<ChallengeExpandedDTO> chas = go(conf, players);
         boolean res = true;
         for(ChallengeExpandedDTO cha: chas) {

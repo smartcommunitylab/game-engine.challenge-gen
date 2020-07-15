@@ -1,6 +1,7 @@
 package eu.fbk.das.api;
 
 import eu.fbk.das.GamificationEngineRestFacade;
+import eu.fbk.das.api.exec.RecommenderSystemGroup;
 import eu.fbk.das.api.exec.RecommenderSystemWeekly;
 import eu.fbk.das.model.ChallengeExpandedDTO;
 import it.smartcommunitylab.model.PlayerStateDTO;
@@ -51,8 +52,23 @@ public class ApiTest {
     }
 
     @Test
-    public void weekCreate() {
+    public void weekSingle() {
         RecommenderSystemWeekly rsw = new RecommenderSystemWeekly();
         rsw.exec(conf, "1069");
+    }
+
+    @Test
+    public void weekGroup() {
+        RecommenderSystemGroup rsw = new RecommenderSystemGroup();
+
+        String challengeType = "groupCooperative";
+        // String challengeType = "groupCompetitiveTime";
+        // String challengeType = "groupCompetitivePerformance"
+
+        conf.put("host", "https://tn.smartcommunitylab.it/gamification2/");
+        conf.put("pass", "long_RoVg@me");
+        conf.put("gameId", "5d9353a3f0856342b2dded7f");
+
+        rsw.exec(conf, "all", challengeType);
     }
 }

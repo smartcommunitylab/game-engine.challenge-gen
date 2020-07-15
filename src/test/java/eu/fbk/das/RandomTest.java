@@ -6,17 +6,24 @@ import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.ext.ChallengeConcept;
 import it.smartcommunitylab.model.ext.GameConcept;
 import org.joda.time.DateTime;
+import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+import static eu.fbk.das.rs.challenges.ChallengeUtil.getLevel;
 import static eu.fbk.das.rs.utils.Utils.p;
 import static eu.fbk.das.rs.utils.Utils.pf;
 
 public class RandomTest extends ChallengesBaseTest {
+
+    @Before
+    public void prepare() {
+        cfg.put("host", HOST);
+        cfg.put("user", USERNAME);
+        cfg.put("pass", PASSWORD);
+        cfg.put("gameId", GAMEID);
+    }
 
     @Test
     public void randTests() {
@@ -115,4 +122,28 @@ public class RandomTest extends ChallengesBaseTest {
         }
     }
 
+
+    @Test
+    public void checkChallenges88() {
+
+        String gameId = cfg.get("gameId");
+
+        Set<String> pIds = facadeLocal.getGamePlayers(gameId);
+        for(String pId: pIds) {
+            PlayerStateDTO state = facadeLocal.getPlayerState(gameId, pId);
+            int lvl = getLevel(state);
+            if (lvl < 1) continue;
+            if (existsChallenge(gameId, pId, "w88_")) continue;
+            pf("%s %d \n", pId, lvl);
+        }
+    }
+
+    private boolean existsChallenge(String gameId, String pId, String l) {
+        List<it.smartcommunitylab.model.ChallengeConcept> currentChallenges = facadeLocal.getChallengesPlayer(gameId, pId);
+        for (it.smartcommunitylab.model.ChallengeConcept cha: currentChallenges) {
+            if (cha.getName().contains(l))
+                return true;
+        }
+        return  false;
+    }
 }

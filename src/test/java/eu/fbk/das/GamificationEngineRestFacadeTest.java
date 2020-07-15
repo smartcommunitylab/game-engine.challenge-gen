@@ -1,5 +1,6 @@
 package eu.fbk.das;
 
+import eu.fbk.das.model.GroupExpandedDTO;
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 import it.smartcommunitylab.model.GroupChallengeDTO;
 import it.smartcommunitylab.model.PlayerStateDTO;
@@ -331,11 +332,11 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
         DateTime start = today.minusDays(2);
         DateTime end = today.plusDays(2);
 
-        GroupChallengeDTO gcd = facade.makeGroupChallengeDTO(
+        GroupExpandedDTO gcd = facade.makeGroupChallengeDTO(
                 "groupCompetitiveTime", "Walk_Km", "225", "7",
                 start, end, res
         );
 
-        facade.assignGroupChallenge(gcd, GAMEID);
+        //        facade.assignGroupChallenge(gcd, GAMEID);
     }
 }

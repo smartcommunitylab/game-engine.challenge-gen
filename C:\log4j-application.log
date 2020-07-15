@@ -3,3 +3,9 @@
 2020-07-07 11:32:14 ERROR GamificationEngineRestFacade:145 - it.smartcommunitylab.ApiException: Bad Request
 2020-07-07 11:33:32 ERROR RecommendationSystemChallengeValuator:526 - Unknown model for the challenge: repetitiveBehaviour!
 2020-07-07 14:02:43 ERROR RecommendationSystemChallengeValuator:526 - Unknown model for the challenge: repetitiveBehaviour!
+2020-07-10 11:47:32 ERROR GamificationEngineRestFacade:146 - it.smartcommunitylab.ApiException: java.net.ConnectException: Failed to connect to localhost/127.0.0.1:18000
+2020-07-10 11:48:35 ERROR GamificationEngineRestFacade:146 - it.smartcommunitylab.ApiException: java.net.ConnectException: Failed to connect to localhost/127.0.0.1:18000
+2020-07-10 11:49:34 ERROR GamificationEngineRestFacade:146 - it.smartcommunitylab.ApiException: java.net.ConnectException: Failed to connect to localhost/127.0.0.1:18000
+2020-07-10 11:53:06 ERROR GamificationEngineRestFacade:146 - it.smartcommunitylab.ApiException: java.net.ConnectException: Failed to connect to localhost/127.0.0.1:18000
+2020-07-10 11:53:38 ERROR GamificationEngineRestFacade:146 - it.smartcommunitylab.ApiException: java.net.ConnectException: Failed to connect to localhost/127.0.0.1:18000
+2020-07-10 11:56:18 ERROR GamificationEngineRestFacade:146 - it.smartcommunitylab.ApiException: java.net.ConnectException: Failed to connect to localhost/127.0.0.1:18000

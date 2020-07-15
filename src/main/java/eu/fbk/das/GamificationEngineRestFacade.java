@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import eu.fbk.das.model.GroupExpandedDTO;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.threeten.bp.Instant;
@@ -160,7 +161,6 @@ public class GamificationEngineRestFacade {
         return true;
     }
 
-
     public boolean assignGroupChallenge(GroupChallengeDTO cdd, String gameId) {
         if (cdd == null || gameId == null) {
             throw new IllegalArgumentException("challenge, gameId and playerId cannot be null");
@@ -208,9 +208,9 @@ public class GamificationEngineRestFacade {
         return readGameStatistics(gameId, timestamp, "");
     }
     
-    public GroupChallengeDTO makeGroupChallengeDTO(String mode, String counter, String pId1, String pId2, DateTime start, DateTime end, Map<String, Double> res) {
+    public GroupExpandedDTO makeGroupChallengeDTO(String mode, String counter, String pId1, String pId2, DateTime start, DateTime end, Map<String, Double> res) {
 
-        GroupChallengeDTO gcd = new GroupChallengeDTO();
+        GroupExpandedDTO gcd = new GroupExpandedDTO();
         gcd.setChallengeModelName(mode);
 
         AttendeeDTO a1 = new AttendeeDTO();

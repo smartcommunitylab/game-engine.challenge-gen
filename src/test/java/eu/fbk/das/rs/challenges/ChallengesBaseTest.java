@@ -29,7 +29,8 @@ public class ChallengesBaseTest {
 
     private LocalDate now;
 
-    protected String HOST = "https://dev.smartcommunitylab.it/gamification";
+    //protected String HOST = "https://dev.smartcommunitylab.it/gamification";
+    protected String HOST = "https://tn.smartcommunitylab.it/gamification2/";
     protected String CONTEXT = "gengine/";
     protected String USERNAME = "long-rovereto";
     protected String PASSWORD = "long_RoVg@me";
@@ -38,7 +39,7 @@ public class ChallengesBaseTest {
     protected String SAVE_ITINERARY = "todo";
     protected String RELEVANT_CUSTOM_DATA = "todo";
 
-    private GamificationEngineRestFacade facadeLocal;
+    protected GamificationEngineRestFacade facadeLocal;
 
 
     @Before
