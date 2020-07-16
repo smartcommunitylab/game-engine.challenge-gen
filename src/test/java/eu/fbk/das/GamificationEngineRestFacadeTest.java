@@ -1,19 +1,19 @@
 package eu.fbk.das;
 
-import eu.fbk.das.model.GroupExpandedDTO;
-import eu.fbk.das.rs.challenges.ChallengesBaseTest;
-import it.smartcommunitylab.model.GroupChallengeDTO;
-import it.smartcommunitylab.model.PlayerStateDTO;
-import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertTrue;
 
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Set;
 
-import static org.junit.Assert.assertTrue;
+import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+import org.junit.Before;
+import org.junit.Test;
+
+import eu.fbk.das.model.GroupExpandedDTO;
+import eu.fbk.das.rs.challenges.ChallengesBaseTest;
+import it.smartcommunitylab.model.PlayerStateDTO;
 
 public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
 
@@ -332,7 +332,7 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
         DateTime start = today.minusDays(2);
         DateTime end = today.plusDays(2);
 
-        GroupExpandedDTO gcd = facade.makeGroupChallengeDTO(
+        GroupExpandedDTO gcd = facade.makeGroupChallengeDTO("gameId",
                 "groupCompetitiveTime", "Walk_Km", "225", "7",
                 start, end, res
         );
