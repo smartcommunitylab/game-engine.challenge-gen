@@ -1,16 +1,22 @@
 package eu.fbk.das.api;
 
-import eu.fbk.das.model.GroupExpandedDTO;
+import static eu.fbk.das.GamificationEngineRestFacade.jodaToOffset;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.joda.time.DateTime;
+
 import eu.fbk.das.model.ChallengeExpandedDTO;
+import eu.fbk.das.model.GroupExpandedDTO;
 import eu.fbk.das.rs.GroupChallengesAssigner;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import it.smartcommunitylab.model.GroupChallengeDTO;
+import it.smartcommunitylab.model.PointConceptDTO;
 import it.smartcommunitylab.model.RewardDTO;
-import org.joda.time.DateTime;
-
-import java.util.*;
-
-import static eu.fbk.das.GamificationEngineRestFacade.jodaToOffset;
 
 public class RecommenderSystemImpl implements RecommenderSystemAPI {
 
@@ -211,9 +217,14 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
         String calcValue = rewards.get("calcValue");
         String maxValue = rewards.get("maxValue");
 
-        // TODO COME INSERIRE INFO SCORE TYPE
         RewardDTO rew = gcd.getReward();
         Map<String, Double> bs = rew.getBonusScore();
+        final PointConceptDTO calculationPointConcept = new PointConceptDTO();
+        calculationPointConcept.setName(scoreType);
+        rew.setCalculationPointConcept(calculationPointConcept);
+        final PointConceptDTO targetPointConcept = new PointConceptDTO();
+        targetPointConcept.setName(scoreType);
+        rew.setTargetPointConcept(targetPointConcept);
 
         Double v = 0.0;
         if (calcValue != null)

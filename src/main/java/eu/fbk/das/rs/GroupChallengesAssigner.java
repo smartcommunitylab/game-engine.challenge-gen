@@ -20,20 +20,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import eu.fbk.das.model.GroupExpandedDTO;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.variables.IntVar;
 import org.joda.time.DateTime;
 
+import eu.fbk.das.model.GroupExpandedDTO;
 import eu.fbk.das.rs.challenges.ChallengeUtil;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemStatistics;
 import eu.fbk.das.rs.utils.ArrayUtils;
 import eu.fbk.das.rs.utils.Pair;
 import it.smartcommunitylab.model.AttendeeDTO;
-import it.smartcommunitylab.model.GroupChallengeDTO;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.PointConceptDTO;
 import it.smartcommunitylab.model.ext.ChallengeAssignmentDTO;
@@ -209,7 +208,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
 
 
 
-            gcd = rs.facade.makeGroupChallengeDTO(
+            gcd = rs.facade.makeGroupChallengeDTO(rs.gameId,
                     type, mode, p.getFirst(), p.getSecond(),
                     startDate, endDate, result
             );

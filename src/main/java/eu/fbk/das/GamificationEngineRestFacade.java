@@ -9,13 +9,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import eu.fbk.das.model.GroupExpandedDTO;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.threeten.bp.Instant;
 import org.threeten.bp.OffsetDateTime;
 import org.threeten.bp.ZoneOffset;
 
+import eu.fbk.das.model.GroupExpandedDTO;
 import it.smartcommunitylab.ApiClient;
 import it.smartcommunitylab.ApiException;
 import it.smartcommunitylab.basic.api.GameControllerApi;
@@ -208,10 +208,12 @@ public class GamificationEngineRestFacade {
         return readGameStatistics(gameId, timestamp, "");
     }
     
-    public GroupExpandedDTO makeGroupChallengeDTO(String mode, String counter, String pId1, String pId2, DateTime start, DateTime end, Map<String, Double> res) {
+    public GroupExpandedDTO makeGroupChallengeDTO(String gameId, String mode, String counter,
+            String pId1, String pId2, DateTime start, DateTime end, Map<String, Double> res) {
 
         GroupExpandedDTO gcd = new GroupExpandedDTO();
         gcd.setChallengeModelName(mode);
+        gcd.setGameId(gameId);
 
         AttendeeDTO a1 = new AttendeeDTO();
         a1.setPlayerId(pId1);
