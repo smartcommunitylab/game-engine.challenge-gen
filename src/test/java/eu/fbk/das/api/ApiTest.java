@@ -77,7 +77,7 @@ public class ApiTest {
     public void testSingle() {
         RecommenderSystemTantum rsw = new RecommenderSystemTantum();
 
-        rsw.exec(conf, "1069", "challengeType");
+        rsw.exec(conf, "survey", new HashMap<>(), "1069");
     }
 
 }

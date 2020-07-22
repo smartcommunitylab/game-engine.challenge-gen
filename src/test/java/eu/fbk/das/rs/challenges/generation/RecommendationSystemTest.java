@@ -79,7 +79,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
         DateTime start = Utils.parseDateTime("26/10/2018 00:00");
         DateTime end = Utils.parseDateTime("28/10/2018 23:59");
 
-        ChallengeExpandedDTO cdd = rscg.prepareChallange("Walk_Km");
+        ChallengeExpandedDTO cdd = rscg.prepareChallangeImpr("Walk_Km");
         cdd.setModelName("absoluteIncrement");
         cdd.setData("target", 7);
 

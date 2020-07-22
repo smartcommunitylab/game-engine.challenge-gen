@@ -34,6 +34,7 @@ public class RecommendationSystemChallengeValuator {
     public void valuate(ChallengeExpandedDTO challenge) {
 
         String counterName = (String) challenge.getData("counterName");
+        if (counterName == null) return;
 
         boolean found = false;
         for (String mode : ChallengesConfig.defaultMode)

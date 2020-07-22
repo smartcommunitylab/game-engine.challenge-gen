@@ -22,12 +22,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.joda.time.DateTime;
@@ -44,6 +38,12 @@ import it.smartcommunitylab.model.ChallengeConcept;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.ext.GameConcept;
 import it.smartcommunitylab.model.ext.PointConcept;
+
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * Recommandation System main class, requires running Gamification Engine in
@@ -227,7 +227,7 @@ public class RecommendationSystem {
 
         if (existsAssignedChallenge(pId, l)) return;
 
-        ChallengeExpandedDTO cha = rscg.prepareChallange(l, "Recommendations");
+        ChallengeExpandedDTO cha = rscg.prepareChallangeImpr(l);
         cha.setStart(new DateTime().toDate());
         cha.setModelName("absoluteIncrement");
         cha.setData("target", 1.0);
@@ -312,7 +312,7 @@ public class RecommendationSystem {
 
         // ADD NEW CHALLENGE SURVEY PREDICTION HERE
 
-        ChallengeExpandedDTO cha = rscg.prepareChallange("survey_" + l);
+        ChallengeExpandedDTO cha = rscg.prepareChallangeImpr("survey_" + l);
 
         DateTime dt = new DateTime();
 
@@ -343,7 +343,7 @@ public class RecommendationSystem {
 
         // ADD NEW CHALLENGE SURVEY PREDICTION HERE
 
-        ChallengeExpandedDTO cha = rscg.prepareChallange("survey_" + l);
+        ChallengeExpandedDTO cha = rscg.prepareChallangeImpr("survey_" + l);
 
         DateTime dt = new DateTime();
 

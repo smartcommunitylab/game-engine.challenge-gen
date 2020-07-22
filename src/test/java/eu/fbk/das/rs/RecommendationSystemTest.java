@@ -35,7 +35,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
     @Test
     public void assignSurveyTest() {
 
-        ChallengeExpandedDTO cha = rscg.prepareChallange("survey_prediction");
+        ChallengeExpandedDTO cha = rscg.prepareChallangeImpr("survey_prediction");
         cha.setStart(new DateTime().toDate());
         cha.setModelName("survey");
         cha.setData("surveyType", "evaluation");
@@ -60,7 +60,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
 
 
     private void assignReccomendation(String l, String pId) {
-        ChallengeExpandedDTO cha = rscg.prepareChallange(l, "Recommendations");
+        ChallengeExpandedDTO cha = rscg.prepareChallangeImpr(l);
         cha.setStart(new DateTime().toDate());
         cha.setModelName("absoluteIncrement");
         cha.setData("target", 1.0);
@@ -74,7 +74,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
     @Test
     public void assignEvaluation() {
 
-        ChallengeExpandedDTO cha = rscg.prepareChallange("survey_prediction");
+        ChallengeExpandedDTO cha = rscg.prepareChallangeImpr("survey_prediction");
 
         cha.setModelName("survey");
         cha.setData("surveyType", "evaluation");

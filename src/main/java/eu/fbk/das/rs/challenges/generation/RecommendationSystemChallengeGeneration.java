@@ -96,7 +96,7 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
             // if (cfg.isDefaultMode(mode)) {
 
             // build a try once
-            ChallengeExpandedDTO cdd = prepareChallange(mode);
+            ChallengeExpandedDTO cdd = prepareChallangeImpr(mode);
 
             cdd.setModelName("absoluteIncrement");
             cdd.setData("target", 1.0);
@@ -127,7 +127,7 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
 
         lastCounter = improvementValue;
 
-        ChallengeExpandedDTO cdd = prepareChallange(mode);
+        ChallengeExpandedDTO cdd = prepareChallangeImpr(mode);
 
         cdd.setModelName("percentageIncrement");
         cdd.setData("target", improvementValue);
@@ -157,22 +157,23 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
 
     }
 
-    public ChallengeExpandedDTO prepareChallange(String mode) {
-        return prepareChallange(mode, mode);
+    public ChallengeExpandedDTO prepareChallangeImpr(String mode) {
+        ChallengeExpandedDTO cdd = prepareChallenge(prefix, mode);
+        cdd.setData("bonusScore", 100.0);
+        if (mode != null)
+            cdd.setData("counterName", mode);
+        cdd.setData("periodName", "weekly");
+
+        return cdd;
     }
 
-    public ChallengeExpandedDTO prepareChallange(String name, String mode) {
+    public ChallengeExpandedDTO prepareChallenge(String prefix, String name) {
 
         ChallengeExpandedDTO cdd = new ChallengeExpandedDTO();
         cdd.setInstanceName(f("%s_%s_%s", prefix,
                 name, UUID.randomUUID()));
 
         cdd.setData("bonusPointType", "green leaves");
-        cdd.setData("bonusScore", 100.0);
-        if (mode != null)
-            cdd.setData("counterName", mode);
-        cdd.setData("periodName", "weekly");
-
         return cdd;
     }
 
@@ -405,7 +406,7 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
 
     public ChallengeExpandedDTO getRepetitive(String pId) {
 
-        ChallengeExpandedDTO rep = prepareChallange("green leaves");
+        ChallengeExpandedDTO rep = prepareChallangeImpr("green leaves");
 
         rep.setModelName("repetitiveBehaviour");
         rep.setData("periodName", "daily");
@@ -527,4 +528,6 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
         return out;
     }
 
+
 }
+

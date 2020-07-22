@@ -9,3 +9,5 @@
 2020-07-10 11:53:06 ERROR GamificationEngineRestFacade:146 - it.smartcommunitylab.ApiException: java.net.ConnectException: Failed to connect to localhost/127.0.0.1:18000
 2020-07-10 11:53:38 ERROR GamificationEngineRestFacade:146 - it.smartcommunitylab.ApiException: java.net.ConnectException: Failed to connect to localhost/127.0.0.1:18000
 2020-07-10 11:56:18 ERROR GamificationEngineRestFacade:146 - it.smartcommunitylab.ApiException: java.net.ConnectException: Failed to connect to localhost/127.0.0.1:18000
+2020-07-22 16:04:41 ERROR GamificationEngineRestFacade:146 - it.smartcommunitylab.ApiException: Bad Request
+2020-07-22 16:59:04 ERROR GamificationEngineRestFacade:146 - it.smartcommunitylab.ApiException: Bad Request

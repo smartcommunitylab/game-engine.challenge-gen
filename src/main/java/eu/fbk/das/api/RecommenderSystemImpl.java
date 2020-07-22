@@ -57,7 +57,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 
         for (String pId: players) {
             // prepare
-            ChallengeExpandedDTO cha = rs.rscg.prepareChallange(modelType);
+            ChallengeExpandedDTO cha = rs.rscg.prepareChallenge("T", modelType);
             // set challenge model
             cha.setModelName(modelType);
             // set data
