@@ -1,3 +1,6 @@
+prod.properties
+test.properties
+
 # Intellij
 .idea/
 *.iml
