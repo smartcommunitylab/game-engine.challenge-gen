@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import eu.fbk.das.GamificationConfig;
+import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -16,36 +18,21 @@ import eu.fbk.das.api.exec.RecommenderSystemWeekly;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.ext.GameConcept;
 
-public class ApiTest {
-
-    String host = "http://localhost:8010/gamification";
-    String user = "long-rovereto";
-    String pass = "test";
-    String gameId = "5b7a885149c95d50c5f9d442";
+public class ApiTest extends ChallengesBaseTest { ;
 
     private GamificationEngineRestFacade facade;
     private HashMap<String, String> conf;
 
-    @Before
-    public void prepare() {
-        facade = new GamificationEngineRestFacade(host, user, pass);
-        conf = new HashMap<String, String>();
-        conf.put("host", host);
-        conf.put("user", user);
-        conf.put("pass", pass);
-        conf.put("gameId", gameId);
-    }
-
     @Test
     public void baseTest() {
-        Set<String> ps = facade.getGamePlayers(gameId);
+        Set<String> ps = facade.getGamePlayers(conf.get("GAME_ID"));
         String analyze = "";
         for (String pId: ps) {
             p(pId);
             analyze = pId;
         }
 
-        PlayerStateDTO player = facade.getPlayerState(gameId, analyze);
+        PlayerStateDTO player = facade.getPlayerState(conf.get("GAME_ID"), analyze);
         Set<GameConcept> scores =  player.getState().get("PointConcept");
         for (GameConcept gc : scores) {
             p(gc);
@@ -65,10 +52,6 @@ public class ApiTest {
         String challengeType = "groupCooperative";
         // String challengeType = "groupCompetitiveTime";
         // String challengeType = "groupCompetitivePerformance"
-
-        conf.put("host", "https://tn.smartcommunitylab.it/gamification2/");
-        conf.put("pass", "long_RoVg@me");
-        conf.put("gameId", "5d9353a3f0856342b2dded7f");
 
         rsw.exec(conf, "all", challengeType);
     }

@@ -22,9 +22,9 @@ public class GroupChallengesAssignerTest extends ChallengesBaseTest {
     @Before
     public void prepare() {
         // cfg.put("HOST", "https://dev.smartcommunitylab.it/gamification/");
-        cfg.put("HOST", "https://tn.smartcommunitylab.it/gamification2/");
+        conf.put("HOST", "https://tn.smartcommunitylab.it/gamification2/");
 
-         rs = new RecommendationSystem(cfg);
+         rs = new RecommendationSystem(conf);
         facade = rs.facade;
          gca = new GroupChallengesAssigner(rs);
     }
@@ -35,7 +35,7 @@ public class GroupChallengesAssignerTest extends ChallengesBaseTest {
         DateTime d = new DateTime();
 
         GroupChallengeDTO gcd = gca.createPerfomanceChallenge("Walk_Km", "7", "225", d.minusDays(3), d.plusDays(3));
-        facade.assignGroupChallenge(gcd, cfg.get("gameId"));
+        facade.assignGroupChallenge(gcd, conf.get("GAME_ID"));
     }
 
     @Test

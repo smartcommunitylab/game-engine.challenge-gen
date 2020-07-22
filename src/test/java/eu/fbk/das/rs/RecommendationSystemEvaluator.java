@@ -39,11 +39,11 @@ public class RecommendationSystemEvaluator extends ChallengesBaseTest {
     @Test
     public void executeAll() {
 
-        cfg.put("HOST", "https://tn.smartcommunitylab.it/gamification2/");
-        facade = new GamificationEngineRestFacade(cfg.get("HOST"),
-                cfg.get("USERNAME"), cfg.get("PASSWORD"));
+        conf.put("HOST", "https://tn.smartcommunitylab.it/gamification2/");
+        facade = new GamificationEngineRestFacade(conf.get("HOST"),
+                conf.get("USERNAME"), conf.get("PASSWORD"));
 
-        Set<String> players = facade.getGamePlayers(cfg.get("gameId"));
+        Set<String> players = facade.getGamePlayers(conf.get("GAME_ID"));
 
         analyzeChallengePlayers(players);
 
@@ -52,9 +52,9 @@ public class RecommendationSystemEvaluator extends ChallengesBaseTest {
     @Test
     public void executeControl() {
 
-        cfg.put("HOST", "https://tn.smartcommunitylab.it/gamification2/");
-        facade = new GamificationEngineRestFacade(cfg.get("HOST"),
-                cfg.get("USERNAME"), cfg.get("PASSWORD"));
+        conf.put("HOST", "https://tn.smartcommunitylab.it/gamification2/");
+        facade = new GamificationEngineRestFacade(conf.get("HOST"),
+                conf.get("USERNAME"), conf.get("PASSWORD"));
 
         analyzeImprovementPlayers(controlPlayers);
 
@@ -67,9 +67,9 @@ public class RecommendationSystemEvaluator extends ChallengesBaseTest {
     @Test
     public void executeTreatment() {
 
-        cfg.put("HOST", "https://tn.smartcommunitylab.it/gamification2/");
-        facade = new GamificationEngineRestFacade(cfg.get("HOST"),
-                cfg.get("USERNAME"), cfg.get("PASSWORD"));
+        conf.put("HOST", "https://tn.smartcommunitylab.it/gamification2/");
+        facade = new GamificationEngineRestFacade(conf.get("HOST"),
+                conf.get("USERNAME"), conf.get("PASSWORD"));
 
         analyzeImprovementPlayers(treatmentPlayers);
 
@@ -83,7 +83,7 @@ public class RecommendationSystemEvaluator extends ChallengesBaseTest {
         weekResult = new HashMap<>();
 
         for (String pId: players) {
-            PlayerStateDTO player = facade.getPlayerState(cfg.get("gameId"), pId);
+            PlayerStateDTO player = facade.getPlayerState(conf.get("GAME_ID"), pId);
             Integer ix = null;
             Map<String, Double> old = new HashMap<>();
             for (int w = startW; w <= endW; w++ ) {
@@ -117,7 +117,7 @@ public class RecommendationSystemEvaluator extends ChallengesBaseTest {
         weekResult = new HashMap<>();
 
         for (String pId: players) {
-            PlayerStateDTO player = facade.getPlayerState(cfg.get("gameId"), pId);
+            PlayerStateDTO player = facade.getPlayerState(conf.get("GAME_ID"), pId);
             Integer ix = null;
             for (int w = startW; w <= endW; w++ ) {
 
@@ -144,7 +144,7 @@ public class RecommendationSystemEvaluator extends ChallengesBaseTest {
 
         for (String pId: players) {
 
-            PlayerStateDTO player = facade.getPlayerState(cfg.get("gameId"), pId);
+            PlayerStateDTO player = facade.getPlayerState(conf.get("GAME_ID"), pId);
             Map<String, Set<GameConcept>> st = player.getState();
 
             int startWeek = getStartWeek(player);

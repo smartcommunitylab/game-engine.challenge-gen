@@ -41,7 +41,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
         String host = conf.get("host");
         String user = conf.get("user");
         String pass = conf.get("pass");
-        String gameId = conf.get("gameId");
+        String gameId = conf.get("GAME_ID");
 
         boolean create = rs == null;
         if (!create) {

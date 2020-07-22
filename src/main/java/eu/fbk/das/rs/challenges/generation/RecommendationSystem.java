@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import eu.fbk.das.GamificationConfig;
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.joda.time.DateTime;
@@ -85,12 +86,12 @@ public class RecommendationSystem {
          // dbg(logger, "Recommendation System init complete");
     }
 
-    public RecommendationSystem(RecommendationSystemConfig cfg) {
+    public RecommendationSystem(HashMap<String, String> cfg) {
         this(cfg.get("HOST"), cfg.get("USERNAME"), cfg.get("PASSWORD"), cfg.get("gameId"));
     }
 
     public RecommendationSystem() {
-        this(new RecommendationSystemConfig());
+        this(new GamificationConfig(true).extract());
     }
 
     // generate challenges

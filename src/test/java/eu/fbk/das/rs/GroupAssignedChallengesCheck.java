@@ -22,11 +22,11 @@ public class GroupAssignedChallengesCheck extends ChallengesBaseTest {
     @Test
     public void check() {
 
-        cfg.put("HOST", "https://tn.smartcommunitylab.it/gamification2/");
-        facade = new GamificationEngineRestFacade(cfg.get("HOST"),
-                cfg.get("USERNAME"), cfg.get("PASSWORD"));
+        conf.put("HOST", "https://tn.smartcommunitylab.it/gamification2/");
+        facade = new GamificationEngineRestFacade(conf.get("HOST"),
+                conf.get("USERNAME"), conf.get("PASSWORD"));
 
-        PlayerStateDTO player = facade.getPlayerState(cfg.get("gameId"), "28593");
+        PlayerStateDTO player = facade.getPlayerState(conf.get("GAME_ID"), "28593");
 
         Set<GameConcept> scores =  player.getState().get("ChallengeConcept");
         for (GameConcept gc : scores) {
@@ -50,14 +50,14 @@ public class GroupAssignedChallengesCheck extends ChallengesBaseTest {
 
     @Test
     public void execute() {
-        cfg.put("HOST", "https://tn.smartcommunitylab.it/gamification2/");
-        facade = new GamificationEngineRestFacade(cfg.get("HOST"),
-                cfg.get("USERNAME"), cfg.get("PASSWORD"));
+        conf.put("HOST", "https://tn.smartcommunitylab.it/gamification2/");
+        facade = new GamificationEngineRestFacade(conf.get("HOST"),
+                conf.get("USERNAME"), conf.get("PASSWORD"));
 
         Map<String, Integer> cont = new HashMap<>();
 
-        for (String pId: facade.getGamePlayers(cfg.get("gameId"))) {
-            PlayerStateDTO player = facade.getPlayerState(cfg.get("gameId"), pId);
+        for (String pId: facade.getGamePlayers(conf.get("GAME_ID"))) {
+            PlayerStateDTO player = facade.getPlayerState(conf.get("GAME_ID"), pId);
             Set<GameConcept> scores =  player.getState().get("ChallengeConcept");
             for (GameConcept gc : scores) {
                 ChallengeConcept chal = (ChallengeConcept) gc;

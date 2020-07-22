@@ -52,7 +52,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
         // preparazione
         String pId = "24164"; // cfg.get("PLAYER_ID");
 
-        String d = cfg.get("DATE");
+        String d = conf.get("DATE");
         DateTime date;
         if ("".equals(d))
             date = new DateTime();
@@ -61,7 +61,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
 
         RecommendationSystem rs = new RecommendationSystem();
 
-        PlayerStateDTO state = facade.getPlayerState(cfg.get("gameId"), pId);
+        PlayerStateDTO state = facade.getPlayerState(conf.get("GAME_ID"), pId);
 
         List<ChallengeExpandedDTO> l_cha = rs.assignForecast(state, date);
 
@@ -83,7 +83,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
         cdd.setModelName("absoluteIncrement");
         cdd.setData("target", 7);
 
-        boolean state = facade.assignChallengeToPlayer(cdd, cfg.get("gameId"), pId);
+        boolean state = facade.assignChallengeToPlayer(cdd, conf.get("GAME_ID"), pId);
 
         p(state);
     }
@@ -96,7 +96,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
         // Set<String> allPlayerIds = new HashSet<>();
         // allPlayerIds.add(player_id);
 
-        DateTime date = Utils.stringToDate(cfg.get("DATE"));
+        DateTime date = Utils.stringToDate(conf.get("DATE"));
 
         RecommendationSystem rs = new RecommendationSystem();
 
@@ -129,14 +129,14 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
         Set<String> allPlayerIds = new HashSet<>();
         allPlayerIds.add(player_id);
 
-        DateTime date = Utils.stringToDate(cfg.get("DATE"));
+        DateTime date = Utils.stringToDate(conf.get("DATE"));
 
         RecommendationSystem rs = new RecommendationSystem();
 
         RecommendationSystemStatistics statistics = new RecommendationSystemStatistics(rs);
         statistics.checkAndUpdateStats(date);
 
-        PlayerStateDTO cnt = facade.getPlayerState(cfg.get("gameId"), player_id);
+        PlayerStateDTO cnt = facade.getPlayerState(conf.get("GAME_ID"), player_id);
 
         // generazione della challenges
         List<ChallengeExpandedDTO> l_cha = rscg.generate(cnt, "Walk_Km", date);

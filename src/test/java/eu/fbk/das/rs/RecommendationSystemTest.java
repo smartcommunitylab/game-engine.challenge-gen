@@ -22,10 +22,10 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
     @Before
     public void test() {
         // prod
-        cfg.put("HOST", "https://tn.smartcommunitylab.it/gamification2/");
-        cfg.put("GAME_ID", "5d9353a3f0856342b2dded7f");
+        conf.put("HOST", "https://tn.smartcommunitylab.it/gamification2/");
+        conf.put("GAME_ID", "5d9353a3f0856342b2dded7f");
 
-        rs = new RecommendationSystem(cfg);
+        rs = new RecommendationSystem(conf);
 
         rscg = new RecommendationSystemChallengeGeneration(rs);
         rscg.prepare(new DateTime());
@@ -50,7 +50,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
         // MIO ID
             // boolean success = facade.assignChallengeToPlayer(cha, cfg.get("gameId"), "28540");
 
-        boolean success = facade.assignChallengeToPlayer(cha, cfg.get("gameId"), "3");
+        boolean success = facade.assignChallengeToPlayer(cha, conf.get("GAME_ID"), "3");
 
         // boolean success = facade.assignChallengeToPlayer(cha, cfg.get("gameId"), "4");
 
@@ -66,7 +66,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
         cha.setData("target", 1.0);
         cha.setData("bonusScore", 100.0);
 
-        boolean state = facade.assignChallengeToPlayer(cha, cfg.get("gameId"), pId);
+        boolean state = facade.assignChallengeToPlayer(cha, conf.get("GAME_ID"), pId);
         p(pId);
         p(state);
     }
@@ -85,12 +85,12 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
 
         cha.setStart(new DateTime().toDate());
 
-        Set<String> playerIds = facade.getGamePlayers(cfg.get("gameId"));
+        Set<String> playerIds = facade.getGamePlayers(conf.get("GAME_ID"));
 
         int w = this.rs.getChallengeWeek(new DateTime());
 
         for (String pId: playerIds) {
-            Map<String, Object> cs = facade.getCustomDataPlayer(cfg.get("gameId"), pId);
+            Map<String, Object> cs = facade.getCustomDataPlayer(conf.get("GAME_ID"), pId);
 
             if (cs == null)
                 continue;
@@ -113,12 +113,12 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
     public void assignRepetitiveTest() {
 
         String pId = "225";
-        PlayerStateDTO st = facade.getPlayerState(cfg.get("gameId"), pId);
+        PlayerStateDTO st = facade.getPlayerState(conf.get("GAME_ID"), pId);
 
         ChallengeExpandedDTO cha = rscg.getRepetitive(pId);
 
         // Assign to me
-        boolean success = facade.assignChallengeToPlayer(cha, cfg.get("gameId"), pId);
+        boolean success = facade.assignChallengeToPlayer(cha, conf.get("GAME_ID"), pId);
         // boolean success = facade.assignChallengeToPlayer(cha, cfg.get("gameId"), "4");
 
         p(success);
@@ -134,7 +134,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
         ChallengeExpandedDTO cha = s.get(0);
 
         // Assign to me
-        boolean success = facade.assignChallengeToPlayer(cha, cfg.get("gameId"), pId);
+        boolean success = facade.assignChallengeToPlayer(cha, conf.get("GAME_ID"), pId);
         // boolean success = facade.assignChallengeToPlayer(cha, cfg.get("gameId"), "4");
 
         p(success);

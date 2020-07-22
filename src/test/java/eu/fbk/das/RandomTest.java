@@ -17,18 +17,10 @@ import static eu.fbk.das.rs.utils.Utils.pf;
 
 public class RandomTest extends ChallengesBaseTest {
 
-    @Before
-    public void prepare() {
-        cfg.put("host", HOST);
-        cfg.put("user", USERNAME);
-        cfg.put("pass", PASSWORD);
-        cfg.put("gameId", GAMEID);
-    }
-
     @Test
     public void randTests() {
 
-        Set<String> pIds = facade.getGamePlayers(cfg.get("gameId"));
+        Set<String> pIds = facade.getGamePlayers(conf.get("GAME_ID"));
 
         p(String.join(", ", pIds));
 
@@ -37,7 +29,7 @@ public class RandomTest extends ChallengesBaseTest {
 
             int count = 0;
 
-            PlayerStateDTO pl = facade.getPlayerState(cfg.get("gameId"), pId);
+            PlayerStateDTO pl = facade.getPlayerState(conf.get("GAME_ID"), pId);
 
             Map<ChallengeConcept, Date> cache = new HashMap<>();
 
@@ -126,11 +118,11 @@ public class RandomTest extends ChallengesBaseTest {
     @Test
     public void checkChallenges88() {
 
-        String gameId = cfg.get("gameId");
+        String gameId = conf.get("GAME_ID");
 
-        Set<String> pIds = facadeLocal.getGamePlayers(gameId);
+        Set<String> pIds = facade.getGamePlayers(gameId);
         for(String pId: pIds) {
-            PlayerStateDTO state = facadeLocal.getPlayerState(gameId, pId);
+            PlayerStateDTO state = facade.getPlayerState(gameId, pId);
             int lvl = getLevel(state);
             if (lvl < 1) continue;
             if (existsChallenge(gameId, pId, "w88_")) continue;
@@ -139,7 +131,7 @@ public class RandomTest extends ChallengesBaseTest {
     }
 
     private boolean existsChallenge(String gameId, String pId, String l) {
-        List<it.smartcommunitylab.model.ChallengeConcept> currentChallenges = facadeLocal.getChallengesPlayer(gameId, pId);
+        List<it.smartcommunitylab.model.ChallengeConcept> currentChallenges = facade.getChallengesPlayer(gameId, pId);
         for (it.smartcommunitylab.model.ChallengeConcept cha: currentChallenges) {
             if (cha.getName().contains(l))
                 return true;

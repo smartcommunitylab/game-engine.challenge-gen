@@ -6,7 +6,7 @@ import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemChallengeGeneration;
-import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
+import eu.fbk.das.GamificationConfig;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
@@ -23,7 +23,7 @@ import static org.junit.Assert.assertTrue;
 public class RecommendationSystemChallengeGenerationTest extends ChallengesBaseTest {
 
     private GamificationEngineRestFacade facade;
-    private RecommendationSystemConfig configuration;
+    private GamificationConfig configuration;
     private DateTime now;
     private RecommendationSystemChallengeGeneration rcg;
 

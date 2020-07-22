@@ -5,6 +5,7 @@ import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.getChalle
 import java.util.HashMap;
 import java.util.Map;
 
+import eu.fbk.das.GamificationConfig;
 import eu.fbk.das.model.ChallengeExpandedDTO;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
@@ -16,10 +17,7 @@ import eu.fbk.das.api.RecommenderSystemImpl;
 // Chiama recommender system per generazione settimanale
 public class RecommenderSystemExec {
 
-    String host = "http://localhost:8010/gamification";
-    String user = "long-rovereto";
-    String pass = "test";
-    String gameId = "5b7a885149c95d50c5f9d442";
+    boolean prod = true;
 
     protected RecommenderSystemAPI api;
     protected HashMap<String, String> conf;
@@ -30,7 +28,8 @@ public class RecommenderSystemExec {
 
     public void prepare() {
         api = new RecommenderSystemImpl();
-        conf = new HashMap<String, String>() {{ put("host", host); put("user", user); put("pass", pass); put("gameId", gameId);}};
+
+        conf = new GamificationConfig(prod).extract();
 
         execDate = new DateTime()
                 .withHourOfDay(0)

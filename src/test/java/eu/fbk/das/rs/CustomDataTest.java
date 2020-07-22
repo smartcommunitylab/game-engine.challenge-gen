@@ -14,12 +14,12 @@ public class CustomDataTest extends ChallengesBaseTest {
 
     @Test
     public void test() {
-        cfg.put("HOST", "https://dev.smartcommunitylab.it/gamification-v3/");
+        conf.put("HOST", "https://dev.smartcommunitylab.it/gamification-v3/");
         // cfg.put("HOST", "https://tn.smartcommunitylab.it/gamification2/");
-        facade = new GamificationEngineRestFacade(cfg.get("HOST"),
-                cfg.get("USERNAME"), cfg.get("PASSWORD"));
+        facade = new GamificationEngineRestFacade(conf.get("HOST"),
+                conf.get("USERNAME"), conf.get("PASSWORD"));
 
-        String gameId = cfg.get("gameId");
+        String gameId = conf.get("GAME_ID");
 
         Set<String> pIds =  facade.getGamePlayers(gameId);
 

@@ -20,28 +20,21 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
     private static final Logger logger = Logger.getLogger(GamificationEngineRestFacadeTest.class);
     private static final String USERID = "24440";
 
-    private GamificationEngineRestFacade facade;
 
     private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/YYYY HH:mm:ss, zzz ZZ");
 
     static public void main(String[] args) {
     }
 
-    @Before
-    public void setup() {
-        facade = new GamificationEngineRestFacade(HOST, USERNAME,
-                PASSWORD);
-    }
-
     @Test
     public void getGamePlayersTest() {
-        Set<String> result = facade.getGamePlayers(GAMEID);
+        Set<String> result = facade.getGamePlayers(conf.get("GAME_ID"));
         assertTrue(result != null && !result.isEmpty());
     }
 
     @Test
     public void getPlayerStateTest() {
-        PlayerStateDTO content = facade.getPlayerState(GAMEID, USERID);
+        PlayerStateDTO content = facade.getPlayerState(conf.get("GAME_ID"), USERID);
         assertTrue(content != null);
     }
 
