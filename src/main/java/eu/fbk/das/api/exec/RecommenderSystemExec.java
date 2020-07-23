@@ -17,20 +17,18 @@ import eu.fbk.das.api.RecommenderSystemImpl;
 // Chiama recommender system per generazione settimanale
 public class RecommenderSystemExec {
 
-    boolean prod = true;
-
     protected RecommenderSystemAPI api;
     protected HashMap<String, String> conf;
     protected DateTime execDate;
     protected HashMap<String, Object> config;
     protected HashMap<String, String> reward;
 
+    public RecommenderSystemExec() {
+        api = new RecommenderSystemImpl();
+    }
+
 
     public void prepare() {
-        api = new RecommenderSystemImpl();
-
-        conf = new GamificationConfig(prod).extract();
-
         execDate = new DateTime()
                 .withHourOfDay(0)
                 .withMinuteOfHour(0)

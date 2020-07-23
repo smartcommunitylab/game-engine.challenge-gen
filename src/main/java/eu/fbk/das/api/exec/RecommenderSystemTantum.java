@@ -7,10 +7,6 @@ import java.util.*;
 
 public class RecommenderSystemTantum extends RecommenderSystemExec {
 
-    public static void main(String[] args) {
-        new RecommenderSystemTantum().go(null, null, null, null);
-    }
-
     public List<ChallengeExpandedDTO> go(Map<String, String> conf, String modelType, Map<String, Object> config, String players) {
         prepare();
         if (conf == null) conf = this.conf;

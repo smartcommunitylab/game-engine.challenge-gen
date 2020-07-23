@@ -19,7 +19,7 @@ public class CustomDataTest extends ChallengesBaseTest {
         facade = new GamificationEngineRestFacade(conf.get("HOST"),
                 conf.get("USERNAME"), conf.get("PASSWORD"));
 
-        String gameId = conf.get("GAME_ID");
+        String gameId = conf.get("GAMEID");
 
         Set<String> pIds =  facade.getGamePlayers(gameId);
 

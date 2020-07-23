@@ -42,7 +42,7 @@ public class GamificationConfig {
     public HashMap<String, String> extract() {
         HashMap<String, String> conf = new HashMap<>();
         for (final String name: prop.stringPropertyNames())
-            conf.put(name, prop.getProperty(name));
+            conf.put(name.toUpperCase(), prop.getProperty(name));
         return conf;
     }
 

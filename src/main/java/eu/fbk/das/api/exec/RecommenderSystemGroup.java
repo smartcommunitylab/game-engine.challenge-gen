@@ -8,13 +8,8 @@ import java.util.*;
 
 public class RecommenderSystemGroup extends RecommenderSystemExec {
 
-    public static void main(String[] args) {
-        new RecommenderSystemGroup().exec(null, null, null);
-    }
-
     private List<GroupExpandedDTO> go(Map<String, String> conf, String players, String challengeType) {
         if (conf == null) conf = this.conf;
-
         prepare();
 
         Set<String> modeList = new HashSet<String>(Arrays.asList(ChallengesConfig.WALK_KM,ChallengesConfig.BIKE_KM,ChallengesConfig.GREEN_LEAVES));

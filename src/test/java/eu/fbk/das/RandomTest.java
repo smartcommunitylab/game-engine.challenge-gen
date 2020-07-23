@@ -20,7 +20,7 @@ public class RandomTest extends ChallengesBaseTest {
     @Test
     public void randTests() {
 
-        Set<String> pIds = facade.getGamePlayers(conf.get("GAME_ID"));
+        Set<String> pIds = facade.getGamePlayers(conf.get("GAMEID"));
 
         p(String.join(", ", pIds));
 
@@ -29,7 +29,7 @@ public class RandomTest extends ChallengesBaseTest {
 
             int count = 0;
 
-            PlayerStateDTO pl = facade.getPlayerState(conf.get("GAME_ID"), pId);
+            PlayerStateDTO pl = facade.getPlayerState(conf.get("GAMEID"), pId);
 
             Map<ChallengeConcept, Date> cache = new HashMap<>();
 
@@ -118,7 +118,7 @@ public class RandomTest extends ChallengesBaseTest {
     @Test
     public void checkChallenges88() {
 
-        String gameId = conf.get("GAME_ID");
+        String gameId = conf.get("GAMEID");
 
         Set<String> pIds = facade.getGamePlayers(gameId);
         for(String pId: pIds) {

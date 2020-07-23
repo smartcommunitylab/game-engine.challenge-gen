@@ -779,9 +779,9 @@ public class RecommendationSystem {
         // final String ELASTIC_URL = "";
         // final String ELASTIC_USER = "";
         // final String ELASTIC_PWD = "";
-        // final String GAME_ID = "";
+        // final String GAMEID = "";
         // FirstActionAnalyzer firstActionAnalyzer =
-        // new OnlineFirstActionAnalyzer(ELASTIC_URL, ELASTIC_USER, ELASTIC_PWD, GAME_ID);
+        // new OnlineFirstActionAnalyzer(ELASTIC_URL, ELASTIC_USER, ELASTIC_PWD, GAMEID);
         for (String playerId : playerIds) {
             Optional<DateTime> dt = firstActionAnalyzer.firstActionDate(playerId);
             dt.ifPresent(date -> {

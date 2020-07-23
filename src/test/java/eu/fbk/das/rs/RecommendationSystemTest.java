@@ -23,7 +23,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
     public void test() {
         // prod
         conf.put("HOST", "https://tn.smartcommunitylab.it/gamification2/");
-        conf.put("GAME_ID", "5d9353a3f0856342b2dded7f");
+        conf.put("GAMEID", "5d9353a3f0856342b2dded7f");
 
         rs = new RecommendationSystem(conf);
 
@@ -50,7 +50,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
         // MIO ID
             // boolean success = facade.assignChallengeToPlayer(cha, cfg.get("gameId"), "28540");
 
-        boolean success = facade.assignChallengeToPlayer(cha, conf.get("GAME_ID"), "3");
+        boolean success = facade.assignChallengeToPlayer(cha, conf.get("GAMEID"), "3");
 
         // boolean success = facade.assignChallengeToPlayer(cha, cfg.get("gameId"), "4");
 
@@ -66,7 +66,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
         cha.setData("target", 1.0);
         cha.setData("bonusScore", 100.0);
 
-        boolean state = facade.assignChallengeToPlayer(cha, conf.get("GAME_ID"), pId);
+        boolean state = facade.assignChallengeToPlayer(cha, conf.get("GAMEID"), pId);
         p(pId);
         p(state);
     }
@@ -85,12 +85,12 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
 
         cha.setStart(new DateTime().toDate());
 
-        Set<String> playerIds = facade.getGamePlayers(conf.get("GAME_ID"));
+        Set<String> playerIds = facade.getGamePlayers(conf.get("GAMEID"));
 
         int w = this.rs.getChallengeWeek(new DateTime());
 
         for (String pId: playerIds) {
-            Map<String, Object> cs = facade.getCustomDataPlayer(conf.get("GAME_ID"), pId);
+            Map<String, Object> cs = facade.getCustomDataPlayer(conf.get("GAMEID"), pId);
 
             if (cs == null)
                 continue;
@@ -113,12 +113,12 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
     public void assignRepetitiveTest() {
 
         String pId = "225";
-        PlayerStateDTO st = facade.getPlayerState(conf.get("GAME_ID"), pId);
+        PlayerStateDTO st = facade.getPlayerState(conf.get("GAMEID"), pId);
 
         ChallengeExpandedDTO cha = rscg.getRepetitive(pId);
 
         // Assign to me
-        boolean success = facade.assignChallengeToPlayer(cha, conf.get("GAME_ID"), pId);
+        boolean success = facade.assignChallengeToPlayer(cha, conf.get("GAMEID"), pId);
         // boolean success = facade.assignChallengeToPlayer(cha, cfg.get("gameId"), "4");
 
         p(success);
@@ -134,7 +134,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
         ChallengeExpandedDTO cha = s.get(0);
 
         // Assign to me
-        boolean success = facade.assignChallengeToPlayer(cha, conf.get("GAME_ID"), pId);
+        boolean success = facade.assignChallengeToPlayer(cha, conf.get("GAMEID"), pId);
         // boolean success = facade.assignChallengeToPlayer(cha, cfg.get("gameId"), "4");
 
         p(success);

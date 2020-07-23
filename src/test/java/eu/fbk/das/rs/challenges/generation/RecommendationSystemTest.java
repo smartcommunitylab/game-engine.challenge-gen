@@ -61,7 +61,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
 
         RecommendationSystem rs = new RecommendationSystem();
 
-        PlayerStateDTO state = facade.getPlayerState(conf.get("GAME_ID"), pId);
+        PlayerStateDTO state = facade.getPlayerState(conf.get("GAMEID"), pId);
 
         List<ChallengeExpandedDTO> l_cha = rs.assignForecast(state, date);
 
@@ -83,7 +83,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
         cdd.setModelName("absoluteIncrement");
         cdd.setData("target", 7);
 
-        boolean state = facade.assignChallengeToPlayer(cdd, conf.get("GAME_ID"), pId);
+        boolean state = facade.assignChallengeToPlayer(cdd, conf.get("GAMEID"), pId);
 
         p(state);
     }
@@ -136,7 +136,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
         RecommendationSystemStatistics statistics = new RecommendationSystemStatistics(rs);
         statistics.checkAndUpdateStats(date);
 
-        PlayerStateDTO cnt = facade.getPlayerState(conf.get("GAME_ID"), player_id);
+        PlayerStateDTO cnt = facade.getPlayerState(conf.get("GAMEID"), player_id);
 
         // generazione della challenges
         List<ChallengeExpandedDTO> l_cha = rscg.generate(cnt, "Walk_Km", date);

@@ -29,19 +29,12 @@ public class ChallengesBaseTest {
     protected RecommendationSystemChallengeGeneration rscg;
     protected RecommendationSystemChallengeFilteringAndSorting rscf;
 
-    private LocalDate now;
-
-    protected GamificationEngineRestFacade facade_;
-
-
     @Before
     public void setup() {
         conf = new GamificationConfig(prod).extract();
 
         facade = new GamificationEngineRestFacade(conf.get("HOST"),
                 conf.get("USERNAME"), conf.get("PASSWORD"));
-
-        now = new LocalDate();
 
         rs = new RecommendationSystem(conf);
 
@@ -54,7 +47,7 @@ public class ChallengesBaseTest {
 
     @Test
     public void test() {
-        PlayerStateDTO res = facade.getPlayerState(conf.get("GAME_ID"), "25706");
+        PlayerStateDTO res = facade.getPlayerState(conf.get("GAMEID"), "25706");
         Set<GameConcept> scores =  res.getState().get("ChallengeConcept");
         for (GameConcept gc : scores) {
             ChallengeConcept cha = (ChallengeConcept) gc;

@@ -20,19 +20,16 @@ import it.smartcommunitylab.model.ext.GameConcept;
 
 public class ApiTest extends ChallengesBaseTest { ;
 
-    private GamificationEngineRestFacade facade;
-    private HashMap<String, String> conf;
-
     @Test
     public void baseTest() {
-        Set<String> ps = facade.getGamePlayers(conf.get("GAME_ID"));
+        Set<String> ps = facade.getGamePlayers(conf.get("GAMEID"));
         String analyze = "";
         for (String pId: ps) {
             p(pId);
             analyze = pId;
         }
 
-        PlayerStateDTO player = facade.getPlayerState(conf.get("GAME_ID"), analyze);
+        PlayerStateDTO player = facade.getPlayerState(conf.get("GAMEID"), analyze);
         Set<GameConcept> scores =  player.getState().get("PointConcept");
         for (GameConcept gc : scores) {
             p(gc);

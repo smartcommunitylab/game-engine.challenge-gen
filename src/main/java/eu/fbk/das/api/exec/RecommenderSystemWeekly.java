@@ -7,10 +7,6 @@ import java.util.*;
 
 public class RecommenderSystemWeekly extends RecommenderSystemExec {
 
-    public static void main(String[] args) {
-        new RecommenderSystemWeekly().go(null, null);
-    }
-
     public List<ChallengeExpandedDTO> go(Map<String, String> conf, String players) {
         prepare();
         if (conf == null) conf = this.conf;

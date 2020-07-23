@@ -96,7 +96,7 @@ public class TargetPrizeChallengesCalculatorTest extends ChallengesBaseTest {
         facade = new GamificationEngineRestFacade(conf.get("HOST"),
                 conf.get("USERNAME"), conf.get("PASSWORD"));
 
-        gameId = conf.get("GAME_ID");
+        gameId = conf.get("GAMEID");
 
         rs = new RecommendationSystem(conf);
 

@@ -28,13 +28,13 @@ public class GamificationEngineRestFacadeTest extends ChallengesBaseTest {
 
     @Test
     public void getGamePlayersTest() {
-        Set<String> result = facade.getGamePlayers(conf.get("GAME_ID"));
+        Set<String> result = facade.getGamePlayers(conf.get("GAMEID"));
         assertTrue(result != null && !result.isEmpty());
     }
 
     @Test
     public void getPlayerStateTest() {
-        PlayerStateDTO content = facade.getPlayerState(conf.get("GAME_ID"), USERID);
+        PlayerStateDTO content = facade.getPlayerState(conf.get("GAMEID"), USERID);
         assertTrue(content != null);
     }
 
