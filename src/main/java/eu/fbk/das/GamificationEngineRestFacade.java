@@ -146,6 +146,11 @@ public class GamificationEngineRestFacade {
         logger.error(e);
     }
 
+    private void apiErr(ApiException e) {
+        p("ERRORE NELL'ESECUZIONE DI UNA API");
+        logger.error(e.getResponseBody());
+    }
+
     public boolean assignChallengeToPlayer(ChallengeAssignmentDTO cdd, String gameId, String playerId) {
         if (cdd == null || gameId == null || playerId == null) {
             throw new IllegalArgumentException("challenge, gameId and playerId cannot be null");
