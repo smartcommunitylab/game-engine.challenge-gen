@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.getWeeklyContentMode;
-import static eu.fbk.das.rs.utils.Utils.pf;
+import static eu.fbk.das.utils.Utils.pf;
 
 public class ChallengeAnalyzerChoice extends ChallengeAnalyzer {
 

@@ -1,24 +1,27 @@
 package eu.fbk.das.api;
 
-import static eu.fbk.das.rs.utils.Utils.p;
+import static eu.fbk.das.utils.Utils.p;
 
+import java.time.OffsetDateTime;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
-import eu.fbk.das.GamificationConfig;
+import eu.fbk.das.model.GroupExpandedDTO;
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
-import org.junit.Before;
 import org.junit.Test;
 
-import eu.fbk.das.GamificationEngineRestFacade;
 import eu.fbk.das.api.exec.RecommenderSystemGroup;
 import eu.fbk.das.api.exec.RecommenderSystemTantum;
 import eu.fbk.das.api.exec.RecommenderSystemWeekly;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.ext.GameConcept;
 
-public class ApiTest extends ChallengesBaseTest { ;
+public class ApiTest extends ChallengesBaseTest {
+
+
+    public ApiTest() {
+        prod = true;
+    }
 
     @Test
     public void baseTest() {
@@ -60,4 +63,13 @@ public class ApiTest extends ChallengesBaseTest { ;
         rsw.exec(conf, "survey", new HashMap<>(), "1069");
     }
 
+    @Test
+    public void testDates() {
+        RecommenderSystemGroup rse = new RecommenderSystemGroup();
+        rse.prepare();
+        HashMap<String, Object> config = rse.config;
+        GroupExpandedDTO gcd = new GroupExpandedDTO();
+
+        gcd.setDates(config.get("start"), config.get("duration"));
+    }
 }

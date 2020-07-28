@@ -1,6 +1,5 @@
 package eu.fbk.das.rs;
 
-import eu.fbk.das.GamificationEngineRestFacade;
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.ext.ChallengeConcept;
@@ -12,7 +11,7 @@ import org.junit.Test;
 import java.util.*;
 
 import static eu.fbk.das.rs.challenges.ChallengeUtil.getPeriodScore;
-import static eu.fbk.das.rs.utils.Utils.*;
+import static eu.fbk.das.utils.Utils.*;
 
 public class RecommendationSystemEvaluator extends ChallengesBaseTest {
 
@@ -39,10 +38,6 @@ public class RecommendationSystemEvaluator extends ChallengesBaseTest {
     @Test
     public void executeAll() {
 
-        conf.put("HOST", "https://tn.smartcommunitylab.it/gamification2/");
-        facade = new GamificationEngineRestFacade(conf.get("HOST"),
-                conf.get("USERNAME"), conf.get("PASSWORD"));
-
         Set<String> players = facade.getGamePlayers(conf.get("GAMEID"));
 
         analyzeChallengePlayers(players);
@@ -51,10 +46,6 @@ public class RecommendationSystemEvaluator extends ChallengesBaseTest {
 
     @Test
     public void executeControl() {
-
-        conf.put("HOST", "https://tn.smartcommunitylab.it/gamification2/");
-        facade = new GamificationEngineRestFacade(conf.get("HOST"),
-                conf.get("USERNAME"), conf.get("PASSWORD"));
 
         analyzeImprovementPlayers(controlPlayers);
 
@@ -66,10 +57,6 @@ public class RecommendationSystemEvaluator extends ChallengesBaseTest {
 
     @Test
     public void executeTreatment() {
-
-        conf.put("HOST", "https://tn.smartcommunitylab.it/gamification2/");
-        facade = new GamificationEngineRestFacade(conf.get("HOST"),
-                conf.get("USERNAME"), conf.get("PASSWORD"));
 
         analyzeImprovementPlayers(treatmentPlayers);
 

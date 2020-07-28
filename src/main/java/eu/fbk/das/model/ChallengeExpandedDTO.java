@@ -1,20 +1,13 @@
 package eu.fbk.das.model;
 
-import static eu.fbk.das.rs.utils.Utils.formatDateTime;
-import static eu.fbk.das.rs.utils.Utils.p;
+import static eu.fbk.das.GamificationEngineRestFacade.getDates;
+import static eu.fbk.das.utils.Utils.formatDateTime;
+import static eu.fbk.das.utils.Utils.p;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.Period;
-import java.time.ZoneId;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.IllegalFormatConversionException;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 
+import eu.fbk.das.utils.Pair;
 import org.joda.time.DateTime;
-import org.joda.time.format.ISODateTimeFormat;
 
 import it.smartcommunitylab.model.ext.ChallengeAssignmentDTO;
 
@@ -117,26 +110,9 @@ public class ChallengeExpandedDTO extends ChallengeAssignmentDTO {
         return d.containsKey(k);
     }
 
-
     public void setDates(Object start, Object duration) {
-        if (start == null || duration == null) {
-            p("NULL START / DURATION!");
-            return;
-        }
-
-        try {
-            Date startDate =
-                    ISODateTimeFormat.dateTimeNoMillis().parseLocalDateTime((String) start)
-                            .toDate();
-            setStart(startDate);
-            String periodAsIsoFormat = "P" + ((String) duration).toUpperCase();
-            Period p = Period.parse(periodAsIsoFormat);
-            LocalDateTime endDateTime =
-                    new Timestamp(startDate.getTime()).toLocalDateTime().plus(p);
-            Date endDate = Date.from(endDateTime.atZone(ZoneId.systemDefault()).toInstant());
-            setEnd(endDate);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Pair<Date, Date> p = getDates(start, duration);
+        setStart(p.getFirst());
+        setEnd(p.getSecond());
     }
 }

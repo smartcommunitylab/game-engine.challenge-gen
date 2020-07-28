@@ -1,14 +1,15 @@
 package eu.fbk.das.api;
 
-import static eu.fbk.das.GamificationEngineRestFacade.jodaToOffset;
+import static eu.fbk.das.GamificationEngineRestFacade.getDates;
+import static eu.fbk.das.utils.Utils.p;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.ZoneId;
+import java.util.*;
 
-import org.joda.time.DateTime;
+import eu.fbk.das.utils.Pair;
 
 import eu.fbk.das.model.ChallengeExpandedDTO;
 import eu.fbk.das.model.GroupExpandedDTO;
@@ -17,6 +18,7 @@ import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import it.smartcommunitylab.model.GroupChallengeDTO;
 import it.smartcommunitylab.model.PointConceptDTO;
 import it.smartcommunitylab.model.RewardDTO;
+import org.joda.time.format.ISODateTimeFormat;
 
 public class RecommenderSystemImpl implements RecommenderSystemAPI {
 
@@ -35,7 +37,6 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
         }
 
     }
-
 
     private void checkUpdateRs(Map<String, String> conf) {
         String host = conf.get("HOST");
@@ -168,7 +169,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
             cha.setData(k, v);
         }
 
-        cha.setDates(config.get("start"), config.get("duration"));
+        cha.setDates(config.get("start"),config.get("duration"));
     }
 
     private void reward(ChallengeExpandedDTO cha, Map<String, String> rewards) {
@@ -201,14 +202,15 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
         cha.setData("bonusScore", r);
     }
 
-    private void dataGroup(GroupChallengeDTO gcd, Map<String, Object> challengeValues) {
-        for (String k : challengeValues.keySet()) {
-            Object v = challengeValues.get(k);
-            if ("start".equals(k)) gcd.setStart(jodaToOffset(new DateTime(v)));
-            else if ("end".equals(k)) gcd.setEnd(jodaToOffset(new DateTime(v)));
+    private void dataGroup(GroupExpandedDTO gcd, Map<String, Object> config) {
+        for (String k : config.keySet()) {
+            Object v = config.get(k);
+            if ("start".equals(k) || "duration".equals(k)) continue;
             // else String v = challengeValues.get(k);
             // else cha.setData(k, v);
         }
+
+        gcd.setDates(config.get("start"), config.get("duration"));
     }
 
     private void rewardGroup(GroupChallengeDTO gcd, Map<String, String> rewards) {

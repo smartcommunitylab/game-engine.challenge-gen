@@ -12,7 +12,7 @@ import java.util.*;
 
 import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.getWeeklyContentMode;
 import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.getChallengeWeek;
-import static eu.fbk.das.rs.utils.Utils.pf;
+import static eu.fbk.das.utils.Utils.pf;
 
 // Checks the rate of improvement between each week
 public class ImprovementChecker extends ChallengeUtil {

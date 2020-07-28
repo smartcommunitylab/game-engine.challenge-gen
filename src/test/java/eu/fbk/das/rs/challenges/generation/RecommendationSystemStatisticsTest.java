@@ -1,14 +1,14 @@
 package eu.fbk.das.rs.challenges.generation;
 
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
-import eu.fbk.das.rs.utils.Utils;
+import eu.fbk.das.utils.Utils;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
 import java.util.Map;
 
-import static eu.fbk.das.rs.utils.Utils.p;
-import static eu.fbk.das.rs.utils.Utils.pf;
+import static eu.fbk.das.utils.Utils.p;
+import static eu.fbk.das.utils.Utils.pf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 

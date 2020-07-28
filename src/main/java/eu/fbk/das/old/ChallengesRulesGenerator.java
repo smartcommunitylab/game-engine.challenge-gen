@@ -12,7 +12,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
 
-import static eu.fbk.das.rs.utils.Utils.dbg;
+import static eu.fbk.das.utils.Utils.dbg;
 
 /**
  * Generate rules for challenges

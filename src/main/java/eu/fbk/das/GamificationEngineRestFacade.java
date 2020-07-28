@@ -1,19 +1,19 @@
 
 package eu.fbk.das;
 
-import static eu.fbk.das.rs.utils.Utils.p;
+import static eu.fbk.das.utils.Utils.p;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import eu.fbk.das.utils.Pair;
+import org.joda.time.format.ISODateTimeFormat;
+import org.threeten.bp.OffsetDateTime;
+
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
-import org.threeten.bp.Instant;
-import org.threeten.bp.OffsetDateTime;
-import org.threeten.bp.ZoneOffset;
+import org.threeten.bp.*;
 
 import eu.fbk.das.model.GroupExpandedDTO;
 import it.smartcommunitylab.ApiClient;
@@ -256,6 +256,53 @@ public class GamificationEngineRestFacade {
         // get total offset (joda returns milliseconds, java.time takes seconds)
         int offsetSeconds = dt.getZone().getOffset(millis) / 1000;
         return OffsetDateTime.ofInstant(instant, ZoneOffset.ofTotalSeconds(offsetSeconds));
+    }
+
+    public static OffsetDateTime dateToOffset(Date date) {
+        String s = formatDateAsUTC(date);
+        return OffsetDateTime.parse(s);
+    }
+
+
+    public static String formatDateAsUTC(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+        // sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        String s = sdf.format(date);
+        return addChar(s, ':', 22);
+    }
+
+    public static String addChar(String str, char ch, int position) {
+        return str.substring(0, position) + ch + str.substring(position);
+    }
+
+    public static Pair<Date, Date> getDates(Object start, Object duration) {
+
+        Date startDate = null;
+        Date endDate = null;
+
+        if (start == null || duration == null) {
+            p("NULL START / DURATION!");
+            return new Pair<>(startDate, endDate);
+        }
+
+        try {
+            startDate =
+                    ISODateTimeFormat.dateTimeNoMillis().parseLocalDateTime((String) start)
+                            .toDate();
+
+            String periodAsIsoFormat = "P" + ((String) duration).toUpperCase();
+            java.time.Period p = java.time.Period.parse(periodAsIsoFormat);
+            java.time.LocalDateTime endDateTime =
+                    new Timestamp(startDate.getTime()).toLocalDateTime().plus(p);
+            endDate = Date.from(endDateTime.atZone(java.time.ZoneId.systemDefault()).toInstant());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return new Pair<>(startDate, endDate);
     }
 
     public Map<String, Object> getCustomDataPlayer(String gameId, String pId) {

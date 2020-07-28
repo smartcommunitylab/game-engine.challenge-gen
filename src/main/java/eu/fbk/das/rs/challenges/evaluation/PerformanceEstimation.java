@@ -1,7 +1,7 @@
 package eu.fbk.das.rs.challenges.evaluation;
 
 import eu.fbk.das.rs.challenges.ChallengeUtil;
-import eu.fbk.das.rs.utils.PolynomialRegression;
+import eu.fbk.das.utils.PolynomialRegression;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
@@ -17,7 +17,7 @@ import java.util.Map;
 
 import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.getWeeklyContentMode;
 import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.getChallengeWeek;
-import static eu.fbk.das.rs.utils.Utils.*;
+import static eu.fbk.das.utils.Utils.*;
 import static org.chocosolver.util.tools.ArrayUtils.sort;
 
 public class PerformanceEstimation extends ChallengeUtil {

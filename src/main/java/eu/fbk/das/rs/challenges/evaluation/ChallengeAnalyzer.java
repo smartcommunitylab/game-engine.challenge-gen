@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.*;
 
-import static eu.fbk.das.rs.utils.Utils.*;
+import static eu.fbk.das.utils.Utils.*;
 
 public class ChallengeAnalyzer extends ChallengeDataGuru {
 
@@ -170,7 +170,7 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
         incrByLvl = new ArrayList<List<Double>>();
         incrByCounter = new HashMap<>();
 
-        // playersTot = facade.getGamePlayers(cfg.get("gameId"));
+        // playersTot = facade.getGamePlayers(cfg.get("GAMEID"));
         // playersDone = new HashSet<String>();
         next_p = 0;
 

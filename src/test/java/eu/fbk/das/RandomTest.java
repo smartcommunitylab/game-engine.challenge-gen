@@ -1,21 +1,27 @@
 package eu.fbk.das;
 
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
-import eu.fbk.das.rs.utils.Utils;
+import eu.fbk.das.utils.Utils;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.ext.ChallengeConcept;
 import it.smartcommunitylab.model.ext.GameConcept;
+import it.smartcommunitylab.model.ext.PointConcept;
 import org.joda.time.DateTime;
-import org.junit.Before;
 import org.junit.Test;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static eu.fbk.das.rs.challenges.ChallengeUtil.getLevel;
-import static eu.fbk.das.rs.utils.Utils.p;
-import static eu.fbk.das.rs.utils.Utils.pf;
+import static eu.fbk.das.rs.challenges.ChallengeUtil.getPeriodScore;
+import static eu.fbk.das.utils.Utils.p;
+import static eu.fbk.das.utils.Utils.pf;
 
 public class RandomTest extends ChallengesBaseTest {
+
+    public RandomTest() {
+        prod = true;
+    }
 
     @Test
     public void randTests() {
@@ -123,10 +129,8 @@ public class RandomTest extends ChallengesBaseTest {
         Set<String> pIds = facade.getGamePlayers(gameId);
         for(String pId: pIds) {
             PlayerStateDTO state = facade.getPlayerState(gameId, pId);
-            int lvl = getLevel(state);
-            if (lvl < 1) continue;
             if (existsChallenge(gameId, pId, "w88_")) continue;
-            pf("%s %d \n", pId, lvl);
+
         }
     }
 
@@ -137,5 +141,60 @@ public class RandomTest extends ChallengesBaseTest {
                 return true;
         }
         return  false;
+    }
+
+    @Test
+    public void checkChallengesWeek() throws ParseException {
+
+        String gameId = conf.get("GAMEID");
+p(gameId);
+        Set<String> pIds = facade.getGamePlayers(gameId);
+        for(String pId: pIds) {
+            String sDate ="24/07/2020";
+            Date date = new SimpleDateFormat("dd/MM/yyyy").parse(sDate);
+
+            PlayerStateDTO state = facade.getPlayerState(gameId, pId);
+
+            if (!checkIfPlaying(state, date)) continue;
+
+            if (!existsWeekChallenge(gameId, pId, date)) continue;
+            pf("%s \n", pId);
+        }
+    }
+
+    private boolean existsWeekChallenge(String gameId, String pId, Date l) {
+
+
+        List<it.smartcommunitylab.model.ChallengeConcept> currentChallenges = facade.getChallengesPlayer(gameId, pId);
+        for (it.smartcommunitylab.model.ChallengeConcept cha: currentChallenges) {
+            if (cha.getOrigin() == null || !cha.getOrigin().equals("gca")) continue;
+
+            if (!cha.getStart().after(l)) continue;
+
+                return true;
+        }
+        return  false;
+    }
+
+    private boolean checkIfPlaying(PlayerStateDTO player, Date date) {
+
+        boolean active = false;
+
+        Set<GameConcept> scores =
+                player.getState().get("PointConcept");
+
+        for (GameConcept gc : scores) {
+            PointConcept pc = (PointConcept) gc;
+            if (!pc.getName().equals("green leaves"))
+                continue;
+
+            Double sc = getPeriodScore(pc, "weekly", new DateTime(date));
+
+            if (sc > 20)
+                return true;
+
+        }
+
+        return false;
     }
 }

@@ -11,8 +11,8 @@ import org.joda.time.DateTime;
 import java.util.*;
 
 import static eu.fbk.das.rs.challenges.ChallengeUtil.getPeriodScore;
-import static eu.fbk.das.rs.utils.ArrayUtils.pos;
-import static eu.fbk.das.rs.utils.Utils.dbg;
+import static eu.fbk.das.utils.ArrayUtils.pos;
+import static eu.fbk.das.utils.Utils.dbg;
 
 public class RecommendationSystemChallengeFilteringAndSorting {
 

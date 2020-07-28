@@ -1,6 +1,6 @@
 package eu.fbk.das.rs;
 
-import static eu.fbk.das.rs.utils.Utils.p;
+import static eu.fbk.das.utils.Utils.p;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,10 +21,6 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
 
     @Before
     public void test() {
-        // prod
-        conf.put("HOST", "https://tn.smartcommunitylab.it/gamification2/");
-        conf.put("GAMEID", "5d9353a3f0856342b2dded7f");
-
         rs = new RecommendationSystem(conf);
 
         rscg = new RecommendationSystemChallengeGeneration(rs);
@@ -48,11 +44,11 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
 
 
         // MIO ID
-            // boolean success = facade.assignChallengeToPlayer(cha, cfg.get("gameId"), "28540");
+            // boolean success = facade.assignChallengeToPlayer(cha, cfg.get("GAMEID"), "28540");
 
         boolean success = facade.assignChallengeToPlayer(cha, conf.get("GAMEID"), "3");
 
-        // boolean success = facade.assignChallengeToPlayer(cha, cfg.get("gameId"), "4");
+        // boolean success = facade.assignChallengeToPlayer(cha, cfg.get("GAMEID"), "4");
 
         p(success);
 
@@ -105,7 +101,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
 
             p(pId);
 
-           // boolean success = facade.assignChallengeToPlayer(cha, cfg.get("gameId"), pId);
+           // boolean success = facade.assignChallengeToPlayer(cha, cfg.get("GAMEID"), pId);
             }
     }
 
@@ -119,7 +115,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
 
         // Assign to me
         boolean success = facade.assignChallengeToPlayer(cha, conf.get("GAMEID"), pId);
-        // boolean success = facade.assignChallengeToPlayer(cha, cfg.get("gameId"), "4");
+        // boolean success = facade.assignChallengeToPlayer(cha, cfg.get("GAMEID"), "4");
 
         p(success);
 
@@ -135,7 +131,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
 
         // Assign to me
         boolean success = facade.assignChallengeToPlayer(cha, conf.get("GAMEID"), pId);
-        // boolean success = facade.assignChallengeToPlayer(cha, cfg.get("gameId"), "4");
+        // boolean success = facade.assignChallengeToPlayer(cha, cfg.get("GAMEID"), "4");
 
         p(success);
 

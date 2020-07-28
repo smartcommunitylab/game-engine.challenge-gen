@@ -9,7 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static eu.fbk.das.rs.utils.Utils.pf;
+import static eu.fbk.das.utils.Utils.pf;
 
 public class ChallengeAnalyzerDifficulty extends ChallengeAnalyzer {
 
