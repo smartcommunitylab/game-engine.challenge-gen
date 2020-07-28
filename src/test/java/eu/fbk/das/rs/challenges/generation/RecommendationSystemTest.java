@@ -3,7 +3,7 @@ package eu.fbk.das.rs.challenges.generation;
 
 import eu.fbk.das.model.ChallengeExpandedDTO;
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
-import eu.fbk.das.rs.utils.Utils;
+import eu.fbk.das.utils.Utils;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import org.joda.time.DateTime;
 import org.junit.Test;
@@ -12,9 +12,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static eu.fbk.das.rs.utils.ArrayUtils.pos;
-import static eu.fbk.das.rs.utils.Utils.p;
-import static eu.fbk.das.rs.utils.Utils.pf;
+import static eu.fbk.das.utils.ArrayUtils.pos;
+import static eu.fbk.das.utils.Utils.p;
+import static eu.fbk.das.utils.Utils.pf;
 
 public class RecommendationSystemTest extends ChallengesBaseTest {
 /*
@@ -30,7 +30,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
 
         RecommendationSystemChallengeGeneration rscg = new RecommendationSystemChallengeGeneration(cfg, null);
 
-        PlayerStateDTO state = facade.getPlayerState(cfg.get("gameId"), pId);
+        PlayerStateDTO state = facade.getPlayerState(cfg.get("GAMEID"), pId);
 
         forecast(rscg, 10.0, 9.0);
         forecast(rscg, 10.0, 11.0);

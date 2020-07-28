@@ -20,7 +20,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.*;
 
-import static eu.fbk.das.rs.utils.Utils.*;
+import static eu.fbk.das.utils.Utils.*;
 
 public class InnoWeeAnalyze extends ChallengesBaseTest {
 
@@ -286,7 +286,7 @@ public class InnoWeeAnalyze extends ChallengesBaseTest {
 
     private void analyzeAction(JSONObject ob) {
 
-        String gId = (String) ob.get("gameId");
+        String gId = (String) ob.get("GAMEID");
         if (!mapGame.containsKey(gId))
             mapGame.put(gId, new TreeMap<>());
         mapClass = mapGame.get(gId);
@@ -333,7 +333,7 @@ public class InnoWeeAnalyze extends ChallengesBaseTest {
         Long creation = (Long) ob.get("creationDate");
         DateTime creatDate = new DateTime(creation);
 
-        pf("Contribution, class: %s (%s), on %s (%s) \n", ob.get("playerName"), schools.get(ob.get("gameId")), weekName, creatDate.toString());
+        pf("Contribution, class: %s (%s), on %s (%s) \n", ob.get("playerName"), schools.get(ob.get("GAMEID")), weekName, creatDate.toString());
     }
 
     private void analyzeAdd(JSONObject ob) {

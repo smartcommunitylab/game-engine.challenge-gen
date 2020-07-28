@@ -3,13 +3,13 @@ package eu.fbk.das.rs;
 import static eu.fbk.das.GamificationEngineRestFacade.jodaToOffset;
 import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.getWeeklyContentMode;
 import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.getChallengeWeek;
-import static eu.fbk.das.rs.utils.Utils.daysApart;
-import static eu.fbk.das.rs.utils.Utils.f;
-import static eu.fbk.das.rs.utils.Utils.jumpToMonday;
-import static eu.fbk.das.rs.utils.Utils.p;
-import static eu.fbk.das.rs.utils.Utils.pf;
-import static eu.fbk.das.rs.utils.Utils.rand;
-import static eu.fbk.das.rs.utils.Utils.sortByValues;
+import static eu.fbk.das.utils.Utils.daysApart;
+import static eu.fbk.das.utils.Utils.f;
+import static eu.fbk.das.utils.Utils.jumpToMonday;
+import static eu.fbk.das.utils.Utils.p;
+import static eu.fbk.das.utils.Utils.pf;
+import static eu.fbk.das.utils.Utils.rand;
+import static eu.fbk.das.utils.Utils.sortByValues;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,8 +30,8 @@ import eu.fbk.das.model.GroupExpandedDTO;
 import eu.fbk.das.rs.challenges.ChallengeUtil;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemStatistics;
-import eu.fbk.das.rs.utils.ArrayUtils;
-import eu.fbk.das.rs.utils.Pair;
+import eu.fbk.das.utils.ArrayUtils;
+import eu.fbk.das.utils.Pair;
 import it.smartcommunitylab.model.AttendeeDTO;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.PointConceptDTO;
@@ -199,7 +199,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
                     startDate, endDate);
         else {
             Map<String, Double> result = tpcc.targetPrizeChallengesCompute(p.getFirst(), p.getSecond(), mode, type);
-            result.put("target", result.get("target") * 0.9);
+            result.put("target", Math.ceil(result.get("target") * 0.9));
             pf("%.2f, %s, %.2f, %.0f, %s, %.2f, %.0f, %s, %s\n",
                     result.get("target"),
                     p.getFirst(), result.get("player1_bas"), result.get("player1_prz"),

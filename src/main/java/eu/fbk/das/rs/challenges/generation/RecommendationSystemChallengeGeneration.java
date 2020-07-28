@@ -3,7 +3,7 @@ package eu.fbk.das.rs.challenges.generation;
 import eu.fbk.das.model.ChallengeExpandedDTO;
 import eu.fbk.das.rs.challenges.ChallengeUtil;
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
-import eu.fbk.das.rs.utils.Pair;
+import eu.fbk.das.utils.Pair;
 import it.smartcommunitylab.model.ChallengeConcept;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
@@ -14,7 +14,7 @@ import java.util.*;
 
 import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.*;
 import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.getChallengeWeek;
-import static eu.fbk.das.rs.utils.Utils.*;
+import static eu.fbk.das.utils.Utils.*;
 
 
 /**

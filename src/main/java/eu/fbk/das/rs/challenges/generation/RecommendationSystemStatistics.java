@@ -3,7 +3,7 @@ package eu.fbk.das.rs.challenges.generation;
 import com.google.common.math.Quantiles;
 import eu.fbk.das.rs.challenges.ChallengeUtil;
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
-import eu.fbk.das.rs.utils.ArrayUtils;
+import eu.fbk.das.utils.ArrayUtils;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.ext.GameConcept;
 import it.smartcommunitylab.model.ext.PointConcept;
@@ -15,7 +15,7 @@ import java.io.*;
 import java.util.*;
 
 import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.fixMode;
-import static eu.fbk.das.rs.utils.Utils.*;
+import static eu.fbk.das.utils.Utils.*;
 
 public class RecommendationSystemStatistics extends ChallengeUtil {
 

@@ -1,4 +1,4 @@
-package eu.fbk.das.rs.utils;
+package eu.fbk.das.utils;
 
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.set.hash.TIntHashSet;

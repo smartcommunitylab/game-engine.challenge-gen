@@ -2,9 +2,9 @@ package eu.fbk.das.rs.challenges.generation;
 
 import static eu.fbk.das.rs.challenges.ChallengeUtil.getLevel;
 import static eu.fbk.das.rs.challenges.ChallengeUtil.getPeriodScore;
-import static eu.fbk.das.rs.utils.Utils.daysApart;
-import static eu.fbk.das.rs.utils.Utils.p;
-import static eu.fbk.das.rs.utils.Utils.parseDate;
+import static eu.fbk.das.utils.Utils.daysApart;
+import static eu.fbk.das.utils.Utils.p;
+import static eu.fbk.das.utils.Utils.parseDate;
 import static it.smartcommunitylab.model.ChallengeConcept.StateEnum.COMPLETED;
 
 import java.io.BufferedReader;
@@ -33,7 +33,7 @@ import org.joda.time.format.DateTimeFormatter;
 import eu.fbk.das.GamificationEngineRestFacade;
 import eu.fbk.das.model.ChallengeExpandedDTO;
 import eu.fbk.das.rs.sortfilter.RecommendationSystemChallengeFilteringAndSorting;
-import eu.fbk.das.rs.utils.Utils;
+import eu.fbk.das.utils.Utils;
 import eu.fbk.das.rs.valuator.RecommendationSystemChallengeValuator;
 import it.smartcommunitylab.model.ChallengeConcept;
 import it.smartcommunitylab.model.PlayerStateDTO;
@@ -87,7 +87,7 @@ public class RecommendationSystem {
     }
 
     public RecommendationSystem(HashMap<String, String> cfg) {
-        this(cfg.get("HOST"), cfg.get("USERNAME"), cfg.get("PASSWORD"), cfg.get("gameId"));
+        this(cfg.get("HOST"), cfg.get("USER"), cfg.get("PASS"), cfg.get("GAMEID"));
     }
 
     public RecommendationSystem() {

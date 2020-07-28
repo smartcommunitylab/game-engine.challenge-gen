@@ -21,8 +21,6 @@ public class GroupChallengesAssignerTest extends ChallengesBaseTest {
 
     @Before
     public void prepare() {
-        // cfg.put("HOST", "https://dev.smartcommunitylab.it/gamification/");
-        conf.put("HOST", "https://tn.smartcommunitylab.it/gamification2/");
 
          rs = new RecommendationSystem(conf);
         facade = rs.facade;

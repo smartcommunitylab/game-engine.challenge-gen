@@ -1,8 +1,7 @@
 package eu.fbk.das.rs.valuator;
 
-import static eu.fbk.das.rs.utils.Utils.dbg;
-import static eu.fbk.das.rs.utils.Utils.err;
-import static eu.fbk.das.rs.utils.Utils.p;
+import static eu.fbk.das.utils.Utils.err;
+import static eu.fbk.das.utils.Utils.p;
 
 import java.util.Map;
 

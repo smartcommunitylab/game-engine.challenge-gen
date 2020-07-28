@@ -1,6 +1,5 @@
 package eu.fbk.das.rs;
 
-import eu.fbk.das.GamificationEngineRestFacade;
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.ext.ChallengeConcept;
@@ -15,16 +14,12 @@ import java.util.Map;
 import java.util.Set;
 
 import static eu.fbk.das.rs.challenges.ChallengeUtil.getPeriodScore;
-import static eu.fbk.das.rs.utils.Utils.*;
+import static eu.fbk.das.utils.Utils.*;
 
 public class GroupAssignedChallengesCheck extends ChallengesBaseTest {
 
     @Test
     public void check() {
-
-        conf.put("HOST", "https://tn.smartcommunitylab.it/gamification2/");
-        facade = new GamificationEngineRestFacade(conf.get("HOST"),
-                conf.get("USERNAME"), conf.get("PASSWORD"));
 
         PlayerStateDTO player = facade.getPlayerState(conf.get("GAMEID"), "28593");
 
@@ -50,9 +45,6 @@ public class GroupAssignedChallengesCheck extends ChallengesBaseTest {
 
     @Test
     public void execute() {
-        conf.put("HOST", "https://tn.smartcommunitylab.it/gamification2/");
-        facade = new GamificationEngineRestFacade(conf.get("HOST"),
-                conf.get("USERNAME"), conf.get("PASSWORD"));
 
         Map<String, Integer> cont = new HashMap<>();
 

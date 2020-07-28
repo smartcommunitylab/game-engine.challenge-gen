@@ -1,4 +1,4 @@
-package eu.fbk.das.rs.utils;
+package eu.fbk.das.utils;
 /******************************************************************************
  *  Compilation:  javac -cp .:jama.jar PolynomialRegression.java
  *  Execution:    java  -cp .:jama.jar PolynomialRegression

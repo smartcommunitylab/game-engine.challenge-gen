@@ -20,7 +20,7 @@ public class RecommenderSystemExec {
     protected RecommenderSystemAPI api;
     protected HashMap<String, String> conf;
     protected DateTime execDate;
-    protected HashMap<String, Object> config;
+    public HashMap<String, Object> config;
     protected HashMap<String, String> reward;
 
     public RecommenderSystemExec() {

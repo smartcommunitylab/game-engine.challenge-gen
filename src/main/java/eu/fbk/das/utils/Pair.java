@@ -1,4 +1,4 @@
-package eu.fbk.das.rs.utils;
+package eu.fbk.das.utils;
 
 public class Pair<T, U> {
     public final T t;

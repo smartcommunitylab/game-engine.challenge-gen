@@ -1,6 +1,6 @@
 package eu.fbk.das;
 
-import eu.fbk.das.rs.utils.Utils;
+import eu.fbk.das.utils.Utils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;

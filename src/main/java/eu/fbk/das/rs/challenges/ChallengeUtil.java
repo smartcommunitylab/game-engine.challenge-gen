@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.getChallengeWeek;
-import static eu.fbk.das.rs.utils.Utils.*;
+import static eu.fbk.das.utils.Utils.*;
 
 public class ChallengeUtil {
 

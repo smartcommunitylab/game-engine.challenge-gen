@@ -5,3 +5,7 @@
 2020-07-23 15:38:51 ERROR GamificationEngineRestFacade:146 - java.lang.IllegalArgumentException: unexpected url: null/data/game/5d9353a3f0856342b2dded7f/player/search?page=1&size=100
 2020-07-23 15:55:30 ERROR GamificationEngineRestFacade:146 - it.smartcommunitylab.ApiException: Unauthorized
 2020-07-23 16:15:18 ERROR RecommendationSystemChallengeValuator:526 - Unknown model for the challenge: repetitiveBehaviour!
+2020-07-27 15:36:01 ERROR GamificationEngineRestFacade:146 - it.smartcommunitylab.ApiException: Unauthorized
+2020-07-27 15:38:26 ERROR GamificationEngineRestFacade:146 - it.smartcommunitylab.ApiException: Unauthorized
+2020-07-27 15:38:48 ERROR GamificationEngineRestFacade:146 - it.smartcommunitylab.ApiException: Unauthorized
+2020-07-27 15:39:35 ERROR GamificationEngineRestFacade:146 - it.smartcommunitylab.ApiException: Unauthorized

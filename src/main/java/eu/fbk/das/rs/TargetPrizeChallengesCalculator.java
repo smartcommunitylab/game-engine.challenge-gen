@@ -4,7 +4,7 @@ import eu.fbk.das.GamificationEngineRestFacade;
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
 import eu.fbk.das.rs.challenges.calculator.DifficultyCalculator;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
-import eu.fbk.das.rs.utils.Pair;
+import eu.fbk.das.utils.Pair;
 import it.smartcommunitylab.model.GameStatistics;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import org.apache.commons.math3.stat.regression.SimpleRegression;

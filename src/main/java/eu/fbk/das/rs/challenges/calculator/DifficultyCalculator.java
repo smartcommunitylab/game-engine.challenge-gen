@@ -3,7 +3,7 @@ package eu.fbk.das.rs.challenges.calculator;
 import java.util.HashMap;
 import java.util.Map;
 
-import static eu.fbk.das.rs.utils.Utils.p;
+import static eu.fbk.das.utils.Utils.p;
 
 public class DifficultyCalculator {
 

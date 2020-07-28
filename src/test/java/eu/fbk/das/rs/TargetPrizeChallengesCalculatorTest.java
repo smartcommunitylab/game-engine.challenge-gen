@@ -1,6 +1,5 @@
 package eu.fbk.das.rs;
 
-import eu.fbk.das.GamificationEngineRestFacade;
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import eu.fbk.das.GamificationConfig;
@@ -18,7 +17,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static eu.fbk.das.rs.challenges.ChallengeUtil.getLevel;
-import static eu.fbk.das.rs.utils.Utils.wf;
+import static eu.fbk.das.utils.Utils.wf;
 
 public class TargetPrizeChallengesCalculatorTest extends ChallengesBaseTest {
 
@@ -89,12 +88,10 @@ public class TargetPrizeChallengesCalculatorTest extends ChallengesBaseTest {
 
     @Before
     public void prepare() {
+
         conf = new GamificationConfig().extract();
 
         now = new DateTime();
-
-        facade = new GamificationEngineRestFacade(conf.get("HOST"),
-                conf.get("USERNAME"), conf.get("PASSWORD"));
 
         gameId = conf.get("GAMEID");
 

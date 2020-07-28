@@ -1,10 +1,10 @@
 package eu.fbk.das.rs.challenges.evaluation;
 
-import static eu.fbk.das.rs.utils.Utils.joinArray;
-import static eu.fbk.das.rs.utils.Utils.p;
-import static eu.fbk.das.rs.utils.Utils.pf;
-import static eu.fbk.das.rs.utils.Utils.stringToDate;
-import static eu.fbk.das.rs.utils.Utils.wf;
+import static eu.fbk.das.utils.Utils.joinArray;
+import static eu.fbk.das.utils.Utils.p;
+import static eu.fbk.das.utils.Utils.pf;
+import static eu.fbk.das.utils.Utils.stringToDate;
+import static eu.fbk.das.utils.Utils.wf;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,7 +17,7 @@ import org.joda.time.DateTime;
 import eu.fbk.das.model.ChallengeExpandedDTO;
 import eu.fbk.das.rs.challenges.ChallengeUtil;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
-import eu.fbk.das.rs.utils.Utils;
+import eu.fbk.das.utils.Utils;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.ext.ChallengeAssignmentDTO;
 import it.smartcommunitylab.model.ext.GameConcept;
