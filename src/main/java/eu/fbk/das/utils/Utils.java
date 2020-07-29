@@ -1,14 +1,43 @@
 package eu.fbk.das.utils;
 
-import gnu.trove.list.array.TIntArrayList;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Scanner;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import java.io.*;
-import java.util.*;
+import gnu.trove.list.array.TIntArrayList;
 
 public class Utils {
 
@@ -524,6 +553,10 @@ public static int rand(int v) {
 
     public static void err(Logger log, String format, Object... args) {
         log.error(String.format(format, args));
+    }
+
+    public static void warn(Logger log, String format, Object... args) {
+        log.warn(String.format(format, args));
     }
 
 

@@ -2,6 +2,7 @@ package eu.fbk.das.rs.valuator;
 
 import static eu.fbk.das.utils.Utils.err;
 import static eu.fbk.das.utils.Utils.p;
+import static eu.fbk.das.utils.Utils.warn;
 
 import java.util.Map;
 
@@ -70,7 +71,8 @@ public class RecommendationSystemChallengeValuator {
                 challenge.setData("bonusScore", tryOnceBonus);
                 break;
             default:
-                err(logger, "Unknown model for the challenge: %s!", challenge.getModelName());
+                warn(logger, "model %s unsupported in valuation strategy",
+                        challenge.getModelName());
                 break;
         }
 
