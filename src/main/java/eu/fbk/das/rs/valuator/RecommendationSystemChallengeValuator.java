@@ -71,7 +71,7 @@ public class RecommendationSystemChallengeValuator {
                 challenge.setData("bonusScore", tryOnceBonus);
                 break;
             default:
-                warn(logger, "model %s unsupported in valuation strategy",
+                warn(logger, "model %s unsupported in difficulty valuation",
                         challenge.getModelName());
                 break;
         }
