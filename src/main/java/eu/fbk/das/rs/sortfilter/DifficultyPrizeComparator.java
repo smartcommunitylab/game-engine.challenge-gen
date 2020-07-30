@@ -9,10 +9,10 @@ public class DifficultyPrizeComparator implements Comparator<ChallengeExpandedDT
 
     @Override
     public int compare(ChallengeExpandedDTO o1, ChallengeExpandedDTO o2) {
-        int difficulty1 = (int) o1.getData("difficulty");
-        int difficulty2 = (int) o2.getData("difficulty");
-        int bonusScore1 = (int) o1.getData("bonusScore");
-        int bonusScore2 = (int) o2.getData("bonusScore");
+        double difficulty1 = o1.getDataFL("difficulty");
+        double difficulty2 =  o2.getDataFL("difficulty");
+        double bonusScore1 = o1.getDataFL("bonusScore");
+        double bonusScore2 = o2.getDataFL("bonusScore");
         Double wi1 = (Double) o1.getData("wi");
         Double wi2 = (Double) o2.getData("wi");
 

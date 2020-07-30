@@ -154,7 +154,7 @@ public class ChallengeDataGuru extends ChallengeUtil  {
         l_cha = new ArrayList<>();
 
         for (String pId : challenges.keySet()) {
-            PlayerStateDTO cnt = rs.facade.getPlayerState(conf.get("GAMEID"), pId);
+            PlayerStateDTO cnt = rs.facade.getPlayerState(rs.gameId, pId);
 
             for (ChallengeExpandedDTO cha : challenges.get(pId)) {
                 goChallenge(cnt, cha);

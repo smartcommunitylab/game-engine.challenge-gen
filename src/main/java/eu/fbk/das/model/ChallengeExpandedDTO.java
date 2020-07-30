@@ -115,4 +115,10 @@ public class ChallengeExpandedDTO extends ChallengeAssignmentDTO {
         setStart(p.getFirst());
         setEnd(p.getSecond());
     }
+
+    public double getDataFL(String k) {
+        Object v = getData(k);
+        if (v == null) return 0;
+        return Double.valueOf(String.valueOf(v));
+    }
 }

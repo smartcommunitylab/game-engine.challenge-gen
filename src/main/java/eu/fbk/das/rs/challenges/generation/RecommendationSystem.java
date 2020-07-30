@@ -56,7 +56,7 @@ public class RecommendationSystem {
 
     public DateTime lastMonday;
     private DateTime execDate;
-    private Integer chaWeek;
+    protected Integer chaWeek;
 
     public GamificationEngineRestFacade facade;
     public String gameId;
@@ -125,7 +125,6 @@ public class RecommendationSystem {
     }
 
     private void prepare(Map<String, Object> challengeValues) {
-        // TODO put correct challengeweek? leave like this? it's an information only for us, after all
         chaWeek = (Integer) challengeValues.get("challengeWeek");
         Date execDateParam = (Date) challengeValues.get("exec");
         execDate = new DateTime(execDateParam.getTime());

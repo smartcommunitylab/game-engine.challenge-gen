@@ -109,14 +109,14 @@ public class DifficultyCalculatorTest {
         ChallengeExpandedDTO first = new ChallengeExpandedDTO();
 
         first.setInstanceName("Instance1");
-        first.setData("difficulty", 3);
+        first.setData("difficulty", 3.0);
         first.setData("bonusScore", 100.0);
         first.setData("wi", 100.0);
         test.add(first);
 
         ChallengeExpandedDTO second = new ChallengeExpandedDTO();
         second.setInstanceName("Instance2");
-        second.setData("difficulty", 1);
+        second.setData("difficulty", 1.0);
         second.setData("bonusScore", 200.0);
         second.setData("wi", 200.0);
         test.add(second);

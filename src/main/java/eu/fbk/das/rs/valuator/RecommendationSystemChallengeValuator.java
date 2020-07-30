@@ -20,6 +20,7 @@ public class RecommendationSystemChallengeValuator {
     private final DifficultyCalculator dc;
 
     private RecommendationSystemStatistics stats;
+    private double def_prize = 100.0;
 
     /**
      * Create a new recommandation system challenge valuator
@@ -43,37 +44,53 @@ public class RecommendationSystemChallengeValuator {
             return;
         }
 
+        Double v = (Double) challenge.getData("bonusScore");
+        if (v != null) return;
+
         Map<Integer, Double> quantiles = stats.getQuantiles(counterName);
 
         switch (challenge.getModelName()) {
             case "percentageIncrement":
                 Double baseline = (Double) challenge.getData("baseline");
                 Double target = (Double) challenge.getData("target");
-
-                if (baseline == 0 || target == 0)
-                    p("eh");
-
-                Integer difficulty = DifficultyCalculator.computeDifficulty(quantiles,
-                        baseline, target);
-                // + ", target=" + target + " difficulty="
-                // + difficulty);
-                challenge.setData("difficulty", difficulty);
-
-                double d = (double) challenge.getData("percentage");
-
-                double prize = dc.calculatePrize(difficulty, d, counterName);
-                challenge.setData("bonusScore", prize);
+                computeReward(challenge, counterName, quantiles, baseline, target);
                 break;
             case "absoluteIncrement":
                 challenge.setData("difficulty", DifficultyCalculator.MEDIUM);
                 double tryOnceBonus = dc.getTryOnceBonus(counterName);
                 challenge.setData("bonusScore", tryOnceBonus);
                 break;
+            case "repetitiveBehaviour":
+                baseline = (Double) challenge.getData("baseline");
+                target = (Double) challenge.getData("target");
+                Double periodTarget = (Double) challenge.getData("periodTarget");
+                target *= periodTarget * 0.9;
+                computeReward(challenge, counterName, quantiles, baseline, target);
+                break;
             default:
-                err(logger, "Unknown model for the challenge: %s!", challenge.getModelName());
+                challenge.setData("bonusScore", def_prize);
+                // err(logger, "Unknown model for the challenge: %s!", challenge.getModelName());
                 break;
         }
 
+    }
+
+    private void computeReward(ChallengeExpandedDTO challenge, String counterName, Map<Integer, Double> quantiles, double baseline, double target) {
+        double prize = def_prize;
+        if (baseline != 0 && target != 0) {
+
+            Integer difficulty = DifficultyCalculator.computeDifficulty(quantiles,
+                    baseline, target);
+            // + ", target=" + target + " difficulty="
+            // + difficulty);
+            challenge.setData("difficulty", difficulty);
+
+            double d = (double) challenge.getData("percentage");
+
+            prize = dc.calculatePrize(difficulty, d, counterName);
+
+        }
+        challenge.setData("bonusScore", prize);
     }
 
     public void prepare(RecommendationSystemStatistics stats) {

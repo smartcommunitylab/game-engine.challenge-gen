@@ -33,10 +33,6 @@ public class ChallengeUtil {
         this.rs = rs;
     }
 
-    public void prepare(DateTime d) {
-        prepare(getChallengeWeek(d));
-    }
-
     public void prepare(int challengeWeek) {
         counters = ChallengesConfig.getPerfomanceCounters();
 
@@ -93,6 +89,12 @@ public class ChallengeUtil {
     }
 
     public static double getPeriodScore(PointConcept pc, String w, DateTime dt) {
-        return pc.getPeriodScore(w, dt.getMillis());
+        try {
+            return pc.getPeriodScore(w, dt.getMillis());
+        } catch (Exception e) {
+            p(e.getMessage());
+        }
+
+        return 0;
     }
 }

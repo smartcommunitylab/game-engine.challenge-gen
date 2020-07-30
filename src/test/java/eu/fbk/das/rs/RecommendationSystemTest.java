@@ -1,5 +1,6 @@
 package eu.fbk.das.rs;
 
+import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.getChallengeWeek;
 import static eu.fbk.das.utils.Utils.p;
 
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
         rs = new RecommendationSystem(conf);
 
         rscg = new RecommendationSystemChallengeGeneration(rs);
-        rscg.prepare(new DateTime());
+        rscg.prepare(getChallengeWeek(new DateTime()));
         facade = rs.facade;
     }
 
@@ -83,7 +84,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
 
         Set<String> playerIds = facade.getGamePlayers(conf.get("GAMEID"));
 
-        int w = this.rs.getChallengeWeek(new DateTime());
+        int w = getChallengeWeek(new DateTime());
 
         for (String pId: playerIds) {
             Map<String, Object> cs = facade.getCustomDataPlayer(conf.get("GAMEID"), pId);

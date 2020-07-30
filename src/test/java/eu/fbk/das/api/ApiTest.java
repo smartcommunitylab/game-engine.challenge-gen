@@ -42,7 +42,8 @@ public class ApiTest extends ChallengesBaseTest {
     @Test
     public void weekSingle() {
         RecommenderSystemWeekly rsw = new RecommenderSystemWeekly();
-        rsw.exec(conf, "1069");
+      //   rsw.exec(conf, "1069");
+        rsw.exec(conf, "28467");
     }
 
     @Test

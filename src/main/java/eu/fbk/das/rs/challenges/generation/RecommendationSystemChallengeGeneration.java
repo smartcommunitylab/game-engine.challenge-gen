@@ -13,7 +13,6 @@ import org.joda.time.DateTime;
 import java.util.*;
 
 import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.*;
-import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.getChallengeWeek;
 import static eu.fbk.das.utils.Utils.*;
 
 
@@ -37,7 +36,7 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
 
     public List<ChallengeExpandedDTO> generate(PlayerStateDTO state, String mode, DateTime execDate, String exp) {
 
-        prepare(getChallengeWeek(execDate));
+        prepare(rs.chaWeek);
 
         List<ChallengeExpandedDTO> output = new ArrayList<>();
 
@@ -103,7 +102,7 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
             cdd.setInfo("improvement", 1.0);
             rs.rscv.valuate(cdd);
 
-            cdd.setData("bonusScore", 100);
+            cdd.setData("bonusScore", 100.0);
 
 
             output.add(cdd);
@@ -220,7 +219,7 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
 
     public List<ChallengeExpandedDTO> forecast(PlayerStateDTO state, String mode, DateTime execDate) {
 
-        prepare(getChallengeWeek(execDate));
+        prepare(rs.chaWeek);
 
         Pair<Double, Double> res = forecastMode(state, mode);
         double target = res.getFirst();
