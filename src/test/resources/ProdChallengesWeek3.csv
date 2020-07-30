@@ -1,9 +1,0 @@
-NAME;TYPE;GOAL_TYPE;TARGET;BONUS;POINT_TYPE;DIFFICULTY;BASELINE_VARIABLE;SELECTION_CRITERIA_CUSTOM_DATA;SELECTION_CRITERIA_POINTS;SELECTION_CRITERIA_BADGES
-w3_recommendation_2;RECOMMENDATION;;2;50;green leaves;;;TRUE;;
-w3_zero_impact_1;ZEROIMPACT;;1;40;green leaves;;;zero_impact_trips_past == null;;
-w3_nextbadge_low;NEXTBADGE;green leaves;1;40;green leaves;;;;green leaves >= 50 && green leaves < 150;
-w3_nextbadge_medium;NEXTBADGE;green leaves;1;40;green leaves;;;;green leaves >= 200 && green leaves <= 350;
-w3_nextbadge_high;NEXTBADGE;green leaves;1;60;green leaves;;;;green leaves >= 400 && green leaves <= 700;
-w3_zero_impact_3;ZEROIMPACT;;3;40;green leaves;;;zero_impact_trips_past >= 1 && zero_impact_trips_past < 3;;
-w3_zero_impact_5;ZEROIMPACT;;5;50;green leaves;;;zero_impact_trips_past >= 3 && zero_impact_trips_past < 5;;
-w3_zero_impact_7;ZEROIMPACT;;7;60;green leaves;;;zero_impact_trips_past >= 5;;
