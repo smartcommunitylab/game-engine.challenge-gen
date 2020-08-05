@@ -2,7 +2,7 @@ package eu.fbk.das.api;
 
 import eu.fbk.das.model.GroupExpandedDTO;
 import eu.fbk.das.model.ChallengeExpandedDTO;
-import it.smartcommunitylab.model.GroupChallengeDTO;
+import it.smartcommunitylab.model.ext.GroupChallengeDTO;
 
 import java.util.List;
 import java.util.Map;

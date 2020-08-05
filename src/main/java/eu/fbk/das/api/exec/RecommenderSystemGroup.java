@@ -1,10 +1,13 @@
 package eu.fbk.das.api.exec;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import eu.fbk.das.model.GroupExpandedDTO;
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
-import it.smartcommunitylab.model.GroupChallengeDTO;
-
-import java.util.*;
 
 public class RecommenderSystemGroup extends RecommenderSystemExec {
 

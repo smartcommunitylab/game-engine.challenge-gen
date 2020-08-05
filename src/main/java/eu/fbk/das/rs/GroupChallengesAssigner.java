@@ -1,6 +1,5 @@
 package eu.fbk.das.rs;
 
-import static eu.fbk.das.GamificationEngineRestFacade.jodaToOffset;
 import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.getWeeklyContentMode;
 import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.getChallengeWeek;
 import static eu.fbk.das.utils.Utils.daysApart;
@@ -32,12 +31,12 @@ import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemStatistics;
 import eu.fbk.das.utils.ArrayUtils;
 import eu.fbk.das.utils.Pair;
-import it.smartcommunitylab.model.AttendeeDTO;
 import it.smartcommunitylab.model.PlayerStateDTO;
-import it.smartcommunitylab.model.PointConceptDTO;
 import it.smartcommunitylab.model.ext.ChallengeAssignmentDTO;
 import it.smartcommunitylab.model.ext.ChallengeConcept;
 import it.smartcommunitylab.model.ext.GameConcept;
+import it.smartcommunitylab.model.ext.GroupChallengeDTO.AttendeeDTO;
+import it.smartcommunitylab.model.ext.GroupChallengeDTO.PointConceptDTO;
 import it.smartcommunitylab.model.ext.PointConcept;
 
 public class GroupChallengesAssigner extends ChallengeUtil {
@@ -248,8 +247,8 @@ public class GroupChallengesAssigner extends ChallengeUtil {
 
         gcd.setOrigin("gca");
         gcd.setState("ASSIGNED");
-        gcd.setStart(jodaToOffset(start));
-        gcd.setEnd(jodaToOffset(end));
+        gcd.setStart(start.toDate());
+        gcd.setEnd(end.toDate());
 
         return gcd;
     }

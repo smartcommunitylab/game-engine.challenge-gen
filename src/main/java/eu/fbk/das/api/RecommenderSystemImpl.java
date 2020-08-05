@@ -1,24 +1,18 @@
 package eu.fbk.das.api;
 
-import static eu.fbk.das.GamificationEngineRestFacade.getDates;
-import static eu.fbk.das.utils.Utils.p;
-
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.Period;
-import java.time.ZoneId;
-import java.util.*;
-
-import eu.fbk.das.utils.Pair;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import eu.fbk.das.model.ChallengeExpandedDTO;
 import eu.fbk.das.model.GroupExpandedDTO;
 import eu.fbk.das.rs.GroupChallengesAssigner;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
-import it.smartcommunitylab.model.GroupChallengeDTO;
-import it.smartcommunitylab.model.PointConceptDTO;
-import it.smartcommunitylab.model.RewardDTO;
-import org.joda.time.format.ISODateTimeFormat;
+import it.smartcommunitylab.model.ext.GroupChallengeDTO;
+import it.smartcommunitylab.model.ext.GroupChallengeDTO.PointConceptDTO;
+import it.smartcommunitylab.model.ext.GroupChallengeDTO.RewardDTO;
 
 public class RecommenderSystemImpl implements RecommenderSystemAPI {
 
@@ -223,6 +217,8 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
         Map<String, Double> bs = rew.getBonusScore();
         final PointConceptDTO calculationPointConcept = new PointConceptDTO();
         calculationPointConcept.setName(scoreType);
+        // FIXME valid only for play&go
+        calculationPointConcept.setPeriod("weekly");
         rew.setCalculationPointConcept(calculationPointConcept);
         final PointConceptDTO targetPointConcept = new PointConceptDTO();
         targetPointConcept.setName(scoreType);
