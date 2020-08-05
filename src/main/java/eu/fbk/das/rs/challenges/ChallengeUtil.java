@@ -1,18 +1,20 @@
 package eu.fbk.das.rs.challenges;
 
-import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
-import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
-import it.smartcommunitylab.model.PlayerStateDTO;
-import it.smartcommunitylab.model.ext.PlayerLevel;
-import it.smartcommunitylab.model.ext.PointConcept;
-import org.joda.time.DateTime;
+import static eu.fbk.das.utils.Utils.equal;
+import static eu.fbk.das.utils.Utils.f;
+import static eu.fbk.das.utils.Utils.pf;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.getChallengeWeek;
-import static eu.fbk.das.utils.Utils.*;
+import org.joda.time.DateTime;
+
+import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
+import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
+import it.smartcommunitylab.model.PlayerStateDTO;
+import it.smartcommunitylab.model.ext.PlayerLevel;
+import it.smartcommunitylab.model.ext.PointConcept;
 
 public class ChallengeUtil {
 
@@ -91,10 +93,9 @@ public class ChallengeUtil {
     public static double getPeriodScore(PointConcept pc, String w, DateTime dt) {
         try {
             return pc.getPeriodScore(w, dt.getMillis());
-        } catch (Exception e) {
-            p(e.getMessage());
+        } catch (Exception e) { // if ask for a date previous of period startDate return 0
+            return 0;
         }
 
-        return 0;
     }
 }
