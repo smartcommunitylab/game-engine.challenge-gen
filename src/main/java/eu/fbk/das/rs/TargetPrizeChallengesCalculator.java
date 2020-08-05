@@ -1,5 +1,18 @@
 package eu.fbk.das.rs;
 
+import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.booster;
+import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.getWeeklyContentMode;
+import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.roundTarget;
+import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.week_n;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.math3.stat.regression.SimpleRegression;
+import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+
 import eu.fbk.das.GamificationEngineRestFacade;
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
 import eu.fbk.das.rs.challenges.calculator.DifficultyCalculator;
@@ -7,18 +20,11 @@ import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import eu.fbk.das.utils.Pair;
 import it.smartcommunitylab.model.GameStatistics;
 import it.smartcommunitylab.model.PlayerStateDTO;
-import org.apache.commons.math3.stat.regression.SimpleRegression;
-import org.joda.time.DateTime;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.*;
 
 
 public class TargetPrizeChallengesCalculator {
 
+    private static final Logger logger = Logger.getLogger(TargetPrizeChallengesCalculator.class);
     private GamificationEngineRestFacade facade;
 
     private DateTime execDate;
@@ -128,7 +134,10 @@ public class TargetPrizeChallengesCalculator {
             if ("green leaves".equals(counter))
                 return Math.min(3000, v);
 
-            p("WRONG COUNTER");
+
+        logger.warn(String.format(
+                "Unsupported value %s calculating max target for group competitive, valid values: Walk_Km, Bike_Km, green leaves",
+                counter));
             return 0.0;
         }
 
@@ -140,7 +149,9 @@ public class TargetPrizeChallengesCalculator {
         if ("green leaves".equals(counter))
             return Math.min(6000, v);
 
-        p("WRONG COUNTER");
+        logger.warn(String.format(
+                "Unsupported value %s calculating max target for group cooperative, valid values: Walk_Km, Bike_Km, green leaves",
+                counter));
         return 0.0;
     }
 
@@ -152,7 +163,9 @@ public class TargetPrizeChallengesCalculator {
         if ("green leaves".equals(counter))
             return Math.max(50, v);
 
-        p("WRONG COUNTER");
+        logger.warn(String.format(
+                "Unsupported value %s calculating min target, valid values: Walk_Km, Bike_Km, green leaves",
+                counter));
         return 0.0;
     }
 
