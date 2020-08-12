@@ -128,7 +128,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
                 if (!pc.getName().equals("green leaves"))
                     continue;
 
-                Double sc = getPeriodScore(pc,"weekly", new DateTime());
+                Double sc = getPeriodScore(pc, "weekly", execDate);
 
                 if (sc > 20)
                     active = true;
