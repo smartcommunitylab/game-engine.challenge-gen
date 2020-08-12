@@ -48,7 +48,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
     }
 
     @Override
-    public List<ChallengeExpandedDTO> createSingleChallengeUnaTantum(Map<String, String> conf, String modelType, Map<String, Object> config,
+    public List<ChallengeExpandedDTO> createSpecialSingleChallenges(Map<String, String> conf, String modelType, Map<String, Object> config,
                                                                      String playerSet, Map<String, String> rewards) {
 
         checkUpdateRs(conf);
@@ -75,7 +75,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
     }
 
     @Override
-    public List<ChallengeExpandedDTO> createSingleChallengeWeekly(Map<String, String> conf, Set<String> modelTypes, Map<String, String> creationRules, Map<String, Object> config, String playerSet, Map<String, String> rewards) {
+    public List<ChallengeExpandedDTO> createStandardSingleChallenges(Map<String, String> conf, Set<String> modelTypes, Map<String, String> creationRules, Map<String, Object> config, String playerSet, Map<String, String> rewards) {
 
         if (playerSet == null || "".equals(playerSet))
             playerSet = "all";
@@ -104,7 +104,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
     }
 
     @Override
-    public List<GroupExpandedDTO> createCoupleChallengeWeekly(Map<String, String> conf, Set<String> modelTypes, String assignmentType, Map<String, Object> config, String playerSet, Map<String, String> rewards) {
+    public List<GroupExpandedDTO> createStandardGroupChallenges(Map<String, String> conf, Set<String> modelTypes, String assignmentType, Map<String, Object> config, String playerSet, Map<String, String> rewards) {
 
         if (playerSet == null || "".equals(playerSet))
             playerSet = "all";

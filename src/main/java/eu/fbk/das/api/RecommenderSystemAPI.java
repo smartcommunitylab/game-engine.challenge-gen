@@ -19,7 +19,7 @@ public interface RecommenderSystemAPI {
      * @param rewards keys: scoreType / calcType (fixed, bonus, booster) / calcValue / maxValue
      * @return success of operation
      */
-    public List<ChallengeExpandedDTO> createSingleChallengeUnaTantum(Map<String, String> conf, String modelType, Map<String, Object> config, String playerSet, Map<String, String> rewards);
+    public List<ChallengeExpandedDTO> createSpecialSingleChallenges(Map<String, String> conf, String modelType, Map<String, Object> config, String playerSet, Map<String, String> rewards);
 
     /**
      *
@@ -31,7 +31,7 @@ public interface RecommenderSystemAPI {
      * @param rewards keys: scoreType / calcType (fixed, bonus, booster) / calcValue / maxValue
      * @return success of operation
      */
-    public List<ChallengeExpandedDTO> createSingleChallengeWeekly(Map<String, String> conf, Set<String> modelTypes, Map<String, String> creationRules, Map<String, Object> config, String playerSet, Map<String, String> rewards);
+    public List<ChallengeExpandedDTO> createStandardSingleChallenges(Map<String, String> conf, Set<String> modelTypes, Map<String, String> creationRules, Map<String, Object> config, String playerSet, Map<String, String> rewards);
 
     /**
      *
@@ -43,7 +43,7 @@ public interface RecommenderSystemAPI {
      * @param rewards keys: scoreType / calcType (fixed, bonus, booster) / calcValue / maxValue
      * @return success of operation
      */
-    public List<GroupExpandedDTO> createCoupleChallengeWeekly(Map<String, String> conf, Set<String> modelTypes, String assignmentType, Map<String, Object> config, String playerSet, Map<String, String> rewards);
+    public List<GroupExpandedDTO> createStandardGroupChallenges(Map<String, String> conf, Set<String> modelTypes, String assignmentType, Map<String, Object> config, String playerSet, Map<String, String> rewards);
 
     public boolean assignSingleChallenge(Map<String, String> conf, ChallengeExpandedDTO cha);
 

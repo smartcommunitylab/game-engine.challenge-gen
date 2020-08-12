@@ -17,7 +17,7 @@ public class RecommenderSystemGroup extends RecommenderSystemExec {
 
         Set<String> modeList = new HashSet<String>(Arrays.asList(ChallengesConfig.WALK_KM,ChallengesConfig.BIKE_KM,ChallengesConfig.GREEN_LEAVES));
 
-        return api.createCoupleChallengeWeekly(conf, modeList, challengeType, config, players, reward);
+        return api.createStandardGroupChallenges(conf, modeList, challengeType, config, players, reward);
     }
 
     public boolean upload(Map<String, String> conf, GroupExpandedDTO cha) {

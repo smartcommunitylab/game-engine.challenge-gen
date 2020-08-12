@@ -14,7 +14,7 @@ public class RecommenderSystemTantum extends RecommenderSystemExec {
         if (players == null)
             players = "all";
 
-        return api.createSingleChallengeUnaTantum(conf, modelType, config, players, reward);
+        return api.createSpecialSingleChallenges(conf, modelType, config, players, reward);
     }
 
     public boolean exec(Map<String, String> conf, String modelType, Map<String, Object> config, String players) {
