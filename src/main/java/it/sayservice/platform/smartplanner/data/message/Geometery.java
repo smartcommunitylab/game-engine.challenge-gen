@@ -19,16 +19,8 @@ package it.sayservice.platform.smartplanner.data.message;
 import java.io.Serializable;
 
 public class Geometery implements Serializable {
-    /**
-     *
-     */
     private static final long serialVersionUID = 7857962270240302948L;
 
-    /**
-     * @param type
-     * @param coordinates
-     * @param description
-     */
     public Geometery(String type, String coordinates, String description) {
         super();
         this.type = type;

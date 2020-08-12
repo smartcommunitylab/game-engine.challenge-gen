@@ -21,47 +21,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * An itinerary between two locations.<br/>
- * <br/>
- * An example in json format:<br/>
- * <br/>
- * {"duration":1553000,"from":{"name":"Via Milano","lat":"46.06180521073646",
- * "lon"
- * :"11.129310376891326","stopId":{"id":"","agencyId":""},"stopCode":"null"}
- * ,"to"
- * :{"name":"Via alla Cascata","lat":"46.0685896","lon":"11.1509119","stopId"
- * :{"id":"","agencyId":""},"stopCode":"null"},"greenPoint":null,"startime":
- * 1355390817000
- * ,"endtime":1355392370000,"leg":[{"duration":122000,"from":{"name"
- * :"Via Milano"
- * ,"lat":"46.06180521073646","lon":"11.129310376891326","stopId":{"id"
- * :"","agencyId"
- * :""},"stopCode":"null"},"to":{"name":"dei Mille  \"Villa Igea\""
- * ,"lat":"46.062506"
- * ,"lon":"11.127984","stopId":{"id":"21275x","agencyId":"12"},
- * "stopCode":"null"}
- * ,"transport":{"type":"WALK","agencyId":"null","routeId":"","tripId"
- * :"null"},"startime"
- * :1355390817000,"endtime":1355390939000,"legId":"null_null",
- * "legGeometery":{"length"
- * :7,"levels":"null","points":"gmcxGeu|bAPZHLIL_BhCILc@x@"
- * },"alertStrikeList":[]
- * ,"alertDelayList":[],"alertParkingList":[],"alertCapacityList"
- * :null},{"duration"
- * :120000,"from":{"name":"dei Mille  \"Villa Igea\"","lat":"46.062506"
- * ,"lon":"11.127984"
- * ,"stopId":{"id":"21275x","agencyId":"12"},"stopCode":"null"}
- * ,"to":{"name":"S.Francesco  Porta Nuova"
- * ,"lat":"46.067075","lon":"11.126226","stopId"
- * :{"id":"21595x","agencyId":"12"},
- * "stopCode":"null"},"transport":{"type":"BUS",
- * "agencyId":"12","routeId":"7","tripId"
+/*
+ * An itinerary between two locations.<br/> <br/> An example in json format:<br/> <br/>
+ * {"duration":1553000,"from":{"name":"Via Milano","lat":"46.06180521073646", "lon"
+ * :"11.129310376891326","stopId":{"id":"","agencyId":""},"stopCode":"null"} ,"to" :{"name":"Via
+ * alla Cascata","lat":"46.0685896","lon":"11.1509119","stopId"
+ * :{"id":"","agencyId":""},"stopCode":"null"},"greenPoint":null,"startime": 1355390817000
+ * ,"endtime":1355392370000,"leg":[{"duration":122000,"from":{"name" :"Via Milano"
+ * ,"lat":"46.06180521073646","lon":"11.129310376891326","stopId":{"id" :"","agencyId"
+ * :""},"stopCode":"null"},"to":{"name":"dei Mille \"Villa Igea\"" ,"lat":"46.062506"
+ * ,"lon":"11.127984","stopId":{"id":"21275x","agencyId":"12"}, "stopCode":"null"}
+ * ,"transport":{"type":"WALK","agencyId":"null","routeId":"","tripId" :"null"},"startime"
+ * :1355390817000,"endtime":1355390939000,"legId":"null_null", "legGeometery":{"length"
+ * :7,"levels":"null","points":"gmcxGeu|bAPZHLIL_BhCILc@x@" },"alertStrikeList":[]
+ * ,"alertDelayList":[],"alertParkingList":[],"alertCapacityList" :null},{"duration"
+ * :120000,"from":{"name":"dei Mille \"Villa Igea\"","lat":"46.062506" ,"lon":"11.127984"
+ * ,"stopId":{"id":"21275x","agencyId":"12"},"stopCode":"null"} ,"to":{"name":"S.Francesco Porta
+ * Nuova" ,"lat":"46.067075","lon":"11.126226","stopId" :{"id":"21595x","agencyId":"12"},
+ * "stopCode":"null"},"transport":{"type":"BUS", "agencyId":"12","routeId":"7","tripId"
  * :"07R-Feriale_025"},"startime":1355390940000
- * ,"endtime":1355391060000,"legId":"12_07R-Feriale_025"
- * ,"legGeometery":{"length"
- * :11,"levels":"null","points":"mqcxGul|bAA?uBdCUf@aAm@sJcECAaAc@eCzNsAs@g@W"
- * },"alertStrikeList"
+ * ,"endtime":1355391060000,"legId":"12_07R-Feriale_025" ,"legGeometery":{"length"
+ * :11,"levels":"null","points":"mqcxGul|bAA?uBdCUf@aAm@sJcECAaAc@eCzNsAs@g@W" },"alertStrikeList"
  * :[],"alertDelayList":[],"alertParkingList":[],"alertCapacityList":null}
  */
 
