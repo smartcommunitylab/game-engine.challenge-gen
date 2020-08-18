@@ -30,21 +30,12 @@ public class TargetPrizeChallengesCalculator {
 
     private String gameId;
     private RecommendationSystem rs;
-
-
-    public void prepare(String host, String username, String password, String gameId) {
-
-        execDate = new DateTime();
-
-        facade = new GamificationEngineRestFacade(host, username, password);
-
-        this.gameId = gameId;
-    }
+    private double modifier = 0.9;
 
     // TODO remove
-    public void prepare(RecommendationSystem rs, String gameId) {
+    public void prepare(RecommendationSystem rs, String gameId, DateTime execDate) {
 
-        execDate = new DateTime();
+        this.execDate = execDate;
 
         facade = rs.facade;
 
@@ -72,7 +63,7 @@ public class TargetPrizeChallengesCalculator {
 
         double target;
         if (type.equals("groupCompetitiveTime")) {
-            target = roundTarget(counter,(player1_tgt + player2_tgt) / 2.0);
+            target = roundTarget(counter,((player1_tgt + player2_tgt) / 2.0) * modifier);
 
             target = checkMaxTargetCompetitive(counter, target);
 
@@ -81,7 +72,7 @@ public class TargetPrizeChallengesCalculator {
             res.put("player2_prz",  evaluate(target, player2_bas, counter, quantiles));
         }
         else if (type.equals("groupCooperative")) {
-            target = roundTarget(counter, player1_tgt + player2_tgt);
+            target = roundTarget(counter, (player1_tgt + player2_tgt) * modifier);
 
             target = checkMaxTargetCooperative(counter, target);
 

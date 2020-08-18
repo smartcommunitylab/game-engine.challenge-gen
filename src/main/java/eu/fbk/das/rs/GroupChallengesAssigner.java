@@ -57,8 +57,6 @@ public class GroupChallengesAssigner extends ChallengeUtil {
     public GroupChallengesAssigner(RecommendationSystem rs) {
         super(rs);
 
-        prepare(getChallengeWeek(new DateTime()));
-
         Arrays.sort(groupCha);
 
         playerLimit = 0;
@@ -72,11 +70,9 @@ public class GroupChallengesAssigner extends ChallengeUtil {
         startDate = new DateTime(challengeValues.get("start"));
         endDate = new DateTime(challengeValues.get("end"));
 
-        groupChallenges = new ArrayList<>();
+        prepare(getChallengeWeek(execDate));
 
-        // String type = "groupCompetitiveTime";
-        // String type = "groupCooperative";
-       //  String type = "groupCompetitivePerformance";
+        groupChallenges = new ArrayList<>();
 
         players = removeAlreadyPlaying(players);
 
@@ -90,7 +86,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
         HashMap<String, HashMap<String, Double>> playersCounterAssignment = getPlayerCounterAssignment(players, stats, modelTypes);
 
         TargetPrizeChallengesCalculator tpcc = new TargetPrizeChallengesCalculator();
-        tpcc.prepare(rs, rs.gameId);
+        tpcc.prepare(rs, rs.gameId, execDate);
 
         for (String mode : modelTypes) {
 
@@ -129,7 +125,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
                 if (!pc.getName().equals("green leaves"))
                     continue;
 
-                Double sc = getPeriodScore(pc,"weekly", new DateTime());
+                Double sc = getPeriodScore(pc,"weekly", execDate);
 
                 if (sc > 20)
                     active = true;
@@ -147,7 +143,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
     private Set<String> removeAlreadyPlaying(Set<String> pl) {
         Set<String> players = new HashSet<>();
 
-        DateTime nextMonday = jumpToMonday(new DateTime().plusDays(7));
+        DateTime nextMonday = jumpToMonday(execDate.plusDays(7));
 
         /* TODO REMOVE
         nextMonday =  nextMonday.minusDays(7);
@@ -199,7 +195,6 @@ public class GroupChallengesAssigner extends ChallengeUtil {
                     startDate, endDate);
         else {
             Map<String, Double> result = tpcc.targetPrizeChallengesCompute(p.getFirst(), p.getSecond(), mode, type);
-            result.put("target", Math.ceil(result.get("target") * 0.9));
             pf("%.2f, %s, %.2f, %.0f, %s, %.2f, %.0f, %s, %s\n",
                     result.get("target"),
                     p.getFirst(), result.get("player1_bas"), result.get("player1_prz"),

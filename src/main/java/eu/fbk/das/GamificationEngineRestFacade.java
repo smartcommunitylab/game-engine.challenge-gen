@@ -230,7 +230,7 @@ public class GamificationEngineRestFacade {
         a2.setRole("GUEST");
         gcd.addAttendeesItem(a2);
 
-        gcd.setChallengeTarget(res.get("target"));
+        gcd.setChallengeTarget(Math.ceil(res.get("target")));
 
         PointConceptDTO cpc = new PointConceptDTO();
         cpc.setName(counter);
@@ -239,8 +239,8 @@ public class GamificationEngineRestFacade {
 
         RewardDTO r = new RewardDTO();
         Map<String, Double> bonusScore = new HashMap<>();
-        bonusScore.put(pId1, res.get("player1_prz"));
-        bonusScore.put(pId2, res.get("player2_prz"));
+        bonusScore.put(pId1, Math.ceil(res.get("player1_prz")));
+        bonusScore.put(pId2, Math.ceil(res.get("player2_prz")));
         r.setBonusScore(bonusScore);
         gcd.setReward(r);
 

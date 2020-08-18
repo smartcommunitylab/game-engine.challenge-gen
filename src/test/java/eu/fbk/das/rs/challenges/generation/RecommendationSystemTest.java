@@ -139,7 +139,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
         PlayerStateDTO cnt = facade.getPlayerState(conf.get("GAMEID"), player_id);
 
         // generazione della challenges
-        List<ChallengeExpandedDTO> l_cha = rscg.generate(cnt, "Walk_Km", date);
+        List<ChallengeExpandedDTO> l_cha = rscg.generate(cnt, "Walk_Km");
 
         p("\n #### GENERATED #### \n");
         for (ChallengeExpandedDTO cha : l_cha) {

@@ -128,15 +128,16 @@ public class RandomTest extends ChallengesBaseTest {
 
         Set<String> pIds = facade.getGamePlayers(gameId);
         for(String pId: pIds) {
-            PlayerStateDTO state = facade.getPlayerState(gameId, pId);
-            if (existsChallenge(gameId, pId, "w88_")) continue;
-
+            // PlayerStateDTO state = facade.getPlayerState(gameId, pId);
+            if (existsChallenge(gameId, pId, "w93_")) continue;
+            p(pId);
         }
     }
 
     private boolean existsChallenge(String gameId, String pId, String l) {
         List<it.smartcommunitylab.model.ChallengeConcept> currentChallenges = facade.getChallengesPlayer(gameId, pId);
         for (it.smartcommunitylab.model.ChallengeConcept cha: currentChallenges) {
+            p(cha.getName());
             if (cha.getName().contains(l))
                 return true;
         }

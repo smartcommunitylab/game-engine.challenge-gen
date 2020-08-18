@@ -4,6 +4,7 @@ import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import eu.fbk.das.GamificationConfig;
 import it.smartcommunitylab.model.PlayerStateDTO;
+import org.chocosolver.solver.constraints.nary.nvalue.amnv.differences.D;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -98,7 +99,7 @@ public class TargetPrizeChallengesCalculatorTest extends ChallengesBaseTest {
         rs = new RecommendationSystem(conf);
 
         tpcc = new TargetPrizeChallengesCalculator();
-        tpcc.prepare(rs, gameId);
+        tpcc.prepare(rs, gameId, new DateTime());
 
     }
 

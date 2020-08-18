@@ -228,7 +228,7 @@ public class RecommendationSystem {
         if (existsAssignedChallenge(pId, l)) return;
 
         ChallengeExpandedDTO cha = rscg.prepareChallangeImpr(l);
-        cha.setStart(new DateTime().toDate());
+        cha.setStart(execDate.toDate());
         cha.setModelName("absoluteIncrement");
         cha.setData("target", 1.0);
         cha.setData("bonusScore", 200.0);
@@ -292,7 +292,7 @@ public class RecommendationSystem {
 
         Map<String, Object> cs = facade.getCustomDataPlayer(gameId, pId);
 
-        int w = this.getChallengeWeek(new DateTime());
+        int w = this.getChallengeWeek(execDate);
 
         if (cs == null)
             return;
@@ -314,9 +314,7 @@ public class RecommendationSystem {
 
         ChallengeExpandedDTO cha = rscg.prepareChallangeImpr("survey_" + l);
 
-        DateTime dt = new DateTime();
-
-        cha.setStart(dt.toDate());
+        cha.setStart(execDate.toDate());
 
         cha.setModelName("survey");
         cha.setData("surveyType", l);
@@ -345,9 +343,7 @@ public class RecommendationSystem {
 
         ChallengeExpandedDTO cha = rscg.prepareChallangeImpr("survey_" + l);
 
-        DateTime dt = new DateTime();
-
-        cha.setStart(dt.toDate());
+        cha.setStart(execDate.toDate());
 
         cha.setModelName("survey");
         cha.setData("surveyType", l);
@@ -531,7 +527,7 @@ public class RecommendationSystem {
 
         List<ChallengeExpandedDTO> challanges = new ArrayList<>();
         for (String mode : modelTypes) {
-            List<ChallengeExpandedDTO> l_cha = rscg.generate(state, mode, d, exp);
+            List<ChallengeExpandedDTO> l_cha = rscg.generate(state, mode, exp);
 
             if (l_cha.isEmpty())
                 continue;
@@ -767,7 +763,7 @@ public class RecommendationSystem {
             String exp = (String) cs.get("exp");
             if (exp == null) continue;
 
-            cs.put("exp-start", this.getChallengeWeek(new DateTime()));
+            cs.put("exp-start", this.getChallengeWeek(execDate));
             facade.setCustomDataPlayer(gameId, pId, cs);
         }*/
 
@@ -784,7 +780,7 @@ public class RecommendationSystem {
         for (String playerId : playerIds) {
             Optional<DateTime> dt = firstActionAnalyzer.firstActionDate(playerId);
             dt.ifPresent(date -> {
-                int am = Days.daysBetween(date, new DateTime()).getDays();
+                int am = Days.daysBetween(date, execDate).getDays();
 
                 if (am > 0 && am < 100)
                     daysPlayed.put(playerId, am);
@@ -794,7 +790,7 @@ public class RecommendationSystem {
 
         int i = 0;
 
-        int w = this.getChallengeWeek(new DateTime());
+        // int w = this.getChallengeWeek(execDate);
 /*
         for (String pId: playerIds) {
             Map<String, Object> cs = facade.getCustomDataPlayer(gameId, pId);
@@ -850,7 +846,7 @@ public class RecommendationSystem {
             control = !control;
 
             cs.put("exp", exp);
-            cs.put("exp-start", this.getChallengeWeek(new DateTime()));
+            cs.put("exp-start", this.getChallengeWeek(execDate));
 
             facade.setCustomDataPlayer(gameId, pId, cs);
         }

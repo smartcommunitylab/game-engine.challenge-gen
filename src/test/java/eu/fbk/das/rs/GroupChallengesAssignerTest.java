@@ -1,6 +1,7 @@
 package eu.fbk.das.rs;
 
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
+import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import it.smartcommunitylab.model.GroupChallengeDTO;
 import org.chocosolver.solver.Model;
@@ -11,9 +12,7 @@ import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 
 public class GroupChallengesAssignerTest extends ChallengesBaseTest {
 
@@ -38,7 +37,17 @@ public class GroupChallengesAssignerTest extends ChallengesBaseTest {
 
     @Test
     public void execute() {
-      // FIX  gca.execute(players, modelType);
+        Set<String> players = facade.getGamePlayers(rs.gameId);
+
+        // String type = "groupCompetitiveTime";
+        String type = "groupCooperative";
+        //  String type = "groupCompetitivePerformance";
+
+        Set<String> modeList = new HashSet<String>(Arrays.asList(ChallengesConfig.WALK_KM,ChallengesConfig.BIKE_KM,ChallengesConfig.GREEN_LEAVES));
+
+        Map<String, Object> config = new HashMap<>();
+
+        gca.execute(players, modeList,  type, config);
     }
 
     @Test
