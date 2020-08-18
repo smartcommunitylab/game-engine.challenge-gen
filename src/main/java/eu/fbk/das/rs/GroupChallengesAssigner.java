@@ -1,11 +1,8 @@
 package eu.fbk.das.rs;
 
-import static eu.fbk.das.GamificationEngineRestFacade.jodaToOffset;
 import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.getWeeklyContentMode;
 import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.getChallengeWeek;
-import static eu.fbk.das.utils.Utils.daysApart;
 import static eu.fbk.das.utils.Utils.f;
-import static eu.fbk.das.utils.Utils.jumpToMonday;
 import static eu.fbk.das.utils.Utils.p;
 import static eu.fbk.das.utils.Utils.pf;
 import static eu.fbk.das.utils.Utils.rand;
@@ -14,6 +11,7 @@ import static eu.fbk.das.utils.Utils.sortByValues;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -26,18 +24,19 @@ import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.variables.IntVar;
 import org.joda.time.DateTime;
 
+import eu.fbk.das.GamificationEngineRestFacade;
 import eu.fbk.das.model.GroupExpandedDTO;
 import eu.fbk.das.rs.challenges.ChallengeUtil;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemStatistics;
 import eu.fbk.das.utils.ArrayUtils;
 import eu.fbk.das.utils.Pair;
-import it.smartcommunitylab.model.AttendeeDTO;
 import it.smartcommunitylab.model.PlayerStateDTO;
-import it.smartcommunitylab.model.PointConceptDTO;
 import it.smartcommunitylab.model.ext.ChallengeAssignmentDTO;
 import it.smartcommunitylab.model.ext.ChallengeConcept;
 import it.smartcommunitylab.model.ext.GameConcept;
+import it.smartcommunitylab.model.ext.GroupChallengeDTO.AttendeeDTO;
+import it.smartcommunitylab.model.ext.GroupChallengeDTO.PointConceptDTO;
 import it.smartcommunitylab.model.ext.PointConcept;
 
 public class GroupChallengesAssigner extends ChallengeUtil {
@@ -67,14 +66,16 @@ public class GroupChallengesAssigner extends ChallengeUtil {
     public List<GroupExpandedDTO> execute(Set<String> players, Set<String> modelTypes, String assignmentType, Map<String, Object> challengeValues) {
 
         execDate = new DateTime(challengeValues.get("exec"));
-        startDate = new DateTime(challengeValues.get("start"));
-        endDate = new DateTime(challengeValues.get("end"));
+        Pair<Date, Date> challengeDates = GamificationEngineRestFacade
+                .getDates(challengeValues.get("start"), challengeValues.get("duration"));
+        startDate = new DateTime(challengeDates.getFirst());
+        endDate = new DateTime(challengeDates.getSecond());
 
         prepare(getChallengeWeek(execDate));
 
         groupChallenges = new ArrayList<>();
 
-        players = removeAlreadyPlaying(players);
+        players = filterPlayersAlreadyAssignedToGroupChallenge(players);
 
         players = removeNotPartecipating(players);
 
@@ -125,7 +126,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
                 if (!pc.getName().equals("green leaves"))
                     continue;
 
-                Double sc = getPeriodScore(pc,"weekly", execDate);
+                Double sc = getPeriodScore(pc, "weekly", execDate);
 
                 if (sc > 20)
                     active = true;
@@ -139,41 +140,21 @@ public class GroupChallengesAssigner extends ChallengeUtil {
         return players;
     }
 
-    // remove players that already have a group challenge assigned
-    private Set<String> removeAlreadyPlaying(Set<String> pl) {
+    private Set<String> filterPlayersAlreadyAssignedToGroupChallenge(Set<String> playersList) {
         Set<String> players = new HashSet<>();
 
-        DateTime nextMonday = jumpToMonday(execDate.plusDays(7));
+        for (String playerId: playersList) {
+            List<it.smartcommunitylab.model.ChallengeConcept> currentChallenges = rs.facade.getChallengesPlayer(rs.gameId, playerId);
+            boolean missingAssignedGroupChallenges =
+                    currentChallenges.stream().filter(c -> c.getModelName().contains("group"))
+                    .filter(c -> startDate.isEqual(new DateTime(c.getStart()))
+                            && endDate.isEqual(new DateTime(c.getEnd())))
+                            .count() == 0;
 
-        /* TODO REMOVE
-        nextMonday =  nextMonday.minusDays(7);
-        startDate = startDate.minusDays(7);
-        endDate = endDate.minusDays(7);
+            if (missingAssignedGroupChallenges) {
+                players.add(playerId);
 
-        rs.rscg.startDate = startDate;
-        rs.rscg.endDate = endDate; */
-
-        for (String pId: pl) {
-
-            boolean exists = false;
-
-            List<it.smartcommunitylab.model.ChallengeConcept> currentChallenges = rs.facade.getChallengesPlayer(rs.gameId, pId);
-            for (it.smartcommunitylab.model.ChallengeConcept cha: currentChallenges) {
-
-                DateTime existingChaEnd = jumpToMonday(new DateTime(cha.getEnd()));
-
-                String s = (String) cha.getModelName();
-                if (!s.contains("group"))
-                    continue;
-
-                int v = Math.abs(daysApart(nextMonday, existingChaEnd));
-                if (v < 1) {
-                    exists = true;
-                }
             }
-
-            if (!exists)
-                players.add(pId);
         }
         return players;
     }
@@ -243,8 +224,8 @@ public class GroupChallengesAssigner extends ChallengeUtil {
 
         gcd.setOrigin("gca");
         gcd.setState("ASSIGNED");
-        gcd.setStart(jodaToOffset(start));
-        gcd.setEnd(jodaToOffset(end));
+        gcd.setStart(start.toDate());
+        gcd.setEnd(end.toDate());
 
         return gcd;
     }

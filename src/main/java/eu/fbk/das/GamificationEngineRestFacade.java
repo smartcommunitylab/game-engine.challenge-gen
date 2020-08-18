@@ -3,35 +3,42 @@ package eu.fbk.das;
 
 import static eu.fbk.das.utils.Utils.p;
 
-import eu.fbk.das.utils.Pair;
-import org.joda.time.format.ISODateTimeFormat;
-import org.threeten.bp.OffsetDateTime;
-
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
-import org.threeten.bp.*;
+import org.joda.time.format.ISODateTimeFormat;
+import org.threeten.bp.Instant;
+import org.threeten.bp.OffsetDateTime;
+import org.threeten.bp.ZoneOffset;
 
 import eu.fbk.das.model.GroupExpandedDTO;
+import eu.fbk.das.utils.Pair;
 import it.smartcommunitylab.ApiClient;
 import it.smartcommunitylab.ApiException;
 import it.smartcommunitylab.basic.api.GameControllerApi;
 import it.smartcommunitylab.basic.api.PlayerControllerApi;
-import it.smartcommunitylab.model.AttendeeDTO;
 import it.smartcommunitylab.model.ChallengeConcept;
 import it.smartcommunitylab.model.GameStatistics;
-import it.smartcommunitylab.model.GroupChallengeDTO;
 import it.smartcommunitylab.model.PagePlayerStateDTO;
 import it.smartcommunitylab.model.PlayerStateDTO;
-import it.smartcommunitylab.model.PointConceptDTO;
 import it.smartcommunitylab.model.Projection;
 import it.smartcommunitylab.model.RawSearchQuery;
-import it.smartcommunitylab.model.RewardDTO;
 import it.smartcommunitylab.model.WrapperQuery;
 import it.smartcommunitylab.model.ext.ChallengeAssignmentDTO;
+import it.smartcommunitylab.model.ext.GroupChallengeDTO;
+import it.smartcommunitylab.model.ext.GroupChallengeDTO.AttendeeDTO;
+import it.smartcommunitylab.model.ext.GroupChallengeDTO.PointConceptDTO;
+import it.smartcommunitylab.model.ext.GroupChallengeDTO.RewardDTO;
 
 public class GamificationEngineRestFacade {
 
@@ -219,16 +226,17 @@ public class GamificationEngineRestFacade {
         GroupExpandedDTO gcd = new GroupExpandedDTO();
         gcd.setChallengeModelName(mode);
         gcd.setGameId(gameId);
-
+        gcd.setAttendees(new ArrayList<GroupChallengeDTO.AttendeeDTO>());
         AttendeeDTO a1 = new AttendeeDTO();
         a1.setPlayerId(pId1);
         a1.setRole("GUEST");
-        gcd.addAttendeesItem(a1);
+
+        gcd.getAttendees().add(a1);
 
         AttendeeDTO a2 = new AttendeeDTO();
         a2.setPlayerId(pId2);
         a2.setRole("GUEST");
-        gcd.addAttendeesItem(a2);
+        gcd.getAttendees().add(a2);
 
         gcd.setChallengeTarget(Math.ceil(res.get("target")));
 
@@ -247,8 +255,8 @@ public class GamificationEngineRestFacade {
         gcd.setOrigin("gca");
         gcd.setState("ASSIGNED");
 
-        gcd.setStart(jodaToOffset(start));
-        gcd.setEnd(jodaToOffset(end));
+        gcd.setStart(start.toDate());
+        gcd.setEnd(end.toDate());
 
         return gcd;
     }

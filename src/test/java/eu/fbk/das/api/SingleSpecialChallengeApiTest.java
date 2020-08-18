@@ -26,7 +26,7 @@ public class SingleSpecialChallengeApiTest {
         rewards.put("scoreType", "green leaves");
         rewards.put("calcType", "fixed");
         rewards.put("calcValue", "300.0");
-        List<ChallengeExpandedDTO> generated = recommenderApi.createSingleChallengeUnaTantum(
+        List<ChallengeExpandedDTO> generated = recommenderApi.createSpecialSingleChallenges(
                 gamificationEngineConf(), model, config,
                 playerSet(), rewards);
         assertThat(generated).hasSize(1);
@@ -56,7 +56,7 @@ public class SingleSpecialChallengeApiTest {
         rewards.put("scoreType", "green leaves");
         rewards.put("calcType", "fixed");
         rewards.put("calcValue", "300.0");
-        List<ChallengeExpandedDTO> generated = recommenderApi.createSingleChallengeUnaTantum(
+        List<ChallengeExpandedDTO> generated = recommenderApi.createSpecialSingleChallenges(
                 gamificationEngineConf(), model, config, playerSet(), rewards);
         final ChallengeExpandedDTO challenge = generated.get(0);
         System.out.println(String.format("model: %s, name: %s, fields: %s",
@@ -87,7 +87,7 @@ public class SingleSpecialChallengeApiTest {
         rewards.put("scoreType", "green leaves");
         rewards.put("calcType", "fixed");
         rewards.put("calcValue", "110.0");
-        List<ChallengeExpandedDTO> generated = recommenderApi.createSingleChallengeUnaTantum(
+        List<ChallengeExpandedDTO> generated = recommenderApi.createSpecialSingleChallenges(
                 gamificationEngineConf(), model, config, playerSet(), rewards);
         final ChallengeExpandedDTO challenge = generated.get(0);
         System.out.println(String.format("model: %s, name: %s, fields: %s",
@@ -121,7 +121,7 @@ public class SingleSpecialChallengeApiTest {
         rewards.put("scoreType", "green leaves");
         rewards.put("calcType", "fixed");
         rewards.put("calcValue", "120.0");
-        List<ChallengeExpandedDTO> generated = recommenderApi.createSingleChallengeUnaTantum(
+        List<ChallengeExpandedDTO> generated = recommenderApi.createSpecialSingleChallenges(
                 gamificationEngineConf(), model, config, playerSet(), rewards);
         final ChallengeExpandedDTO challenge = generated.get(0);
         System.out.println(String.format("model: %s, name: %s, fields: %s",

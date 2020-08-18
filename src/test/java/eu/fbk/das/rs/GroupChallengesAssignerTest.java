@@ -3,7 +3,10 @@ package eu.fbk.das.rs;
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
-import it.smartcommunitylab.model.GroupChallengeDTO;
+import it.smartcommunitylab.model.ext.GroupChallengeDTO;
+
+import java.util.*;
+
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.search.strategy.Search;
@@ -11,8 +14,6 @@ import org.chocosolver.solver.variables.IntVar;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.*;
 
 public class GroupChallengesAssignerTest extends ChallengesBaseTest {
 

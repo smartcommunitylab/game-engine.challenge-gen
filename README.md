@@ -21,6 +21,34 @@ Gamification Engine Challenge Generator is based on two tools:
 1. Clone repository with git
 2. Compile with maven using mvn install
 
+## How to deploy
+
+To deploy a new version of challenge-gen on the Smartcommunitylab Nexus you have to configure a valid user into your `~/.m2/settings.xml`
+
+### Deploy Snapshot
+
+```bash
+mvn clean install  deploy:deploy-file  \
+-Dmaven.test.skip=true \
+-Dpackaging=jar \
+-DrepositoryId=SmartCommunityLab-snapshots \
+-DpomFile=pom.xml \
+-Durl=http://repository.smartcommunitylab.it/content/repositories/snapshots \
+-Dfile=target/challenge-gen-<VERSION>-SNAPSHOT.jar
+```
+
+### Deploy Release
+
+```bash
+mvn clean install  deploy:deploy-file  \
+-Dmaven.test.skip=true \
+-Dpackaging=jar \
+-DrepositoryId=SmartCommunityLab-releases \
+-DpomFile=pom.xml \
+-Durl=http://repository.smartcommunitylab.it/content/repositories/releases \
+-Dfile=target/gamification-java-client-<VERSION>.jar
+```
+
 ## How to generate tools
 
 Challenge generator have two tools available:
