@@ -7,23 +7,27 @@ import java.util.*;
 
 public class RecommenderSystemWeekly extends RecommenderSystemExec {
 
-    public List<ChallengeExpandedDTO> go(Map<String, String> conf, String players) {
+    public List<ChallengeExpandedDTO> go(Map<String, String> conf, String players, Set<String> modelTypes,  Map<String, String> creationRules) {
         prepare();
         if (conf == null) conf = this.conf;
 
-        Map<String, String> creationRules = new HashMap<>();
-        creationRules.put("0", "empty");
-        creationRules.put("1", "fixedOne");
-        creationRules.put("2", "choiceTwo");
-        creationRules.put("3", "choiceThree");
-        creationRules.put("other", "choiceThree");
+        if (creationRules == null) {
+            creationRules = new HashMap<>();
+            creationRules.put("0", "empty");
+            creationRules.put("1", "fixedOne");
+            creationRules.put("2", "choiceTwo");
+            creationRules.put("3", "choiceThree");
+            creationRules.put("other", "choiceThree");
+        }
 
-        Set<String> modelTypes = new HashSet<>();
-        modelTypes.add(ChallengesConfig.BIKE_KM);
-        modelTypes.add(ChallengesConfig.WALK_KM);
-        modelTypes.add(ChallengesConfig.GREEN_LEAVES);
-        modelTypes.add(ChallengesConfig.BUS_KM);
-        modelTypes.add(ChallengesConfig.TRAIN_KM);
+        if (modelTypes == null) {
+            modelTypes = new HashSet<>();
+            modelTypes.add(ChallengesConfig.BIKE_KM);
+            modelTypes.add(ChallengesConfig.WALK_KM);
+            modelTypes.add(ChallengesConfig.GREEN_LEAVES);
+            modelTypes.add(ChallengesConfig.BUS_KM);
+            modelTypes.add(ChallengesConfig.TRAIN_KM);
+        }
 
         if (players == null)
             players = "all";
@@ -31,10 +35,10 @@ public class RecommenderSystemWeekly extends RecommenderSystemExec {
         return api.createStandardSingleChallenges(conf, modelTypes, creationRules, config, players, reward);
     }
 
-    public boolean exec(Map<String, String> conf, String players) {
+    public boolean exec(Map<String, String> conf, String players, Set<String> modelTypes,  Map<String, String> creationRules) {
         if (conf == null) conf = this.conf;
 
-        List<ChallengeExpandedDTO> chas = go(conf, players);
+        List<ChallengeExpandedDTO> chas = go(conf, players, modelTypes, creationRules);
         boolean res = true;
         for(ChallengeExpandedDTO cha: chas) {
             res = res & upload(conf, cha);

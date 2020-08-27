@@ -7,8 +7,11 @@ import java.util.*;
 
 public class RecommenderSystemTantum extends RecommenderSystemExec {
 
-    public List<ChallengeExpandedDTO> go(Map<String, String> conf, String modelType, Map<String, Object> config, String players) {
+    public List<ChallengeExpandedDTO> go(Map<String, String> conf, String modelType, Map<String, Object> options, String players) {
         prepare();
+        if (options != null)
+            config.putAll(options);
+
         if (conf == null) conf = this.conf;
 
         if (players == null)
