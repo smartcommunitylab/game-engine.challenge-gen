@@ -46,7 +46,7 @@ mvn clean install  deploy:deploy-file  \
 -DrepositoryId=SmartCommunityLab-releases \
 -DpomFile=pom.xml \
 -Durl=http://repository.smartcommunitylab.it/content/repositories/releases \
--Dfile=target/gamification-java-client-<VERSION>.jar
+-Dfile=target/challenge-gen-<VERSION>.jar
 ```
 
 ## How to generate tools
