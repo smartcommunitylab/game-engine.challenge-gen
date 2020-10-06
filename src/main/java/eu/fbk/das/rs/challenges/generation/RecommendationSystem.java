@@ -493,7 +493,7 @@ public class RecommendationSystem {
 
         int ix = 1;
 
-        for (int i = 0; i < limit -1; i++) {
+        for (int i = 0; i < limit -1 && ix < list.size(); i++) {
             boolean found = false;
             while (!found) {
 

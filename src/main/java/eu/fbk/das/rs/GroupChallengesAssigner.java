@@ -75,9 +75,14 @@ public class GroupChallengesAssigner extends ChallengeUtil {
 
         groupChallenges = new ArrayList<>();
 
+        players = filterLevel(players);
+
         players = filterPlayersAlreadyAssignedToGroupChallenge(players);
 
         players = removeNotPartecipating(players);
+
+        if (players.size() == 0)
+            return new ArrayList<>();
 
         RecommendationSystemStatistics stats = rs.getStats();
 
@@ -107,6 +112,20 @@ public class GroupChallengesAssigner extends ChallengeUtil {
         }
 
         return groupChallenges;
+    }
+
+    private Set<String> filterLevel(Set<String> pl) {
+        Set<String> players = new HashSet<>();
+        for (String pId: pl) {
+            PlayerStateDTO p = rs.facade.getPlayerState(rs.gameId, pId);
+            int lvl = getLevel(p);
+            if (minLvl < 0 || lvl >=  minLvl) {
+                players.add(pId);
+                if (playerLimit != 0 && players.size() >= playerLimit)
+                    break;
+            }
+        }
+        return players;
     }
 
     private Set<String> removeNotPartecipating(Set<String> pl) {

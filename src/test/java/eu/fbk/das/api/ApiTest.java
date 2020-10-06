@@ -19,7 +19,11 @@ import static eu.fbk.das.utils.Utils.p;
 
 public class ApiTest extends ChallengesBaseTest {
 
-    protected boolean quick = true;
+    public ApiTest() {
+        prod = true;
+    }
+
+    protected boolean quick = false;
 
     private Set<String> ps;
     private DateTime execDate;
@@ -31,10 +35,6 @@ public class ApiTest extends ChallengesBaseTest {
 
     @Before
     public void prepare() {
-        // TODO caricamento del dump del database corretto
-
-        // TODO verifica che ci sia un docker attivo?
-
         setStartEnd(new DateTime());
     }
 
@@ -252,5 +252,27 @@ public class ApiTest extends ChallengesBaseTest {
         assert(start.compareTo(startDate) == 0);
         DateTime end = new DateTime(cha.getEnd());
         assert(end.compareTo(endDate) == 0);
+    }
+
+    @Test
+    public void testProblemGeneration() {
+        // p(conf);
+        conf.put("GAMEID", "5edf5f7d4149dd117cc7f17d");
+
+        String challengeType = "groupCooperative";
+        HashSet<String> modelTypes = new HashSet<>();
+        modelTypes.add(ChallengesConfig.GREEN_LEAVES);
+        modelTypes.add(ChallengesConfig.BIKE_KM);
+        modelTypes.add(ChallengesConfig.WALK_KM);
+
+        RecommenderSystemGroup rsw = new RecommenderSystemGroup();
+        List<GroupExpandedDTO> res = rsw.go(conf, "all", challengeType, modelTypes);
+
+        // Fai verifiche sulle challenges
+        for (GroupExpandedDTO cha : res) {
+            p(cha);
+        }
+        // List<GroupExpandedDTO> res = rsw.go(conf, "all", challengeType, modelTypes);
+
     }
 }

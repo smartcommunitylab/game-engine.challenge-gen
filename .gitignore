@@ -1,6 +1,8 @@
 prod.properties
 test.properties
 
+test/dbs/*
+
 # Intellij
 .idea/
 *.iml

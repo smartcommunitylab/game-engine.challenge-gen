@@ -20,7 +20,7 @@ public class ApiSimpleTest extends ChallengesBaseTest {
 
 
     public ApiSimpleTest() {
-        prod = true;
+        prod = false;
     }
 
     @Test

@@ -44,17 +44,5 @@ public class ChallengesBaseTest {
         rscf = rs.rscf;
     }
 
-    @Test
-    public void test() {
-        PlayerStateDTO res = facade.getPlayerState(conf.get("GAMEID"), "25706");
-        Set<GameConcept> scores =  res.getState().get("ChallengeConcept");
-        for (GameConcept gc : scores) {
-            ChallengeConcept cha = (ChallengeConcept) gc;
-            p(cha.getName());
-
-            p(cha.getStateDate());
-        }
-    }
-
 
 }
