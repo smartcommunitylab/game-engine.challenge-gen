@@ -1,26 +1,30 @@
 package eu.fbk.das.rs;
 
-import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
-import eu.fbk.das.rs.challenges.calculator.DifficultyCalculator;
-
-import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
-import eu.fbk.das.rs.utils.Pair;
-import eu.trentorise.game.challenges.rest.Player;
-import eu.trentorise.game.challenges.rest.GameStatisticsSet;
-import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
-import eu.trentorise.game.challenges.rest.PointConcept;
-import eu.trentorise.game.model.GameStatistics;
-import org.apache.commons.math3.stat.regression.SimpleRegression;
-import org.joda.time.DateTime;
+import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.booster;
+import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.getWeeklyContentMode;
+import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.roundTarget;
+import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.week_n;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.*;
+import org.apache.commons.math3.stat.regression.SimpleRegression;
+import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+
+import eu.fbk.das.GamificationEngineRestFacade;
+import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
+import eu.fbk.das.rs.challenges.calculator.DifficultyCalculator;
+import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
+import eu.fbk.das.utils.Pair;
+import it.smartcommunitylab.model.GameStatistics;
+import it.smartcommunitylab.model.PlayerStateDTO;
 
 
 public class TargetPrizeChallengesCalculator {
 
+    private static final Logger logger = Logger.getLogger(TargetPrizeChallengesCalculator.class);
     private GamificationEngineRestFacade facade;
 
     private DateTime execDate;
@@ -32,21 +36,12 @@ public class TargetPrizeChallengesCalculator {
 
     private String gameId;
     private RecommendationSystem rs;
-
-
-    public void prepare(String host, String username, String password, String gameId) {
-
-        execDate = new DateTime();
-
-        facade = new GamificationEngineRestFacade(host, username, password);
-
-        this.gameId = gameId;
-    }
+    private double modifier = 0.9;
 
     // TODO remove
-    public void prepare(RecommendationSystem rs, String gameId) {
+    public void prepare(RecommendationSystem rs, String gameId, DateTime execDate) {
 
-        execDate = new DateTime();
+        this.execDate = execDate;
 
         facade = rs.facade;
 
@@ -74,7 +69,7 @@ public class TargetPrizeChallengesCalculator {
 
         double target;
         if (type.equals("groupCompetitiveTime")) {
-            target = roundTarget(counter,(player1_tgt + player2_tgt) / 2.0);
+            target = roundTarget(counter,((player1_tgt + player2_tgt) / 2.0) * modifier);
 
             target = checkMaxTargetCompetitive(counter, target);
 
@@ -83,7 +78,7 @@ public class TargetPrizeChallengesCalculator {
             res.put("player2_prz",  evaluate(target, player2_bas, counter, quantiles));
         }
         else if (type.equals("groupCooperative")) {
-            target = roundTarget(counter, player1_tgt + player2_tgt);
+            target = roundTarget(counter, (player1_tgt + player2_tgt) * modifier);
 
             target = checkMaxTargetCooperative(counter, target);
 
@@ -104,7 +99,7 @@ public class TargetPrizeChallengesCalculator {
 
     private Pair<Double, Double> getForecast(String nm, String pId, Map<String, Double> res,  String counter) {
 
-        Player state = facade.getPlayerState(gameId, pId);
+        PlayerStateDTO state = facade.getPlayerState(gameId, pId);
 
         Pair<Double, Double> forecast = forecastMode(state, counter);
 
@@ -130,7 +125,10 @@ public class TargetPrizeChallengesCalculator {
             if ("green leaves".equals(counter))
                 return Math.min(3000, v);
 
-            p("WRONG COUNTER");
+
+        logger.warn(String.format(
+                "Unsupported value %s calculating max target for group competitive, valid values: Walk_Km, Bike_Km, green leaves",
+                counter));
             return 0.0;
         }
 
@@ -142,7 +140,9 @@ public class TargetPrizeChallengesCalculator {
         if ("green leaves".equals(counter))
             return Math.min(6000, v);
 
-        p("WRONG COUNTER");
+        logger.warn(String.format(
+                "Unsupported value %s calculating max target for group cooperative, valid values: Walk_Km, Bike_Km, green leaves",
+                counter));
         return 0.0;
     }
 
@@ -154,7 +154,9 @@ public class TargetPrizeChallengesCalculator {
         if ("green leaves".equals(counter))
             return Math.max(50, v);
 
-        p("WRONG COUNTER");
+        logger.warn(String.format(
+                "Unsupported value %s calculating min target, valid values: Walk_Km, Bike_Km, green leaves",
+                counter));
         return 0.0;
     }
 
@@ -162,10 +164,10 @@ public class TargetPrizeChallengesCalculator {
         return rs.getStats().getQuantiles(counter);
     }
 
-    private Map<Integer, Double> getQuantiles(String gameId, String counter) {
+    private Map<String, Double> getQuantiles(String gameId, String counter) {
 
         // Da sistemare richiesta per dati della settimana precedente, al momento non presenti
-        GameStatisticsSet stats = facade.readGameStatistics(gameId, lastMonday, counter);
+        List<GameStatistics> stats = facade.readGameStatistics(gameId, lastMonday, counter);
         if (stats == null || stats.isEmpty()) {
             pf("Nope \n");
             return null;
@@ -186,7 +188,7 @@ public class TargetPrizeChallengesCalculator {
         dc = new DifficultyCalculator();
     }
 
-    private Pair<Double, Double> forecastMode(Player state, String counter) {
+    private Pair<Double, Double> forecastMode(PlayerStateDTO state, String counter) {
 
         // Check date of registration, decide which method to use
         int week_playing = getWeekPlaying(state, counter);
@@ -202,7 +204,7 @@ public class TargetPrizeChallengesCalculator {
     }
 
     // Weighted moving average
-    private Pair<Double, Double> forecastWMA(int v, Player state, String counter) {
+    private Pair<Double, Double> forecastWMA(int v, PlayerStateDTO state, String counter) {
 
         DateTime date = lastMonday;
 
@@ -224,7 +226,7 @@ public class TargetPrizeChallengesCalculator {
         return new Pair<Double, Double>(pv, baseline);
     }
 
-    private int getWeekPlaying(Player state, String counter) {
+    private int getWeekPlaying(PlayerStateDTO state, String counter) {
 
         DateTime date = lastMonday;
         int i = 0;
@@ -240,7 +242,7 @@ public class TargetPrizeChallengesCalculator {
         return i;
     }
 
-    public Pair<Double, Double> forecastModeSimple(Player state, String counter) {
+    public Pair<Double, Double> forecastModeSimple(PlayerStateDTO state, String counter) {
 
         DateTime date = lastMonday;
         Double currentValue = getWeeklyContentMode(state, counter, date);
@@ -261,7 +263,7 @@ public class TargetPrizeChallengesCalculator {
     }
 
     // old approach
-    private Pair<Double, Double> forecastOld(Map<String, Double> res, String nm, Player state, String counter) {
+    private Pair<Double, Double> forecastOld(Map<String, Double> res, String nm, PlayerStateDTO state, String counter) {
 
         // Last 3 values?
         int v = 3;

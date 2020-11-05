@@ -10,8 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static eu.fbk.das.rs.utils.Utils.*;
-import static eu.fbk.das.rs.utils.Utils.p;
+import static eu.fbk.das.utils.Utils.pf;
 
 public class CostAssigner {
 
@@ -49,7 +48,7 @@ public class CostAssigner {
             int ch = a[0] + 1;
             int cost = getPlayerCost(pl, ch);
             tot_cost += cost;
-            pf("Player %s: %d (%d) \n", pl, ch, cost);
+            pf("PlayerStateDTO %s: %d (%d) \n", pl, ch, cost);
         }
 
         pf("\n\nMean delusion: %.2f - tot delusion: %d \n", tot_cost * 1.0/N, tot_cost);
@@ -109,7 +108,7 @@ public class CostAssigner {
         for(int i  = 0; i < N; i++) {
             for(int j  =  i +1; j < N; j++) {
                 if (best.getIntVal(vs[i][j]) > 0) {
-                    pf("Player %s: %d (%d) \n", players.get(i), j, costMatrix[i][j]);
+                    pf("PlayerStateDTO %s: %d (%d) \n", players.get(i), j, costMatrix[i][j]);
                 }
             }
         }

@@ -2,7 +2,7 @@ package eu.fbk.das.rs;
 
 import org.testng.annotations.Test;
 
-import static eu.fbk.das.rs.utils.Utils.pf;
+import static eu.fbk.das.utils.Utils.pf;
 
 public class RandomTest {
 

@@ -1,13 +1,11 @@
 package eu.fbk.das.rs;
 
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
-import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
-import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
-import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
-import eu.trentorise.game.challenges.rest.Player;
+import eu.fbk.das.GamificationConfig;
+import it.smartcommunitylab.model.PlayerStateDTO;
+import org.chocosolver.solver.constraints.nary.nvalue.amnv.differences.D;
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,8 +18,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static eu.fbk.das.rs.challenges.ChallengeUtil.getLevel;
-import static eu.fbk.das.rs.utils.Utils.*;
-import static org.junit.Assert.*;
+import static eu.fbk.das.utils.Utils.wf;
 
 public class TargetPrizeChallengesCalculatorTest extends ChallengesBaseTest {
 
@@ -67,7 +64,7 @@ public class TargetPrizeChallengesCalculatorTest extends ChallengesBaseTest {
         for (String pId: players) {
              if (ix++ > 100)
                break;
-            Player p = facade.getPlayerState(gameId, pId);
+            PlayerStateDTO p = facade.getPlayerState(gameId, pId);
             int lvl = getLevel(p);
             if (lvl >= 3)
                 playersToConsider.add(pId);
@@ -92,19 +89,17 @@ public class TargetPrizeChallengesCalculatorTest extends ChallengesBaseTest {
 
     @Before
     public void prepare() {
-        cfg = new RecommendationSystemConfig();
+
+        conf = new GamificationConfig().extract();
 
         now = new DateTime();
 
-        facade = new GamificationEngineRestFacade(cfg.get("HOST"),
-                cfg.get("USERNAME"), cfg.get("PASSWORD"));
+        gameId = conf.get("GAMEID");
 
-        gameId = cfg.get("GAME_ID");
+        rs = new RecommendationSystem(conf);
 
-        rs = new RecommendationSystem();
-        rs.prepare(facade, now);
         tpcc = new TargetPrizeChallengesCalculator();
-        tpcc.prepare(rs, gameId);
+        tpcc.prepare(rs, gameId, new DateTime());
 
     }
 

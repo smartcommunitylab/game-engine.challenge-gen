@@ -1,9 +1,8 @@
 package eu.fbk.das.rs.challenges.evaluation;
 
-import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
-import eu.trentorise.game.challenges.rest.ChallengeConcept;
-import eu.trentorise.game.challenges.rest.Player;
-import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
+import it.smartcommunitylab.model.PlayerStateDTO;
+import it.smartcommunitylab.model.ext.ChallengeConcept;
+import it.smartcommunitylab.model.ext.GameConcept;
 import org.joda.time.DateTime;
 
 import java.io.BufferedReader;
@@ -13,7 +12,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.*;
 
-import static eu.fbk.das.rs.utils.Utils.*;
+import static eu.fbk.das.utils.Utils.*;
 
 public class ChallengeAnalyzer extends ChallengeDataGuru {
 
@@ -52,12 +51,8 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
 
     private int weekEnd = 24;
 
-    public ChallengeAnalyzer(RecommendationSystemConfig cfg) {
-        super(cfg);
-    }
-
     public static void main(String[] args) {
-        ChallengeAnalyzer cdg = new ChallengeAnalyzer(new RecommendationSystemConfig());
+        ChallengeAnalyzer cdg = new ChallengeAnalyzer();
 
         cdg.analyzeSelected();
         // cdg.analyzeAll();
@@ -65,7 +60,6 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
 
     protected void analyzeAll() {
         prepare();
-        createFacade();
 
         for (int i = weekStart; i < weekEnd; i++) {
             String n_path = f("%s/week-%d/", path, i);
@@ -81,7 +75,6 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
 
     protected void analyzeSelected() {
         prepare();
-        createFacade();
 
         for (String s: files)
             analyze(path, s);
@@ -90,7 +83,7 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
     protected void analyze(String file, String s)  {
 
         p("");
-        p(cfg.get("GAME_ID"));
+        p(rs.gameId);
         p(file + s);
 
         playersAll = new HashSet<>();
@@ -177,7 +170,7 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
         incrByLvl = new ArrayList<List<Double>>();
         incrByCounter = new HashMap<>();
 
-        // playersTot = facade.getGamePlayers(cfg.get("GAME_ID"));
+        // playersTot = facade.getGamePlayers(cfg.get("GAMEID"));
         // playersDone = new HashSet<String>();
         next_p = 0;
 
@@ -386,13 +379,15 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
 
         private void searchChallenge() {
 
-            Player state = facade.getPlayerState(cfg.get("GAME_ID"), pId);
+            PlayerStateDTO state = rs.facade.getPlayerState(rs.gameId, pId);
 
-            List<ChallengeConcept> l_cha = state.getState().getChallengeConcept();
+            Set<GameConcept> l_cha = state.getState().get("ChallengeConcept");
             if (l_cha != null)
-            for (ChallengeConcept cha: l_cha ) {
+            for (GameConcept gc: l_cha ) {
+                    ChallengeConcept cha = (ChallengeConcept) gc;
                 if (!cha.getName().equals(name))
                     continue;
+
 
                 chosen = checkChosen(cha.getStateDate());
                 completed = cha.isCompleted();
@@ -404,8 +399,8 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
             completed = false;
         }
 
-        private boolean checkChosen(Map<String, Date> stateDate) {
-            for (String k: stateDate.keySet()) {
+        private boolean checkChosen(Map<ChallengeConcept.ChallengeState, Date> stateDate) {
+            for (ChallengeConcept.ChallengeState k: stateDate.keySet()) {
                 if (!k.equals("ASSIGNED"))
                     continue;
 

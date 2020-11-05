@@ -1,16 +1,15 @@
 package eu.fbk.das.rs.challenges.evaluation.analyzer;
 
 import eu.fbk.das.rs.challenges.evaluation.ChallengeAnalyzer;
-import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
-import eu.trentorise.game.challenges.rest.Player;
-import org.apache.commons.math3.stat.StatUtils;
-import org.apache.commons.math3.util.FastMath;
+import it.smartcommunitylab.model.PlayerStateDTO;
 import org.joda.time.DateTime;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.getWeeklyContentMode;
-import static eu.fbk.das.rs.utils.Utils.pf;
+import static eu.fbk.das.utils.Utils.pf;
 
 public class ChallengeAnalyzerChoice extends ChallengeAnalyzer {
 
@@ -18,12 +17,8 @@ public class ChallengeAnalyzerChoice extends ChallengeAnalyzer {
 
     int[] l;
 
-    public ChallengeAnalyzerChoice(RecommendationSystemConfig cfg) {
-        super(cfg);
-    }
-
     public static void main(String[] args) {
-        ChallengeAnalyzerChoice cdg = new ChallengeAnalyzerChoice(new RecommendationSystemConfig());
+        ChallengeAnalyzerChoice cdg = new ChallengeAnalyzerChoice();
 
         cdg.analyzeAll();
     }
@@ -40,7 +35,7 @@ public class ChallengeAnalyzerChoice extends ChallengeAnalyzer {
 
         for (String pId : challenges.keySet()) {
 
-            Player player = facade.getPlayerState(cfg.get("GAME_ID"), pId);
+            PlayerStateDTO player = rs.facade.getPlayerState(rs.gameId, pId);
 
             List<ChallengeRecord> chas = challenges.get(pId);
 

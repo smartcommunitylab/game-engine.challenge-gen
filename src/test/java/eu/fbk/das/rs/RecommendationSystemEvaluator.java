@@ -1,13 +1,17 @@
 package eu.fbk.das.rs;
 
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
-import eu.trentorise.game.challenges.rest.*;
+import it.smartcommunitylab.model.PlayerStateDTO;
+import it.smartcommunitylab.model.ext.ChallengeConcept;
+import it.smartcommunitylab.model.ext.GameConcept;
+import it.smartcommunitylab.model.ext.PointConcept;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
 import java.util.*;
 
-import static eu.fbk.das.rs.utils.Utils.*;
+import static eu.fbk.das.rs.challenges.ChallengeUtil.getPeriodScore;
+import static eu.fbk.das.utils.Utils.*;
 
 public class RecommendationSystemEvaluator extends ChallengesBaseTest {
 
@@ -34,11 +38,7 @@ public class RecommendationSystemEvaluator extends ChallengesBaseTest {
     @Test
     public void executeAll() {
 
-        cfg.put("HOST", "https://tn.smartcommunitylab.it/gamification2/");
-        facade = new GamificationEngineRestFacade(cfg.get("HOST"),
-                cfg.get("USERNAME"), cfg.get("PASSWORD"));
-
-        Set<String> players = facade.getGamePlayers(cfg.get("GAME_ID"));
+        Set<String> players = facade.getGamePlayers(conf.get("GAMEID"));
 
         analyzeChallengePlayers(players);
 
@@ -46,10 +46,6 @@ public class RecommendationSystemEvaluator extends ChallengesBaseTest {
 
     @Test
     public void executeControl() {
-
-        cfg.put("HOST", "https://tn.smartcommunitylab.it/gamification2/");
-        facade = new GamificationEngineRestFacade(cfg.get("HOST"),
-                cfg.get("USERNAME"), cfg.get("PASSWORD"));
 
         analyzeImprovementPlayers(controlPlayers);
 
@@ -61,10 +57,6 @@ public class RecommendationSystemEvaluator extends ChallengesBaseTest {
 
     @Test
     public void executeTreatment() {
-
-        cfg.put("HOST", "https://tn.smartcommunitylab.it/gamification2/");
-        facade = new GamificationEngineRestFacade(cfg.get("HOST"),
-                cfg.get("USERNAME"), cfg.get("PASSWORD"));
 
         analyzeImprovementPlayers(treatmentPlayers);
 
@@ -78,7 +70,7 @@ public class RecommendationSystemEvaluator extends ChallengesBaseTest {
         weekResult = new HashMap<>();
 
         for (String pId: players) {
-            Player player = facade.getPlayerState(cfg.get("GAME_ID"), pId);
+            PlayerStateDTO player = facade.getPlayerState(conf.get("GAMEID"), pId);
             Integer ix = null;
             Map<String, Double> old = new HashMap<>();
             for (int w = startW; w <= endW; w++ ) {
@@ -112,7 +104,7 @@ public class RecommendationSystemEvaluator extends ChallengesBaseTest {
         weekResult = new HashMap<>();
 
         for (String pId: players) {
-            Player player = facade.getPlayerState(cfg.get("GAME_ID"), pId);
+            PlayerStateDTO player = facade.getPlayerState(conf.get("GAMEID"), pId);
             Integer ix = null;
             for (int w = startW; w <= endW; w++ ) {
 
@@ -139,12 +131,13 @@ public class RecommendationSystemEvaluator extends ChallengesBaseTest {
 
         for (String pId: players) {
 
-            Player player = facade.getPlayerState(cfg.get("GAME_ID"), pId);
-            State st = player.getState();
+            PlayerStateDTO player = facade.getPlayerState(conf.get("GAMEID"), pId);
+            Map<String, Set<GameConcept>> st = player.getState();
 
             int startWeek = getStartWeek(player);
-
-            for (ChallengeConcept chal : st.getChallengeConcept()) {
+            Set<GameConcept> scores =  st.get("ChallengeConcept");
+            for (GameConcept gc : scores) {
+                ChallengeConcept chal = (ChallengeConcept) gc;
                 String nm = chal.getName();
 
                 String mName = chal.getModelName();
@@ -173,7 +166,7 @@ public class RecommendationSystemEvaluator extends ChallengesBaseTest {
                 addWeekRes(w,"diff", diff);
 
                 // choice
-                addWeekRes(w,"choice", chal.getForced() ? 1 : 0);
+                addWeekRes(w,"choice", chal.isForced() ? 1 : 0);
 
                 // completion
                 addWeekRes(w,"compl", chal.isCompleted() ? 1 : 0);
@@ -220,7 +213,11 @@ public class RecommendationSystemEvaluator extends ChallengesBaseTest {
         }
     }
 
-    private int getStartWeek(Player player) {
+    private boolean scoredGreenLeaves(PlayerStateDTO player, Date dt) {
+        return scoredGreenLeaves(player, new DateTime(dt));
+    }
+
+    private int getStartWeek(PlayerStateDTO player) {
 
 
         for (int i = startW; i < endW; i++) {
@@ -282,12 +279,12 @@ public class RecommendationSystemEvaluator extends ChallengesBaseTest {
             res.put(f, res.get(f) + 1);
     }
 
-    private boolean scoredGreenLeaves(Player player, Long day) {
+    private boolean scoredGreenLeaves(PlayerStateDTO player, Long day) {
         return scoredGreenLeaves(player, new DateTime(day));
 
     }
 
-    private boolean scoredGreenLeaves(Player player, DateTime day) {
+    private boolean scoredGreenLeaves(PlayerStateDTO player, DateTime day) {
 
             Double sc = getWeeklyContentMode(player, "green leaves", day);
 
@@ -297,16 +294,16 @@ public class RecommendationSystemEvaluator extends ChallengesBaseTest {
         return true;
     }
 
-    public static Double getWeeklyContentMode(Player cnt, String mode, DateTime execDate) {
-
-
-        for (PointConcept pc : cnt.getState().getPointConcept()) {
+    public static Double getWeeklyContentMode(PlayerStateDTO cnt, String mode, DateTime execDate) {
+        Set<GameConcept> scores =  cnt.getState().get("PointConcept");
+        for (GameConcept gc : scores) {
+            PointConcept pc = (PointConcept) gc;
 
             String m = pc.getName();
             if (!m.equals(mode))
                 continue;
 
-            return pc.getPeriodScore("weekly", execDate);
+            return getPeriodScore(pc,"weekly", execDate);
         }
 
         return 0.0;

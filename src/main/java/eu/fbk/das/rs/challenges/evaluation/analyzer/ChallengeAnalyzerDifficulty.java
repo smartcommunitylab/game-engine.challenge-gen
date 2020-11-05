@@ -1,25 +1,22 @@
 package eu.fbk.das.rs.challenges.evaluation.analyzer;
 
-import eu.fbk.das.rs.challenges.calculator.ChallengesModeConfiguration;
 import eu.fbk.das.rs.challenges.evaluation.ChallengeAnalyzer;
-import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
 import org.apache.commons.math3.stat.StatUtils;
 import org.apache.commons.math3.util.FastMath;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
-import static eu.fbk.das.rs.utils.Utils.pf;
+import static eu.fbk.das.utils.Utils.pf;
 
 public class ChallengeAnalyzerDifficulty extends ChallengeAnalyzer {
 
     private Map<String, List<Double>> cache;
 
-    public ChallengeAnalyzerDifficulty(RecommendationSystemConfig cfg) {
-        super(cfg);
-    }
-
     public static void main(String[] args) {
-        ChallengeAnalyzerDifficulty cdg = new ChallengeAnalyzerDifficulty(new RecommendationSystemConfig());
+        ChallengeAnalyzerDifficulty cdg = new ChallengeAnalyzerDifficulty();
 
         cdg.analyzeAll();
     }

@@ -1,9 +1,0 @@
-NAME;TYPE;GOAL_TYPE;TARGET;BONUS;POINT_TYPE;DIFFICULTY;BASELINE_VARIABLE;SELECTION_CRITERIA_CUSTOM_DATA;SELECTION_CRITERIA_POINTS;SELECTION_CRITERIA_BADGES
-w7_no_car_2;NEGATEDMODE;carDistance;2;250;green leaves;;;;green leaves week 6 < 20;
-w7_no_car_4;NEGATEDMODE;carDistance;4;250;green leaves;;;;green leaves week 6 >= 20 && green leaves week 6 < 200;
-w7_no_car_8;NEGATEDMODE;carDistance;8;250;green leaves;;;;green leaves week 6 >= 200 && green leaves week 6 < 600;
-w7_no_car_12;NEGATEDMODE;carDistance;12;200;green leaves;;;;green leaves week 6 >= 600;
-w7_recommendation_1;RECOMMENDATION;;1;200;green leaves;;;;green leaves > 0 && green leaves < 1500;
-w7_recommendation_2;RECOMMENDATION;;2;250;green leaves;;;;green leaves >= 1500;
-w7_nextbadge_PR_1;NEXTBADGE;park and ride pioneer;1;200;green leaves;;;;;size <= 1
-w7_points_GL_100;POINTSEARNED;green leaves;100;100;green leaves;;;;TRUE;

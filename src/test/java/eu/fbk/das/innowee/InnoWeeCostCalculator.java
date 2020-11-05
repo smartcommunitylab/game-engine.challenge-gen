@@ -1,6 +1,6 @@
 package eu.fbk.das.innowee;
 
-import eu.fbk.das.rs.utils.ArrayUtils;
+import eu.fbk.das.utils.ArrayUtils;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.Solver;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static eu.fbk.das.rs.utils.Utils.*;
+import static eu.fbk.das.utils.Utils.*;
 
 public class InnoWeeCostCalculator {
 

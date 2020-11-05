@@ -1,9 +1,8 @@
 package eu.fbk.das.rs.challenges.evaluation;
 
 import eu.fbk.das.rs.challenges.ChallengeUtil;
-import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
-import eu.fbk.das.rs.utils.PolynomialRegression;
-import eu.trentorise.game.challenges.rest.Player;
+import eu.fbk.das.utils.PolynomialRegression;
+import it.smartcommunitylab.model.PlayerStateDTO;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 
@@ -11,10 +10,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.getWeeklyContentMode;
-import static eu.fbk.das.rs.utils.Utils.*;
+import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.getChallengeWeek;
+import static eu.fbk.das.utils.Utils.*;
 import static org.chocosolver.util.tools.ArrayUtils.sort;
 
 public class PerformanceEstimation extends ChallengeUtil {
@@ -28,24 +31,20 @@ public class PerformanceEstimation extends ChallengeUtil {
     private Map<String, List<Double>> method_error;
     private List<Double> counter_error;
     private PrintWriter writer;
+    private DateTime date;
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        PerformanceEstimation cdg = new PerformanceEstimation(new RecommendationSystemConfig());
+        PerformanceEstimation cdg = new PerformanceEstimation();
         cdg.execute();
     }
 
-    public PerformanceEstimation(RecommendationSystemConfig cfg) {
-        super(cfg);
-        createFacade();
-
+    public PerformanceEstimation() {
+        super();
         playerLimit = 50;
-
     }
 
-    protected void prepare(DateTime date) {
-        super.prepare(date);
-
-        createFacade();
+    public void prepare(DateTime date) {
+        super.prepare(getChallengeWeek(date));
 
         record = new HashMap<>();
         for (String counter: counters) {
@@ -60,6 +59,7 @@ public class PerformanceEstimation extends ChallengeUtil {
             e.printStackTrace();
         }
 
+        this.date = date;
     }
 
     public void execute() {
@@ -69,7 +69,7 @@ public class PerformanceEstimation extends ChallengeUtil {
         List<String> players = getPlayers();
 
         for (String pId: players) {
-            Player state = facade.getPlayerState(gameId, pId);
+            PlayerStateDTO state = rs.facade.getPlayerState(rs.gameId, pId);
             consider(state);
         }
 
@@ -155,14 +155,13 @@ public class PerformanceEstimation extends ChallengeUtil {
         // test all other methods?
     }
 
-    private void consider(Player state) {
+    private void consider(PlayerStateDTO state) {
 
         for (String counter: counters) {
 
             double[] perf = new double[week];
             String[] out = new String[week];
 
-            DateTime date = lastMonday;
             double sum = 0;
 
 

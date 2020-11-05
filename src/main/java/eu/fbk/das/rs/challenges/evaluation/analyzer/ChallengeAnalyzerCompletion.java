@@ -1,27 +1,25 @@
 package eu.fbk.das.rs.challenges.evaluation.analyzer;
 
 import eu.fbk.das.rs.challenges.evaluation.ChallengeAnalyzer;
-import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
-import eu.trentorise.game.challenges.rest.ChallengeConcept;
-import eu.trentorise.game.challenges.rest.Player;
+import it.smartcommunitylab.model.PlayerStateDTO;
+import it.smartcommunitylab.model.ext.ChallengeConcept;
+import it.smartcommunitylab.model.ext.GameConcept;
 import org.joda.time.DateTime;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.getWeeklyContentMode;
-import static eu.fbk.das.rs.utils.Utils.p;
-import static eu.fbk.das.rs.utils.Utils.pf;
+import static eu.fbk.das.utils.Utils.pf;
 
 public class ChallengeAnalyzerCompletion extends ChallengeAnalyzer {
 
     private Map<Integer, int[]> cache;
 
-    public ChallengeAnalyzerCompletion(RecommendationSystemConfig cfg) {
-        super(cfg);
-    }
-
     public static void main(String[] args) {
-        ChallengeAnalyzerCompletion cdg = new ChallengeAnalyzerCompletion(new RecommendationSystemConfig());
+        ChallengeAnalyzerCompletion cdg = new ChallengeAnalyzerCompletion();
 
         cdg.execute();
     }
@@ -38,14 +36,15 @@ public class ChallengeAnalyzerCompletion extends ChallengeAnalyzer {
     private void execute() {
 
         prepare();
-        createFacade();
 
         int[] l;
 
         List<String> pl = getPlayers();
         for (String pId: pl) {
-            Player player = facade.getPlayerState(cfg.get("GAME_ID"), pId);
-            for (ChallengeConcept cha: player.getState().getChallengeConcept()) {
+            PlayerStateDTO player = rs.facade.getPlayerState(rs.gameId, pId);
+            Set<GameConcept> scores =  player.getState().get("ChallengeConcept");
+            for (GameConcept gc : scores) {
+                ChallengeConcept cha = (ChallengeConcept) gc;
 
                 if (!cha.getModelName().equals("percentageIncrement") && !cha.getModelName().equals("absoluteIncrement"))
                     continue;

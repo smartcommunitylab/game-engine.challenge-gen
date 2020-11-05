@@ -1,51 +1,64 @@
 package eu.fbk.das.rs.challenges.generation;
 
 import com.google.common.math.Quantiles;
-import eu.fbk.das.rs.utils.ArrayUtils;
+import eu.fbk.das.rs.challenges.ChallengeUtil;
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
-import eu.trentorise.game.challenges.rest.*;
+import eu.fbk.das.utils.ArrayUtils;
+import it.smartcommunitylab.model.PlayerStateDTO;
+import it.smartcommunitylab.model.ext.GameConcept;
+import it.smartcommunitylab.model.ext.PointConcept;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.io.*;
 import java.util.*;
 
-import static eu.fbk.das.rs.utils.Utils.formatDate;
-import static eu.fbk.das.rs.utils.Utils.*;
 import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.fixMode;
+import static eu.fbk.das.utils.Utils.*;
 
-public class RecommendationSystemStatistics {
+public class RecommendationSystemStatistics extends ChallengeUtil {
 
     private String STATS_FILENAME = "rs.statistics";
-    protected GamificationEngineRestFacade facade;
 
     protected DateTime execDate;
     private String[] l_mode;
     private Map<String, Map<Integer, Double>> quartiles;
     private boolean offline = true;
-    protected RecommendationSystemConfig cfg;
 
     private DateTime lastMonday;
     private String host;
 
-    public RecommendationSystemStatistics() {
+    private Map<String, Map<String, Map<Integer, Double>>> cache;
+    private String lastMondayKey;
+
+    public RecommendationSystemStatistics(RecommendationSystem rs) {
+        super(rs);
         quartiles = new HashMap<>();
 
         this.l_mode = ArrayUtils.cloneArray(ChallengesConfig.defaultMode);
         for (int i = 0; i < l_mode.length; i++)
             l_mode[i] = fixMode(l_mode[i]);
         Arrays.sort(this.l_mode);
+
+        cache = new HashMap<>();
     }
 
-    public Map<String, Map<Integer, Double>> checkAndUpdateStats(GamificationEngineRestFacade facade, DateTime date, RecommendationSystemConfig cfg, String host) {
-        this.facade = facade;
-        this.cfg = cfg;
+    public RecommendationSystemStatistics(RecommendationSystem rs, boolean takeOnlineStats) {
+        this(rs);
+        offline = !takeOnlineStats;
+    }
+
+    public Map<String, Map<Integer, Double>> checkAndUpdateStats(DateTime date) {
         this.execDate = date;
-        this.host = host;
 
         int week_day = execDate.getDayOfWeek();
         int d = (7 - week_day) + 1;
 
         lastMonday = execDate.minusDays(week_day-1).minusDays(7);
+        DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
+        lastMondayKey = fmt.print(lastMonday);
+        if (cache.containsKey(lastMondayKey)) return cache.get(lastMondayKey);
 
         if (offline)
             return updateStatsOffline();
@@ -54,13 +67,28 @@ public class RecommendationSystemStatistics {
 
     }
 
+    private Map<Integer,Double> convert(Map<String,Double> statsData) {
+        Map<Integer,Double> data = new HashMap<>();
+        for(String key : statsData.keySet()) {
+            data.put(Integer.valueOf(key), statsData.get(key));
+        }
+        return data;
+    }
+
     private Map<String, Map<Integer, Double>> updateStatsOnline() {
+        Map<String, Map<Integer, Double>> stats = new HashMap<>();
+        for (String pointConceptName : ChallengesConfig.defaultMode) {
+            Map<Integer, Double> statsData =
+                    rs.facade.readGameStatistics(rs.gameId, lastMonday, pointConceptName).stream()
+                            .map(data -> convert(data.getQuantiles())).findFirst()
+                            .orElse(emptyQuartiles());
+            stats.put(fixMode(pointConceptName), statsData);
+        }
+        quartiles = stats;
 
-        GameStatisticsSet st = facade.readGameStatistics(cfg.get("GAME_ID"), lastMonday);
+        cache.put(lastMondayKey, quartiles);
 
-        // GameStatisticsSet st = facade.readGameStatistics(cfg.get("GAME_ID"));
-
-        return  null;
+        return stats;
     }
 
     private Map<String, Map<Integer, Double>> updateStatsOffline() {
@@ -68,6 +96,8 @@ public class RecommendationSystemStatistics {
 
         if (quartiles == null)
             quartiles = updateStats();
+
+        cache.put(lastMondayKey, quartiles);
 
         return quartiles;
 
@@ -161,13 +191,15 @@ public class RecommendationSystemStatistics {
         for (String mode : l_mode) {
             stats.put(mode, new ArrayList<Double>());
         }
+        stats.put(ChallengesConfig.gLeaves, new ArrayList<Double>());
 
-        Map<String, Player> m_player = facade.readGameState(cfg.get("GAME_ID"));
+        Set <String> m_player = rs.facade.getGamePlayers(rs.gameId);
 
         // update(stats, "24440");
 
-        for (String pId: m_player.keySet()) {
-            update(stats, m_player.get(pId));
+        for (String pId: m_player) {
+            PlayerStateDTO st = rs.facade.getPlayerState(rs.gameId, pId);
+            update(stats, st);
         }
 
         /*
@@ -208,27 +240,25 @@ public class RecommendationSystemStatistics {
         return q;
     }
 
-    private void update(HashMap<String, List<Double>> stats, Player cnt) {
+    private void update(HashMap<String, List<Double>> stats, PlayerStateDTO cnt) {
 
-        State st = cnt.getState();
-
-        // p(st.getPointConcept());
-
-        for (PointConcept pc : st.getPointConcept()) {
+        Set<GameConcept> scores =  cnt.getState().get("PointConcept");
+        for (GameConcept gc : scores) {
+            PointConcept pc = (PointConcept) gc;
 
             String m = fixMode(pc.getName());
 
-            /*
-            if (pc.getName().equals(cfg.gLeaves)) {
-                stats.get(cfg.gLeaves).add(pc.getPeriodScore("weekly", execDate.getTime()));
-            }*/
+            if (pc.getName().equals(ChallengesConfig.gLeaves)) {
+                stats.get(ChallengesConfig.gLeaves).add(getPeriodScore(pc,"weekly", execDate));
+            }
 
             if (!ArrayUtils.find(m, l_mode))
                 continue;
 
-            Double score = pc.getPeriodScore("weekly", lastMonday);
+            Double score = getPeriodScore(pc,"weekly", lastMonday);
             if (score > 0)
                 stats.get(m).add(score);
+
         }
     }
 

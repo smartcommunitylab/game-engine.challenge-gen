@@ -4,7 +4,6 @@ import eu.fbk.das.rs.challenges.calculator.PlanePointFunction;
 import org.junit.Before;
 import org.junit.Test;
 
-import static eu.fbk.das.rs.utils.Utils.pf;
 import static org.junit.Assert.assertTrue;
 
 public class PlaneFunctionTest {

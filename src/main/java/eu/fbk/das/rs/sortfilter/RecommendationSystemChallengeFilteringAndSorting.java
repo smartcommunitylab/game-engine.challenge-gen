@@ -1,70 +1,51 @@
 package eu.fbk.das.rs.sortfilter;
 
-import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
+import eu.fbk.das.model.ChallengeExpandedDTO;
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
-import eu.fbk.das.rs.challenges.generation.RecommendationSystemStatistics;
-import eu.trentorise.game.challenges.model.ChallengeDataDTO;
-import eu.trentorise.game.challenges.rest.Player;
-import eu.trentorise.game.challenges.rest.PointConcept;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import it.smartcommunitylab.model.PlayerStateDTO;
+import it.smartcommunitylab.model.ext.GameConcept;
+import it.smartcommunitylab.model.ext.PointConcept;
+import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 
 import java.util.*;
 
-import static eu.fbk.das.rs.utils.ArrayUtils.pos;
-import static eu.fbk.das.rs.utils.Utils.dbg;
+import static eu.fbk.das.rs.challenges.ChallengeUtil.getPeriodScore;
+import static eu.fbk.das.utils.ArrayUtils.pos;
+import static eu.fbk.das.utils.Utils.dbg;
 
 public class RecommendationSystemChallengeFilteringAndSorting {
 
-    private static final Logger logger = LogManager
+    private static final Logger logger = Logger
             .getLogger(RecommendationSystemChallengeFilteringAndSorting.class);
-
-    private RecommendationSystemConfig cfg;
 
     private double[] leaderboard;
 
     private DateTime execDate;
 
-    /**
-     * Create a new recommandation system challenge filtering and sorting
-     *
-     * @param configuration
-     * @throws IllegalArgumentException if cfg is null
-     */
-    public RecommendationSystemChallengeFilteringAndSorting(
-            RecommendationSystemConfig configuration) {
-        if (configuration == null) {
-            throw new IllegalArgumentException(
-                    "Recommandation system cfg must be not null");
-        }
-        this.cfg = configuration;
-        dbg(logger, "RecommendationSystemChallengeFilteringAndSorting init complete");
-    }
-
-    public List<ChallengeDataDTO> filter(List<ChallengeDataDTO> challenges, Player player, DateTime date) {
+    public List<ChallengeExpandedDTO> filter(List<ChallengeExpandedDTO> challenges, PlayerStateDTO player, DateTime date) {
         this.execDate = date;
 
-        List<ChallengeDataDTO> result = new ArrayList<ChallengeDataDTO>();
+        List<ChallengeExpandedDTO> result = new ArrayList<ChallengeExpandedDTO>();
 
         /* REMOVED LEADERBOARD
-        List<ChallengeDataDTO> improvingLeaderboard = new ArrayList<ChallengeDataDTO>();
-        List<ChallengeDataDTO> notImprovingLeaderboard = new ArrayList<ChallengeDataDTO>();
+        List<ChallengeExpandedDTO> improvingLeaderboard = new ArrayList<ChallengeExpandedDTO>();
+        List<ChallengeExpandedDTO> notImprovingLeaderboard = new ArrayList<ChallengeExpandedDTO>();
         */
 
-        for (ChallengeDataDTO challenge : challenges) {
-            Double baseline = (Double) challenge.getData().get("baseline");
+        for (ChallengeExpandedDTO challenge : challenges) {
+            Double baseline = (Double) challenge.getData("baseline");
             Double target = 0.0;
-            if (challenge.getData().get("target") instanceof Integer) {
-                target = new Double((Integer) challenge.getData().get("target"));
+            if (challenge.getData("target") instanceof Integer) {
+                target = new Double((Integer) challenge.getData("target"));
             } else {
-                target = (Double) challenge.getData().get("target");
+                target = (Double) challenge.getData("target");
             }
-            Integer weight = ChallengesConfig.getWeight((String) challenge.getData().get("counterName"));
+            Integer weight = ChallengesConfig.getWeight((String) challenge.getData("counterName"));
             Double percentageImprovment = 0.0;
             if (baseline != null) {
                 if (challenge.getModelName().equals("percentageIncrement")) {
-                    Double p = (Double) challenge.getData().get("percentage");
+                    Double p = (Double) challenge.getData("percentage");
                     percentageImprovment = p;
                 } else {
                     percentageImprovment = Math.round(Math.abs(baseline - target) * 100.0 / baseline) / 100.0;
@@ -72,12 +53,12 @@ public class RecommendationSystemChallengeFilteringAndSorting {
             } else {
                 percentageImprovment = 1.0;
             }
-            int prize = (int) challenge.getData().get("bonusScore");
+            double prize = (double) challenge.getData("bonusScore");
             // calculating the WI for each mode based on weight of Mode and
             // improvement percentage
             double wi = percentageImprovment * weight;
-            challenge.getData().put("wi", wi);
-            // finding the position of the player in the leader board
+            challenge.setData("wi", wi);
+            // finding the position of the PlayerStateDTO in the leader board
 
 
             /* REMOVED LEADERBOARD
@@ -132,13 +113,15 @@ public class RecommendationSystemChallengeFilteringAndSorting {
         return result;
     }
 
-    private int findPosition(double[] leaderboard, Player player) {
+    private int findPosition(double[] leaderboard, PlayerStateDTO player) {
         double score = 0;
-        for (PointConcept pc : player.getState().getPointConcept()) {
-            if (!pc.getName().equals(ChallengesConfig.gLeaves))
+        Set<GameConcept> scores =  player.getState().get("PointConcept");
+        for (GameConcept gc : scores) {
+            PointConcept pc = (PointConcept) gc;
+            if (!gc.getName().equals(ChallengesConfig.gLeaves))
                 continue;
 
-            score = pc.getPeriodScore("weekly", execDate.getMillis() / 1000);
+            score = getPeriodScore(pc, "weekly", execDate);
         }
 
         int pos = pos(score, leaderboard);
@@ -149,31 +132,31 @@ public class RecommendationSystemChallengeFilteringAndSorting {
         return pos;
     }
 
-    public Map<String, List<ChallengeDataDTO>> filterAndSort(
-            Map<String, List<ChallengeDataDTO>> evaluatedChallenges,
+    public Map<String, List<ChallengeExpandedDTO>> filterAndSort(
+            Map<String, List<ChallengeExpandedDTO>> evaluatedChallenges,
             List<LeaderboardPosition> leaderboard) {
-        Map<String, List<ChallengeDataDTO>> result = new HashMap<String, List<ChallengeDataDTO>>();
+        Map<String, List<ChallengeExpandedDTO>> result = new HashMap<String, List<ChallengeExpandedDTO>>();
         Double wi = 0.0;
         for (String playerId : evaluatedChallenges.keySet()) {
             // creating two list for the challenges that can improve the player
             // in the leader board and not improving
-            List<ChallengeDataDTO> improvingLeaderboard = new ArrayList<ChallengeDataDTO>();
-            List<ChallengeDataDTO> notImprovingLeaderboard = new ArrayList<ChallengeDataDTO>();
-            for (ChallengeDataDTO challenge : evaluatedChallenges.get(playerId)) {
-                Double baseline = (Double) challenge.getData().get("baseline");
+            List<ChallengeExpandedDTO> improvingLeaderboard = new ArrayList<ChallengeExpandedDTO>();
+            List<ChallengeExpandedDTO> notImprovingLeaderboard = new ArrayList<ChallengeExpandedDTO>();
+            for (ChallengeExpandedDTO challenge : evaluatedChallenges.get(playerId)) {
+                Double baseline = (Double) challenge.getData("baseline");
                 Double target = 0.0;
-                if (challenge.getData().get("target") instanceof Integer) {
-                    target = new Double((Integer) challenge.getData().get(
+                if (challenge.getData("target") instanceof Integer) {
+                    target = new Double((Integer) challenge.getData(
                             "target"));
                 } else {
-                    target = (Double) challenge.getData().get("target");
+                    target = (Double) challenge.getData("target");
                 }
                 Integer weight = ChallengesConfig.getWeight((String) challenge
-                        .getData().get("counterName"));
+                        .getData("counterName"));
                 Double percentageImprovment = 0.0;
                 if (baseline != null) {
                     if (challenge.getModelName().equals("percentageIncrement")) {
-                        Double p = (Double) challenge.getData().get(
+                        Double p = (Double) challenge.getData(
                                 "percentage");
                         percentageImprovment = p;
                     } else {
@@ -184,12 +167,12 @@ public class RecommendationSystemChallengeFilteringAndSorting {
                 } else {
                     percentageImprovment = 1.0;
                 }
-                Double prize = (Double) challenge.getData().get("bonusScore");
+                Double prize = (Double) challenge.getData("bonusScore");
                 // calculating the WI for each mode based on weight of Mode and
                 // improvement percentage
                 wi = percentageImprovment * weight;
-                challenge.getData().put("wi", wi);
-                // finding the position of the player in the leader board
+                challenge.setData("wi", wi);
+                // finding the position of the PlayerStateDTO in the leader board
                 LeaderboardPosition position = findPosition(leaderboard,
                         playerId);
                 if (position.getIndex() == 0) {
@@ -210,7 +193,7 @@ public class RecommendationSystemChallengeFilteringAndSorting {
             }
             // make some initialization for result data structure
             if (result.get(playerId) == null) {
-                result.put(playerId, new ArrayList<ChallengeDataDTO>());
+                result.put(playerId, new ArrayList<ChallengeExpandedDTO>());
             }
             // sorting both lists
             Collections
@@ -258,35 +241,35 @@ public class RecommendationSystemChallengeFilteringAndSorting {
         return null;
     }
 
-    public Map<String, List<ChallengeDataDTO>> removeDuplicates(
-            Map<String, List<ChallengeDataDTO>> filteredChallenges) {
-        List<ChallengeDataDTO> challengeIdToRemove = new ArrayList<ChallengeDataDTO>();
+    public Map<String, List<ChallengeExpandedDTO>> removeDuplicates(
+            Map<String, List<ChallengeExpandedDTO>> filteredChallenges) {
+        List<ChallengeExpandedDTO> challengeIdToRemove = new ArrayList<ChallengeExpandedDTO>();
         for (String key : filteredChallenges.keySet()) {
 
-            Iterator<ChallengeDataDTO> iter = filteredChallenges.get(key)
+            Iterator<ChallengeExpandedDTO> iter = filteredChallenges.get(key)
                     .iterator();
             while (iter.hasNext()) {
-                ChallengeDataDTO dto = iter.next();
-                Iterator<ChallengeDataDTO> innerIter = filteredChallenges.get(
+                ChallengeExpandedDTO dto = iter.next();
+                Iterator<ChallengeExpandedDTO> innerIter = filteredChallenges.get(
                         key).iterator();
                 int count = 0;
                 while (innerIter.hasNext()) {
-                    ChallengeDataDTO idto = innerIter.next();
+                    ChallengeExpandedDTO idto = innerIter.next();
 
                     if (dto.getModelName().equals(idto.getModelName())
-                            && dto.getData().get("counterName")
-                            .equals(idto.getData().get("counterName"))) {
+                            && dto.getData("counterName")
+                            .equals(idto.getData("counterName"))) {
                         double t = 0;
                         double ti = 0;
-                        if (dto.getData().get("target") instanceof Double) {
-                            t = (Double) dto.getData().get("target");
+                        if (dto.getData("target") instanceof Double) {
+                            t = (Double) dto.getData("target");
                         } else {
-                            t = (Integer) dto.getData().get("target");
+                            t = (Integer) dto.getData("target");
                         }
-                        if (idto.getData().get("target") instanceof Double) {
-                            ti = (Double) idto.getData().get("target");
+                        if (idto.getData("target") instanceof Double) {
+                            ti = (Double) idto.getData("target");
                         } else {
-                            ti = (Integer) idto.getData().get("target");
+                            ti = (Integer) idto.getData("target");
                         }
                         if (t == ti) {
                             count++;

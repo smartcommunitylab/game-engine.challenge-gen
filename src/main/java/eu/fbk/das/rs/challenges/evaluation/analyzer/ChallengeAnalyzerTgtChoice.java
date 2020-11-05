@@ -1,14 +1,12 @@
 package eu.fbk.das.rs.challenges.evaluation.analyzer;
 
 import eu.fbk.das.rs.challenges.evaluation.ChallengeAnalyzer;
-import eu.fbk.das.rs.challenges.generation.RecommendationSystemConfig;
-import eu.trentorise.game.model.CustomData;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static eu.fbk.das.rs.utils.Utils.pf;
+import static eu.fbk.das.utils.Utils.pf;
 
 public class ChallengeAnalyzerTgtChoice extends ChallengeAnalyzer {
 
@@ -20,12 +18,8 @@ public class ChallengeAnalyzerTgtChoice extends ChallengeAnalyzer {
     private Map<String, Integer> c_chosen_exp;
     private Map<String, Integer> c_proposed_exp;
 
-    public ChallengeAnalyzerTgtChoice(RecommendationSystemConfig cfg) {
-        super(cfg);
-    }
-
     public static void main(String[] args) {
-        ChallengeAnalyzerTgtChoice cdg = new ChallengeAnalyzerTgtChoice(new RecommendationSystemConfig());
+        ChallengeAnalyzerTgtChoice cdg = new ChallengeAnalyzerTgtChoice();
 
         cdg.analyzeSelected();
     }

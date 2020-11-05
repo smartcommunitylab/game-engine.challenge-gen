@@ -1,32 +1,32 @@
 package eu.fbk.das.rs;
 
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
-import eu.trentorise.game.challenges.rest.ChallengeConcept;
-import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
-import eu.trentorise.game.challenges.rest.Player;
-import eu.trentorise.game.challenges.rest.PointConcept;
+import it.smartcommunitylab.model.PlayerStateDTO;
+import it.smartcommunitylab.model.ext.ChallengeConcept;
+import it.smartcommunitylab.model.ext.GameConcept;
+import it.smartcommunitylab.model.ext.PointConcept;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static eu.fbk.das.rs.utils.Utils.*;
-import static eu.fbk.das.rs.utils.Utils.parseDate;
+import static eu.fbk.das.rs.challenges.ChallengeUtil.getPeriodScore;
+import static eu.fbk.das.utils.Utils.*;
 
 public class GroupAssignedChallengesCheck extends ChallengesBaseTest {
 
     @Test
     public void check() {
 
-        cfg.put("HOST", "https://tn.smartcommunitylab.it/gamification2/");
-        facade = new GamificationEngineRestFacade(cfg.get("HOST"),
-                cfg.get("USERNAME"), cfg.get("PASSWORD"));
+        PlayerStateDTO player = facade.getPlayerState(conf.get("GAMEID"), "28593");
 
-        Player player = facade.getPlayerState(cfg.get("GAME_ID"), "28593");
+        Set<GameConcept> scores =  player.getState().get("ChallengeConcept");
+        for (GameConcept gc : scores) {
+            ChallengeConcept chal = (ChallengeConcept) gc;
 
-        for (ChallengeConcept chal : player.getState().getChallengeConcept()) {
             String nm = chal.getModelName();
 
             int w = daysApart(new DateTime(chal.getStart()), parseDate("29/10/2018"));
@@ -45,16 +45,15 @@ public class GroupAssignedChallengesCheck extends ChallengesBaseTest {
 
     @Test
     public void execute() {
-        cfg.put("HOST", "https://tn.smartcommunitylab.it/gamification2/");
-        facade = new GamificationEngineRestFacade(cfg.get("HOST"),
-                cfg.get("USERNAME"), cfg.get("PASSWORD"));
 
         Map<String, Integer> cont = new HashMap<>();
 
-        for (String pId: facade.getGamePlayers(cfg.get("GAME_ID"))) {
-            Player player = facade.getPlayerState(cfg.get("GAME_ID"), pId);
+        for (String pId: facade.getGamePlayers(conf.get("GAMEID"))) {
+            PlayerStateDTO player = facade.getPlayerState(conf.get("GAMEID"), pId);
+            Set<GameConcept> scores =  player.getState().get("ChallengeConcept");
+            for (GameConcept gc : scores) {
+                ChallengeConcept chal = (ChallengeConcept) gc;
 
-            for (ChallengeConcept chal : player.getState().getChallengeConcept()) {
                 String nm = chal.getModelName();
 
                 if (!nm.contains("group"))
@@ -77,6 +76,8 @@ public class GroupAssignedChallengesCheck extends ChallengesBaseTest {
                 incr(cont, f("%s-%d-%s", chal.getOrigin(), w, "compl"), chal.getState().equals("COMPLETED"));
 
                 p(chal.getState());
+
+
             }
         }
 
@@ -108,13 +109,16 @@ public class GroupAssignedChallengesCheck extends ChallengesBaseTest {
 
     }
 
-    private boolean scoredGreenLeaves(Player player, Long day) {
+    private boolean scoredGreenLeaves(PlayerStateDTO player, Date day) {
 
-        for (PointConcept pc: player.getState().getPointConcept()) {
+        Set<GameConcept> scores =  player.getState().get("PointConcept");
+        for (GameConcept gc : scores) {
+            PointConcept pc = (PointConcept) gc;
+
             if (!pc.getName().equals("green leaves"))
                 continue;
 
-            Double sc = pc.getPeriodScore("weekly", new DateTime(day));
+            Double sc = getPeriodScore(pc,"weekly", new DateTime(day));
 
             if (sc < 100)
                 return false;

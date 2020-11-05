@@ -1,11 +1,14 @@
 package eu.fbk.das.rs.challenges.calculator;
 
-import eu.trentorise.game.challenges.rest.Player;
-import eu.trentorise.game.challenges.rest.PointConcept;
+import it.smartcommunitylab.model.PlayerStateDTO;
+import it.smartcommunitylab.model.ext.GameConcept;
+import it.smartcommunitylab.model.ext.PointConcept;
 import org.joda.time.DateTime;
 
 import java.util.List;
 import java.util.Set;
+
+import static eu.fbk.das.rs.challenges.ChallengeUtil.getPeriodScore;
 
 
 /**
@@ -28,11 +31,11 @@ public class ChallengesConfig {
     // default modes
     private static final String NO_CAR_TRIPS = "NoCar_Trips";
     public static final String BIKE_KM = "Bike_Km";
-    private static final String BUS_KM = "Bus_Km";
+    public static final String BUS_KM = "Bus_Km";
     private static final String BIKE_SHARING_TRIPS = "BikeSharing_Trips";
     private static final String WALK_TRIPS = "Walk_Trips";
     private static final String BIKE_TRIPS = "Bike_Trips";
-    private static final String TRAIN_KM = "Train_Km";
+    public static final String TRAIN_KM = "Train_Km";
     public static final String BUS_TRIPS = "Bus_Trips";
     public static final String TRAIN_TRIPS = "Train_Trips";
     private static final String ZERO_IMPACT_TRIPS = "ZeroImpact_Trips";
@@ -89,7 +92,7 @@ public class ChallengesConfig {
     // defining different improvement percentage 10%,20%, etc.
     private static final Double[] percentage = {0.1, 0.2, 0.3, 0.4};
 
-    // default user player id
+    // default user PlayerStateDTO id
     private static List<String> playerIds;
 
     // recommendation system configuration
@@ -228,16 +231,21 @@ public class ChallengesConfig {
         return improvementValue;
     }
 
-    public static Double getWeeklyContentMode(Player cnt, String mode, DateTime execDate) {
+    public static Double getWeeklyContentMode(PlayerStateDTO state, String mode, DateTime execDate) {
 
+        try {
+            for (GameConcept gc : state.getState().get("PointConcept")) {
 
-        for (PointConcept pc : cnt.getState().getPointConcept()) {
+                PointConcept pc = (PointConcept) gc;
 
-            String m = pc.getName();
-            if (!m.equals(mode))
-                continue;
+                String m = pc.getName();
+                if (!m.equals(mode))
+                    continue;
 
-            return pc.getPeriodScore("weekly", execDate);
+                return getPeriodScore(pc, "weekly", execDate);
+            }
+        } catch (IllegalArgumentException e) {
+            return -1.0;
         }
 
         return 0.0;

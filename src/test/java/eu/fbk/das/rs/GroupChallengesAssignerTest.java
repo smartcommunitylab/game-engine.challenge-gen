@@ -1,45 +1,54 @@
 package eu.fbk.das.rs;
 
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
-import eu.trentorise.game.challenges.model.GroupChallengeDTO;
-import eu.trentorise.game.challenges.rest.GamificationEngineRestFacade;
+import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
+import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
+import it.smartcommunitylab.model.ext.GroupChallengeDTO;
+
+import java.util.*;
+
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.search.strategy.Search;
 import org.chocosolver.solver.variables.IntVar;
 import org.joda.time.DateTime;
+import org.junit.Before;
 import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 
 public class GroupChallengesAssignerTest extends ChallengesBaseTest {
 
+    private GroupChallengesAssigner gca;
+
+    @Before
+    public void prepare() {
+
+         rs = new RecommendationSystem(conf);
+        facade = rs.facade;
+         gca = new GroupChallengesAssigner(rs);
+    }
+
     @Test
     public void test() {
-        // cfg.put("HOST", "https://dev.smartcommunitylab.it/gamification/");
-        cfg.put("HOST", "https://tn.smartcommunitylab.it/gamification2/");
-        facade = new GamificationEngineRestFacade(cfg.get("HOST"),
-                cfg.get("USERNAME"), cfg.get("PASSWORD"));
-        GroupChallengesAssigner gca = new GroupChallengesAssigner(cfg, facade);
-
-
         // gca.execute();
         DateTime d = new DateTime();
 
         GroupChallengeDTO gcd = gca.createPerfomanceChallenge("Walk_Km", "7", "225", d.minusDays(3), d.plusDays(3));
-        facade.assignGroupChallenge(gcd, cfg.get("GAME_ID"));
+        facade.assignGroupChallenge(gcd, conf.get("GAMEID"));
     }
 
     @Test
     public void execute() {
-        cfg.put("HOST", "https://tn.smartcommunitylab.it/gamification2/");
-        facade = new GamificationEngineRestFacade(cfg.get("HOST"),
-                cfg.get("USERNAME"), cfg.get("PASSWORD"));
-        GroupChallengesAssigner gca = new GroupChallengesAssigner(cfg, facade);
+        Set<String> players = facade.getGamePlayers(rs.gameId);
 
-        gca.execute();
+        // String type = "groupCompetitiveTime";
+        String type = "groupCooperative";
+        //  String type = "groupCompetitivePerformance";
+
+        Set<String> modeList = new HashSet<String>(Arrays.asList(ChallengesConfig.WALK_KM,ChallengesConfig.BIKE_KM,ChallengesConfig.GREEN_LEAVES));
+
+        Map<String, Object> config = new HashMap<>();
+
+        gca.execute(players, modeList,  type, config);
     }
 
     @Test
@@ -99,8 +108,6 @@ public class GroupChallengesAssignerTest extends ChallengesBaseTest {
         p.put("27345", 9);
         p.put("27742", 9);
 
-        GroupChallengesAssigner gca = new GroupChallengesAssigner(cfg, facade);
-
         gca.reduce(p);
         gca.chocoModel(p);
     }
@@ -128,14 +135,12 @@ public class GroupChallengesAssignerTest extends ChallengesBaseTest {
         p.put("27943", 9);
         p.put("24471", 9);
 
-        GroupChallengesAssigner gca = new GroupChallengesAssigner(cfg, facade);
         gca.chocoModel(p);
     }
     
 
     @Test
     public void chocoModel() {
-        GroupChallengesAssigner gca = new GroupChallengesAssigner(cfg, facade);
 
         HashMap<Integer, ArrayList<String>> test = new HashMap<>();
         test.put(1, new ArrayList<String>(Arrays.asList("One", "Two", "Three")));
