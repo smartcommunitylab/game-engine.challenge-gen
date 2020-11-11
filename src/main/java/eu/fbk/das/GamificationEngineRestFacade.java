@@ -125,11 +125,12 @@ public class GamificationEngineRestFacade {
             PagePlayerStateDTO result = playerApi.searchByQueryUsingPOST(gameId,  q,"1", size);
             int totPages = result.getTotalPages();
             addAllPlayers(players, result.getContent());
-            for (int i = 1; i < totPages; i++) {
-                result = playerApi.searchByQueryUsingPOST(gameId, q, Integer.toString(i), size);
-                addAllPlayers(players, result.getContent());
+            if(totPages > 1) {
+	            for (int i = 2; i <= totPages; i++) {
+	                result = playerApi.searchByQueryUsingPOST(gameId, q, Integer.toString(i), size);
+	                addAllPlayers(players, result.getContent());
+	            }
             }
-
         } catch (Exception e) {
             apiErr(e);
             return null;
