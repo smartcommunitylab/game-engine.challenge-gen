@@ -166,8 +166,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
             List<it.smartcommunitylab.model.ChallengeConcept> currentChallenges = rs.facade.getChallengesPlayer(rs.gameId, playerId);
             boolean missingAssignedGroupChallenges =
                     currentChallenges.stream().filter(c -> c.getModelName().contains("group"))
-                    .filter(c -> startDate.isEqual(new DateTime(c.getStart()))
-                            && endDate.isEqual(new DateTime(c.getEnd())))
+                    .filter(c -> startDate.isEqual(new DateTime(c.getStart())))
                             .count() == 0;
 
             if (missingAssignedGroupChallenges) {
