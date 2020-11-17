@@ -67,7 +67,7 @@ public class ApiSimpleTest extends ChallengesBaseTest {
     @Test
     public void testDates() {
         RecommenderSystemGroup rse = new RecommenderSystemGroup();
-        rse.prepare();
+        rse.prepare(conf);
         HashMap<String, Object> config = rse.config;
         GroupExpandedDTO gcd = new GroupExpandedDTO();
 

@@ -13,7 +13,7 @@ public class RecommenderSystemGroup extends RecommenderSystemExec {
 
     public List<GroupExpandedDTO> go(Map<String, String> conf, String players, String challengeType, Set<String> modelTypes) {
         if (conf == null) conf = this.conf;
-        prepare();
+        prepare(conf);
 
         if (modelTypes == null) {
             modelTypes = new HashSet<String>(Arrays.asList(ChallengesConfig.WALK_KM, ChallengesConfig.BIKE_KM, ChallengesConfig.GREEN_LEAVES));

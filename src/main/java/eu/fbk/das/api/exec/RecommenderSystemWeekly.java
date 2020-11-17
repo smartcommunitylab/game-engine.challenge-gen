@@ -8,7 +8,7 @@ import java.util.*;
 public class RecommenderSystemWeekly extends RecommenderSystemExec {
 
     public List<ChallengeExpandedDTO> go(Map<String, String> conf, String players, Set<String> modelTypes,  Map<String, String> creationRules) {
-        prepare();
+        prepare(conf);
         if (conf == null) conf = this.conf;
 
         if (creationRules == null) {

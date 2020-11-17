@@ -161,6 +161,7 @@
 						<configuration>
 							<additionalparam>-Xdoclint:none</additionalparam>
 							<nohelp>true</nohelp>
+							<javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
 						</configuration>
 					</plugin>
 					<plugin>
