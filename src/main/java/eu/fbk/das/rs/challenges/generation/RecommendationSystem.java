@@ -29,6 +29,7 @@ import it.smartcommunitylab.model.ChallengeConcept;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.ext.GameConcept;
 import it.smartcommunitylab.model.ext.PointConcept;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -549,10 +550,42 @@ public class RecommendationSystem {
 
     public boolean repetitiveInterveneAnalyze(String response) throws ParseException {
         JSONParser parser = new JSONParser();
-        JSONObject json = (JSONObject) parser.parse(response);
+        JSONObject json = (JSONObject)  parser.parse(response);
+        JSONObject aggr = (JSONObject) json.get("aggregations");
+        JSONObject spd = (JSONObject) aggr.get("score_per_day");
+        JSONArray buckets = (JSONArray) spd.get("buckets");
 
-        p(json);
+        boolean start = false;
+        int week = 1;
 
+        HashMap<Integer, Map> cacheWeek = new HashMap<>();
+
+        for (int i = 0; i < buckets.size(); i++) {
+            JSONObject bck = (JSONObject) buckets.get(i);
+            Long k = (Long) bck.get("key");
+            Date d = new Date(k);
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(d);
+            int dof = cal.get(Calendar.DAY_OF_WEEK);
+            if (dof == Calendar.MONDAY){
+                if (!start)
+                    start = true;
+                else
+                    week += 1;
+            }
+            if (!start) continue;
+
+            if (!cacheWeek.containsKey(week))
+                cacheWeek.put(week, new HashMap());
+
+            JSONObject by_concept = (JSONObject) bck.get("by_concept");
+            JSONArray buckets_m = (JSONArray) by_concept.get("buckets");
+            p(d);
+            p(dof);
+            p(buckets_m);
+        }
+
+        p (cacheWeek);
         return false;
     }
 

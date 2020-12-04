@@ -18,7 +18,7 @@ public class RecommendationSystemV2Test extends ChallengesBaseTest {
     public void testRepetitiveInterveneAnalyze() throws IOException, ParseException {
         InputStream is = getClass().getClassLoader().getResourceAsStream("query/past-performances/response-1.json");
         String response = IOUtils.toString(is, StandardCharsets.UTF_8.name());
-        p(response);
+        // p(response);
         rs.repetitiveInterveneAnalyze(response);
     }
 }
