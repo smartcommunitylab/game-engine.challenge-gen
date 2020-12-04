@@ -31,10 +31,6 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
     }
 
     public List<ChallengeExpandedDTO> generate(PlayerStateDTO state, String mode) {
-        return generate(state, mode, "treatment");
-    }
-
-    public List<ChallengeExpandedDTO> generate(PlayerStateDTO state, String mode, String exp) {
 
         prepare(rs.chaWeek);
 
@@ -51,12 +47,14 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
 
             // if (pos > 4) {
             Pair<Double, Double> res;
+            res = forecastMode(state, mode);
 
+            /*
             if ("treatment".equals(exp)) {
                 res = forecastMode(state, mode);
             } else {
                 res = oldChallengeMode(state, mode);
-            }
+            } */
                 double target = res.getFirst();
                 double baseline = res.getSecond();
 

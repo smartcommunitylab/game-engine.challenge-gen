@@ -2,27 +2,17 @@ package eu.fbk.das.rs.challenges.generation;
 
 import static eu.fbk.das.rs.challenges.ChallengeUtil.getLevel;
 import static eu.fbk.das.rs.challenges.ChallengeUtil.getPeriodScore;
-import static eu.fbk.das.utils.Utils.daysApart;
-import static eu.fbk.das.utils.Utils.p;
-import static eu.fbk.das.utils.Utils.parseDate;
+import static eu.fbk.das.utils.Utils.*;
 import static it.smartcommunitylab.model.ChallengeConcept.StateEnum.COMPLETED;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import eu.fbk.das.GamificationConfig;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.joda.time.DateTime;
@@ -39,6 +29,9 @@ import it.smartcommunitylab.model.ChallengeConcept;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.ext.GameConcept;
 import it.smartcommunitylab.model.ext.PointConcept;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -108,14 +101,13 @@ public class RecommendationSystem {
         String exp = getPlayerExperiment(pId);
 
         // OLD method
-        // List<ChallengeExpandedDTO> cha = generation2019(pId, state, d, lvl, exp);
+        // List<ChallengeExpandedDTO> cha = generation2019(pId, state, d, lvl);
 
-       List<ChallengeExpandedDTO> cha = generationRule(pId, state, execDate, lvl, creationRules, exp);
+       List<ChallengeExpandedDTO> cha = generationRule(pId, state, execDate, lvl, creationRules);
 
         for (ChallengeExpandedDTO c: cha) {
             c.setInfo("playerLevel", lvl);
             c.setInfo("player", pId);
-            c.setInfo("experiment", exp);
 
             c.setHide(true);
         }
@@ -137,7 +129,7 @@ public class RecommendationSystem {
         rscg.prepare(chaWeek);
     }
 
-    private List<ChallengeExpandedDTO> generationRule(String pId, PlayerStateDTO state, DateTime d, int lvl, Map<String, String> creationRules, String exp) {
+    private List<ChallengeExpandedDTO> generationRule(String pId, PlayerStateDTO state, DateTime d, int lvl, Map<String, String> creationRules) {
         String rule = creationRules.get(String.valueOf(lvl));
         if (rule == null) rule = creationRules.get("other");
 
@@ -149,17 +141,22 @@ public class RecommendationSystem {
         s.add(g);
 
         if ("fixedOne".equals(rule))
-            s.addAll(getAssigned(state, d, 1, exp));
+            s.addAll(getAssigned(state, d, 1));
         else if ("choiceTwo".equals(rule))
-            s.addAll(assignLimit(2, state, d, exp));
+            s.addAll(assignLimit(2, state, d));
         else if ("choiceThree".equals(rule))
-            s.addAll(assignLimit(3, state, d, exp));
+            s.addAll(assignLimit(3, state, d));
+        else if ("choiceTwoV2".equals(rule))
+            s.addAll(assignLimitV2(2, state, d));
+        else if ("choiceThreeV2".equals(rule))
+            s.addAll(assignLimitV2(3, state, d));
         else
             s.clear();
 
         return s;
 
     }
+
 
 
     private List<ChallengeExpandedDTO> generation2019(String pId, PlayerStateDTO state, DateTime d, int lvl, String exp) {
@@ -198,25 +195,25 @@ public class RecommendationSystem {
         // if level is 1, assign two fixed
         if (lvl == 1) {
             s.add(g);
-            s.addAll(getAssigned(state, d, 1, exp));
+            s.addAll(getAssigned(state, d, 1));
             return s;
         }
 
         // if level is 2, assign 1 repetitive and two choices
         if (lvl == 2) {
             s.add(g);
-            s.addAll(assignLimit(2, state, d, exp));
+            s.addAll(assignLimit(2, state, d));
             return s;
         }
 
         // if level is 3, assign 1 repetitive and three choices
         if (lvl == 3) {
             s.add(g);
-            s.addAll(assignLimit(3, state, d, exp));
+            s.addAll(assignLimit(3, state, d));
             return s;
         }
 
-        s.addAll(assignLimit(3, state, d, exp));
+        s.addAll(assignLimit(3, state, d));
         return s;
 
     }
@@ -450,7 +447,7 @@ public class RecommendationSystem {
     }
 
     private List<ChallengeExpandedDTO> getAssigned(PlayerStateDTO state, DateTime d, int num, String exp) {
-        List<ChallengeExpandedDTO> list = recommendAll(state, d, exp);
+        List<ChallengeExpandedDTO> list = recommendAll(state, d);
         if (list == null || list.isEmpty())
             return null;
 
@@ -471,13 +468,10 @@ public class RecommendationSystem {
 
     }
 
+
     protected List<ChallengeExpandedDTO> assignLimit(int limit, PlayerStateDTO state, DateTime d) {
-        return assignLimit(limit, state, d, "treatment");
-    }
 
-    protected List<ChallengeExpandedDTO> assignLimit(int limit, PlayerStateDTO state, DateTime d, String exp) {
-
-        List<ChallengeExpandedDTO> list = recommendAll(state, d, exp);
+        List<ChallengeExpandedDTO> list = recommendAll(state, d);
         if (list == null || list.isEmpty())
             return null;
 
@@ -519,6 +513,49 @@ public class RecommendationSystem {
 
     }
 
+
+    protected List<ChallengeExpandedDTO> assignLimitV2(int limit, PlayerStateDTO state, DateTime d) {
+
+        // Check if we have to intervene
+        if (repetitiveIntervene(state, d))
+            // TODO
+            return null;
+
+        return assignLimit(limit, state, d);
+    }
+
+    public boolean repetitiveIntervene(PlayerStateDTO state, DateTime d) {
+
+        InputStream is = getClass().getClassLoader().getResourceAsStream("query/past-performance.json");
+        try {
+            String query = IOUtils.toString(is, StandardCharsets.UTF_8.name());
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(query);
+            // TODO replace parameters in query
+
+            String url = "https://api-dev.smartcommunitylab.it/gamification-stats-5d9353a3f0856342b2dded7f-*/_search?size=0";
+            // TODO rimpiazzare autenticazione / mettere in prod.properties
+            //  autenticazione  Basic els-game / G9pLc3BV3b79iwfxFGpF
+
+            String response = "";
+
+            return repetitiveInterveneAnalyze(response);
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public boolean repetitiveInterveneAnalyze(String response) throws ParseException {
+        JSONParser parser = new JSONParser();
+        JSONObject json = (JSONObject) parser.parse(response);
+
+        p(json);
+
+        return false;
+    }
+
     public List<ChallengeExpandedDTO> recommendAll(PlayerStateDTO state, DateTime d) {
         return recommendAll(state, d, "treatment");
     }
@@ -527,7 +564,7 @@ public class RecommendationSystem {
 
         List<ChallengeExpandedDTO> challanges = new ArrayList<>();
         for (String mode : modelTypes) {
-            List<ChallengeExpandedDTO> l_cha = rscg.generate(state, mode, exp);
+            List<ChallengeExpandedDTO> l_cha = rscg.generate(state, mode);
 
             if (l_cha.isEmpty())
                 continue;
@@ -845,7 +882,7 @@ public class RecommendationSystem {
             if (control) exp = "control";
             control = !control;
 
-            cs.put("exp", exp);
+            cs.put("exp");
             cs.put("exp-start", this.getChallengeWeek(execDate));
 
             facade.setCustomDataPlayer(gameId, pId, cs);

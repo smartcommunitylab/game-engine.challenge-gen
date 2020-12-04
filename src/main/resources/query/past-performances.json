@@ -1,0 +1,31 @@
+{
+  "query": {
+    "bool": {
+      "must" : [
+        { "match" : {"playerId" : "0"} },
+        { "bool" : {"should" : [{ "match" : {"conceptName" : "Walk_Km"} }, { "match" : {"conceptName" : "green leaves"} }, { "match" : {"conceptName" : "Bike_Km"} } ] } },
+        {"range" : { "executionTime" : { "gte" : "1573254000000", "lt" :  "1576278000000" } }}
+      ]
+    }
+  },
+  "aggs": {
+    "score_per_day": {
+      "date_histogram": {
+        "field": "executionTime",
+        "interval": "day"
+      },
+      "aggs": {
+        "by_concept": {
+          "terms" : {"field":"conceptName"},
+          "aggs": {
+            "score": {
+              "sum": {
+                "field": "deltaScore"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
