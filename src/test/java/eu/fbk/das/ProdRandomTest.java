@@ -17,9 +17,9 @@ import static eu.fbk.das.rs.challenges.ChallengeUtil.getPeriodScore;
 import static eu.fbk.das.utils.Utils.p;
 import static eu.fbk.das.utils.Utils.pf;
 
-public class ProdRandomTest extends ChallengesBaseTest {
+public class RandomTest extends ChallengesBaseTest {
 
-    public ProdRandomTest() {
+    public RandomTest() {
         prod = true;
     }
 
