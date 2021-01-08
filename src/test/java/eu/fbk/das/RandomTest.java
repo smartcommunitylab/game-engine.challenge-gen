@@ -1,5 +1,9 @@
 package eu.fbk.das;
 
+import eu.fbk.das.api.RecommenderSystemAPI;
+import eu.fbk.das.api.RecommenderSystemImpl;
+import eu.fbk.das.api.exec.RecommenderSystemGroup;
+import eu.fbk.das.api.exec.RecommenderSystemWeekly;
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 import eu.fbk.das.utils.Utils;
 import it.smartcommunitylab.model.PlayerStateDTO;
@@ -25,7 +29,7 @@ public class RandomTest extends ChallengesBaseTest {
 
     @Test
     public void checkIfEvilCyclist() {
-        
+
 
     }
 }

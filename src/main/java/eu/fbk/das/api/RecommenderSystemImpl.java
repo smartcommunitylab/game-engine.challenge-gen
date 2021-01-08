@@ -14,6 +14,8 @@ import it.smartcommunitylab.model.ext.GroupChallengeDTO;
 import it.smartcommunitylab.model.ext.GroupChallengeDTO.PointConceptDTO;
 import it.smartcommunitylab.model.ext.GroupChallengeDTO.RewardDTO;
 
+import static eu.fbk.das.utils.Utils.p;
+
 public class RecommenderSystemImpl implements RecommenderSystemAPI {
 
     private static RecommendationSystem rs;
@@ -86,6 +88,8 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
         List<ChallengeExpandedDTO> chas = new ArrayList<>();
 
         for (String pId: players) {
+            if (pId.equals("29889"))
+                p("ciao");
             List<ChallengeExpandedDTO> challenges = rs.recommend(pId, modelTypes, creationRules, config);
 
             for (ChallengeExpandedDTO cha: challenges) {

@@ -8,6 +8,9 @@ import java.util.Map;
 import eu.fbk.das.GamificationConfig;
 import eu.fbk.das.model.ChallengeExpandedDTO;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
@@ -28,8 +31,12 @@ public class RecommenderSystemExec {
     }
 
 
-    public void prepare() {
-        execDate = new DateTime()
+    public void prepare(Map<String, String> conf) {
+        if (conf.containsKey("execDate")) {
+            execDate = DateTime.parse(conf.get("execDate"));
+        }
+        else
+            execDate = new DateTime()
                 .withHourOfDay(0)
                 .withMinuteOfHour(0)
                 .withSecondOfMinute(0);

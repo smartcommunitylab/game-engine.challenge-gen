@@ -1,5 +1,7 @@
 package eu.fbk.das;
 
+import eu.fbk.das.api.exec.RecommenderSystemGroup;
+import eu.fbk.das.api.exec.RecommenderSystemWeekly;
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 import eu.fbk.das.utils.Utils;
 import it.smartcommunitylab.model.PlayerStateDTO;
@@ -197,5 +199,31 @@ p(gameId);
         }
 
         return false;
+    }
+
+    @Test
+    // test per capire come mai "Un utente con due sfide di coppia. ID utente 29590"
+    public void checkCoopGeneration() {
+        String ferrara20_gameid = conf.get("FERRARA20_GAMEID");
+        // Set<String> pIds = facade.getGamePlayers(ferrara20_gameid);
+        // RecommenderSystemAPI api = new RecommenderSystemImpl();
+        conf.put("GAMEID", ferrara20_gameid);
+        conf.put("execDate", "2020-11-06");
+        RecommenderSystemGroup rsw = new RecommenderSystemGroup();
+        String challengeType = "groupCooperative";
+        rsw.go(conf, "all", challengeType, null);
+    }
+
+    @Test
+    // test per capire come mai "Un utente senza sfide per questa settimana. ID utente 29889"
+    public void checkSingleGeneration() {
+        String ferrara20_gameid = conf.get("FERRARA20_GAMEID");
+        // Set<String> pIds = facade.getGamePlayers(ferrara20_gameid);
+        // RecommenderSystemAPI api = new RecommenderSystemImpl();
+        conf.put("GAMEID", ferrara20_gameid);
+        conf.put("execDate", "2020-11-06");
+        RecommenderSystemWeekly rsw = new RecommenderSystemWeekly();
+        String challengeType = "groupCooperative";
+        rsw.go(conf, "all", null, null);
     }
 }
