@@ -228,4 +228,9 @@ p(gameId);
         String challengeType = "groupCooperative";
         rsw.go(conf, "all", null, null);
     }
+
+    @Test
+    public void checkIfEvilCyclist() {
+
+    }
 }

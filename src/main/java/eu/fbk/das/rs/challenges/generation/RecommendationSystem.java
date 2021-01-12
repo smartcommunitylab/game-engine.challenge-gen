@@ -558,7 +558,9 @@ public class RecommendationSystem {
         boolean start = false;
         int week = 1;
 
-        HashMap<Integer, Map> cacheWeek = new HashMap<>();
+        Map<String, Map<Integer, double[]>> cacheAll = new HashMap<>();
+
+        Map<String, Double> totMode = new HashMap<>();
 
         for (int i = 0; i < buckets.size(); i++) {
             JSONObject bck = (JSONObject) buckets.get(i);
@@ -566,8 +568,9 @@ public class RecommendationSystem {
             Date d = new Date(k);
             Calendar cal = Calendar.getInstance();
             cal.setTime(d);
+
             int dof = cal.get(Calendar.DAY_OF_WEEK);
-            if (dof == Calendar.MONDAY){
+            if (dof == Calendar.MONDAY) {
                 if (!start)
                     start = true;
                 else
@@ -575,17 +578,48 @@ public class RecommendationSystem {
             }
             if (!start) continue;
 
-            if (!cacheWeek.containsKey(week))
-                cacheWeek.put(week, new HashMap());
-
             JSONObject by_concept = (JSONObject) bck.get("by_concept");
             JSONArray buckets_m = (JSONArray) by_concept.get("buckets");
+
+            if (dof == 1)
+                dof = 6;
+            else dof -= 2;
+
+            for (int j = 0; j < buckets_m.size();j++) {
+                JSONObject aux = (JSONObject) buckets_m.get(j);
+
+                String mode = (String) aux.get("key");
+                JSONObject aux2 = (JSONObject) aux.get("score");
+                Double score = (Double) aux2.get("value");
+
+                if (!totMode.containsKey(mode))
+                    totMode.put(mode, score);
+                else
+                    totMode.put(mode, totMode.get(mode) + score);
+
+
+                if (!cacheAll.containsKey(mode))
+                    cacheAll.put(mode, new HashMap<>());
+
+                Map<Integer, double[]> cacheMode = cacheAll.get(mode);
+                if (!cacheMode.containsKey(week))
+                    cacheMode.put(week, new double[7]);
+
+                double[] cacheWeek = cacheMode.get(week);
+                cacheWeek[dof] = score;
+
+                p(mode);
+                p(score);
+
+            }
+
             p(d);
             p(dof);
             p(buckets_m);
         }
 
-        p (cacheWeek);
+        p (cacheAll);
+        p (totMode);
         return false;
     }
 
