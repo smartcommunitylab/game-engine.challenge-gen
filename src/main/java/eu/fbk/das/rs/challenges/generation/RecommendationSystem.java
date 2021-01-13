@@ -518,21 +518,17 @@ public class RecommendationSystem {
     protected List<ChallengeExpandedDTO> assignLimitV2(int limit, PlayerStateDTO state, DateTime d) {
 
         // Check if we have to intervene
-        if (repetitiveIntervene(state, d))
+        if (repetitiveIntervene(state, d) > 0)
             // TODO
             return null;
 
         return assignLimit(limit, state, d);
     }
 
-    public boolean repetitiveIntervene(PlayerStateDTO state, DateTime d) {
+    public Double repetitiveIntervene(PlayerStateDTO state, DateTime d) {
 
-        InputStream is = getClass().getClassLoader().getResourceAsStream("query/past-performance.json");
         try {
-            String query = IOUtils.toString(is, StandardCharsets.UTF_8.name());
-            JSONParser parser = new JSONParser();
-            JSONObject json = (JSONObject) parser.parse(query);
-            // TODO replace parameters in query
+            String query = getRepetitiveQuery(state.getPlayerId(), d);
 
             String url = "https://api-dev.smartcommunitylab.it/gamification-stats-5d9353a3f0856342b2dded7f-*/_search?size=0";
             // TODO rimpiazzare autenticazione / mettere in prod.properties
@@ -541,14 +537,26 @@ public class RecommendationSystem {
             String response = "";
 
             return repetitiveInterveneAnalyze(response);
-        } catch (IOException | ParseException e) {
+        } catch (ParseException | IOException e) {
             e.printStackTrace();
         }
 
-        return false;
+        return null;
     }
 
-    public boolean repetitiveInterveneAnalyze(String response) throws ParseException {
+    protected String getRepetitiveQuery(String playerId, DateTime d) throws IOException, ParseException {
+        InputStream is = getClass().getResourceAsStream("/query/past-performance.json");
+        p(is);
+        String query = IOUtils.toString(is, StandardCharsets.UTF_8.name());
+        JSONParser parser = new JSONParser();
+        JSONObject json = (JSONObject) parser.parse(query);
+        // TODO replace parameters in query
+
+        return null;
+    }
+
+    // get entropy means of highest performing mode
+    public Double repetitiveInterveneAnalyze(String response) throws ParseException {
         JSONParser parser = new JSONParser();
         JSONObject json = (JSONObject)  parser.parse(response);
         JSONObject aggr = (JSONObject) json.get("aggregations");
@@ -608,19 +616,53 @@ public class RecommendationSystem {
                 double[] cacheWeek = cacheMode.get(week);
                 cacheWeek[dof] = score;
 
-                p(mode);
-                p(score);
-
+                // p(mode);
+                // p(score);
             }
 
-            p(d);
-            p(dof);
-            p(buckets_m);
+            // p(d);
+            // p(dof);
+            // p(buckets_m);
         }
 
-        p (cacheAll);
-        p (totMode);
-        return false;
+        // Get strongest mode
+        String max_mode = null;
+        double max_value = -1;
+        for (String m: totMode.keySet()) {
+            double v = totMode.get(m);
+            if (!m.equals("green leaves") && v > max_value) {
+               max_value = v;
+               max_mode = m;
+            }
+        }
+
+        if (max_mode == null) return null;
+
+        // TODO check if strongest mode is in the 10% performers, otherwise return none
+
+        // compute entropy of highest mode found
+        Map<Integer, double[]> cacheEnt = cacheAll.get(max_mode);
+        int num_ent = 0;
+        double tot_ent = 0;
+        for (Integer wk: cacheEnt.keySet()) {
+            double[] cacheWeek = cacheEnt.get(wk);
+            double tot = 0, ent = 0;
+            for (double e: cacheWeek) tot += e;
+            if (tot <= 0) continue;
+            for (double e: cacheWeek) {
+                p(e);
+                if (e <= 0) continue;
+                double p = e / tot;
+                ent += p * Math.log(p);
+            }
+
+            tot_ent += ent;
+            num_ent += 1;
+        }
+
+        tot_ent /= num_ent;
+
+        return tot_ent;
     }
 
     public List<ChallengeExpandedDTO> recommendAll(PlayerStateDTO state, DateTime d) {
