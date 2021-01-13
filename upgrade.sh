@@ -1,1 +1,1 @@
-git add -A && git commit -m 'upgrade' && git push
+git add -A && git commit -m 'upgrade' && git pull && git push
