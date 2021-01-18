@@ -518,17 +518,17 @@ public class RecommendationSystem {
     protected List<ChallengeExpandedDTO> assignLimitV2(int limit, PlayerStateDTO state, DateTime d) {
 
         // Check if we have to intervene
-        if (repetitiveIntervene(state, d) > 0)
+        if (repetitiveIntervene(state, d.toDate()) > 0)
             // TODO
             return null;
 
         return assignLimit(limit, state, d);
     }
 
-    public Double repetitiveIntervene(PlayerStateDTO state, DateTime d) {
+    public Double repetitiveIntervene(PlayerStateDTO state, Date dt) {
 
         try {
-            String query = getRepetitiveQuery(state.getPlayerId(), d);
+            String query = getRepetitiveQuery(state.getPlayerId(), dt);
 
             String url = "https://api-dev.smartcommunitylab.it/gamification-stats-5d9353a3f0856342b2dded7f-*/_search?size=0";
             // TODO rimpiazzare autenticazione / mettere in prod.properties
@@ -544,15 +544,53 @@ public class RecommendationSystem {
         return null;
     }
 
-    protected String getRepetitiveQuery(String playerId, DateTime d) throws IOException, ParseException {
-        InputStream is = getClass().getResourceAsStream("/query/past-performance.json");
-        p(is);
-        String query = IOUtils.toString(is, StandardCharsets.UTF_8.name());
+    protected String getRepetitiveQuery(String playerId, Date dt) throws IOException, ParseException {
+        InputStream is = RecommendationSystem.class.getClassLoader().getResourceAsStream("query/past-performances.json");
+        // p(is);
+        String json = IOUtils.toString(is, StandardCharsets.UTF_8.name());
         JSONParser parser = new JSONParser();
-        JSONObject json = (JSONObject) parser.parse(query);
-        // TODO replace parameters in query
+        JSONObject all = (JSONObject) parser.parse(json);
+        // replace parameters in query
+        JSONObject query = (JSONObject) all.get("query");
+        JSONObject bool = (JSONObject) query.get("bool");
+        JSONArray must = ((JSONArray) bool.get("must"));
+        // p(must);
+        // Replace player Id
+        JSONObject mustPl = (JSONObject) must.get(0);
+        JSONObject match = (JSONObject) mustPl.get("match");
+        match.put("playerId", playerId);
+        // Replace date
+        JSONObject mustDt = (JSONObject) must.get(2);
+        // p(mustDt);
+        JSONObject mustRange = (JSONObject) mustDt.get("range");
+        JSONObject mustDtExe = (JSONObject) mustRange.get("executionTime");
+        // p(mustDtExe);
+        // last saturday
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.setTime(dt);
+        cal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+        cal.set(Calendar.HOUR, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
 
-        return null;
+        Date start = cal.getTime();
+       // p(start);
+        mustDtExe.put("lt", start.getTime());
+        // previous five weeks, start monday
+        cal.add(Calendar.WEEK_OF_YEAR, -5);
+        cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        Date end = cal.getTime();
+        // p(end);
+        mustDtExe.put("gte", end.getTime());
+
+        /*
+        Writer wr = new FileWriter("test.json");
+        all.writeJSONString(wr);;
+        wr.close();
+        */
+
+        return all.toString();
     }
 
     // get entropy means of highest performing mode

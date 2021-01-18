@@ -32,7 +32,7 @@ public class InnoWeeAnalyze extends ChallengesBaseTest {
 
     String[] keys = new String[] {"totalReduce", "totalReuse", "totalRecycle"};
 
-    String period = "R2";
+    String[] startWeek = new String[] {"21/11/2020", "28/11/2020", "05/12/2020", "19/12/2020", "16/01/2021", "23/01/2021"};
 
     Map<String, String> schools;
 
@@ -41,11 +41,11 @@ public class InnoWeeAnalyze extends ChallengesBaseTest {
     // ottenere token: https://aac.platform.smartcommunitylab.it/aac/eauth/authorize?client_id=2c53f587-693c-48fa-b579-65506d8d3221&redirect_uri=http://localhost:2020/aac&response_type=token
     // fare login "google", proprio account, copiare token dall'url risultante
 
-    String token = "eyJraWQiOiJyc2ExIiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiIyMzgxNSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJ1c2VyX25hbWUiOiJtc2NhbmFnYXR0YUBmYmsuZXUiLCJyb2xlcyI6WyJST0xFX1VTRVIiXSwiaXNzIjoiaHR0cHM6XC9cL2FhYy5wbGF0Zm9ybS5zbWFydGNvbW11bml0eWxhYi5pdFwvYWFjIiwiZ3JvdXBzIjpbXSwicHJlZmVycmVkX3VzZXJuYW1lIjoibXNjYW5hZ2F0dGFAZmJrLmV1IiwiZ2l2ZW5fbmFtZSI6Ik1hdXJvIiwiYXVkIjpbIjJjNTNmNTg3LTY5M2MtNDhmYS1iNTc5LTY1NTA2ZDhkMzIyMSIsImNhcmJvbi5zdXBlci1hYWMtMS4wLjAiLCJjYXJib24uc3VwZXItYWFjcm9sZXMtMS4wLjAiXSwibmJmIjoxNjA3Njk5MTI0LCJhenAiOiIyYzUzZjU4Ny02OTNjLTQ4ZmEtYjU3OS02NTUwNmQ4ZDMyMjEiLCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIHByb2ZpbGUuYmFzaWNwcm9maWxlLm1lIGVtYWlsIHVzZXIucm9sZXMubWUiLCJuYW1lIjoiU2NhbmFnYXR0YSBNYXVybyIsImV4cCI6MTYwNzc0MjMyNCwiaWF0IjoxNjA3Njk5MTI0LCJmYW1pbHlfbmFtZSI6IlNjYW5hZ2F0dGEiLCJqdGkiOiJGU1c5R1ZoaDI1b2s0MXRLeURCNkZINFJMTU0iLCJlbWFpbCI6Im1zY2FuYWdhdHRhQGZiay5ldSIsInVzZXJuYW1lIjoibXNjYW5hZ2F0dGFAZmJrLmV1In0.jJ2xqpeJwEH9faabI6oNcPa4UZPe45EO0O_3f-mJOc8QxtkYGLg9w3a1vqcKy00ab7NZedB3bqMCbZg9zFD1iPYjhMpHUmjpX9LWFv2vnxk6D6ZaBqOJ9mgAmyCp6n3DY7MMv8cAcBUBhflL_QqMB4Eo2SIjfoG88JwqqIX30VZrZ9FZj3J-fKLU5ImsP5uK2bYhH2oaawOuVHLVOXLrVxCJ-W2jvgDEdp1OTGjK_O5s65A4WK4wZ0JIvX8PNSk0C_pmc0_KoASGVspQWNxS8kLChLLIZ5_m9E5CTt7lufgt2P8km-ab6GhtNrYwpDpzxigqXahyLe_gXQJByhh2OQ";
+    String token = "eyJraWQiOiJyc2ExIiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiIyMzgxNSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJ1c2VyX25hbWUiOiJtc2NhbmFnYXR0YUBmYmsuZXUiLCJyb2xlcyI6WyJST0xFX1VTRVIiXSwiaXNzIjoiaHR0cHM6XC9cL2FhYy5wbGF0Zm9ybS5zbWFydGNvbW11bml0eWxhYi5pdFwvYWFjIiwiZ3JvdXBzIjpbXSwicHJlZmVycmVkX3VzZXJuYW1lIjoibXNjYW5hZ2F0dGFAZmJrLmV1IiwiZ2l2ZW5fbmFtZSI6Ik1hdXJvIiwiYXVkIjpbIjJjNTNmNTg3LTY5M2MtNDhmYS1iNTc5LTY1NTA2ZDhkMzIyMSIsImNhcmJvbi5zdXBlci1hYWMtMS4wLjAiLCJjYXJib24uc3VwZXItYWFjcm9sZXMtMS4wLjAiXSwibmJmIjoxNjEwNzI2MzgzLCJhenAiOiIyYzUzZjU4Ny02OTNjLTQ4ZmEtYjU3OS02NTUwNmQ4ZDMyMjEiLCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIHByb2ZpbGUuYmFzaWNwcm9maWxlLm1lIGVtYWlsIHVzZXIucm9sZXMubWUiLCJuYW1lIjoiU2NhbmFnYXR0YSBNYXVybyIsImV4cCI6MTYxMDc2OTU4MywiaWF0IjoxNjEwNzI2MzgzLCJmYW1pbHlfbmFtZSI6IlNjYW5hZ2F0dGEiLCJqdGkiOiJYNk9uNFlSVVMwSkZSaHE4b05QcmFaQnhDdmsiLCJlbWFpbCI6Im1zY2FuYWdhdHRhQGZiay5ldSIsInVzZXJuYW1lIjoibXNjYW5hZ2F0dGFAZmJrLmV1In0.I7pfle62JjVok_sQxSVv8M-ao002fwuGr9wAlfB66AtEMKwgm2CufeEStrh5a-zaLdWXA9mfmGDMLmIY3Ldl_DBEphGFvk97J7Ug-6gFDbOCPgSqP-f-lI1h2iZZ_px03u3Oh9Gc16MpeodUFBQoQ0SzHub290qk3zYZ7Qu8tI_HR_fd_v_xOUHH7nj-Jc_QnyKVuFg-6It9A3JjITjXYQWIqLuOS6VF65fPwfGAdEmq62JPnM9GQcSVZzvcmFdSgC54cRWnJax8W1MCVtpVt86TOfsxjGa8sj_vObRCMhRFqfMMCPI406O9Ock3J7-mCWTmtaOHL2JukCw6N_2MXg";
 
     // swagger https://innoweee.platform.smartcommunitylab.it/innoweee-engine/swagger-ui.html
 
-    private String startDate = "22/11/2020";
+    private String startDate = "";
 
     private Set<String> pIds;
 
@@ -309,8 +309,11 @@ public class InnoWeeAnalyze extends ChallengesBaseTest {
 
         Long creation = (Long) ob.get("creationDate");
         DateTime creatDate = new DateTime(creation);
-        int week = (daysApart(parseDate(startDate), creatDate) / 7) + 1;
-
+        int week = 0;
+        for (int i = 1; i < startWeek.length && week == 0; i++) {
+            if (parseDate(startWeek[i]).isAfter(creation)) week = i;
+        }
+if (week == 0) week = 6;
         String weekName = f("R%d", week);
         if (!mapAct.containsKey(weekName))
             mapAct.put(weekName, new TreeMap<>());
@@ -487,7 +490,7 @@ public class InnoWeeAnalyze extends ChallengesBaseTest {
                 if (pos < 0)
                     continue;
 
-                PointConcept.Period aux = pc.getPeriod(period);
+                // PointConcept.Period aux = pc.getPeriod(period);
 
                 values[pos] = f("%.2f", pc.getScore());
             }

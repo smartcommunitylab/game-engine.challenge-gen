@@ -1,6 +1,7 @@
 package eu.fbk.das.rs.challenges.generation;
 
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
+import it.smartcommunitylab.model.PlayerStateDTO;
 import org.apache.commons.io.IOUtils;
 import org.chocosolver.solver.constraints.nary.nvalue.amnv.differences.D;
 import org.joda.time.DateTime;
@@ -10,12 +11,19 @@ import org.junit.Test;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Set;
 
 import static eu.fbk.das.utils.Utils.f;
 import static eu.fbk.das.utils.Utils.p;
 
 // Test per la versione V2 - con gestione del detect di intervenire con i repetitive
 public class RecommendationSystemV2Test extends ChallengesBaseTest {
+
+    public RecommendationSystemV2Test() {
+        prod = true;
+    }
 
     @Test
     public void testRepetitiveInterveneAnalyze() throws IOException, ParseException {
@@ -31,7 +39,21 @@ public class RecommendationSystemV2Test extends ChallengesBaseTest {
 
     @Test
     public void testRepetitiveQuery() throws IOException, ParseException {
-        p(this.getClass().getResource("."));
-        p(rs.getRepetitiveQuery("1", new DateTime()));
+        p(rs.getRepetitiveQuery("1345", new DateTime().toDate()));
+    }
+
+    @Test
+    public void testRepetitiveIntervene() throws java.text.ParseException {
+        String ferrara20_gameid = conf.get("FERRARA20_GAMEID");
+        conf.put("GAMEID", ferrara20_gameid);
+        conf.put("execDate", "2021-01-08");
+
+        Set<String> pIds = facade.getGamePlayers(ferrara20_gameid);
+        // for (String pId: pIds) p(pId);
+
+        Date date = new SimpleDateFormat("yyyy-MM-dd").parse(conf.get("execDate"));
+
+        PlayerStateDTO state = facade.getPlayerState("19092", ferrara20_gameid);
+        rs.repetitiveIntervene(state, date);
     }
 }
