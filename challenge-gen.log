@@ -986,3 +986,532 @@
 2021-01-15 17:38:47 DEBUG PoolingHttpClientConnectionManager:341 - Connection [id: 1][route: {s}->https://innoweee.platform.smartcommunitylab.it:443] can be kept alive indefinitely
 2021-01-15 17:38:47 DEBUG DefaultManagedHttpClientConnection:88 - http-outgoing-1: set socket timeout to 0
 2021-01-15 17:38:47 DEBUG PoolingHttpClientConnectionManager:348 - Connection released: [id: 1][route: {s}->https://innoweee.platform.smartcommunitylab.it:443][total kept alive: 1; route allocated: 1 of 2; total allocated: 1 of 20]
+2021-01-19 17:31:15 DEBUG RequestAddCookies:123 - CookieSpec selected: default
+2021-01-19 17:31:15 DEBUG RequestAuthCache:77 - Auth cache not set in the context
+2021-01-19 17:31:15 DEBUG PoolingHttpClientConnectionManager:265 - Connection request: [route: {s}->https://api-dev.smartcommunitylab.it:443][total kept alive: 0; route allocated: 0 of 2; total allocated: 0 of 20]
+2021-01-19 17:31:15 DEBUG PoolingHttpClientConnectionManager:309 - Connection leased: [id: 0][route: {s}->https://api-dev.smartcommunitylab.it:443][total kept alive: 0; route allocated: 1 of 2; total allocated: 1 of 20]
+2021-01-19 17:31:15 DEBUG MainClientExec:235 - Opening connection {s}->https://api-dev.smartcommunitylab.it:443
+2021-01-19 17:31:15 DEBUG DefaultHttpClientConnectionOperator:139 - Connecting to api-dev.smartcommunitylab.it/54.76.137.204:443
+2021-01-19 17:31:15 DEBUG SSLConnectionSocketFactory:337 - Connecting socket to api-dev.smartcommunitylab.it/54.76.137.204:443 with timeout 0
+2021-01-19 17:31:15 DEBUG SSLConnectionSocketFactory:390 - Enabled protocols: [TLSv1.3, TLSv1.2, TLSv1.1, TLSv1]
+2021-01-19 17:31:15 DEBUG SSLConnectionSocketFactory:391 - Enabled cipher suites:[TLS_AES_128_GCM_SHA256, TLS_AES_256_GCM_SHA384, TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384, TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256, TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384, TLS_RSA_WITH_AES_256_GCM_SHA384, TLS_ECDH_ECDSA_WITH_AES_256_GCM_SHA384, TLS_ECDH_RSA_WITH_AES_256_GCM_SHA384, TLS_DHE_RSA_WITH_AES_256_GCM_SHA384, TLS_DHE_DSS_WITH_AES_256_GCM_SHA384, TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, TLS_RSA_WITH_AES_128_GCM_SHA256, TLS_ECDH_ECDSA_WITH_AES_128_GCM_SHA256, TLS_ECDH_RSA_WITH_AES_128_GCM_SHA256, TLS_DHE_RSA_WITH_AES_128_GCM_SHA256, TLS_DHE_DSS_WITH_AES_128_GCM_SHA256, TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384, TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384, TLS_RSA_WITH_AES_256_CBC_SHA256, TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA384, TLS_ECDH_RSA_WITH_AES_256_CBC_SHA384, TLS_DHE_RSA_WITH_AES_256_CBC_SHA256, TLS_DHE_DSS_WITH_AES_256_CBC_SHA256, TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA, TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA, TLS_RSA_WITH_AES_256_CBC_SHA, TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA, TLS_ECDH_RSA_WITH_AES_256_CBC_SHA, TLS_DHE_RSA_WITH_AES_256_CBC_SHA, TLS_DHE_DSS_WITH_AES_256_CBC_SHA, TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256, TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256, TLS_RSA_WITH_AES_128_CBC_SHA256, TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA256, TLS_ECDH_RSA_WITH_AES_128_CBC_SHA256, TLS_DHE_RSA_WITH_AES_128_CBC_SHA256, TLS_DHE_DSS_WITH_AES_128_CBC_SHA256, TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA, TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA, TLS_RSA_WITH_AES_128_CBC_SHA, TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA, TLS_ECDH_RSA_WITH_AES_128_CBC_SHA, TLS_DHE_RSA_WITH_AES_128_CBC_SHA, TLS_DHE_DSS_WITH_AES_128_CBC_SHA, TLS_EMPTY_RENEGOTIATION_INFO_SCSV]
+2021-01-19 17:31:15 DEBUG SSLConnectionSocketFactory:395 - Starting handshake
+2021-01-19 17:31:18 DEBUG SSLConnectionSocketFactory:425 - Secure session established
+2021-01-19 17:31:18 DEBUG SSLConnectionSocketFactory:426 -  negotiated protocol: TLSv1.2
+2021-01-19 17:31:18 DEBUG SSLConnectionSocketFactory:427 -  negotiated cipher suite: TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+2021-01-19 17:31:18 DEBUG SSLConnectionSocketFactory:435 -  peer principal: CN=*.smartcommunitylab.it, O=Fondazione Bruno Kessler, STREET=Via Santa Croce 77, L=Trento, ST=Trento, OID.2.5.4.17=38122, C=IT
+2021-01-19 17:31:18 DEBUG SSLConnectionSocketFactory:444 -  peer alternative names: [*.smartcommunitylab.it, smartcommunitylab.it]
+2021-01-19 17:31:18 DEBUG SSLConnectionSocketFactory:448 -  issuer principal: CN=GEANT OV RSA CA 4, O=GEANT Vereniging, C=NL
+2021-01-19 17:31:18 DEBUG DefaultHttpClientConnectionOperator:146 - Connection established 192.168.1.7:47652<->54.76.137.204:443
+2021-01-19 17:31:18 DEBUG MainClientExec:256 - Executing request GET /gamification-stats-5d9353a3f0856342b2dded7f-*/_search?size=0 HTTP/1.1
+2021-01-19 17:31:18 DEBUG MainClientExec:261 - Target auth state: UNCHALLENGED
+2021-01-19 17:31:18 DEBUG MainClientExec:267 - Proxy auth state: UNCHALLENGED
+2021-01-19 17:31:18 DEBUG headers:133 - http-outgoing-0 >> GET /gamification-stats-5d9353a3f0856342b2dded7f-*/_search?size=0 HTTP/1.1
+2021-01-19 17:31:18 DEBUG headers:136 - http-outgoing-0 >> Host: api-dev.smartcommunitylab.it
+2021-01-19 17:31:18 DEBUG headers:136 - http-outgoing-0 >> Connection: Keep-Alive
+2021-01-19 17:31:18 DEBUG headers:136 - http-outgoing-0 >> User-Agent: Apache-HttpClient/4.5.6 (Java/11.0.9.1)
+2021-01-19 17:31:18 DEBUG headers:136 - http-outgoing-0 >> Accept-Encoding: gzip,deflate
+2021-01-19 17:31:18 DEBUG wire:73 - http-outgoing-0 >> "GET /gamification-stats-5d9353a3f0856342b2dded7f-*/_search?size=0 HTTP/1.1[\r][\n]"
+2021-01-19 17:31:18 DEBUG wire:73 - http-outgoing-0 >> "Host: api-dev.smartcommunitylab.it[\r][\n]"
+2021-01-19 17:31:18 DEBUG wire:73 - http-outgoing-0 >> "Connection: Keep-Alive[\r][\n]"
+2021-01-19 17:31:18 DEBUG wire:73 - http-outgoing-0 >> "User-Agent: Apache-HttpClient/4.5.6 (Java/11.0.9.1)[\r][\n]"
+2021-01-19 17:31:18 DEBUG wire:73 - http-outgoing-0 >> "Accept-Encoding: gzip,deflate[\r][\n]"
+2021-01-19 17:31:18 DEBUG wire:73 - http-outgoing-0 >> "[\r][\n]"
+2021-01-19 17:31:18 DEBUG wire:73 - http-outgoing-0 << "HTTP/1.1 401 Unauthorized[\r][\n]"
+2021-01-19 17:31:18 DEBUG wire:73 - http-outgoing-0 << "Date: Tue, 19 Jan 2021 16:31:18 GMT[\r][\n]"
+2021-01-19 17:31:18 DEBUG wire:73 - http-outgoing-0 << "Server: Apache[\r][\n]"
+2021-01-19 17:31:19 DEBUG wire:73 - http-outgoing-0 << "WWW-Authenticate: Basic realm="Restricted Files"[\r][\n]"
+2021-01-19 17:31:19 DEBUG wire:73 - http-outgoing-0 << "Content-Length: 381[\r][\n]"
+2021-01-19 17:31:19 DEBUG wire:73 - http-outgoing-0 << "Keep-Alive: timeout=5, max=100[\r][\n]"
+2021-01-19 17:31:19 DEBUG wire:73 - http-outgoing-0 << "Connection: Keep-Alive[\r][\n]"
+2021-01-19 17:31:19 DEBUG wire:73 - http-outgoing-0 << "Content-Type: text/html; charset=iso-8859-1[\r][\n]"
+2021-01-19 17:31:19 DEBUG wire:73 - http-outgoing-0 << "[\r][\n]"
+2021-01-19 17:31:19 DEBUG headers:122 - http-outgoing-0 << HTTP/1.1 401 Unauthorized
+2021-01-19 17:31:19 DEBUG headers:125 - http-outgoing-0 << Date: Tue, 19 Jan 2021 16:31:18 GMT
+2021-01-19 17:31:19 DEBUG headers:125 - http-outgoing-0 << Server: Apache
+2021-01-19 17:31:19 DEBUG headers:125 - http-outgoing-0 << WWW-Authenticate: Basic realm="Restricted Files"
+2021-01-19 17:31:19 DEBUG headers:125 - http-outgoing-0 << Content-Length: 381
+2021-01-19 17:31:19 DEBUG headers:125 - http-outgoing-0 << Keep-Alive: timeout=5, max=100
+2021-01-19 17:31:19 DEBUG headers:125 - http-outgoing-0 << Connection: Keep-Alive
+2021-01-19 17:31:19 DEBUG headers:125 - http-outgoing-0 << Content-Type: text/html; charset=iso-8859-1
+2021-01-19 17:31:19 DEBUG MainClientExec:285 - Connection can be kept alive for 5000 MILLISECONDS
+2021-01-19 17:31:19 DEBUG HttpAuthenticator:77 - Authentication required
+2021-01-19 17:31:19 DEBUG HttpAuthenticator:107 - api-dev.smartcommunitylab.it:443 requested authentication
+2021-01-19 17:31:19 DEBUG TargetAuthenticationStrategy:175 - Authentication schemes in the order of preference: [Negotiate, Kerberos, NTLM, CredSSP, Digest, Basic]
+2021-01-19 17:31:19 DEBUG TargetAuthenticationStrategy:203 - Challenge for Negotiate authentication scheme not available
+2021-01-19 17:31:19 DEBUG TargetAuthenticationStrategy:203 - Challenge for Kerberos authentication scheme not available
+2021-01-19 17:31:19 DEBUG TargetAuthenticationStrategy:203 - Challenge for NTLM authentication scheme not available
+2021-01-19 17:31:19 DEBUG TargetAuthenticationStrategy:203 - Challenge for CredSSP authentication scheme not available
+2021-01-19 17:31:19 DEBUG TargetAuthenticationStrategy:203 - Challenge for Digest authentication scheme not available
+2021-01-19 17:31:19 DEBUG HttpAuthenticator:157 - Selected authentication options: [BASIC [complete=true]]
+2021-01-19 17:31:19 DEBUG wire:73 - http-outgoing-0 << "<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">[\n]"
+2021-01-19 17:31:19 DEBUG wire:73 - http-outgoing-0 << "<html><head>[\n]"
+2021-01-19 17:31:19 DEBUG wire:73 - http-outgoing-0 << "<title>401 Unauthorized</title>[\n]"
+2021-01-19 17:31:19 DEBUG wire:73 - http-outgoing-0 << "</head><body>[\n]"
+2021-01-19 17:31:19 DEBUG wire:73 - http-outgoing-0 << "<h1>Unauthorized</h1>[\n]"
+2021-01-19 17:31:19 DEBUG wire:73 - http-outgoing-0 << "<p>This server could not verify that you[\n]"
+2021-01-19 17:31:19 DEBUG wire:73 - http-outgoing-0 << "are authorized to access the document[\n]"
+2021-01-19 17:31:19 DEBUG wire:73 - http-outgoing-0 << "requested.  Either you supplied the wrong[\n]"
+2021-01-19 17:31:19 DEBUG wire:73 - http-outgoing-0 << "credentials (e.g., bad password), or your[\n]"
+2021-01-19 17:31:19 DEBUG wire:73 - http-outgoing-0 << "browser doesn't understand how to supply[\n]"
+2021-01-19 17:31:19 DEBUG wire:73 - http-outgoing-0 << "the credentials required.</p>[\n]"
+2021-01-19 17:31:19 DEBUG wire:73 - http-outgoing-0 << "</body></html>[\n]"
+2021-01-19 17:31:19 DEBUG MainClientExec:256 - Executing request GET /gamification-stats-5d9353a3f0856342b2dded7f-*/_search?size=0 HTTP/1.1
+2021-01-19 17:31:19 DEBUG MainClientExec:261 - Target auth state: CHALLENGED
+2021-01-19 17:31:19 DEBUG HttpAuthenticator:198 - Generating response to an authentication challenge using basic scheme
+2021-01-19 17:31:19 DEBUG MainClientExec:267 - Proxy auth state: UNCHALLENGED
+2021-01-19 17:31:19 DEBUG headers:133 - http-outgoing-0 >> GET /gamification-stats-5d9353a3f0856342b2dded7f-*/_search?size=0 HTTP/1.1
+2021-01-19 17:31:20 DEBUG headers:136 - http-outgoing-0 >> Host: api-dev.smartcommunitylab.it
+2021-01-19 17:31:20 DEBUG headers:136 - http-outgoing-0 >> Connection: Keep-Alive
+2021-01-19 17:31:20 DEBUG headers:136 - http-outgoing-0 >> User-Agent: Apache-HttpClient/4.5.6 (Java/11.0.9.1)
+2021-01-19 17:31:20 DEBUG headers:136 - http-outgoing-0 >> Accept-Encoding: gzip,deflate
+2021-01-19 17:31:20 DEBUG headers:136 - http-outgoing-0 >> Authorization: Basic ZWxzLWdhbWU6RzlwTGMzQlYzYjc5aXdmeEZHcEYg
+2021-01-19 17:31:20 DEBUG wire:73 - http-outgoing-0 >> "GET /gamification-stats-5d9353a3f0856342b2dded7f-*/_search?size=0 HTTP/1.1[\r][\n]"
+2021-01-19 17:31:20 DEBUG wire:73 - http-outgoing-0 >> "Host: api-dev.smartcommunitylab.it[\r][\n]"
+2021-01-19 17:31:20 DEBUG wire:73 - http-outgoing-0 >> "Connection: Keep-Alive[\r][\n]"
+2021-01-19 17:31:20 DEBUG wire:73 - http-outgoing-0 >> "User-Agent: Apache-HttpClient/4.5.6 (Java/11.0.9.1)[\r][\n]"
+2021-01-19 17:31:20 DEBUG wire:73 - http-outgoing-0 >> "Accept-Encoding: gzip,deflate[\r][\n]"
+2021-01-19 17:31:20 DEBUG wire:73 - http-outgoing-0 >> "Authorization: Basic ZWxzLWdhbWU6RzlwTGMzQlYzYjc5aXdmeEZHcEYg[\r][\n]"
+2021-01-19 17:31:20 DEBUG wire:73 - http-outgoing-0 >> "[\r][\n]"
+2021-01-19 17:31:20 DEBUG wire:73 - http-outgoing-0 << "HTTP/1.1 401 Unauthorized[\r][\n]"
+2021-01-19 17:31:20 DEBUG wire:73 - http-outgoing-0 << "Date: Tue, 19 Jan 2021 16:31:20 GMT[\r][\n]"
+2021-01-19 17:31:20 DEBUG wire:73 - http-outgoing-0 << "Server: Apache[\r][\n]"
+2021-01-19 17:31:20 DEBUG wire:73 - http-outgoing-0 << "WWW-Authenticate: Basic realm="Restricted Files"[\r][\n]"
+2021-01-19 17:31:20 DEBUG wire:73 - http-outgoing-0 << "Content-Length: 381[\r][\n]"
+2021-01-19 17:31:20 DEBUG wire:73 - http-outgoing-0 << "Keep-Alive: timeout=5, max=99[\r][\n]"
+2021-01-19 17:31:20 DEBUG wire:73 - http-outgoing-0 << "Connection: Keep-Alive[\r][\n]"
+2021-01-19 17:31:20 DEBUG wire:73 - http-outgoing-0 << "Content-Type: text/html; charset=iso-8859-1[\r][\n]"
+2021-01-19 17:31:20 DEBUG wire:73 - http-outgoing-0 << "[\r][\n]"
+2021-01-19 17:31:20 DEBUG headers:122 - http-outgoing-0 << HTTP/1.1 401 Unauthorized
+2021-01-19 17:31:20 DEBUG headers:125 - http-outgoing-0 << Date: Tue, 19 Jan 2021 16:31:20 GMT
+2021-01-19 17:31:20 DEBUG headers:125 - http-outgoing-0 << Server: Apache
+2021-01-19 17:31:20 DEBUG headers:125 - http-outgoing-0 << WWW-Authenticate: Basic realm="Restricted Files"
+2021-01-19 17:31:20 DEBUG headers:125 - http-outgoing-0 << Content-Length: 381
+2021-01-19 17:31:20 DEBUG headers:125 - http-outgoing-0 << Keep-Alive: timeout=5, max=99
+2021-01-19 17:31:20 DEBUG headers:125 - http-outgoing-0 << Connection: Keep-Alive
+2021-01-19 17:31:20 DEBUG headers:125 - http-outgoing-0 << Content-Type: text/html; charset=iso-8859-1
+2021-01-19 17:31:20 DEBUG MainClientExec:285 - Connection can be kept alive for 5000 MILLISECONDS
+2021-01-19 17:31:20 DEBUG HttpAuthenticator:77 - Authentication required
+2021-01-19 17:31:20 DEBUG HttpAuthenticator:107 - api-dev.smartcommunitylab.it:443 requested authentication
+2021-01-19 17:31:20 DEBUG HttpAuthenticator:136 - Authorization challenge processed
+2021-01-19 17:31:20 DEBUG HttpAuthenticator:139 - Authentication failed
+2021-01-19 17:49:10 DEBUG RequestAddCookies:123 - CookieSpec selected: default
+2021-01-19 17:49:11 DEBUG RequestAuthCache:77 - Auth cache not set in the context
+2021-01-19 17:49:11 DEBUG PoolingHttpClientConnectionManager:265 - Connection request: [route: {s}->https://api-dev.smartcommunitylab.it:443][total kept alive: 0; route allocated: 0 of 2; total allocated: 0 of 20]
+2021-01-19 17:49:11 DEBUG PoolingHttpClientConnectionManager:309 - Connection leased: [id: 0][route: {s}->https://api-dev.smartcommunitylab.it:443][total kept alive: 0; route allocated: 1 of 2; total allocated: 1 of 20]
+2021-01-19 17:49:11 DEBUG MainClientExec:235 - Opening connection {s}->https://api-dev.smartcommunitylab.it:443
+2021-01-19 17:49:11 DEBUG DefaultHttpClientConnectionOperator:139 - Connecting to api-dev.smartcommunitylab.it/54.76.137.204:443
+2021-01-19 17:49:11 DEBUG SSLConnectionSocketFactory:337 - Connecting socket to api-dev.smartcommunitylab.it/54.76.137.204:443 with timeout 0
+2021-01-19 17:49:11 DEBUG SSLConnectionSocketFactory:390 - Enabled protocols: [TLSv1.3, TLSv1.2, TLSv1.1, TLSv1]
+2021-01-19 17:49:11 DEBUG SSLConnectionSocketFactory:391 - Enabled cipher suites:[TLS_AES_128_GCM_SHA256, TLS_AES_256_GCM_SHA384, TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384, TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256, TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384, TLS_RSA_WITH_AES_256_GCM_SHA384, TLS_ECDH_ECDSA_WITH_AES_256_GCM_SHA384, TLS_ECDH_RSA_WITH_AES_256_GCM_SHA384, TLS_DHE_RSA_WITH_AES_256_GCM_SHA384, TLS_DHE_DSS_WITH_AES_256_GCM_SHA384, TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, TLS_RSA_WITH_AES_128_GCM_SHA256, TLS_ECDH_ECDSA_WITH_AES_128_GCM_SHA256, TLS_ECDH_RSA_WITH_AES_128_GCM_SHA256, TLS_DHE_RSA_WITH_AES_128_GCM_SHA256, TLS_DHE_DSS_WITH_AES_128_GCM_SHA256, TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384, TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384, TLS_RSA_WITH_AES_256_CBC_SHA256, TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA384, TLS_ECDH_RSA_WITH_AES_256_CBC_SHA384, TLS_DHE_RSA_WITH_AES_256_CBC_SHA256, TLS_DHE_DSS_WITH_AES_256_CBC_SHA256, TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA, TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA, TLS_RSA_WITH_AES_256_CBC_SHA, TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA, TLS_ECDH_RSA_WITH_AES_256_CBC_SHA, TLS_DHE_RSA_WITH_AES_256_CBC_SHA, TLS_DHE_DSS_WITH_AES_256_CBC_SHA, TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256, TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256, TLS_RSA_WITH_AES_128_CBC_SHA256, TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA256, TLS_ECDH_RSA_WITH_AES_128_CBC_SHA256, TLS_DHE_RSA_WITH_AES_128_CBC_SHA256, TLS_DHE_DSS_WITH_AES_128_CBC_SHA256, TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA, TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA, TLS_RSA_WITH_AES_128_CBC_SHA, TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA, TLS_ECDH_RSA_WITH_AES_128_CBC_SHA, TLS_DHE_RSA_WITH_AES_128_CBC_SHA, TLS_DHE_DSS_WITH_AES_128_CBC_SHA, TLS_EMPTY_RENEGOTIATION_INFO_SCSV]
+2021-01-19 17:49:11 DEBUG SSLConnectionSocketFactory:395 - Starting handshake
+2021-01-19 17:49:13 DEBUG SSLConnectionSocketFactory:425 - Secure session established
+2021-01-19 17:49:13 DEBUG SSLConnectionSocketFactory:426 -  negotiated protocol: TLSv1.2
+2021-01-19 17:49:13 DEBUG SSLConnectionSocketFactory:427 -  negotiated cipher suite: TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+2021-01-19 17:49:13 DEBUG SSLConnectionSocketFactory:435 -  peer principal: CN=*.smartcommunitylab.it, O=Fondazione Bruno Kessler, STREET=Via Santa Croce 77, L=Trento, ST=Trento, OID.2.5.4.17=38122, C=IT
+2021-01-19 17:49:13 DEBUG SSLConnectionSocketFactory:444 -  peer alternative names: [*.smartcommunitylab.it, smartcommunitylab.it]
+2021-01-19 17:49:13 DEBUG SSLConnectionSocketFactory:448 -  issuer principal: CN=GEANT OV RSA CA 4, O=GEANT Vereniging, C=NL
+2021-01-19 17:49:13 DEBUG DefaultHttpClientConnectionOperator:146 - Connection established 192.168.1.7:48078<->54.76.137.204:443
+2021-01-19 17:49:13 DEBUG MainClientExec:256 - Executing request POST /gamification-stats-5d9353a3f0856342b2dded7f-*/_search?size=0 HTTP/1.1
+2021-01-19 17:49:13 DEBUG MainClientExec:261 - Target auth state: UNCHALLENGED
+2021-01-19 17:49:13 DEBUG MainClientExec:267 - Proxy auth state: UNCHALLENGED
+2021-01-19 17:49:13 DEBUG headers:133 - http-outgoing-0 >> POST /gamification-stats-5d9353a3f0856342b2dded7f-*/_search?size=0 HTTP/1.1
+2021-01-19 17:49:13 DEBUG headers:136 - http-outgoing-0 >> Content-Length: 474
+2021-01-19 17:49:13 DEBUG headers:136 - http-outgoing-0 >> Content-Type: text/plain; charset=ISO-8859-1
+2021-01-19 17:49:13 DEBUG headers:136 - http-outgoing-0 >> Host: api-dev.smartcommunitylab.it
+2021-01-19 17:49:13 DEBUG headers:136 - http-outgoing-0 >> Connection: Keep-Alive
+2021-01-19 17:49:13 DEBUG headers:136 - http-outgoing-0 >> User-Agent: Apache-HttpClient/4.5.6 (Java/11.0.9.1)
+2021-01-19 17:49:13 DEBUG headers:136 - http-outgoing-0 >> Accept-Encoding: gzip,deflate
+2021-01-19 17:49:13 DEBUG wire:73 - http-outgoing-0 >> "POST /gamification-stats-5d9353a3f0856342b2dded7f-*/_search?size=0 HTTP/1.1[\r][\n]"
+2021-01-19 17:49:13 DEBUG wire:73 - http-outgoing-0 >> "Content-Length: 474[\r][\n]"
+2021-01-19 17:49:13 DEBUG wire:73 - http-outgoing-0 >> "Content-Type: text/plain; charset=ISO-8859-1[\r][\n]"
+2021-01-19 17:49:13 DEBUG wire:73 - http-outgoing-0 >> "Host: api-dev.smartcommunitylab.it[\r][\n]"
+2021-01-19 17:49:13 DEBUG wire:73 - http-outgoing-0 >> "Connection: Keep-Alive[\r][\n]"
+2021-01-19 17:49:13 DEBUG wire:73 - http-outgoing-0 >> "User-Agent: Apache-HttpClient/4.5.6 (Java/11.0.9.1)[\r][\n]"
+2021-01-19 17:49:13 DEBUG wire:73 - http-outgoing-0 >> "Accept-Encoding: gzip,deflate[\r][\n]"
+2021-01-19 17:49:13 DEBUG wire:73 - http-outgoing-0 >> "[\r][\n]"
+2021-01-19 17:49:13 DEBUG wire:87 - http-outgoing-0 >> "{"query":{"bool":{"must":[{"match":{"playerId":"5edf5f7d4149dd117cc7f17d"}},{"bool":{"should":[{"match":{"conceptName":"Walk_Km"}},{"match":{"conceptName":"green leaves"}},{"match":{"conceptName":"Bike_Km"}}]}},{"range":{"executionTime":{"lt":1609628400000,"gte":1606690800000}}}]}},"aggs":{"score_per_day":{"date_histogram":{"field":"executionTime","interval":"day"},"aggs":{"by_concept":{"terms":{"field":"conceptName"},"aggs":{"score":{"sum":{"field":"deltaScore"}}}}}}}}"
+2021-01-19 17:49:14 DEBUG wire:73 - http-outgoing-0 << "HTTP/1.1 401 Unauthorized[\r][\n]"
+2021-01-19 17:49:14 DEBUG wire:73 - http-outgoing-0 << "Date: Tue, 19 Jan 2021 16:49:14 GMT[\r][\n]"
+2021-01-19 17:49:14 DEBUG wire:73 - http-outgoing-0 << "Server: Apache[\r][\n]"
+2021-01-19 17:49:14 DEBUG wire:73 - http-outgoing-0 << "WWW-Authenticate: Basic realm="Restricted Files"[\r][\n]"
+2021-01-19 17:49:14 DEBUG wire:73 - http-outgoing-0 << "Content-Length: 381[\r][\n]"
+2021-01-19 17:49:14 DEBUG wire:73 - http-outgoing-0 << "Keep-Alive: timeout=5, max=100[\r][\n]"
+2021-01-19 17:49:14 DEBUG wire:73 - http-outgoing-0 << "Connection: Keep-Alive[\r][\n]"
+2021-01-19 17:49:14 DEBUG wire:73 - http-outgoing-0 << "Content-Type: text/html; charset=iso-8859-1[\r][\n]"
+2021-01-19 17:49:14 DEBUG wire:73 - http-outgoing-0 << "[\r][\n]"
+2021-01-19 17:49:14 DEBUG headers:122 - http-outgoing-0 << HTTP/1.1 401 Unauthorized
+2021-01-19 17:49:14 DEBUG headers:125 - http-outgoing-0 << Date: Tue, 19 Jan 2021 16:49:14 GMT
+2021-01-19 17:49:14 DEBUG headers:125 - http-outgoing-0 << Server: Apache
+2021-01-19 17:49:14 DEBUG headers:125 - http-outgoing-0 << WWW-Authenticate: Basic realm="Restricted Files"
+2021-01-19 17:49:14 DEBUG headers:125 - http-outgoing-0 << Content-Length: 381
+2021-01-19 17:49:14 DEBUG headers:125 - http-outgoing-0 << Keep-Alive: timeout=5, max=100
+2021-01-19 17:49:14 DEBUG headers:125 - http-outgoing-0 << Connection: Keep-Alive
+2021-01-19 17:49:14 DEBUG headers:125 - http-outgoing-0 << Content-Type: text/html; charset=iso-8859-1
+2021-01-19 17:49:14 DEBUG MainClientExec:285 - Connection can be kept alive for 5000 MILLISECONDS
+2021-01-19 17:49:14 DEBUG HttpAuthenticator:77 - Authentication required
+2021-01-19 17:49:14 DEBUG HttpAuthenticator:107 - api-dev.smartcommunitylab.it:443 requested authentication
+2021-01-19 17:49:14 DEBUG TargetAuthenticationStrategy:175 - Authentication schemes in the order of preference: [Negotiate, Kerberos, NTLM, CredSSP, Digest, Basic]
+2021-01-19 17:49:14 DEBUG TargetAuthenticationStrategy:203 - Challenge for Negotiate authentication scheme not available
+2021-01-19 17:49:14 DEBUG TargetAuthenticationStrategy:203 - Challenge for Kerberos authentication scheme not available
+2021-01-19 17:49:14 DEBUG TargetAuthenticationStrategy:203 - Challenge for NTLM authentication scheme not available
+2021-01-19 17:49:14 DEBUG TargetAuthenticationStrategy:203 - Challenge for CredSSP authentication scheme not available
+2021-01-19 17:49:14 DEBUG TargetAuthenticationStrategy:203 - Challenge for Digest authentication scheme not available
+2021-01-19 17:49:14 DEBUG HttpAuthenticator:157 - Selected authentication options: [BASIC [complete=true]]
+2021-01-19 17:49:14 DEBUG wire:73 - http-outgoing-0 << "<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">[\n]"
+2021-01-19 17:49:14 DEBUG wire:73 - http-outgoing-0 << "<html><head>[\n]"
+2021-01-19 17:49:14 DEBUG wire:73 - http-outgoing-0 << "<title>401 Unauthorized</title>[\n]"
+2021-01-19 17:49:14 DEBUG wire:73 - http-outgoing-0 << "</head><body>[\n]"
+2021-01-19 17:49:14 DEBUG wire:73 - http-outgoing-0 << "<h1>Unauthorized</h1>[\n]"
+2021-01-19 17:49:14 DEBUG wire:73 - http-outgoing-0 << "<p>This server could not verify that you[\n]"
+2021-01-19 17:49:14 DEBUG wire:73 - http-outgoing-0 << "are authorized to access the document[\n]"
+2021-01-19 17:49:14 DEBUG wire:73 - http-outgoing-0 << "requested.  Either you supplied the wrong[\n]"
+2021-01-19 17:49:14 DEBUG wire:73 - http-outgoing-0 << "credentials (e.g., bad password), or your[\n]"
+2021-01-19 17:49:14 DEBUG wire:73 - http-outgoing-0 << "browser doesn't understand how to supply[\n]"
+2021-01-19 17:49:14 DEBUG wire:73 - http-outgoing-0 << "the credentials required.</p>[\n]"
+2021-01-19 17:49:14 DEBUG wire:73 - http-outgoing-0 << "</body></html>[\n]"
+2021-01-19 17:49:14 DEBUG MainClientExec:256 - Executing request POST /gamification-stats-5d9353a3f0856342b2dded7f-*/_search?size=0 HTTP/1.1
+2021-01-19 17:49:15 DEBUG MainClientExec:261 - Target auth state: CHALLENGED
+2021-01-19 17:49:15 DEBUG HttpAuthenticator:198 - Generating response to an authentication challenge using basic scheme
+2021-01-19 17:49:15 DEBUG MainClientExec:267 - Proxy auth state: UNCHALLENGED
+2021-01-19 17:49:15 DEBUG headers:133 - http-outgoing-0 >> POST /gamification-stats-5d9353a3f0856342b2dded7f-*/_search?size=0 HTTP/1.1
+2021-01-19 17:49:15 DEBUG headers:136 - http-outgoing-0 >> Content-Length: 474
+2021-01-19 17:49:15 DEBUG headers:136 - http-outgoing-0 >> Content-Type: text/plain; charset=ISO-8859-1
+2021-01-19 17:49:15 DEBUG headers:136 - http-outgoing-0 >> Host: api-dev.smartcommunitylab.it
+2021-01-19 17:49:15 DEBUG headers:136 - http-outgoing-0 >> Connection: Keep-Alive
+2021-01-19 17:49:15 DEBUG headers:136 - http-outgoing-0 >> User-Agent: Apache-HttpClient/4.5.6 (Java/11.0.9.1)
+2021-01-19 17:49:15 DEBUG headers:136 - http-outgoing-0 >> Accept-Encoding: gzip,deflate
+2021-01-19 17:49:15 DEBUG headers:136 - http-outgoing-0 >> Authorization: Basic ZWxzLWdhbWU6RzlwTGMzQlYzYjc5aXdmeEZHcEYg
+2021-01-19 17:49:15 DEBUG wire:73 - http-outgoing-0 >> "POST /gamification-stats-5d9353a3f0856342b2dded7f-*/_search?size=0 HTTP/1.1[\r][\n]"
+2021-01-19 17:49:15 DEBUG wire:73 - http-outgoing-0 >> "Content-Length: 474[\r][\n]"
+2021-01-19 17:49:15 DEBUG wire:73 - http-outgoing-0 >> "Content-Type: text/plain; charset=ISO-8859-1[\r][\n]"
+2021-01-19 17:49:15 DEBUG wire:73 - http-outgoing-0 >> "Host: api-dev.smartcommunitylab.it[\r][\n]"
+2021-01-19 17:49:15 DEBUG wire:73 - http-outgoing-0 >> "Connection: Keep-Alive[\r][\n]"
+2021-01-19 17:49:15 DEBUG wire:73 - http-outgoing-0 >> "User-Agent: Apache-HttpClient/4.5.6 (Java/11.0.9.1)[\r][\n]"
+2021-01-19 17:49:15 DEBUG wire:73 - http-outgoing-0 >> "Accept-Encoding: gzip,deflate[\r][\n]"
+2021-01-19 17:49:15 DEBUG wire:73 - http-outgoing-0 >> "Authorization: Basic ZWxzLWdhbWU6RzlwTGMzQlYzYjc5aXdmeEZHcEYg[\r][\n]"
+2021-01-19 17:49:15 DEBUG wire:73 - http-outgoing-0 >> "[\r][\n]"
+2021-01-19 17:49:15 DEBUG wire:87 - http-outgoing-0 >> "{"query":{"bool":{"must":[{"match":{"playerId":"5edf5f7d4149dd117cc7f17d"}},{"bool":{"should":[{"match":{"conceptName":"Walk_Km"}},{"match":{"conceptName":"green leaves"}},{"match":{"conceptName":"Bike_Km"}}]}},{"range":{"executionTime":{"lt":1609628400000,"gte":1606690800000}}}]}},"aggs":{"score_per_day":{"date_histogram":{"field":"executionTime","interval":"day"},"aggs":{"by_concept":{"terms":{"field":"conceptName"},"aggs":{"score":{"sum":{"field":"deltaScore"}}}}}}}}"
+2021-01-19 17:49:15 DEBUG wire:73 - http-outgoing-0 << "HTTP/1.1 401 Unauthorized[\r][\n]"
+2021-01-19 17:49:15 DEBUG wire:73 - http-outgoing-0 << "Date: Tue, 19 Jan 2021 16:49:15 GMT[\r][\n]"
+2021-01-19 17:49:15 DEBUG wire:73 - http-outgoing-0 << "Server: Apache[\r][\n]"
+2021-01-19 17:49:15 DEBUG wire:73 - http-outgoing-0 << "WWW-Authenticate: Basic realm="Restricted Files"[\r][\n]"
+2021-01-19 17:49:15 DEBUG wire:73 - http-outgoing-0 << "Content-Length: 381[\r][\n]"
+2021-01-19 17:49:15 DEBUG wire:73 - http-outgoing-0 << "Keep-Alive: timeout=5, max=99[\r][\n]"
+2021-01-19 17:49:15 DEBUG wire:73 - http-outgoing-0 << "Connection: Keep-Alive[\r][\n]"
+2021-01-19 17:49:15 DEBUG wire:73 - http-outgoing-0 << "Content-Type: text/html; charset=iso-8859-1[\r][\n]"
+2021-01-19 17:49:15 DEBUG wire:73 - http-outgoing-0 << "[\r][\n]"
+2021-01-19 17:49:15 DEBUG headers:122 - http-outgoing-0 << HTTP/1.1 401 Unauthorized
+2021-01-19 17:49:15 DEBUG headers:125 - http-outgoing-0 << Date: Tue, 19 Jan 2021 16:49:15 GMT
+2021-01-19 17:49:15 DEBUG headers:125 - http-outgoing-0 << Server: Apache
+2021-01-19 17:49:15 DEBUG headers:125 - http-outgoing-0 << WWW-Authenticate: Basic realm="Restricted Files"
+2021-01-19 17:49:15 DEBUG headers:125 - http-outgoing-0 << Content-Length: 381
+2021-01-19 17:49:15 DEBUG headers:125 - http-outgoing-0 << Keep-Alive: timeout=5, max=99
+2021-01-19 17:49:15 DEBUG headers:125 - http-outgoing-0 << Connection: Keep-Alive
+2021-01-19 17:49:15 DEBUG headers:125 - http-outgoing-0 << Content-Type: text/html; charset=iso-8859-1
+2021-01-19 17:49:16 DEBUG MainClientExec:285 - Connection can be kept alive for 5000 MILLISECONDS
+2021-01-19 17:49:16 DEBUG HttpAuthenticator:77 - Authentication required
+2021-01-19 17:49:16 DEBUG HttpAuthenticator:107 - api-dev.smartcommunitylab.it:443 requested authentication
+2021-01-19 17:49:16 DEBUG HttpAuthenticator:136 - Authorization challenge processed
+2021-01-19 17:49:16 DEBUG HttpAuthenticator:139 - Authentication failed
+2021-01-19 17:58:35 DEBUG RequestAddCookies:123 - CookieSpec selected: default
+2021-01-19 17:58:35 DEBUG RequestAuthCache:77 - Auth cache not set in the context
+2021-01-19 17:58:35 DEBUG PoolingHttpClientConnectionManager:265 - Connection request: [route: {s}->https://api-dev.smartcommunitylab.it:443][total kept alive: 0; route allocated: 0 of 2; total allocated: 0 of 20]
+2021-01-19 17:58:36 DEBUG PoolingHttpClientConnectionManager:309 - Connection leased: [id: 0][route: {s}->https://api-dev.smartcommunitylab.it:443][total kept alive: 0; route allocated: 1 of 2; total allocated: 1 of 20]
+2021-01-19 17:58:36 DEBUG MainClientExec:235 - Opening connection {s}->https://api-dev.smartcommunitylab.it:443
+2021-01-19 17:58:36 DEBUG DefaultHttpClientConnectionOperator:139 - Connecting to api-dev.smartcommunitylab.it/54.76.137.204:443
+2021-01-19 17:58:36 DEBUG SSLConnectionSocketFactory:337 - Connecting socket to api-dev.smartcommunitylab.it/54.76.137.204:443 with timeout 0
+2021-01-19 17:58:36 DEBUG SSLConnectionSocketFactory:390 - Enabled protocols: [TLSv1.3, TLSv1.2, TLSv1.1, TLSv1]
+2021-01-19 17:58:36 DEBUG SSLConnectionSocketFactory:391 - Enabled cipher suites:[TLS_AES_128_GCM_SHA256, TLS_AES_256_GCM_SHA384, TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384, TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256, TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384, TLS_RSA_WITH_AES_256_GCM_SHA384, TLS_ECDH_ECDSA_WITH_AES_256_GCM_SHA384, TLS_ECDH_RSA_WITH_AES_256_GCM_SHA384, TLS_DHE_RSA_WITH_AES_256_GCM_SHA384, TLS_DHE_DSS_WITH_AES_256_GCM_SHA384, TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, TLS_RSA_WITH_AES_128_GCM_SHA256, TLS_ECDH_ECDSA_WITH_AES_128_GCM_SHA256, TLS_ECDH_RSA_WITH_AES_128_GCM_SHA256, TLS_DHE_RSA_WITH_AES_128_GCM_SHA256, TLS_DHE_DSS_WITH_AES_128_GCM_SHA256, TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384, TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384, TLS_RSA_WITH_AES_256_CBC_SHA256, TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA384, TLS_ECDH_RSA_WITH_AES_256_CBC_SHA384, TLS_DHE_RSA_WITH_AES_256_CBC_SHA256, TLS_DHE_DSS_WITH_AES_256_CBC_SHA256, TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA, TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA, TLS_RSA_WITH_AES_256_CBC_SHA, TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA, TLS_ECDH_RSA_WITH_AES_256_CBC_SHA, TLS_DHE_RSA_WITH_AES_256_CBC_SHA, TLS_DHE_DSS_WITH_AES_256_CBC_SHA, TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256, TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256, TLS_RSA_WITH_AES_128_CBC_SHA256, TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA256, TLS_ECDH_RSA_WITH_AES_128_CBC_SHA256, TLS_DHE_RSA_WITH_AES_128_CBC_SHA256, TLS_DHE_DSS_WITH_AES_128_CBC_SHA256, TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA, TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA, TLS_RSA_WITH_AES_128_CBC_SHA, TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA, TLS_ECDH_RSA_WITH_AES_128_CBC_SHA, TLS_DHE_RSA_WITH_AES_128_CBC_SHA, TLS_DHE_DSS_WITH_AES_128_CBC_SHA, TLS_EMPTY_RENEGOTIATION_INFO_SCSV]
+2021-01-19 17:58:36 DEBUG SSLConnectionSocketFactory:395 - Starting handshake
+2021-01-19 17:58:38 DEBUG SSLConnectionSocketFactory:425 - Secure session established
+2021-01-19 17:58:38 DEBUG SSLConnectionSocketFactory:426 -  negotiated protocol: TLSv1.2
+2021-01-19 17:58:38 DEBUG SSLConnectionSocketFactory:427 -  negotiated cipher suite: TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+2021-01-19 17:58:38 DEBUG SSLConnectionSocketFactory:435 -  peer principal: CN=*.smartcommunitylab.it, O=Fondazione Bruno Kessler, STREET=Via Santa Croce 77, L=Trento, ST=Trento, OID.2.5.4.17=38122, C=IT
+2021-01-19 17:58:38 DEBUG SSLConnectionSocketFactory:444 -  peer alternative names: [*.smartcommunitylab.it, smartcommunitylab.it]
+2021-01-19 17:58:38 DEBUG SSLConnectionSocketFactory:448 -  issuer principal: CN=GEANT OV RSA CA 4, O=GEANT Vereniging, C=NL
+2021-01-19 17:58:38 DEBUG DefaultHttpClientConnectionOperator:146 - Connection established 192.168.1.7:48366<->54.76.137.204:443
+2021-01-19 17:58:38 DEBUG MainClientExec:256 - Executing request POST /gamification-stats-5d9353a3f0856342b2dded7f-*/_search?size=0 HTTP/1.1
+2021-01-19 17:58:38 DEBUG MainClientExec:267 - Proxy auth state: UNCHALLENGED
+2021-01-19 17:58:38 DEBUG headers:133 - http-outgoing-0 >> POST /gamification-stats-5d9353a3f0856342b2dded7f-*/_search?size=0 HTTP/1.1
+2021-01-19 17:58:38 DEBUG headers:136 - http-outgoing-0 >> Authorization: Basic ZWxzLWdhbWU6RzlwTGMzQlYzYjc5aXdmeEZHcEYg
+2021-01-19 17:58:38 DEBUG headers:136 - http-outgoing-0 >> Content-Length: 474
+2021-01-19 17:58:38 DEBUG headers:136 - http-outgoing-0 >> Content-Type: text/plain; charset=ISO-8859-1
+2021-01-19 17:58:38 DEBUG headers:136 - http-outgoing-0 >> Host: api-dev.smartcommunitylab.it
+2021-01-19 17:58:38 DEBUG headers:136 - http-outgoing-0 >> Connection: Keep-Alive
+2021-01-19 17:58:38 DEBUG headers:136 - http-outgoing-0 >> User-Agent: Apache-HttpClient/4.5.6 (Java/11.0.9.1)
+2021-01-19 17:58:38 DEBUG headers:136 - http-outgoing-0 >> Accept-Encoding: gzip,deflate
+2021-01-19 17:58:38 DEBUG wire:73 - http-outgoing-0 >> "POST /gamification-stats-5d9353a3f0856342b2dded7f-*/_search?size=0 HTTP/1.1[\r][\n]"
+2021-01-19 17:58:38 DEBUG wire:73 - http-outgoing-0 >> "Authorization: Basic ZWxzLWdhbWU6RzlwTGMzQlYzYjc5aXdmeEZHcEYg[\r][\n]"
+2021-01-19 17:58:38 DEBUG wire:73 - http-outgoing-0 >> "Content-Length: 474[\r][\n]"
+2021-01-19 17:58:38 DEBUG wire:73 - http-outgoing-0 >> "Content-Type: text/plain; charset=ISO-8859-1[\r][\n]"
+2021-01-19 17:58:38 DEBUG wire:73 - http-outgoing-0 >> "Host: api-dev.smartcommunitylab.it[\r][\n]"
+2021-01-19 17:58:38 DEBUG wire:73 - http-outgoing-0 >> "Connection: Keep-Alive[\r][\n]"
+2021-01-19 17:58:38 DEBUG wire:73 - http-outgoing-0 >> "User-Agent: Apache-HttpClient/4.5.6 (Java/11.0.9.1)[\r][\n]"
+2021-01-19 17:58:38 DEBUG wire:73 - http-outgoing-0 >> "Accept-Encoding: gzip,deflate[\r][\n]"
+2021-01-19 17:58:38 DEBUG wire:73 - http-outgoing-0 >> "[\r][\n]"
+2021-01-19 17:58:38 DEBUG wire:87 - http-outgoing-0 >> "{"query":{"bool":{"must":[{"match":{"playerId":"5edf5f7d4149dd117cc7f17d"}},{"bool":{"should":[{"match":{"conceptName":"Walk_Km"}},{"match":{"conceptName":"green leaves"}},{"match":{"conceptName":"Bike_Km"}}]}},{"range":{"executionTime":{"lt":1609628400000,"gte":1606690800000}}}]}},"aggs":{"score_per_day":{"date_histogram":{"field":"executionTime","interval":"day"},"aggs":{"by_concept":{"terms":{"field":"conceptName"},"aggs":{"score":{"sum":{"field":"deltaScore"}}}}}}}}"
+2021-01-19 17:58:39 DEBUG wire:73 - http-outgoing-0 << "HTTP/1.1 401 Unauthorized[\r][\n]"
+2021-01-19 17:58:39 DEBUG wire:73 - http-outgoing-0 << "Date: Tue, 19 Jan 2021 16:58:38 GMT[\r][\n]"
+2021-01-19 17:58:39 DEBUG wire:73 - http-outgoing-0 << "Server: Apache[\r][\n]"
+2021-01-19 17:58:39 DEBUG wire:73 - http-outgoing-0 << "WWW-Authenticate: Basic realm="Restricted Files"[\r][\n]"
+2021-01-19 17:58:39 DEBUG wire:73 - http-outgoing-0 << "Content-Length: 381[\r][\n]"
+2021-01-19 17:58:39 DEBUG wire:73 - http-outgoing-0 << "Keep-Alive: timeout=5, max=100[\r][\n]"
+2021-01-19 17:58:39 DEBUG wire:73 - http-outgoing-0 << "Connection: Keep-Alive[\r][\n]"
+2021-01-19 17:58:39 DEBUG wire:73 - http-outgoing-0 << "Content-Type: text/html; charset=iso-8859-1[\r][\n]"
+2021-01-19 17:58:39 DEBUG wire:73 - http-outgoing-0 << "[\r][\n]"
+2021-01-19 17:58:39 DEBUG headers:122 - http-outgoing-0 << HTTP/1.1 401 Unauthorized
+2021-01-19 17:58:39 DEBUG headers:125 - http-outgoing-0 << Date: Tue, 19 Jan 2021 16:58:38 GMT
+2021-01-19 17:58:39 DEBUG headers:125 - http-outgoing-0 << Server: Apache
+2021-01-19 17:58:39 DEBUG headers:125 - http-outgoing-0 << WWW-Authenticate: Basic realm="Restricted Files"
+2021-01-19 17:58:39 DEBUG headers:125 - http-outgoing-0 << Content-Length: 381
+2021-01-19 17:58:39 DEBUG headers:125 - http-outgoing-0 << Keep-Alive: timeout=5, max=100
+2021-01-19 17:58:39 DEBUG headers:125 - http-outgoing-0 << Connection: Keep-Alive
+2021-01-19 17:58:39 DEBUG headers:125 - http-outgoing-0 << Content-Type: text/html; charset=iso-8859-1
+2021-01-19 17:58:39 DEBUG MainClientExec:285 - Connection can be kept alive for 5000 MILLISECONDS
+2021-01-19 17:58:39 DEBUG HttpAuthenticator:77 - Authentication required
+2021-01-19 17:58:39 DEBUG HttpAuthenticator:107 - api-dev.smartcommunitylab.it:443 requested authentication
+2021-01-19 17:58:39 DEBUG TargetAuthenticationStrategy:175 - Authentication schemes in the order of preference: [Negotiate, Kerberos, NTLM, CredSSP, Digest, Basic]
+2021-01-19 17:58:39 DEBUG TargetAuthenticationStrategy:203 - Challenge for Negotiate authentication scheme not available
+2021-01-19 17:58:39 DEBUG TargetAuthenticationStrategy:203 - Challenge for Kerberos authentication scheme not available
+2021-01-19 17:58:39 DEBUG TargetAuthenticationStrategy:203 - Challenge for NTLM authentication scheme not available
+2021-01-19 17:58:39 DEBUG TargetAuthenticationStrategy:203 - Challenge for CredSSP authentication scheme not available
+2021-01-19 17:58:39 DEBUG TargetAuthenticationStrategy:203 - Challenge for Digest authentication scheme not available
+2021-01-19 18:26:20 DEBUG RequestAddCookies:123 - CookieSpec selected: default
+2021-01-19 18:26:20 DEBUG RequestAuthCache:77 - Auth cache not set in the context
+2021-01-19 18:26:20 DEBUG PoolingHttpClientConnectionManager:265 - Connection request: [route: {s}->https://api-dev.smartcommunitylab.it:443][total kept alive: 0; route allocated: 0 of 2; total allocated: 0 of 20]
+2021-01-19 18:26:20 DEBUG PoolingHttpClientConnectionManager:309 - Connection leased: [id: 0][route: {s}->https://api-dev.smartcommunitylab.it:443][total kept alive: 0; route allocated: 1 of 2; total allocated: 1 of 20]
+2021-01-19 18:26:20 DEBUG MainClientExec:235 - Opening connection {s}->https://api-dev.smartcommunitylab.it:443
+2021-01-19 18:26:21 DEBUG DefaultHttpClientConnectionOperator:139 - Connecting to api-dev.smartcommunitylab.it/54.76.137.204:443
+2021-01-19 18:26:21 DEBUG SSLConnectionSocketFactory:337 - Connecting socket to api-dev.smartcommunitylab.it/54.76.137.204:443 with timeout 0
+2021-01-19 18:26:21 DEBUG SSLConnectionSocketFactory:390 - Enabled protocols: [TLSv1.3, TLSv1.2, TLSv1.1, TLSv1]
+2021-01-19 18:26:21 DEBUG SSLConnectionSocketFactory:391 - Enabled cipher suites:[TLS_AES_128_GCM_SHA256, TLS_AES_256_GCM_SHA384, TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384, TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256, TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384, TLS_RSA_WITH_AES_256_GCM_SHA384, TLS_ECDH_ECDSA_WITH_AES_256_GCM_SHA384, TLS_ECDH_RSA_WITH_AES_256_GCM_SHA384, TLS_DHE_RSA_WITH_AES_256_GCM_SHA384, TLS_DHE_DSS_WITH_AES_256_GCM_SHA384, TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, TLS_RSA_WITH_AES_128_GCM_SHA256, TLS_ECDH_ECDSA_WITH_AES_128_GCM_SHA256, TLS_ECDH_RSA_WITH_AES_128_GCM_SHA256, TLS_DHE_RSA_WITH_AES_128_GCM_SHA256, TLS_DHE_DSS_WITH_AES_128_GCM_SHA256, TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384, TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384, TLS_RSA_WITH_AES_256_CBC_SHA256, TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA384, TLS_ECDH_RSA_WITH_AES_256_CBC_SHA384, TLS_DHE_RSA_WITH_AES_256_CBC_SHA256, TLS_DHE_DSS_WITH_AES_256_CBC_SHA256, TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA, TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA, TLS_RSA_WITH_AES_256_CBC_SHA, TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA, TLS_ECDH_RSA_WITH_AES_256_CBC_SHA, TLS_DHE_RSA_WITH_AES_256_CBC_SHA, TLS_DHE_DSS_WITH_AES_256_CBC_SHA, TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256, TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256, TLS_RSA_WITH_AES_128_CBC_SHA256, TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA256, TLS_ECDH_RSA_WITH_AES_128_CBC_SHA256, TLS_DHE_RSA_WITH_AES_128_CBC_SHA256, TLS_DHE_DSS_WITH_AES_128_CBC_SHA256, TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA, TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA, TLS_RSA_WITH_AES_128_CBC_SHA, TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA, TLS_ECDH_RSA_WITH_AES_128_CBC_SHA, TLS_DHE_RSA_WITH_AES_128_CBC_SHA, TLS_DHE_DSS_WITH_AES_128_CBC_SHA, TLS_EMPTY_RENEGOTIATION_INFO_SCSV]
+2021-01-19 18:26:21 DEBUG SSLConnectionSocketFactory:395 - Starting handshake
+2021-01-19 18:26:23 DEBUG SSLConnectionSocketFactory:425 - Secure session established
+2021-01-19 18:26:23 DEBUG SSLConnectionSocketFactory:426 -  negotiated protocol: TLSv1.2
+2021-01-19 18:26:23 DEBUG SSLConnectionSocketFactory:427 -  negotiated cipher suite: TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+2021-01-19 18:26:23 DEBUG SSLConnectionSocketFactory:435 -  peer principal: CN=*.smartcommunitylab.it, O=Fondazione Bruno Kessler, STREET=Via Santa Croce 77, L=Trento, ST=Trento, OID.2.5.4.17=38122, C=IT
+2021-01-19 18:26:23 DEBUG SSLConnectionSocketFactory:444 -  peer alternative names: [*.smartcommunitylab.it, smartcommunitylab.it]
+2021-01-19 18:26:23 DEBUG SSLConnectionSocketFactory:448 -  issuer principal: CN=GEANT OV RSA CA 4, O=GEANT Vereniging, C=NL
+2021-01-19 18:26:23 DEBUG DefaultHttpClientConnectionOperator:146 - Connection established 192.168.1.7:49244<->54.76.137.204:443
+2021-01-19 18:26:23 DEBUG MainClientExec:256 - Executing request POST /gamification-stats-5d9353a3f0856342b2dded7f-*/_search?size=0 HTTP/1.1
+2021-01-19 18:26:23 DEBUG MainClientExec:261 - Target auth state: UNCHALLENGED
+2021-01-19 18:26:23 DEBUG MainClientExec:267 - Proxy auth state: UNCHALLENGED
+2021-01-19 18:26:23 DEBUG headers:133 - http-outgoing-0 >> POST /gamification-stats-5d9353a3f0856342b2dded7f-*/_search?size=0 HTTP/1.1
+2021-01-19 18:26:23 DEBUG headers:136 - http-outgoing-0 >> Content-Length: 474
+2021-01-19 18:26:23 DEBUG headers:136 - http-outgoing-0 >> Content-Type: text/plain; charset=ISO-8859-1
+2021-01-19 18:26:23 DEBUG headers:136 - http-outgoing-0 >> Host: api-dev.smartcommunitylab.it
+2021-01-19 18:26:23 DEBUG headers:136 - http-outgoing-0 >> Connection: Keep-Alive
+2021-01-19 18:26:23 DEBUG headers:136 - http-outgoing-0 >> User-Agent: Apache-HttpClient/4.5.6 (Java/11.0.9.1)
+2021-01-19 18:26:23 DEBUG headers:136 - http-outgoing-0 >> Accept-Encoding: gzip,deflate
+2021-01-19 18:26:23 DEBUG wire:73 - http-outgoing-0 >> "POST /gamification-stats-5d9353a3f0856342b2dded7f-*/_search?size=0 HTTP/1.1[\r][\n]"
+2021-01-19 18:26:23 DEBUG wire:73 - http-outgoing-0 >> "Content-Length: 474[\r][\n]"
+2021-01-19 18:26:23 DEBUG wire:73 - http-outgoing-0 >> "Content-Type: text/plain; charset=ISO-8859-1[\r][\n]"
+2021-01-19 18:26:23 DEBUG wire:73 - http-outgoing-0 >> "Host: api-dev.smartcommunitylab.it[\r][\n]"
+2021-01-19 18:26:24 DEBUG wire:73 - http-outgoing-0 >> "Connection: Keep-Alive[\r][\n]"
+2021-01-19 18:26:24 DEBUG wire:73 - http-outgoing-0 >> "User-Agent: Apache-HttpClient/4.5.6 (Java/11.0.9.1)[\r][\n]"
+2021-01-19 18:26:24 DEBUG wire:73 - http-outgoing-0 >> "Accept-Encoding: gzip,deflate[\r][\n]"
+2021-01-19 18:26:24 DEBUG wire:73 - http-outgoing-0 >> "[\r][\n]"
+2021-01-19 18:26:24 DEBUG wire:87 - http-outgoing-0 >> "{"query":{"bool":{"must":[{"match":{"playerId":"5edf5f7d4149dd117cc7f17d"}},{"bool":{"should":[{"match":{"conceptName":"Walk_Km"}},{"match":{"conceptName":"green leaves"}},{"match":{"conceptName":"Bike_Km"}}]}},{"range":{"executionTime":{"lt":1609628400000,"gte":1606690800000}}}]}},"aggs":{"score_per_day":{"date_histogram":{"field":"executionTime","interval":"day"},"aggs":{"by_concept":{"terms":{"field":"conceptName"},"aggs":{"score":{"sum":{"field":"deltaScore"}}}}}}}}"
+2021-01-19 18:26:24 DEBUG wire:73 - http-outgoing-0 << "HTTP/1.1 401 Unauthorized[\r][\n]"
+2021-01-19 18:26:24 DEBUG wire:73 - http-outgoing-0 << "Date: Tue, 19 Jan 2021 17:26:24 GMT[\r][\n]"
+2021-01-19 18:26:24 DEBUG wire:73 - http-outgoing-0 << "Server: Apache[\r][\n]"
+2021-01-19 18:26:24 DEBUG wire:73 - http-outgoing-0 << "WWW-Authenticate: Basic realm="Restricted Files"[\r][\n]"
+2021-01-19 18:26:24 DEBUG wire:73 - http-outgoing-0 << "Content-Length: 381[\r][\n]"
+2021-01-19 18:26:24 DEBUG wire:73 - http-outgoing-0 << "Keep-Alive: timeout=5, max=100[\r][\n]"
+2021-01-19 18:26:24 DEBUG wire:73 - http-outgoing-0 << "Connection: Keep-Alive[\r][\n]"
+2021-01-19 18:26:24 DEBUG wire:73 - http-outgoing-0 << "Content-Type: text/html; charset=iso-8859-1[\r][\n]"
+2021-01-19 18:26:24 DEBUG wire:73 - http-outgoing-0 << "[\r][\n]"
+2021-01-19 18:26:24 DEBUG headers:122 - http-outgoing-0 << HTTP/1.1 401 Unauthorized
+2021-01-19 18:26:24 DEBUG headers:125 - http-outgoing-0 << Date: Tue, 19 Jan 2021 17:26:24 GMT
+2021-01-19 18:26:24 DEBUG headers:125 - http-outgoing-0 << Server: Apache
+2021-01-19 18:26:24 DEBUG headers:125 - http-outgoing-0 << WWW-Authenticate: Basic realm="Restricted Files"
+2021-01-19 18:26:24 DEBUG headers:125 - http-outgoing-0 << Content-Length: 381
+2021-01-19 18:26:24 DEBUG headers:125 - http-outgoing-0 << Keep-Alive: timeout=5, max=100
+2021-01-19 18:26:24 DEBUG headers:125 - http-outgoing-0 << Connection: Keep-Alive
+2021-01-19 18:26:24 DEBUG headers:125 - http-outgoing-0 << Content-Type: text/html; charset=iso-8859-1
+2021-01-19 18:26:24 DEBUG MainClientExec:285 - Connection can be kept alive for 5000 MILLISECONDS
+2021-01-19 18:26:24 DEBUG HttpAuthenticator:77 - Authentication required
+2021-01-19 18:26:24 DEBUG HttpAuthenticator:107 - api-dev.smartcommunitylab.it:443 requested authentication
+2021-01-19 18:26:24 DEBUG TargetAuthenticationStrategy:175 - Authentication schemes in the order of preference: [Negotiate, Kerberos, NTLM, CredSSP, Digest, Basic]
+2021-01-19 18:26:24 DEBUG TargetAuthenticationStrategy:203 - Challenge for Negotiate authentication scheme not available
+2021-01-19 18:26:24 DEBUG TargetAuthenticationStrategy:203 - Challenge for Kerberos authentication scheme not available
+2021-01-19 18:26:24 DEBUG TargetAuthenticationStrategy:203 - Challenge for NTLM authentication scheme not available
+2021-01-19 18:26:24 DEBUG TargetAuthenticationStrategy:203 - Challenge for CredSSP authentication scheme not available
+2021-01-19 18:26:24 DEBUG TargetAuthenticationStrategy:203 - Challenge for Digest authentication scheme not available
+2021-01-19 18:26:24 DEBUG HttpAuthenticator:157 - Selected authentication options: [BASIC [complete=true]]
+2021-01-19 18:26:24 DEBUG wire:73 - http-outgoing-0 << "<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">[\n]"
+2021-01-19 18:26:24 DEBUG wire:73 - http-outgoing-0 << "<html><head>[\n]"
+2021-01-19 18:26:24 DEBUG wire:73 - http-outgoing-0 << "<title>401 Unauthorized</title>[\n]"
+2021-01-19 18:26:24 DEBUG wire:73 - http-outgoing-0 << "</head><body>[\n]"
+2021-01-19 18:26:24 DEBUG wire:73 - http-outgoing-0 << "<h1>Unauthorized</h1>[\n]"
+2021-01-19 18:26:24 DEBUG wire:73 - http-outgoing-0 << "<p>This server could not verify that you[\n]"
+2021-01-19 18:26:24 DEBUG wire:73 - http-outgoing-0 << "are authorized to access the document[\n]"
+2021-01-19 18:26:24 DEBUG wire:73 - http-outgoing-0 << "requested.  Either you supplied the wrong[\n]"
+2021-01-19 18:26:25 DEBUG wire:73 - http-outgoing-0 << "credentials (e.g., bad password), or your[\n]"
+2021-01-19 18:26:25 DEBUG wire:73 - http-outgoing-0 << "browser doesn't understand how to supply[\n]"
+2021-01-19 18:26:25 DEBUG wire:73 - http-outgoing-0 << "the credentials required.</p>[\n]"
+2021-01-19 18:26:25 DEBUG wire:73 - http-outgoing-0 << "</body></html>[\n]"
+2021-01-19 18:26:25 DEBUG MainClientExec:256 - Executing request POST /gamification-stats-5d9353a3f0856342b2dded7f-*/_search?size=0 HTTP/1.1
+2021-01-19 18:26:25 DEBUG MainClientExec:261 - Target auth state: CHALLENGED
+2021-01-19 18:26:25 DEBUG HttpAuthenticator:198 - Generating response to an authentication challenge using basic scheme
+2021-01-19 18:26:25 DEBUG MainClientExec:267 - Proxy auth state: UNCHALLENGED
+2021-01-19 18:26:25 DEBUG headers:133 - http-outgoing-0 >> POST /gamification-stats-5d9353a3f0856342b2dded7f-*/_search?size=0 HTTP/1.1
+2021-01-19 18:26:25 DEBUG headers:136 - http-outgoing-0 >> Content-Length: 474
+2021-01-19 18:26:25 DEBUG headers:136 - http-outgoing-0 >> Content-Type: text/plain; charset=ISO-8859-1
+2021-01-19 18:26:25 DEBUG headers:136 - http-outgoing-0 >> Host: api-dev.smartcommunitylab.it
+2021-01-19 18:26:25 DEBUG headers:136 - http-outgoing-0 >> Connection: Keep-Alive
+2021-01-19 18:26:25 DEBUG headers:136 - http-outgoing-0 >> User-Agent: Apache-HttpClient/4.5.6 (Java/11.0.9.1)
+2021-01-19 18:26:25 DEBUG headers:136 - http-outgoing-0 >> Accept-Encoding: gzip,deflate
+2021-01-19 18:26:25 DEBUG headers:136 - http-outgoing-0 >> Authorization: Basic ZWxzLWdhbWU6RzlwTGMzQlYzYjc5aXdmeEZHcEYg
+2021-01-19 18:26:25 DEBUG wire:73 - http-outgoing-0 >> "POST /gamification-stats-5d9353a3f0856342b2dded7f-*/_search?size=0 HTTP/1.1[\r][\n]"
+2021-01-19 18:26:25 DEBUG wire:73 - http-outgoing-0 >> "Content-Length: 474[\r][\n]"
+2021-01-19 18:26:25 DEBUG wire:73 - http-outgoing-0 >> "Content-Type: text/plain; charset=ISO-8859-1[\r][\n]"
+2021-01-19 18:26:25 DEBUG wire:73 - http-outgoing-0 >> "Host: api-dev.smartcommunitylab.it[\r][\n]"
+2021-01-19 18:26:25 DEBUG wire:73 - http-outgoing-0 >> "Connection: Keep-Alive[\r][\n]"
+2021-01-19 18:26:25 DEBUG wire:73 - http-outgoing-0 >> "User-Agent: Apache-HttpClient/4.5.6 (Java/11.0.9.1)[\r][\n]"
+2021-01-19 18:26:25 DEBUG wire:73 - http-outgoing-0 >> "Accept-Encoding: gzip,deflate[\r][\n]"
+2021-01-19 18:26:25 DEBUG wire:73 - http-outgoing-0 >> "Authorization: Basic ZWxzLWdhbWU6RzlwTGMzQlYzYjc5aXdmeEZHcEYg[\r][\n]"
+2021-01-19 18:26:25 DEBUG wire:73 - http-outgoing-0 >> "[\r][\n]"
+2021-01-19 18:26:25 DEBUG wire:87 - http-outgoing-0 >> "{"query":{"bool":{"must":[{"match":{"playerId":"5edf5f7d4149dd117cc7f17d"}},{"bool":{"should":[{"match":{"conceptName":"Walk_Km"}},{"match":{"conceptName":"green leaves"}},{"match":{"conceptName":"Bike_Km"}}]}},{"range":{"executionTime":{"lt":1609628400000,"gte":1606690800000}}}]}},"aggs":{"score_per_day":{"date_histogram":{"field":"executionTime","interval":"day"},"aggs":{"by_concept":{"terms":{"field":"conceptName"},"aggs":{"score":{"sum":{"field":"deltaScore"}}}}}}}}"
+2021-01-19 18:26:25 DEBUG wire:73 - http-outgoing-0 << "HTTP/1.1 401 Unauthorized[\r][\n]"
+2021-01-19 18:26:25 DEBUG wire:73 - http-outgoing-0 << "Date: Tue, 19 Jan 2021 17:26:25 GMT[\r][\n]"
+2021-01-19 18:26:25 DEBUG wire:73 - http-outgoing-0 << "Server: Apache[\r][\n]"
+2021-01-19 18:26:25 DEBUG wire:73 - http-outgoing-0 << "WWW-Authenticate: Basic realm="Restricted Files"[\r][\n]"
+2021-01-19 18:26:25 DEBUG wire:73 - http-outgoing-0 << "Content-Length: 381[\r][\n]"
+2021-01-19 18:26:25 DEBUG wire:73 - http-outgoing-0 << "Keep-Alive: timeout=5, max=99[\r][\n]"
+2021-01-19 18:26:25 DEBUG wire:73 - http-outgoing-0 << "Connection: Keep-Alive[\r][\n]"
+2021-01-19 18:26:25 DEBUG wire:73 - http-outgoing-0 << "Content-Type: text/html; charset=iso-8859-1[\r][\n]"
+2021-01-19 18:26:25 DEBUG wire:73 - http-outgoing-0 << "[\r][\n]"
+2021-01-19 18:26:25 DEBUG headers:122 - http-outgoing-0 << HTTP/1.1 401 Unauthorized
+2021-01-19 18:26:25 DEBUG headers:125 - http-outgoing-0 << Date: Tue, 19 Jan 2021 17:26:25 GMT
+2021-01-19 18:26:25 DEBUG headers:125 - http-outgoing-0 << Server: Apache
+2021-01-19 18:26:26 DEBUG headers:125 - http-outgoing-0 << WWW-Authenticate: Basic realm="Restricted Files"
+2021-01-19 18:26:26 DEBUG headers:125 - http-outgoing-0 << Content-Length: 381
+2021-01-19 18:26:26 DEBUG headers:125 - http-outgoing-0 << Keep-Alive: timeout=5, max=99
+2021-01-19 18:26:26 DEBUG headers:125 - http-outgoing-0 << Connection: Keep-Alive
+2021-01-19 18:26:26 DEBUG headers:125 - http-outgoing-0 << Content-Type: text/html; charset=iso-8859-1
+2021-01-19 18:26:26 DEBUG MainClientExec:285 - Connection can be kept alive for 5000 MILLISECONDS
+2021-01-19 18:26:26 DEBUG HttpAuthenticator:77 - Authentication required
+2021-01-19 18:26:26 DEBUG HttpAuthenticator:107 - api-dev.smartcommunitylab.it:443 requested authentication
+2021-01-19 18:26:26 DEBUG HttpAuthenticator:136 - Authorization challenge processed
+2021-01-19 18:26:26 DEBUG HttpAuthenticator:139 - Authentication failed
+2021-01-19 18:27:44 DEBUG RequestAddCookies:123 - CookieSpec selected: default
+2021-01-19 18:27:44 DEBUG RequestAuthCache:77 - Auth cache not set in the context
+2021-01-19 18:27:44 DEBUG PoolingHttpClientConnectionManager:265 - Connection request: [route: {s}->https://api-dev.smartcommunitylab.it:443][total kept alive: 0; route allocated: 0 of 2; total allocated: 0 of 20]
+2021-01-19 18:27:44 DEBUG PoolingHttpClientConnectionManager:309 - Connection leased: [id: 0][route: {s}->https://api-dev.smartcommunitylab.it:443][total kept alive: 0; route allocated: 1 of 2; total allocated: 1 of 20]
+2021-01-19 18:27:44 DEBUG MainClientExec:235 - Opening connection {s}->https://api-dev.smartcommunitylab.it:443
+2021-01-19 18:27:44 DEBUG DefaultHttpClientConnectionOperator:139 - Connecting to api-dev.smartcommunitylab.it/54.76.137.204:443
+2021-01-19 18:27:44 DEBUG SSLConnectionSocketFactory:337 - Connecting socket to api-dev.smartcommunitylab.it/54.76.137.204:443 with timeout 0
+2021-01-19 18:27:44 DEBUG SSLConnectionSocketFactory:390 - Enabled protocols: [TLSv1.3, TLSv1.2, TLSv1.1, TLSv1]
+2021-01-19 18:27:44 DEBUG SSLConnectionSocketFactory:391 - Enabled cipher suites:[TLS_AES_128_GCM_SHA256, TLS_AES_256_GCM_SHA384, TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384, TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256, TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384, TLS_RSA_WITH_AES_256_GCM_SHA384, TLS_ECDH_ECDSA_WITH_AES_256_GCM_SHA384, TLS_ECDH_RSA_WITH_AES_256_GCM_SHA384, TLS_DHE_RSA_WITH_AES_256_GCM_SHA384, TLS_DHE_DSS_WITH_AES_256_GCM_SHA384, TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, TLS_RSA_WITH_AES_128_GCM_SHA256, TLS_ECDH_ECDSA_WITH_AES_128_GCM_SHA256, TLS_ECDH_RSA_WITH_AES_128_GCM_SHA256, TLS_DHE_RSA_WITH_AES_128_GCM_SHA256, TLS_DHE_DSS_WITH_AES_128_GCM_SHA256, TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384, TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384, TLS_RSA_WITH_AES_256_CBC_SHA256, TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA384, TLS_ECDH_RSA_WITH_AES_256_CBC_SHA384, TLS_DHE_RSA_WITH_AES_256_CBC_SHA256, TLS_DHE_DSS_WITH_AES_256_CBC_SHA256, TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA, TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA, TLS_RSA_WITH_AES_256_CBC_SHA, TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA, TLS_ECDH_RSA_WITH_AES_256_CBC_SHA, TLS_DHE_RSA_WITH_AES_256_CBC_SHA, TLS_DHE_DSS_WITH_AES_256_CBC_SHA, TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256, TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256, TLS_RSA_WITH_AES_128_CBC_SHA256, TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA256, TLS_ECDH_RSA_WITH_AES_128_CBC_SHA256, TLS_DHE_RSA_WITH_AES_128_CBC_SHA256, TLS_DHE_DSS_WITH_AES_128_CBC_SHA256, TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA, TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA, TLS_RSA_WITH_AES_128_CBC_SHA, TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA, TLS_ECDH_RSA_WITH_AES_128_CBC_SHA, TLS_DHE_RSA_WITH_AES_128_CBC_SHA, TLS_DHE_DSS_WITH_AES_128_CBC_SHA, TLS_EMPTY_RENEGOTIATION_INFO_SCSV]
+2021-01-19 18:27:44 DEBUG SSLConnectionSocketFactory:395 - Starting handshake
+2021-01-19 18:27:44 DEBUG SSLConnectionSocketFactory:425 - Secure session established
+2021-01-19 18:27:44 DEBUG SSLConnectionSocketFactory:426 -  negotiated protocol: TLSv1.2
+2021-01-19 18:27:44 DEBUG SSLConnectionSocketFactory:427 -  negotiated cipher suite: TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+2021-01-19 18:27:44 DEBUG SSLConnectionSocketFactory:435 -  peer principal: CN=*.smartcommunitylab.it, O=Fondazione Bruno Kessler, STREET=Via Santa Croce 77, L=Trento, ST=Trento, OID.2.5.4.17=38122, C=IT
+2021-01-19 18:27:44 DEBUG SSLConnectionSocketFactory:444 -  peer alternative names: [*.smartcommunitylab.it, smartcommunitylab.it]
+2021-01-19 18:27:44 DEBUG SSLConnectionSocketFactory:448 -  issuer principal: CN=GEANT OV RSA CA 4, O=GEANT Vereniging, C=NL
+2021-01-19 18:27:44 DEBUG DefaultHttpClientConnectionOperator:146 - Connection established 192.168.1.7:49286<->54.76.137.204:443
+2021-01-19 18:27:44 DEBUG MainClientExec:256 - Executing request POST /gamification-stats-5d9353a3f0856342b2dded7f-*/_search?size=0 HTTP/1.1
+2021-01-19 18:27:44 DEBUG MainClientExec:261 - Target auth state: UNCHALLENGED
+2021-01-19 18:27:44 DEBUG MainClientExec:267 - Proxy auth state: UNCHALLENGED
+2021-01-19 18:27:44 DEBUG headers:133 - http-outgoing-0 >> POST /gamification-stats-5d9353a3f0856342b2dded7f-*/_search?size=0 HTTP/1.1
+2021-01-19 18:27:44 DEBUG headers:136 - http-outgoing-0 >> Content-Length: 474
+2021-01-19 18:27:44 DEBUG headers:136 - http-outgoing-0 >> Content-Type: text/plain; charset=ISO-8859-1
+2021-01-19 18:27:44 DEBUG headers:136 - http-outgoing-0 >> Host: api-dev.smartcommunitylab.it
+2021-01-19 18:27:44 DEBUG headers:136 - http-outgoing-0 >> Connection: Keep-Alive
+2021-01-19 18:27:44 DEBUG headers:136 - http-outgoing-0 >> User-Agent: Apache-HttpClient/4.5.6 (Java/11.0.9.1)
+2021-01-19 18:27:44 DEBUG headers:136 - http-outgoing-0 >> Accept-Encoding: gzip,deflate
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 >> "POST /gamification-stats-5d9353a3f0856342b2dded7f-*/_search?size=0 HTTP/1.1[\r][\n]"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 >> "Content-Length: 474[\r][\n]"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 >> "Content-Type: text/plain; charset=ISO-8859-1[\r][\n]"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 >> "Host: api-dev.smartcommunitylab.it[\r][\n]"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 >> "Connection: Keep-Alive[\r][\n]"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 >> "User-Agent: Apache-HttpClient/4.5.6 (Java/11.0.9.1)[\r][\n]"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 >> "Accept-Encoding: gzip,deflate[\r][\n]"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 >> "[\r][\n]"
+2021-01-19 18:27:44 DEBUG wire:87 - http-outgoing-0 >> "{"query":{"bool":{"must":[{"match":{"playerId":"5edf5f7d4149dd117cc7f17d"}},{"bool":{"should":[{"match":{"conceptName":"Walk_Km"}},{"match":{"conceptName":"green leaves"}},{"match":{"conceptName":"Bike_Km"}}]}},{"range":{"executionTime":{"lt":1609628400000,"gte":1606690800000}}}]}},"aggs":{"score_per_day":{"date_histogram":{"field":"executionTime","interval":"day"},"aggs":{"by_concept":{"terms":{"field":"conceptName"},"aggs":{"score":{"sum":{"field":"deltaScore"}}}}}}}}"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 << "HTTP/1.1 401 Unauthorized[\r][\n]"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 << "Date: Tue, 19 Jan 2021 17:27:44 GMT[\r][\n]"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 << "Server: Apache[\r][\n]"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 << "WWW-Authenticate: Basic realm="Restricted Files"[\r][\n]"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 << "Content-Length: 381[\r][\n]"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 << "Keep-Alive: timeout=5, max=100[\r][\n]"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 << "Connection: Keep-Alive[\r][\n]"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 << "Content-Type: text/html; charset=iso-8859-1[\r][\n]"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 << "[\r][\n]"
+2021-01-19 18:27:44 DEBUG headers:122 - http-outgoing-0 << HTTP/1.1 401 Unauthorized
+2021-01-19 18:27:44 DEBUG headers:125 - http-outgoing-0 << Date: Tue, 19 Jan 2021 17:27:44 GMT
+2021-01-19 18:27:44 DEBUG headers:125 - http-outgoing-0 << Server: Apache
+2021-01-19 18:27:44 DEBUG headers:125 - http-outgoing-0 << WWW-Authenticate: Basic realm="Restricted Files"
+2021-01-19 18:27:44 DEBUG headers:125 - http-outgoing-0 << Content-Length: 381
+2021-01-19 18:27:44 DEBUG headers:125 - http-outgoing-0 << Keep-Alive: timeout=5, max=100
+2021-01-19 18:27:44 DEBUG headers:125 - http-outgoing-0 << Connection: Keep-Alive
+2021-01-19 18:27:44 DEBUG headers:125 - http-outgoing-0 << Content-Type: text/html; charset=iso-8859-1
+2021-01-19 18:27:44 DEBUG MainClientExec:285 - Connection can be kept alive for 5000 MILLISECONDS
+2021-01-19 18:27:44 DEBUG HttpAuthenticator:77 - Authentication required
+2021-01-19 18:27:44 DEBUG HttpAuthenticator:107 - api-dev.smartcommunitylab.it:443 requested authentication
+2021-01-19 18:27:44 DEBUG TargetAuthenticationStrategy:175 - Authentication schemes in the order of preference: [Negotiate, Kerberos, NTLM, CredSSP, Digest, Basic]
+2021-01-19 18:27:44 DEBUG TargetAuthenticationStrategy:203 - Challenge for Negotiate authentication scheme not available
+2021-01-19 18:27:44 DEBUG TargetAuthenticationStrategy:203 - Challenge for Kerberos authentication scheme not available
+2021-01-19 18:27:44 DEBUG TargetAuthenticationStrategy:203 - Challenge for NTLM authentication scheme not available
+2021-01-19 18:27:44 DEBUG TargetAuthenticationStrategy:203 - Challenge for CredSSP authentication scheme not available
+2021-01-19 18:27:44 DEBUG TargetAuthenticationStrategy:203 - Challenge for Digest authentication scheme not available
+2021-01-19 18:27:44 DEBUG HttpAuthenticator:157 - Selected authentication options: [BASIC [complete=true]]
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 << "<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">[\n]"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 << "<html><head>[\n]"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 << "<title>401 Unauthorized</title>[\n]"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 << "</head><body>[\n]"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 << "<h1>Unauthorized</h1>[\n]"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 << "<p>This server could not verify that you[\n]"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 << "are authorized to access the document[\n]"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 << "requested.  Either you supplied the wrong[\n]"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 << "credentials (e.g., bad password), or your[\n]"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 << "browser doesn't understand how to supply[\n]"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 << "the credentials required.</p>[\n]"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 << "</body></html>[\n]"
+2021-01-19 18:27:44 DEBUG MainClientExec:256 - Executing request POST /gamification-stats-5d9353a3f0856342b2dded7f-*/_search?size=0 HTTP/1.1
+2021-01-19 18:27:44 DEBUG MainClientExec:261 - Target auth state: CHALLENGED
+2021-01-19 18:27:44 DEBUG HttpAuthenticator:198 - Generating response to an authentication challenge using basic scheme
+2021-01-19 18:27:44 DEBUG MainClientExec:267 - Proxy auth state: UNCHALLENGED
+2021-01-19 18:27:44 DEBUG headers:133 - http-outgoing-0 >> POST /gamification-stats-5d9353a3f0856342b2dded7f-*/_search?size=0 HTTP/1.1
+2021-01-19 18:27:44 DEBUG headers:136 - http-outgoing-0 >> Content-Length: 474
+2021-01-19 18:27:44 DEBUG headers:136 - http-outgoing-0 >> Content-Type: text/plain; charset=ISO-8859-1
+2021-01-19 18:27:44 DEBUG headers:136 - http-outgoing-0 >> Host: api-dev.smartcommunitylab.it
+2021-01-19 18:27:44 DEBUG headers:136 - http-outgoing-0 >> Connection: Keep-Alive
+2021-01-19 18:27:44 DEBUG headers:136 - http-outgoing-0 >> User-Agent: Apache-HttpClient/4.5.6 (Java/11.0.9.1)
+2021-01-19 18:27:44 DEBUG headers:136 - http-outgoing-0 >> Accept-Encoding: gzip,deflate
+2021-01-19 18:27:44 DEBUG headers:136 - http-outgoing-0 >> Authorization: Basic ZWxzLWdhbWU6RzlwTGMzQlYzYjc5aXdmeEZHcEYg
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 >> "POST /gamification-stats-5d9353a3f0856342b2dded7f-*/_search?size=0 HTTP/1.1[\r][\n]"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 >> "Content-Length: 474[\r][\n]"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 >> "Content-Type: text/plain; charset=ISO-8859-1[\r][\n]"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 >> "Host: api-dev.smartcommunitylab.it[\r][\n]"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 >> "Connection: Keep-Alive[\r][\n]"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 >> "User-Agent: Apache-HttpClient/4.5.6 (Java/11.0.9.1)[\r][\n]"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 >> "Accept-Encoding: gzip,deflate[\r][\n]"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 >> "Authorization: Basic ZWxzLWdhbWU6RzlwTGMzQlYzYjc5aXdmeEZHcEYg[\r][\n]"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 >> "[\r][\n]"
+2021-01-19 18:27:44 DEBUG wire:87 - http-outgoing-0 >> "{"query":{"bool":{"must":[{"match":{"playerId":"5edf5f7d4149dd117cc7f17d"}},{"bool":{"should":[{"match":{"conceptName":"Walk_Km"}},{"match":{"conceptName":"green leaves"}},{"match":{"conceptName":"Bike_Km"}}]}},{"range":{"executionTime":{"lt":1609628400000,"gte":1606690800000}}}]}},"aggs":{"score_per_day":{"date_histogram":{"field":"executionTime","interval":"day"},"aggs":{"by_concept":{"terms":{"field":"conceptName"},"aggs":{"score":{"sum":{"field":"deltaScore"}}}}}}}}"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 << "HTTP/1.1 401 Unauthorized[\r][\n]"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 << "Date: Tue, 19 Jan 2021 17:27:44 GMT[\r][\n]"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 << "Server: Apache[\r][\n]"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 << "WWW-Authenticate: Basic realm="Restricted Files"[\r][\n]"
+2021-01-19 18:27:44 DEBUG wire:73 - http-outgoing-0 << "Content-Length: 381[\r][\n]"
+2021-01-19 18:27:45 DEBUG wire:73 - http-outgoing-0 << "Keep-Alive: timeout=5, max=99[\r][\n]"
+2021-01-19 18:27:45 DEBUG wire:73 - http-outgoing-0 << "Connection: Keep-Alive[\r][\n]"
+2021-01-19 18:27:45 DEBUG wire:73 - http-outgoing-0 << "Content-Type: text/html; charset=iso-8859-1[\r][\n]"
+2021-01-19 18:27:45 DEBUG wire:73 - http-outgoing-0 << "[\r][\n]"
+2021-01-19 18:27:45 DEBUG headers:122 - http-outgoing-0 << HTTP/1.1 401 Unauthorized
+2021-01-19 18:27:45 DEBUG headers:125 - http-outgoing-0 << Date: Tue, 19 Jan 2021 17:27:44 GMT
+2021-01-19 18:27:45 DEBUG headers:125 - http-outgoing-0 << Server: Apache
+2021-01-19 18:27:45 DEBUG headers:125 - http-outgoing-0 << WWW-Authenticate: Basic realm="Restricted Files"
+2021-01-19 18:27:45 DEBUG headers:125 - http-outgoing-0 << Content-Length: 381
+2021-01-19 18:27:45 DEBUG headers:125 - http-outgoing-0 << Keep-Alive: timeout=5, max=99
+2021-01-19 18:27:45 DEBUG headers:125 - http-outgoing-0 << Connection: Keep-Alive
+2021-01-19 18:27:45 DEBUG headers:125 - http-outgoing-0 << Content-Type: text/html; charset=iso-8859-1
+2021-01-19 18:27:45 DEBUG MainClientExec:285 - Connection can be kept alive for 5000 MILLISECONDS
+2021-01-19 18:27:45 DEBUG HttpAuthenticator:77 - Authentication required
+2021-01-19 18:27:45 DEBUG HttpAuthenticator:107 - api-dev.smartcommunitylab.it:443 requested authentication
+2021-01-19 18:27:45 DEBUG HttpAuthenticator:136 - Authorization challenge processed
+2021-01-19 18:27:45 DEBUG HttpAuthenticator:139 - Authentication failed

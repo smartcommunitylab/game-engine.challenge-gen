@@ -13,6 +13,20 @@ import java.util.regex.Pattern;
 
 import eu.fbk.das.GamificationConfig;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.AuthCache;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.*;
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.joda.time.DateTime;
@@ -37,6 +51,7 @@ import org.json.simple.parser.ParseException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -47,6 +62,8 @@ import javax.ws.rs.core.Response;
 public class RecommendationSystem {
 
     private static final Logger logger = Logger.getLogger(RecommendationSystem.class);
+    
+    private final Map<String, String> cfg;
 
     public DateTime lastMonday;
     private DateTime execDate;
@@ -64,12 +81,14 @@ public class RecommendationSystem {
     private RecommendationSystemStatistics stats;
     
     private Set<String> modelTypes;
+    
+    public RecommendationSystem(Map<String, String> cfg) {
+        this.cfg = cfg;
 
-    public RecommendationSystem(String host, String user, String pass, String gameId) {
-        this.host = host;
-        this.user = user;
-        this.pass = pass;
-        this.gameId = gameId;
+        this.host = cfg.get("HOST");
+        this.user = cfg.get("USER");
+        this.pass = cfg.get("PASS");
+        this.gameId = cfg.get("GAMEID");;
 
         facade = new GamificationEngineRestFacade(host, user, pass);
 
@@ -77,11 +96,7 @@ public class RecommendationSystem {
         rscg = new RecommendationSystemChallengeGeneration(this);
         rscf = new RecommendationSystemChallengeFilteringAndSorting();
         stats = new RecommendationSystemStatistics(this, true);
-         // dbg(logger, "Recommendation System init complete");
-    }
-
-    public RecommendationSystem(HashMap<String, String> cfg) {
-        this(cfg.get("HOST"), cfg.get("USER"), cfg.get("PASS"), cfg.get("GAMEID"));
+        // dbg(logger, "Recommendation System init complete");
     }
 
     public RecommendationSystem() {
@@ -530,18 +545,54 @@ public class RecommendationSystem {
         try {
             String query = getRepetitiveQuery(state.getPlayerId(), dt);
 
-            String url = "https://api-dev.smartcommunitylab.it/gamification-stats-5d9353a3f0856342b2dded7f-*/_search?size=0";
-            // TODO rimpiazzare autenticazione / mettere in prod.properties
-            //  autenticazione  Basic els-game / G9pLc3BV3b79iwfxFGpF
+            String url = "https://api-dev.smartcommunitylab.it/gamification-stats-" + this.gameId + "-*/_search?size=0";
+            String user = cfg.get("API_USER");
+            String pass = cfg.get("API_PASS");
 
-            String response = "";
+            HttpResponse response = getHttpResponse(query, url, user, pass);
 
-            return repetitiveInterveneAnalyze(response);
+            return repetitiveInterveneAnalyze(response.toString());
         } catch (ParseException | IOException e) {
             e.printStackTrace();
         }
 
         return null;
+    }
+
+    private HttpResponse getHttpResponse(String query, String url, String user, String pass) throws IOException {
+        HttpHost target = new HttpHost("api-dev.smartcommunitylab.it", 443, "https");
+        CredentialsProvider credsProvider = new BasicCredentialsProvider();
+        credsProvider.setCredentials(
+                new AuthScope(target.getHostName(), target.getPort()),
+                new UsernamePasswordCredentials(user, pass));
+        CloseableHttpClient httpclient = HttpClients.custom()
+                .setDefaultCredentialsProvider(credsProvider).build();
+
+        // Create AuthCache instance
+        AuthCache authCache = new BasicAuthCache();
+        // Generate BASIC scheme object and add it to the local
+        // auth cache
+        BasicScheme basicAuth = new BasicScheme();
+        authCache.put(target, basicAuth);
+
+        // Add AuthCache to the execution context
+        HttpClientContext localContext = HttpClientContext.create();
+        localContext.setAuthCache(authCache);
+
+        HttpPost httpPost = new HttpPost(url);
+        httpPost.setEntity(new StringEntity(query));
+
+        HttpResponse response = httpclient.execute(httpPost);
+
+        int statusCode = response.getStatusLine()
+                .getStatusCode();
+
+        p(statusCode);
+        p(response.toString());
+
+        // TODO rimpiazzare autenticazione / mettere in prod.properties
+        //  autenticazione  Basic els-game / G9pLc3BV3b79iwfxFGpF
+        return response;
     }
 
     protected String getRepetitiveQuery(String playerId, Date dt) throws IOException, ParseException {

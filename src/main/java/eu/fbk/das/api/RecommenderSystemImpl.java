@@ -46,7 +46,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
         }
 
         if (create)
-            this.rs = new RecommendationSystem(host, user, pass, gameId);
+            this.rs = new RecommendationSystem(conf);
     }
 
     @Override
