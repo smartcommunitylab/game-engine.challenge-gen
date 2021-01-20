@@ -43,17 +43,34 @@ public class RecommendationSystemV2Test extends ChallengesBaseTest {
     }
 
     @Test
-    public void testRepetitiveIntervene() throws java.text.ParseException {
+    public void testRepetitiveInterveneSingle() throws java.text.ParseException {
         String ferrara20_gameid = conf.get("FERRARA20_GAMEID");
         conf.put("GAMEID", ferrara20_gameid);
-        conf.put("execDate", "2021-01-08");
+        conf.put("execDate", "2020-12-08");
 
         Set<String> pIds = facade.getGamePlayers(ferrara20_gameid);
-        // for (String pId: pIds) p(pId);
+         // for (String pId: pIds) p(pId);
 
         Date date = new SimpleDateFormat("yyyy-MM-dd").parse(conf.get("execDate"));
 
-        PlayerStateDTO state = facade.getPlayerState("19092", ferrara20_gameid);
+        PlayerStateDTO state = facade.getPlayerState(ferrara20_gameid, "29774");
         rs.repetitiveIntervene(state, date);
+    }
+
+    @Test
+    public void testRepetitiveIntervene() throws java.text.ParseException {
+        String ferrara20_gameid = conf.get("FERRARA20_GAMEID");
+        conf.put("GAMEID", ferrara20_gameid);
+        conf.put("execDate", "2021-01-20");
+
+        Date date = new SimpleDateFormat("yyyy-MM-dd").parse(conf.get("execDate"));
+
+        Set<String> pIds = facade.getGamePlayers(ferrara20_gameid);
+        for (String pId: pIds) {
+            p(pId);
+            PlayerStateDTO state = facade.getPlayerState(ferrara20_gameid, pId);
+            rs.repetitiveIntervene(state, date);
+        }
+
     }
 }

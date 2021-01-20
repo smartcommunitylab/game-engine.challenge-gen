@@ -42,6 +42,9 @@ public class ChallengesBaseTest {
         rscg = rs.rscg;
 
         rscf = rs.rscf;
+
+        System.err.close();
+        System.setErr(System.out);
     }
 
 

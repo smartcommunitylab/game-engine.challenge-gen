@@ -13,15 +13,15 @@ import java.util.regex.Pattern;
 
 import eu.fbk.das.GamificationConfig;
 import org.apache.commons.io.IOUtils;
+
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
+
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.AuthCache;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.StringEntity;
@@ -51,7 +51,6 @@ import org.json.simple.parser.ParseException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -543,15 +542,16 @@ public class RecommendationSystem {
     public Double repetitiveIntervene(PlayerStateDTO state, Date dt) {
 
         try {
+            p(state.getPlayerId());
             String query = getRepetitiveQuery(state.getPlayerId(), dt);
 
             String url = "https://api-dev.smartcommunitylab.it/gamification-stats-" + this.gameId + "-*/_search?size=0";
             String user = cfg.get("API_USER");
             String pass = cfg.get("API_PASS");
 
-            HttpResponse response = getHttpResponse(query, url, user, pass);
-
-            return repetitiveInterveneAnalyze(response.toString());
+            String response = getHttpResponse(query, url, user, pass);
+            p(response);
+            return repetitiveInterveneAnalyze(response);
         } catch (ParseException | IOException e) {
             e.printStackTrace();
         }
@@ -559,40 +559,42 @@ public class RecommendationSystem {
         return null;
     }
 
-    private HttpResponse getHttpResponse(String query, String url, String user, String pass) throws IOException {
-        HttpHost target = new HttpHost("api-dev.smartcommunitylab.it", 443, "https");
-        CredentialsProvider credsProvider = new BasicCredentialsProvider();
-        credsProvider.setCredentials(
-                new AuthScope(target.getHostName(), target.getPort()),
-                new UsernamePasswordCredentials(user, pass));
-        CloseableHttpClient httpclient = HttpClients.custom()
-                .setDefaultCredentialsProvider(credsProvider).build();
+    private String getHttpResponse(String query, String url, String user, String pass) throws IOException {
 
-        // Create AuthCache instance
+        Logger.getLogger("org.apache.http").setLevel(org.apache.log4j.Level.OFF);
+
+        HttpHost targetHost = new HttpHost("api-dev.smartcommunitylab.it", 403, "https");
+        CredentialsProvider credsProvider = new BasicCredentialsProvider();
+        credsProvider.setCredentials(AuthScope.ANY,
+                new UsernamePasswordCredentials(user, pass));
+
         AuthCache authCache = new BasicAuthCache();
-        // Generate BASIC scheme object and add it to the local
-        // auth cache
-        BasicScheme basicAuth = new BasicScheme();
-        authCache.put(target, basicAuth);
+        authCache.put(targetHost, new BasicScheme());
 
         // Add AuthCache to the execution context
-        HttpClientContext localContext = HttpClientContext.create();
-        localContext.setAuthCache(authCache);
+        HttpClientContext context = HttpClientContext.create();
+        context.setCredentialsProvider(credsProvider);
+        context.setAuthCache(authCache);
 
         HttpPost httpPost = new HttpPost(url);
         httpPost.setEntity(new StringEntity(query));
 
-        HttpResponse response = httpclient.execute(httpPost);
+        HttpClient client = HttpClientBuilder.create().build();
+        HttpResponse response = client.execute(
+                httpPost, context);
 
-        int statusCode = response.getStatusLine()
-                .getStatusCode();
+        int statusCode = response.getStatusLine().getStatusCode();
 
-        p(statusCode);
-        p(response.toString());
+        String jsonResponse = null;
 
-        // TODO rimpiazzare autenticazione / mettere in prod.properties
-        //  autenticazione  Basic els-game / G9pLc3BV3b79iwfxFGpF
-        return response;
+        try(InputStream content = response.getEntity().getContent()) {
+            //With apache
+            jsonResponse = IOUtils.toString(content, "UTF-8");
+        } catch (UnsupportedOperationException | IOException e) {
+            logExp(e);
+        }
+
+        return jsonResponse;
     }
 
     protected String getRepetitiveQuery(String playerId, Date dt) throws IOException, ParseException {
