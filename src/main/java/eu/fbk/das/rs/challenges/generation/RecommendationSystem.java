@@ -80,6 +80,8 @@ public class RecommendationSystem {
     private RecommendationSystemStatistics stats;
     
     private Set<String> modelTypes;
+
+    boolean debug = false;
     
     public RecommendationSystem(Map<String, String> cfg) {
         this.cfg = cfg;
@@ -131,7 +133,7 @@ public class RecommendationSystem {
 
     }
 
-    private void prepare(Map<String, Object> challengeValues) {
+    protected void prepare(Map<String, Object> challengeValues) {
         chaWeek = (Integer) challengeValues.get("challengeWeek");
         Date execDateParam = (Date) challengeValues.get("exec");
         execDate = new DateTime(execDateParam.getTime());
@@ -532,31 +534,174 @@ public class RecommendationSystem {
     protected List<ChallengeExpandedDTO> assignLimitV2(int limit, PlayerStateDTO state, DateTime d) {
 
         // Check if we have to intervene
-        if (repetitiveIntervene(state, d.toDate()) > 0)
+        if (repetitiveIntervene(state, d.toDate()))
             // TODO
             return null;
 
         return assignLimit(limit, state, d);
     }
 
-    public Double repetitiveIntervene(PlayerStateDTO state, Date dt) {
+    public boolean repetitiveIntervene(PlayerStateDTO state, Date dt) {
 
         try {
-            p(state.getPlayerId());
-            String query = getRepetitiveQuery(state.getPlayerId(), dt);
+            Map<Integer, double[]> cache = extractRipetitivePerformance(state, dt);
+            // if null does not intervene
+            if (cache == null) return false;
+            // analyze if we have to assign repetitive
+            boolean dec = repetitiveInterveneAnalyze(cache);
+            if (debug)
+                pf("%s,%d\n", state.getPlayerId(), getLevel(state));
 
-            String url = "https://api-dev.smartcommunitylab.it/gamification-stats-" + this.gameId + "-*/_search?size=0";
-            String user = cfg.get("API_USER");
-            String pass = cfg.get("API_PASS");
-
-            String response = getHttpResponse(query, url, user, pass);
-            p(response);
-            return repetitiveInterveneAnalyze(response);
         } catch (ParseException | IOException e) {
             e.printStackTrace();
         }
 
-        return null;
+        return false;
+    }
+
+    protected Map<Integer, double[]> extractRipetitivePerformance(PlayerStateDTO state, Date dt) throws IOException, ParseException {
+        // p(state.getPlayerId());
+        String query = getRepetitiveQuery(state.getPlayerId(), dt);
+        // p(query);
+
+        String url = "https://api-dev.smartcommunitylab.it/gamification-stats-" + this.gameId + "-*/_search?size=0";
+        String user = cfg.get("API_USER");
+        String pass = cfg.get("API_PASS");
+
+        String response = getHttpResponse(query, url, user, pass);
+        // p(response);
+        Map<Integer, double[]> cache = getTimeSeriesPerformance(response);
+
+        return cache;
+    }
+
+    protected boolean repetitiveInterveneAnalyze(Map<Integer, double[]> cacheEnt) {
+
+            int num_ent = 0;
+            double tot_ent = 0;
+            for (Integer wk: cacheEnt.keySet()) {
+                double[] cacheWeek = cacheEnt.get(wk);
+                double tot = 0, ent = 0;
+                for (double e: cacheWeek) tot += e;
+                if (tot <= 0) continue;
+                for (double e: cacheWeek) {
+                    // p(e);
+                    if (e <= 0) continue;
+                    double p = e / tot;
+                    ent += p * Math.log(p);
+                }
+
+                tot_ent += ent;
+                num_ent += 1;
+            }
+
+            tot_ent /= num_ent;
+
+            if (debug)
+                pf("%.2f,", tot_ent);
+
+            return tot_ent > 4;
+    }
+
+    protected Map<Integer, double[]> getTimeSeriesPerformance(String response) throws ParseException {
+
+        JSONParser parser = new JSONParser();
+        JSONObject json = (JSONObject)  parser.parse(response);
+        JSONObject aggr = (JSONObject) json.get("aggregations");
+        JSONObject spd = (JSONObject) aggr.get("score_per_day");
+        JSONArray buckets = (JSONArray) spd.get("buckets");
+
+        boolean start = false;
+        int week = 1;
+        int gt_week = 0;
+        Map<String, Map<Integer, double[]>> cacheAll = new HashMap<>();
+
+        Map<String, Double> totMode = new HashMap<>();
+
+        for (int i = 0; i < buckets.size(); i++) {
+            JSONObject bck = (JSONObject) buckets.get(i);
+            Long k = (Long) bck.get("key");
+            Date d = new Date(k);
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(d);
+
+            int dof = cal.get(Calendar.DAY_OF_WEEK);
+            if (dof == Calendar.MONDAY) {
+                if (!start)
+                    start = true;
+                else
+                    week += 1;
+            }
+            if (!start) continue;
+
+            JSONObject by_concept = (JSONObject) bck.get("by_concept");
+            JSONArray buckets_m = (JSONArray) by_concept.get("buckets");
+
+            if (dof == 1)
+                dof = 6;
+            else dof -= 2;
+
+            for (int j = 0; j < buckets_m.size();j++) {
+                JSONObject aux = (JSONObject) buckets_m.get(j);
+
+                String mode = (String) aux.get("key");
+                JSONObject aux2 = (JSONObject) aux.get("score");
+                Double score = (Double) aux2.get("value");
+
+                if (!totMode.containsKey(mode))
+                    totMode.put(mode, score);
+                else
+                    totMode.put(mode, totMode.get(mode) + score);
+
+
+                if (!cacheAll.containsKey(mode))
+                    cacheAll.put(mode, new HashMap<>());
+
+                Map<Integer, double[]> cacheMode = cacheAll.get(mode);
+                if (!cacheMode.containsKey(week))
+                    cacheMode.put(week, new double[7]);
+
+                double[] cacheWeek = cacheMode.get(week);
+                cacheWeek[dof] = score;
+                cacheMode.put(week, cacheWeek);
+
+                if (week > gt_week) gt_week = week;
+                        // p(mode);
+                // p(score);
+            }
+
+            // p(d);
+            // p(dof);
+            // p(buckets_m);
+        }
+
+        // Get strongest mode
+        String max_mode = null;
+        double max_value = -1;
+        for (String m: totMode.keySet()) {
+            double v = totMode.get(m);
+            if (v > max_value) {
+                max_value = v;
+                max_mode = m;
+            }
+        }
+
+        if (max_mode == null) return null;
+
+        double perf = 0;
+        for (Double v: cacheAll.get(max_mode).get(gt_week))
+            perf += v;
+
+        int position = stats.getPosition(max_mode, perf);
+
+        // check if strongest mode is in the 10% performers, otherwise return none
+        if (position < 5)
+            return null;
+
+        if (debug)
+            pf("%.2f,%d,", perf, position);
+
+        return cacheAll.get(max_mode);
     }
 
     private String getHttpResponse(String query, String url, String user, String pass) throws IOException {
@@ -628,7 +773,7 @@ public class RecommendationSystem {
         cal.set(Calendar.MILLISECOND, 0);
 
         Date start = cal.getTime();
-       // p(start);
+        // p(start);
         mustDtExe.put("lt", start.getTime());
         // previous five weeks, start monday
         cal.add(Calendar.WEEK_OF_YEAR, -5);
@@ -646,121 +791,7 @@ public class RecommendationSystem {
         return all.toString();
     }
 
-    // get entropy means of highest performing mode
-    public Double repetitiveInterveneAnalyze(String response) throws ParseException {
-        JSONParser parser = new JSONParser();
-        JSONObject json = (JSONObject)  parser.parse(response);
-        JSONObject aggr = (JSONObject) json.get("aggregations");
-        JSONObject spd = (JSONObject) aggr.get("score_per_day");
-        JSONArray buckets = (JSONArray) spd.get("buckets");
-
-        boolean start = false;
-        int week = 1;
-
-        Map<String, Map<Integer, double[]>> cacheAll = new HashMap<>();
-
-        Map<String, Double> totMode = new HashMap<>();
-
-        for (int i = 0; i < buckets.size(); i++) {
-            JSONObject bck = (JSONObject) buckets.get(i);
-            Long k = (Long) bck.get("key");
-            Date d = new Date(k);
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(d);
-
-            int dof = cal.get(Calendar.DAY_OF_WEEK);
-            if (dof == Calendar.MONDAY) {
-                if (!start)
-                    start = true;
-                else
-                    week += 1;
-            }
-            if (!start) continue;
-
-            JSONObject by_concept = (JSONObject) bck.get("by_concept");
-            JSONArray buckets_m = (JSONArray) by_concept.get("buckets");
-
-            if (dof == 1)
-                dof = 6;
-            else dof -= 2;
-
-            for (int j = 0; j < buckets_m.size();j++) {
-                JSONObject aux = (JSONObject) buckets_m.get(j);
-
-                String mode = (String) aux.get("key");
-                JSONObject aux2 = (JSONObject) aux.get("score");
-                Double score = (Double) aux2.get("value");
-
-                if (!totMode.containsKey(mode))
-                    totMode.put(mode, score);
-                else
-                    totMode.put(mode, totMode.get(mode) + score);
-
-
-                if (!cacheAll.containsKey(mode))
-                    cacheAll.put(mode, new HashMap<>());
-
-                Map<Integer, double[]> cacheMode = cacheAll.get(mode);
-                if (!cacheMode.containsKey(week))
-                    cacheMode.put(week, new double[7]);
-
-                double[] cacheWeek = cacheMode.get(week);
-                cacheWeek[dof] = score;
-
-                // p(mode);
-                // p(score);
-            }
-
-            // p(d);
-            // p(dof);
-            // p(buckets_m);
-        }
-
-        // Get strongest mode
-        String max_mode = null;
-        double max_value = -1;
-        for (String m: totMode.keySet()) {
-            double v = totMode.get(m);
-            if (!m.equals("green leaves") && v > max_value) {
-               max_value = v;
-               max_mode = m;
-            }
-        }
-
-        if (max_mode == null) return null;
-
-        // TODO check if strongest mode is in the 10% performers, otherwise return none
-
-        // compute entropy of highest mode found
-        Map<Integer, double[]> cacheEnt = cacheAll.get(max_mode);
-        int num_ent = 0;
-        double tot_ent = 0;
-        for (Integer wk: cacheEnt.keySet()) {
-            double[] cacheWeek = cacheEnt.get(wk);
-            double tot = 0, ent = 0;
-            for (double e: cacheWeek) tot += e;
-            if (tot <= 0) continue;
-            for (double e: cacheWeek) {
-                p(e);
-                if (e <= 0) continue;
-                double p = e / tot;
-                ent += p * Math.log(p);
-            }
-
-            tot_ent += ent;
-            num_ent += 1;
-        }
-
-        tot_ent /= num_ent;
-
-        return tot_ent;
-    }
-
     public List<ChallengeExpandedDTO> recommendAll(PlayerStateDTO state, DateTime d) {
-        return recommendAll(state, d, "treatment");
-    }
-
-    public List<ChallengeExpandedDTO> recommendAll(PlayerStateDTO state, DateTime d, String exp) {
 
         List<ChallengeExpandedDTO> challanges = new ArrayList<>();
         for (String mode : modelTypes) {

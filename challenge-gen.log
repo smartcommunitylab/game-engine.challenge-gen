@@ -2416,3 +2416,19 @@
 2021-01-20 17:16:56 DEBUG PoolingHttpClientConnectionManager:341 - Connection [id: 0][route: {s}->https://api-dev.smartcommunitylab.it:443] can be kept alive for 5.0 seconds
 2021-01-20 17:16:56 DEBUG DefaultManagedHttpClientConnection:88 - http-outgoing-0: set socket timeout to 0
 2021-01-20 17:16:56 DEBUG PoolingHttpClientConnectionManager:348 - Connection released: [id: 0][route: {s}->https://api-dev.smartcommunitylab.it:443][total kept alive: 1; route allocated: 1 of 2; total allocated: 1 of 20]
+2021-01-23 15:33:39 DEBUG RequestAddCookies:123 - CookieSpec selected: default
+2021-01-23 15:33:39 DEBUG RequestAuthCache:77 - Auth cache not set in the context
+2021-01-23 15:33:39 DEBUG PoolingHttpClientConnectionManager:265 - Connection request: [route: {s}->https://innoweee.platform.smartcommunitylab.it:443][total kept alive: 0; route allocated: 0 of 2; total allocated: 0 of 20]
+2021-01-23 15:33:39 DEBUG PoolingHttpClientConnectionManager:309 - Connection leased: [id: 0][route: {s}->https://innoweee.platform.smartcommunitylab.it:443][total kept alive: 0; route allocated: 1 of 2; total allocated: 1 of 20]
+2021-01-23 15:33:39 DEBUG MainClientExec:235 - Opening connection {s}->https://innoweee.platform.smartcommunitylab.it:443
+2021-01-23 15:33:39 DEBUG DefaultManagedHttpClientConnection:96 - http-outgoing-0: Shutdown connection
+2021-01-23 15:33:39 DEBUG MainClientExec:129 - Connection discarded
+2021-01-23 15:33:39 DEBUG PoolingHttpClientConnectionManager:348 - Connection released: [id: 0][route: {s}->https://innoweee.platform.smartcommunitylab.it:443][total kept alive: 0; route allocated: 0 of 2; total allocated: 0 of 20]
+2021-01-23 15:33:39 DEBUG RequestAddCookies:123 - CookieSpec selected: default
+2021-01-23 15:33:39 DEBUG RequestAuthCache:77 - Auth cache not set in the context
+2021-01-23 15:33:39 DEBUG PoolingHttpClientConnectionManager:265 - Connection request: [route: {s}->https://innoweee.platform.smartcommunitylab.it:443][total kept alive: 0; route allocated: 0 of 2; total allocated: 0 of 20]
+2021-01-23 15:33:39 DEBUG PoolingHttpClientConnectionManager:309 - Connection leased: [id: 1][route: {s}->https://innoweee.platform.smartcommunitylab.it:443][total kept alive: 0; route allocated: 1 of 2; total allocated: 1 of 20]
+2021-01-23 15:33:39 DEBUG MainClientExec:235 - Opening connection {s}->https://innoweee.platform.smartcommunitylab.it:443
+2021-01-23 15:33:39 DEBUG DefaultManagedHttpClientConnection:96 - http-outgoing-1: Shutdown connection
+2021-01-23 15:33:39 DEBUG MainClientExec:129 - Connection discarded
+2021-01-23 15:33:39 DEBUG PoolingHttpClientConnectionManager:348 - Connection released: [id: 1][route: {s}->https://innoweee.platform.smartcommunitylab.it:443][total kept alive: 0; route allocated: 0 of 2; total allocated: 0 of 20]

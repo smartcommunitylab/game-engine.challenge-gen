@@ -2,10 +2,9 @@
   "query": {
     "bool": {
       "must" : [
-        { "match" : {"playerId" : "28635"} },
-        { "match" : {"conceptName" : "green leaves"}  },
-        {"range" : { "executionTime" : { "gte" : "1573254000000", "lt" :  "1576278000000" } }},
-        { "match" : {"ruleName" : "all modes - update green points"}  }
+        { "match" : {"playerId" : "0"} },
+        { "bool" : {"should" : [{ "match" : {"conceptName" : "Walk_Km"} }, { "match" : {"conceptName" : "green leaves"} }, { "match" : {"conceptName" : "Bike_Km"} } ] } },
+        {"range" : { "executionTime" : { "gte" : "1573254000000", "lt" :  "1576278000000" } }}
       ]
     }
   },
