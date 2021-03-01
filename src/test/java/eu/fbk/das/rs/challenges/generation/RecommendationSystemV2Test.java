@@ -108,6 +108,11 @@ public class RecommendationSystemV2Test extends ChallengesBaseTest {
         conf.put("execDate", "2021-02-15");
         Date date = new SimpleDateFormat("yyyy-MM-dd").parse(conf.get("execDate"));
 
+        Map<String, Object> challengeValues = new HashMap<>();
+        challengeValues.put("exec", date);
+        challengeValues.put("challengeWeek", 1);
+        rs.prepare(challengeValues);
+
         Set<String> pIds = facade.getGamePlayers(gameId);
 
         // Player high performance / low entropy
@@ -167,7 +172,7 @@ public class RecommendationSystemV2Test extends ChallengesBaseTest {
         rs.gameId = gameId;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-        Date date = sdf.parse("2021-02-06");
+        Date date = sdf.parse("2021-02-27");
 
         for (int j = 0; j < 5; j++ ) {
 
@@ -183,7 +188,7 @@ public class RecommendationSystemV2Test extends ChallengesBaseTest {
 
             Set<String> pIds = facade.getGamePlayers(gameId);
             for (String pId : pIds) {
-                p(pId);
+
                 PlayerStateDTO state = facade.getPlayerState(gameId, pId);
                 Map<Integer, double[]> cache = rs.extractRipetitivePerformance(state, date);
                 // if null does not intervene
@@ -200,7 +205,11 @@ public class RecommendationSystemV2Test extends ChallengesBaseTest {
                 else if (ent < -1.1) slot = 4;
                 else if (ent < -0.9) slot = 3;
 
-                String path = createDirectory(sdf.format(date), null);
+                String path = "../experiment";
+                path = createDirectory(path, null);
+                path = createDirectory("rep", path);
+                path = createDirectory(gameId, path);
+                path = createDirectory(sdf.format(date), path);
                 path = createDirectory(f("%d", slot), path);
                 path = createDirectory(f("%s", pId), path);
 
