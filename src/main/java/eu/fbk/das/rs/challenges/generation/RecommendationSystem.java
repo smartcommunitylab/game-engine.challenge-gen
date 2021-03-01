@@ -12,6 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import eu.fbk.das.GamificationConfig;
+import eu.fbk.das.utils.Pair;
 import org.apache.commons.io.IOUtils;
 
 import org.apache.http.HttpHost;
@@ -548,9 +549,10 @@ public class RecommendationSystem {
             // if null does not intervene
             if (cache == null) return false;
             // analyze if we have to assign repetitive
-            boolean dec = repetitiveInterveneAnalyze(cache);
-            if (debug)
-                pf("%s,%d\n", state.getPlayerId(), getLevel(state));
+            double ent = repetitiveInterveneAnalyze(cache);
+
+            if (ent > 1.4)
+                return true;
 
         } catch (ParseException | IOException e) {
             e.printStackTrace();
@@ -575,10 +577,17 @@ public class RecommendationSystem {
         return cache;
     }
 
-    protected boolean repetitiveInterveneAnalyze(Map<Integer, double[]> cacheEnt) {
+    public double repetitiveTarget(PlayerStateDTO state, double repDifficulty) {
+        Pair<Double, Double> res = rscg.forecastMode(state, "green leaves");
+        // repDifficulty should be in (1-15) range, def value 5
+        double repTarget = res.getSecond() / (15 - repDifficulty);
+        return repTarget;
+    }
 
-            int num_ent = 0;
-            double tot_ent = 0;
+    protected double repetitiveInterveneAnalyze(Map<Integer, double[]> cacheEnt) {
+
+            List<Double> allEnt = new ArrayList<>();
+
             for (Integer wk: cacheEnt.keySet()) {
                 double[] cacheWeek = cacheEnt.get(wk);
                 double tot = 0, ent = 0;
@@ -591,16 +600,27 @@ public class RecommendationSystem {
                     ent += p * Math.log(p);
                 }
 
-                tot_ent += ent;
-                num_ent += 1;
+                allEnt.add(ent);
             }
 
-            tot_ent /= num_ent;
+            // WMA to entropy
 
-            if (debug)
-                pf("%.2f,", tot_ent);
+        double den = 0;
+        double num = 0;
 
-            return tot_ent > 4;
+        int v = allEnt.size();
+
+            for (int ix = 0; ix < v; ix++) {
+                double c = allEnt.get(ix);
+
+                den += (v -ix) * c;
+                num += (v -ix);
+            }
+
+
+        double ent = den / num;
+
+            return ent;
     }
 
     protected Map<Integer, double[]> getTimeSeriesPerformance(String response) throws ParseException {
@@ -698,8 +718,10 @@ public class RecommendationSystem {
         if (position < 5)
             return null;
 
+        /*
         if (debug)
             pf("%.2f,%d,", perf, position);
+         */
 
         return cacheAll.get(max_mode);
     }

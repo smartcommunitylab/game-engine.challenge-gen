@@ -263,7 +263,7 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
     }
 
 
-    private Pair<Double, Double> forecastMode(PlayerStateDTO state, String counter) {
+    protected Pair<Double, Double> forecastMode(PlayerStateDTO state, String counter) {
 
         // Check date of registration, decide which method to use
         int week_playing = getWeekPlaying(state, counter);
