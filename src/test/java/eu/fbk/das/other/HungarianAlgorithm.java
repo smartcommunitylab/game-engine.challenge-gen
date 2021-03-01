@@ -1,4 +1,4 @@
-package eu.fbk.das.innowee;
+package eu.fbk.das.other;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;

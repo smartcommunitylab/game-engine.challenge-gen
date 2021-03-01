@@ -26,24 +26,26 @@ public class InnoWeeAnalyze extends ChallengesBaseTest {
 
     // String gameId = "5c9b48cad9aedcf3d418b936"; - gandhi
 
-    String gameId = "5dd2ac42bec030000187f762"; // S. Pellico
-    // String gameId = "5dd2aca7bec030000187f774"; // Arcivescovile
+    // String gameId_Pellico = "5dd2ac42bec030000187f762"; // S. Pellico
+    // String gameId_Arci = "5dd2aca7bec030000187f774"; // Arcivescovile
+    String gameId_Volano = "5fa17d6b16e6c7000108f5d7"; // Volano
 
     String[] keys = new String[] {"totalReduce", "totalReuse", "totalRecycle"};
 
-    String period = "R2";
-
-    String token = "9d9b2075-7e19-4494-a162-30a04b27779f";
+    String[] startWeek = new String[] {"21/11/2020", "28/11/2020", "05/12/2020", "19/12/2020", "16/01/2021", "23/01/2021"};
 
     Map<String, String> schools;
 
     String[] coins = new String[] {"reduce", "reuse", "recycle"};
 
-    // ottenere token: https://am-dev.smartcommunitylab.it/aac/eauth/authorize?client_id=2be89b9c-4050-4e7e-9042-c02b0d9121c6&redirect_uri=http://localhost:2020/aac&response_type=token
+    // ottenere token: https://aac.platform.smartcommunitylab.it/aac/eauth/authorize?client_id=2c53f587-693c-48fa-b579-65506d8d3221&redirect_uri=http://localhost:2020/aac&response_type=token
+    // fare login "google", proprio account, copiare token dall'url risultante
+
+    String token = "eyJraWQiOiJyc2ExIiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiIyMzgxNSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJ1c2VyX25hbWUiOiJtc2NhbmFnYXR0YUBmYmsuZXUiLCJyb2xlcyI6WyJST0xFX1VTRVIiXSwiaXNzIjoiaHR0cHM6XC9cL2FhYy5wbGF0Zm9ybS5zbWFydGNvbW11bml0eWxhYi5pdFwvYWFjIiwiZ3JvdXBzIjpbXSwicHJlZmVycmVkX3VzZXJuYW1lIjoibXNjYW5hZ2F0dGFAZmJrLmV1IiwiZ2l2ZW5fbmFtZSI6Ik1hdXJvIiwiYXVkIjpbIjJjNTNmNTg3LTY5M2MtNDhmYS1iNTc5LTY1NTA2ZDhkMzIyMSIsImNhcmJvbi5zdXBlci1hYWMtMS4wLjAiLCJjYXJib24uc3VwZXItYWFjcm9sZXMtMS4wLjAiXSwibmJmIjoxNjEwNzI2MzgzLCJhenAiOiIyYzUzZjU4Ny02OTNjLTQ4ZmEtYjU3OS02NTUwNmQ4ZDMyMjEiLCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIHByb2ZpbGUuYmFzaWNwcm9maWxlLm1lIGVtYWlsIHVzZXIucm9sZXMubWUiLCJuYW1lIjoiU2NhbmFnYXR0YSBNYXVybyIsImV4cCI6MTYxMDc2OTU4MywiaWF0IjoxNjEwNzI2MzgzLCJmYW1pbHlfbmFtZSI6IlNjYW5hZ2F0dGEiLCJqdGkiOiJYNk9uNFlSVVMwSkZSaHE4b05QcmFaQnhDdmsiLCJlbWFpbCI6Im1zY2FuYWdhdHRhQGZiay5ldSIsInVzZXJuYW1lIjoibXNjYW5hZ2F0dGFAZmJrLmV1In0.I7pfle62JjVok_sQxSVv8M-ao002fwuGr9wAlfB66AtEMKwgm2CufeEStrh5a-zaLdWXA9mfmGDMLmIY3Ldl_DBEphGFvk97J7Ug-6gFDbOCPgSqP-f-lI1h2iZZ_px03u3Oh9Gc16MpeodUFBQoQ0SzHub290qk3zYZ7Qu8tI_HR_fd_v_xOUHH7nj-Jc_QnyKVuFg-6It9A3JjITjXYQWIqLuOS6VF65fPwfGAdEmq62JPnM9GQcSVZzvcmFdSgC54cRWnJax8W1MCVtpVt86TOfsxjGa8sj_vObRCMhRFqfMMCPI406O9Ock3J7-mCWTmtaOHL2JukCw6N_2MXg";
 
     // swagger https://innoweee.platform.smartcommunitylab.it/innoweee-engine/swagger-ui.html
 
-
+    private String startDate = "";
 
     private Set<String> pIds;
 
@@ -58,16 +60,17 @@ public class InnoWeeAnalyze extends ChallengesBaseTest {
     private Map<String, Map<String, Integer>> mapState;
     private Map<String, Integer> state;
 
+
     @Test
     public void analyze() throws IOException, ParseException {
 
         schools = new HashMap<>();
-        schools.put("5dd2ac42bec030000187f762", "pellico");
-        schools.put("5dd2aca7bec030000187f774", "arcivescovile");
+        schools.put(gameId_Volano, "Volano");
 
         mapState = new TreeMap<>();
 
-        analyzeGame("5dd2ac42bec030000187f762");
+        for (String gId: schools.keySet())
+            analyzeGame(gId);
         analyzeGameActions("TRENTINO");
         p(pIds);
 
@@ -286,7 +289,10 @@ public class InnoWeeAnalyze extends ChallengesBaseTest {
 
     private void analyzeAction(JSONObject ob) {
 
-        String gId = (String) ob.get("GAMEID");
+        String gId = (String) ob.get("gameId");
+        if (!schools.containsKey(gId))
+            return;
+
         if (!mapGame.containsKey(gId))
             mapGame.put(gId, new TreeMap<>());
         mapClass = mapGame.get(gId);
@@ -303,9 +309,11 @@ public class InnoWeeAnalyze extends ChallengesBaseTest {
 
         Long creation = (Long) ob.get("creationDate");
         DateTime creatDate = new DateTime(creation);
-        int week = (daysApart(parseDate("02/12/2019"), creatDate) / 7) + 1;
-        // TODO remove in other istances
-        if (week > 3) week-=2;
+        int week = 0;
+        for (int i = 1; i < startWeek.length && week == 0; i++) {
+            if (parseDate(startWeek[i]).isAfter(creation)) week = i;
+        }
+if (week == 0) week = 6;
         String weekName = f("R%d", week);
         if (!mapAct.containsKey(weekName))
             mapAct.put(weekName, new TreeMap<>());
@@ -462,7 +470,7 @@ public class InnoWeeAnalyze extends ChallengesBaseTest {
     }
 
 
-    public void execute() {
+    public void execute(String gameId) {
         Set<String> res = facade.getGamePlayers(gameId);
         for (String pId: res) {
             pf("%s ", pId);
@@ -482,7 +490,7 @@ public class InnoWeeAnalyze extends ChallengesBaseTest {
                 if (pos < 0)
                     continue;
 
-                PointConcept.Period aux = pc.getPeriod(period);
+                // PointConcept.Period aux = pc.getPeriod(period);
 
                 values[pos] = f("%.2f", pc.getScore());
             }

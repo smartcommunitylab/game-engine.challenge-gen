@@ -32,4 +32,9 @@ public class RandomTest extends ChallengesBaseTest {
 
 
     }
+
+    @Test
+    public void checkIfEvilCyclist() {
+
+    }
 }

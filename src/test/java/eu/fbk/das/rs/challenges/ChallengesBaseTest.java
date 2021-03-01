@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import static eu.fbk.das.utils.Utils.p;
@@ -23,7 +24,7 @@ public class ChallengesBaseTest {
 
     protected GamificationEngineRestFacade facade;
     protected RecommendationSystem rs;
-    protected HashMap<String, String> conf;
+    protected Map<String, String> conf;
     protected RecommendationSystemChallengeValuator rscv;
     protected RecommendationSystemChallengeGeneration rscg;
     protected RecommendationSystemChallengeFilteringAndSorting rscf;
@@ -42,6 +43,9 @@ public class ChallengesBaseTest {
         rscg = rs.rscg;
 
         rscf = rs.rscf;
+
+        System.err.close();
+        System.setErr(System.out);
     }
 
 

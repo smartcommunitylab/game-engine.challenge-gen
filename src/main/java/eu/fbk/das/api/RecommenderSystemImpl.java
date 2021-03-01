@@ -46,7 +46,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
         }
 
         if (create)
-            this.rs = new RecommendationSystem(host, user, pass, gameId);
+            this.rs = new RecommendationSystem(conf);
     }
 
     @Override
@@ -88,8 +88,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
         List<ChallengeExpandedDTO> chas = new ArrayList<>();
 
         for (String pId: players) {
-            if (pId.equals("29889"))
-                p("ciao");
+
             List<ChallengeExpandedDTO> challenges = rs.recommend(pId, modelTypes, creationRules, config);
 
             for (ChallengeExpandedDTO cha: challenges) {
