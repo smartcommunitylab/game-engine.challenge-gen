@@ -110,7 +110,7 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
         return output;
     }
 
-    private ChallengeExpandedDTO generatePercentage(Double modeCounter, String mode, double improvementValue) {
+    protected ChallengeExpandedDTO generatePercentage(Double modeCounter, String mode, double improvementValue) {
 
         modeCounter = checkMax(modeCounter, mode);
 

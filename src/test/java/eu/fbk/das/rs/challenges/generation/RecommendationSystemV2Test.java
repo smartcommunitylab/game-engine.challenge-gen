@@ -1,6 +1,8 @@
 package eu.fbk.das.rs.challenges.generation;
 
+import eu.fbk.das.model.ChallengeExpandedDTO;
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
+import eu.fbk.das.utils.Pair;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import org.apache.commons.io.IOUtils;
 import org.jfree.chart.ChartFactory;
@@ -25,6 +27,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -195,8 +198,8 @@ public class RecommendationSystemV2Test extends ChallengesBaseTest {
                 if (cache == null) continue;
                 // analyze if we have to assign repetitive
                 double ent = rs.repetitiveInterveneAnalyze(cache);
-                double target = rs.repetitiveTarget(state, 2);
-
+                Pair<Double, Double> res = rs.repetitiveTarget(state, 2);
+                double target = res.getSecond();
                 if (ent < -1.5)
                     continue;
 
@@ -271,4 +274,33 @@ public class RecommendationSystemV2Test extends ChallengesBaseTest {
         if (!directory.exists()) directory.mkdir();
         return path;
     }
+
+
+    @Test
+    public void tesRepetitiveIntervene() throws IOException, ParseException, java.text.ParseException {
+        String gameId = conf.get("FERRARA20_GAMEID");
+        // String gameId = conf.get("TRENTO19_GAMEID");
+        rs.gameId = gameId;
+        conf.put("GAMEID", gameId);
+        conf.put("execDate", "2021-02-24");
+        Date date = new SimpleDateFormat("yyyy-MM-dd").parse(conf.get("execDate"));
+
+        Map<String, Object> challengeValues = new HashMap<>();
+        challengeValues.put("exec", date);
+        challengeValues.put("challengeWeek", 1);
+        rs.prepare(challengeValues);
+
+        Set<String> pIds = facade.getGamePlayers(gameId);
+
+        // Player high performance / low entropy
+        for (String pId: pIds) {
+            PlayerStateDTO state = facade.getPlayerState(gameId, pId);
+            List<ChallengeExpandedDTO> ls = rs.repetitiveIntervene(state, date);
+            if (ls == null) continue;
+            ChallengeExpandedDTO rep = ls.get(0); 
+            pf("%s %.2f %.2f %.2f \n", pId, rep.getData("periodTarget"), rep.getData("target"), rep.getData("bonusScore"));
+        }
+
+    }
+
 }

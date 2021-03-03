@@ -2,6 +2,7 @@ package eu.fbk.das.rs.challenges.generation;
 
 import static eu.fbk.das.rs.challenges.ChallengeUtil.getLevel;
 import static eu.fbk.das.rs.challenges.ChallengeUtil.getPeriodScore;
+import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.roundTarget;
 import static eu.fbk.das.utils.Utils.*;
 import static it.smartcommunitylab.model.ChallengeConcept.StateEnum.COMPLETED;
 
@@ -81,6 +82,8 @@ public class RecommendationSystem {
     private RecommendationSystemStatistics stats;
     
     private Set<String> modelTypes;
+
+    private int repetitiveDifficulty = 2;
 
     boolean debug = false;
     
@@ -535,30 +538,63 @@ public class RecommendationSystem {
     protected List<ChallengeExpandedDTO> assignLimitV2(int limit, PlayerStateDTO state, DateTime d) {
 
         // Check if we have to intervene
-        if (repetitiveIntervene(state, d.toDate()))
-            // TODO
-            return null;
+        List<ChallengeExpandedDTO> rep = repetitiveIntervene(state, d.toDate());
+        if (rep != null) return rep;
 
         return assignLimit(limit, state, d);
     }
 
-    public boolean repetitiveIntervene(PlayerStateDTO state, Date dt) {
+    public List<ChallengeExpandedDTO> repetitiveIntervene(PlayerStateDTO state, Date dt) {
 
         try {
             Map<Integer, double[]> cache = extractRipetitivePerformance(state, dt);
             // if null does not intervene
-            if (cache == null) return false;
+            if (cache == null) return null;
             // analyze if we have to assign repetitive
             double ent = repetitiveInterveneAnalyze(cache);
+            int slot = repetitiveSlot(ent);
+            if (slot == 0)
+                return null;
 
-            if (ent > 1.4)
-                return true;
+            Pair<Double, Double> tg = repetitiveTarget(state, repetitiveDifficulty);
+            Double repScore = tg.getSecond();
+            double repTarget = tg.getFirst();
+
+            // Create
+
+            ChallengeExpandedDTO rep = rscg.prepareChallangeImpr("green leaves");
+            rep.setModelName("repetitiveBehaviour");
+            rep.setData("periodName", "daily");
+            rep.setData("periodTarget", slot * 1.0);
+            rep.setData("target", repTarget);
+            rep.setData("bonusScore", repScore);
+
+            rep.setState("assigned");
+            rep.setOrigin("rs");
+            rep.setInfo("id", 0);
+            rep.setPriority(1);
+
+            List <ChallengeExpandedDTO> ls = new ArrayList<>();
+            ls.add(rep);
+            return ls;
 
         } catch (ParseException | IOException e) {
             e.printStackTrace();
         }
 
-        return false;
+        return null;
+    }
+
+    private int repetitiveSlot(double ent) {
+        if (ent < -1.5)
+            return 0;
+
+        int slot = 2;
+        if (ent < -1.3) slot = 5;
+        else if (ent < -1.1) slot = 4;
+        else if (ent < -0.9) slot = 3;
+
+        return slot;
     }
 
     protected Map<Integer, double[]> extractRipetitivePerformance(PlayerStateDTO state, Date dt) throws IOException, ParseException {
@@ -577,11 +613,20 @@ public class RecommendationSystem {
         return cache;
     }
 
-    public double repetitiveTarget(PlayerStateDTO state, double repDifficulty) {
-        Pair<Double, Double> res = rscg.forecastMode(state, "green leaves");
+    public Pair<Double, Double> repetitiveTarget(PlayerStateDTO state, double repDifficulty) {
+        String mode = "green leaves";
+        Pair<Double, Double> res = rscg.forecastMode(state, mode);
+        double target = res.getFirst();
+        double baseline = res.getSecond();
+        target = roundTarget(mode, target);
+        ChallengeExpandedDTO cdd = rscg.generatePercentage(baseline, mode, target);
+        double score = (Double) cdd.getData("bonusScore");
+
         // repDifficulty should be in (1-15) range, def value 5
-        double repTarget = res.getSecond() / (15 - repDifficulty);
-        return repTarget;
+        double repTarget = target / (15 - repDifficulty);
+
+        // return target, score
+        return new Pair<Double, Double>(repTarget, score);
     }
 
     protected double repetitiveInterveneAnalyze(Map<Integer, double[]> cacheEnt) {
