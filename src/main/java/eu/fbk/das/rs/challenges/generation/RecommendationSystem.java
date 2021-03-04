@@ -119,7 +119,7 @@ public class RecommendationSystem {
         int lvl = getLevel(state);
 
         // TODO check, serve ancora?
-        String exp = getPlayerExperiment(pId);
+        // String exp = getPlayerExperiment(pId);
 
         // OLD method
         // List<ChallengeExpandedDTO> cha = generation2019(pId, state, d, lvl);
@@ -585,7 +585,7 @@ public class RecommendationSystem {
         return null;
     }
 
-    private int repetitiveSlot(double ent) {
+    protected int repetitiveSlot(double ent) {
         if (ent < -1.5)
             return 0;
 
@@ -619,7 +619,7 @@ public class RecommendationSystem {
         double target = res.getFirst();
         double baseline = res.getSecond();
         target = roundTarget(mode, target);
-        ChallengeExpandedDTO cdd = rscg.generatePercentage(baseline, mode, target);
+        ChallengeExpandedDTO cdd = rscg.generatePercentage(baseline, mode, target, true);
         double score = (Double) cdd.getData("bonusScore");
 
         // repDifficulty should be in (1-15) range, def value 5

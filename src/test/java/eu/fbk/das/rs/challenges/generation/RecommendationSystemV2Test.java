@@ -1,5 +1,6 @@
 package eu.fbk.das.rs.challenges.generation;
 
+import eu.fbk.das.api.exec.RecommenderSystemWeekly;
 import eu.fbk.das.model.ChallengeExpandedDTO;
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 import eu.fbk.das.utils.Pair;
@@ -167,7 +168,6 @@ public class RecommendationSystemV2Test extends ChallengesBaseTest {
     }
 
     @Test
-    /* TODO farlo andare su più date */
     public void testRepetitiveChoice() throws ParseException, java.text.ParseException, IOException {
         String gameId = conf.get("FERRARA20_GAMEID");
         // String gameId = conf.get("TRENTO19_GAMEID");
@@ -299,6 +299,77 @@ public class RecommendationSystemV2Test extends ChallengesBaseTest {
             if (ls == null) continue;
             ChallengeExpandedDTO rep = ls.get(0); 
             pf("%s %.2f %.2f %.2f \n", pId, rep.getData("periodTarget"), rep.getData("target"), rep.getData("bonusScore"));
+        }
+
+    }
+
+    @Test
+
+    public void checkWholeGeneration() {
+        String ferrara20_gameid = conf.get("FERRARA20_GAMEID");
+        // Set<String> pIds = facade.getGamePlayers(ferrara20_gameid);
+        // RecommenderSystemAPI api = new RecommenderSystemImpl();
+        conf.put("GAMEID", ferrara20_gameid);
+        conf.put("execDate", "2020-02-03");
+        RecommenderSystemWeekly rsw = new RecommenderSystemWeekly();
+
+        rsw.go(conf, "all", null, null);
+    }
+
+    @Test
+    public void testRepetitiveTrend() throws ParseException, java.text.ParseException, IOException {
+        String gameId = conf.get("FERRARA20_GAMEID");
+        // String gameId = conf.get("TRENTO19_GAMEID");
+        conf.put("GAMEID", gameId);
+        rs.gameId = gameId;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+        Date date = sdf.parse("2021-03-03");
+
+        Set<String> pIds = facade.getGamePlayers(gameId);
+
+        for (int j = 0; j < 10; j++ ) {
+
+            String sdt = sdf.format(date);
+            conf.put("execDate", sdt);
+
+            Map<String, Object> challengeValues = new HashMap<>();
+            challengeValues.put("exec", date);
+            challengeValues.put("challengeWeek", 1);
+            rs.prepare(challengeValues);
+
+            rs.debug = true;
+
+            int cnt_playing = 0;
+            int cnt_rep = 0;
+
+            double mean_ent = 0;
+
+            for (String pId : pIds) {
+
+                PlayerStateDTO state = facade.getPlayerState(gameId, pId);
+                Map<Integer, double[]> cache = rs.extractRipetitivePerformance(state, date);
+                // if null does not intervene
+                if (cache == null) continue;
+
+                // Check only playing in that week
+                cnt_playing++;
+
+                // analyze if we have to assign repetitive
+                double ent = rs.repetitiveInterveneAnalyze(cache);
+                mean_ent += ent;
+
+                int slot = rs.repetitiveSlot(ent);
+                if (slot == 0)
+                    continue;
+
+                cnt_rep++;
+            }
+
+            pf("%s - %d - %d - %.2f - %.2f\n", sdt, cnt_playing, cnt_rep, cnt_rep * 1.0 / cnt_playing, mean_ent / cnt_playing);
+
+            DateTime aux = new DateTime(date.getTime());
+            date = aux.minusDays(7).toDate();
         }
 
     }

@@ -111,6 +111,10 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
     }
 
     protected ChallengeExpandedDTO generatePercentage(Double modeCounter, String mode, double improvementValue) {
+        return generatePercentage(modeCounter, mode, improvementValue, false);
+    }
+
+    protected ChallengeExpandedDTO generatePercentage(Double modeCounter, String mode, double improvementValue, boolean updateReward) {
 
         modeCounter = checkMax(modeCounter, mode);
 
@@ -131,6 +135,8 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
         cdd.setData("percentage", improvementValue / modeCounter - 1);
         cdd.setData("baseline", modeCounter);
         cdd.setInfo("improvement", improvementValue / modeCounter);
+
+        if (updateReward) cdd.delData("bonusScore");
 
         rs.rscv.valuate(cdd);
 

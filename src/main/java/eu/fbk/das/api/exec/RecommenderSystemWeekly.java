@@ -15,8 +15,8 @@ public class RecommenderSystemWeekly extends RecommenderSystemExec {
             creationRules = new HashMap<>();
             creationRules.put("0", "empty");
             creationRules.put("1", "fixedOne");
-            creationRules.put("2", "choiceTwo");
-            creationRules.put("3", "choiceThree");
+            creationRules.put("2", "choiceTwoV2");
+            creationRules.put("3", "choiceThreeV2");
             creationRules.put("other", "choiceThree");
         }
 
