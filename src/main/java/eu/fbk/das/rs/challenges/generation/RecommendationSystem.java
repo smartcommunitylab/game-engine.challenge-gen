@@ -157,24 +157,18 @@ public class RecommendationSystem {
         if ("empty".equals(rule))
             return new ArrayList<>();
 
-        List<ChallengeExpandedDTO> s = new ArrayList<>();
-        ChallengeExpandedDTO g = rscg.getRepetitive(pId);
-        s.add(g);
-
         if ("fixedOne".equals(rule))
-            s.addAll(getAssigned(state, d, 1));
+            return getAssigned(state, d, 1);
         else if ("choiceTwo".equals(rule))
-            s.addAll(assignLimit(2, state, d));
+            return assignLimit(2, state, d);
         else if ("choiceThree".equals(rule))
-            s.addAll(assignLimit(3, state, d));
+            return assignLimit(3, state, d);
         else if ("choiceTwoV2".equals(rule))
-            s.addAll(assignLimitV2(2, state, d));
+            return assignLimitV2(2, state, d);
         else if ("choiceThreeV2".equals(rule))
-            s.addAll(assignLimitV2(3, state, d));
+            return assignLimitV2(3, state, d);
         else
-            s.clear();
-
-        return s;
+            return null;
 
     }
 
@@ -485,6 +479,9 @@ public class RecommendationSystem {
             res.add(chosen);
         }
 
+        ChallengeExpandedDTO g = rscg.getRepetitive(state.getPlayerId());
+        res.add(g);
+
         return res;
 
     }
@@ -530,6 +527,9 @@ public class RecommendationSystem {
             cdd.setState("proposed");
         }
 
+        ChallengeExpandedDTO g = rscg.getRepetitive(state.getPlayerId());
+        res.add(g);
+
         return res;
 
     }
@@ -539,7 +539,8 @@ public class RecommendationSystem {
 
         // Check if we have to intervene
         List<ChallengeExpandedDTO> rep = repetitiveIntervene(state, d.toDate());
-        if (rep != null) return rep;
+        if (rep != null)
+            return rep;
 
         return assignLimit(limit, state, d);
     }

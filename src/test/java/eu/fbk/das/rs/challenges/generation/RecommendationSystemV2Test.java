@@ -310,7 +310,7 @@ public class RecommendationSystemV2Test extends ChallengesBaseTest {
         // Set<String> pIds = facade.getGamePlayers(ferrara20_gameid);
         // RecommenderSystemAPI api = new RecommenderSystemImpl();
         conf.put("GAMEID", ferrara20_gameid);
-        conf.put("execDate", "2020-02-03");
+        conf.put("execDate", "2021-03-03");
         RecommenderSystemWeekly rsw = new RecommenderSystemWeekly();
 
         rsw.go(conf, "all", null, null);
