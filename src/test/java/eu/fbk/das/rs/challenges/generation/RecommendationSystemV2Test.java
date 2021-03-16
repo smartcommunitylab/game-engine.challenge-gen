@@ -12,8 +12,6 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.ValueMarker;
-import org.jfree.chart.plot.XYPlot;
-import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.statistics.HistogramDataset;
 import org.joda.time.DateTime;
@@ -132,7 +130,7 @@ public class RecommendationSystemV2Test extends ChallengesBaseTest {
 
     private void saveHistogramPerformance(String gameId, Date date, String pId, boolean b) throws IOException, ParseException {
         PlayerStateDTO state = facade.getPlayerState(gameId, pId);
-        Map<Integer, double[]> cache = rs.extractRipetitivePerformance(state, date);
+        Map<Integer, double[]> cache = rs.extractRepetitivePerformance(state, date);
 
         for (Integer w: cache.keySet()) {
 
@@ -193,7 +191,7 @@ public class RecommendationSystemV2Test extends ChallengesBaseTest {
             for (String pId : pIds) {
 
                 PlayerStateDTO state = facade.getPlayerState(gameId, pId);
-                Map<Integer, double[]> cache = rs.extractRipetitivePerformance(state, date);
+                Map<Integer, double[]> cache = rs.extractRepetitivePerformance(state, date);
                 // if null does not intervene
                 if (cache == null) continue;
                 // analyze if we have to assign repetitive
@@ -310,7 +308,7 @@ public class RecommendationSystemV2Test extends ChallengesBaseTest {
         // Set<String> pIds = facade.getGamePlayers(ferrara20_gameid);
         // RecommenderSystemAPI api = new RecommenderSystemImpl();
         conf.put("GAMEID", ferrara20_gameid);
-        conf.put("execDate", "2021-03-03");
+        conf.put("execDate", "2021-03-10");
         RecommenderSystemWeekly rsw = new RecommenderSystemWeekly();
 
         rsw.go(conf, "all", null, null);
@@ -324,7 +322,7 @@ public class RecommendationSystemV2Test extends ChallengesBaseTest {
         rs.gameId = gameId;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-        Date date = sdf.parse("2021-03-03");
+        Date date = sdf.parse("2021-03-10");
 
         Set<String> pIds = facade.getGamePlayers(gameId);
 
@@ -348,7 +346,7 @@ public class RecommendationSystemV2Test extends ChallengesBaseTest {
             for (String pId : pIds) {
 
                 PlayerStateDTO state = facade.getPlayerState(gameId, pId);
-                Map<Integer, double[]> cache = rs.extractRipetitivePerformance(state, date);
+                Map<Integer, double[]> cache = rs.extractRepetitivePerformance(state, date);
                 // if null does not intervene
                 if (cache == null) continue;
 
@@ -363,10 +361,16 @@ public class RecommendationSystemV2Test extends ChallengesBaseTest {
                 if (slot == 0)
                     continue;
 
+                Pair<Double, Double> tg = rs.repetitiveTarget(state, rs.repetitiveDifficulty);
+                Double repScore = tg.getSecond();
+                double repTarget = tg.getFirst();
+
+                pf("%s - %d - %.2f - %.2f\n", pId, slot, repScore, repTarget);
+
                 cnt_rep++;
             }
 
-            pf("%s - %d - %d - %.2f - %.2f\n", sdt, cnt_playing, cnt_rep, cnt_rep * 1.0 / cnt_playing, mean_ent / cnt_playing);
+            pf("### WEEK %s - %d - %d - %.2f - %.2f\n", sdt, cnt_playing, cnt_rep, cnt_rep * 1.0 / cnt_playing, mean_ent / cnt_playing);
 
             DateTime aux = new DateTime(date.getTime());
             date = aux.minusDays(7).toDate();

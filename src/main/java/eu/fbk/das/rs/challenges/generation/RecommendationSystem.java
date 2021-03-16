@@ -83,7 +83,7 @@ public class RecommendationSystem {
     
     private Set<String> modelTypes;
 
-    private int repetitiveDifficulty = 2;
+    protected int repetitiveDifficulty = 2;
 
     boolean debug = false;
     
@@ -131,6 +131,11 @@ public class RecommendationSystem {
             c.setInfo("player", pId);
 
             c.setHide(true);
+        }
+
+        for (ChallengeExpandedDTO c: cha) {
+            pf("playerId: %s, instanceName: %s, model: %s, s: %s, e: %s, f: %s\n", pId,
+                    c.getInstanceName(), c.getModelName(), c.getStart(), c.getEnd(), c.printData());
         }
 
         return cha;
@@ -548,7 +553,7 @@ public class RecommendationSystem {
     public List<ChallengeExpandedDTO> repetitiveIntervene(PlayerStateDTO state, Date dt) {
 
         try {
-            Map<Integer, double[]> cache = extractRipetitivePerformance(state, dt);
+            Map<Integer, double[]> cache = extractRepetitivePerformance(state, dt);
             // if null does not intervene
             if (cache == null) return null;
             // analyze if we have to assign repetitive
@@ -577,6 +582,8 @@ public class RecommendationSystem {
 
             List <ChallengeExpandedDTO> ls = new ArrayList<>();
             ls.add(rep);
+
+            pf("### NewRepetitive, %s, %d, %.2f, %.2f\n", state.getPlayerId(), slot, repTarget, repScore);
             return ls;
 
         } catch (ParseException | IOException e) {
@@ -598,7 +605,7 @@ public class RecommendationSystem {
         return slot;
     }
 
-    protected Map<Integer, double[]> extractRipetitivePerformance(PlayerStateDTO state, Date dt) throws IOException, ParseException {
+    protected Map<Integer, double[]> extractRepetitivePerformance(PlayerStateDTO state, Date dt) throws IOException, ParseException {
         // p(state.getPlayerId());
         String query = getRepetitiveQuery(state.getPlayerId(), dt);
         // p(query);
@@ -608,7 +615,7 @@ public class RecommendationSystem {
         String pass = cfg.get("API_PASS");
 
         String response = getHttpResponse(query, url, user, pass);
-        // p(response);
+
         Map<Integer, double[]> cache = getTimeSeriesPerformance(response);
 
         return cache;
