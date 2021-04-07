@@ -161,7 +161,11 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
     }
 
     public ChallengeExpandedDTO prepareChallangeImpr(String mode) {
-        ChallengeExpandedDTO cdd = prepareChallenge(prefix, mode);
+        return prepareChallangeImpr(mode, mode);
+    }
+
+    public ChallengeExpandedDTO prepareChallangeImpr(String name, String mode) {
+        ChallengeExpandedDTO cdd = prepareChallenge(prefix, name);
         cdd.setData("bonusScore", 100.0);
         if (mode != null)
             cdd.setData("counterName", mode);
