@@ -3,6 +3,8 @@ test.properties
 
 test/dbs/*
 
+*.log
+
 # Intellij
 .idea/
 *.iml
