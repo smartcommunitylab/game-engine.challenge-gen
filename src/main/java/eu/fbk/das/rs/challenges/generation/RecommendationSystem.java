@@ -568,7 +568,7 @@ public class RecommendationSystem {
 
             // Create
 
-            ChallengeExpandedDTO rep = rscg.prepareChallangeImpr("correctAnomalies", "green leaves");
+            ChallengeExpandedDTO rep = rscg.prepareChallangeImpr("correctErraticBehaviour", "green leaves");
             rep.setModelName("repetitiveBehaviour");
             rep.setData("periodName", "daily");
             rep.setData("periodTarget", slot * 1.0);
