@@ -1067,12 +1067,6 @@ public class RecommendationSystem {
 
     public Double getContentMode(PlayerStateDTO state, String period, String mode, DateTime execDate) {
 
-        // TEMPORARY FIX FOR GAME STOP ON MARCH/APRIL 2021
-        // TODO REMOVE AFTER END OF FERRARA GAME
-        if (this.cfg.get("GAMEID").endsWith("f17d") && execDate.getMillis() / 1000  < 1617608316) {
-            execDate = execDate.minusDays(3*7);
-        }
-
         for (GameConcept gc : state.getState().get("PointConcept")) {
             PointConcept pc = (PointConcept) gc;
 
