@@ -16,8 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static eu.fbk.das.rs.challenges.ChallengeUtil.getPeriodScore;
-import static eu.fbk.das.utils.Utils.p;
-import static eu.fbk.das.utils.Utils.pf;
+import static eu.fbk.das.utils.Utils.*;
 
 public class ProdRandomTest extends ChallengesBaseTest {
 
@@ -225,5 +224,46 @@ p(gameId);
         RecommenderSystemWeekly rsw = new RecommenderSystemWeekly();
         String challengeType = "groupCooperative";
         rsw.go(conf, "all", null, null);
+    }
+
+    @Test
+    public void extractCorrectErraticBehaviour() {
+        String ferrara20_gameid = conf.get("FERRARA20_GAMEID");
+        conf.put("GAMEID", ferrara20_gameid);
+
+        SimpleDateFormat fmt = new SimpleDateFormat("yyyy/MM/dd");
+        Map<String, List<String>> cache = new HashMap<>();
+
+        Set<String> pIds = facade.getGamePlayers(ferrara20_gameid);
+        for (String pId: pIds) {
+            PlayerStateDTO pl = facade.getPlayerState(conf.get("GAMEID"), pId);
+
+            Set<GameConcept> scores =  pl.getState().get("ChallengeConcept");
+            if (scores == null) continue;
+            for (GameConcept gc : scores) {
+                ChallengeConcept cha = (ChallengeConcept) gc;
+
+                String chNm = cha.getName();
+                if (!(chNm.contains("correctErraticBehaviour")))
+                    continue;
+
+                String chSt = fmt.format(cha.getStart());
+                Map<String, Object> fields = cha.getFields();
+                int cmp = 0;
+                if (cha.isCompleted()) cmp = 1;
+                String res = f("%s,%.2f,%s,%d", pId, fields.get("target"),  fields.get("periodTarget"), cmp);
+
+                if (!cache.containsKey(chSt)) cache.put(chSt, new ArrayList<>());
+                cache.get(chSt).add(res);
+            }
+        }
+
+        SortedSet<String> keys = new TreeSet<>(cache.keySet());
+        for (String k: keys) {
+            pf("###### %s\n", k);
+            for (String r: cache.get(k))
+                p(r);
+        }
+
     }
 }

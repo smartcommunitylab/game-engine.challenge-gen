@@ -313,7 +313,7 @@ public class GamificationEngineRestFacade {
             endDate = Date.from(endDateTime.atZone(java.time.ZoneId.systemDefault()).toInstant());
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e);
         }
 
         return new Pair<>(startDate, endDate);

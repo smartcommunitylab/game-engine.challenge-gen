@@ -10,6 +10,7 @@ import org.apache.http.StatusLine;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -23,6 +24,8 @@ import java.util.*;
 import static eu.fbk.das.utils.Utils.*;
 
 public class InnoWeeAnalyze extends ChallengesBaseTest {
+
+    private static final Logger logger = Logger.getLogger(InnoWeeAnalyze.class);
 
     // String gameId = "5c9b48cad9aedcf3d418b936"; - gandhi
 
@@ -282,7 +285,7 @@ public class InnoWeeAnalyze extends ChallengesBaseTest {
 
         } catch (ParseException e) {
             // TODO
-            e.printStackTrace();
+            logger.error(e);
         }
 
     }
@@ -407,7 +410,7 @@ if (week == 0) week = 6;
 
         } catch (ParseException e) {
             // TODO
-            e.printStackTrace();
+            logger.error(e);
         }
 
     }
@@ -435,7 +438,7 @@ if (week == 0) week = 6;
             return performRestCall(format, args);
         } catch (IOException e) {
             // TODO
-            e.printStackTrace();
+            logger.error(e);
         }
 
         return null;

@@ -15,6 +15,7 @@ import it.smartcommunitylab.model.ext.GroupChallengeDTO.PointConceptDTO;
 import it.smartcommunitylab.model.ext.GroupChallengeDTO.RewardDTO;
 
 import static eu.fbk.das.utils.Utils.p;
+import static eu.fbk.das.utils.Utils.pf;
 
 public class RecommenderSystemImpl implements RecommenderSystemAPI {
 
@@ -100,6 +101,9 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
                 cha.setInfo("gameId", rs.gameId);
                 cha.setInfo("pId", pId);
                 chas.add(cha);
+
+                pf("playerId: %s, instanceName: %s, model: %s, s: %s, e: %s, f: %s\n", pId,
+                        cha.getInstanceName(), cha.getModelName(), cha.getStart(), cha.getEnd(), cha.printData());
             }
         }
 

@@ -1,9 +1,11 @@
 package eu.fbk.das.rs.challenges.evaluation;
 
 import eu.fbk.das.rs.challenges.ChallengeUtil;
+import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import eu.fbk.das.utils.PolynomialRegression;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 
 import java.io.File;
@@ -22,6 +24,7 @@ import static org.chocosolver.util.tools.ArrayUtils.sort;
 
 public class PerformanceEstimation extends ChallengeUtil {
 
+    private static final Logger logger = Logger.getLogger(PerformanceEstimation.class);
 
     private int week = 19;
 
@@ -56,7 +59,7 @@ public class PerformanceEstimation extends ChallengeUtil {
         try {
             writer = new PrintWriter(new File("performances.csv"));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            logger.error(e);
         }
 
         this.date = date;

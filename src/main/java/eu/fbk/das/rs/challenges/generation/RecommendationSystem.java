@@ -133,11 +133,6 @@ public class RecommendationSystem {
             c.setHide(true);
         }
 
-        for (ChallengeExpandedDTO c: cha) {
-            pf("playerId: %s, instanceName: %s, model: %s, s: %s, e: %s, f: %s\n", pId,
-                    c.getInstanceName(), c.getModelName(), c.getStart(), c.getEnd(), c.printData());
-        }
-
         return cha;
 
     }
@@ -587,7 +582,7 @@ public class RecommendationSystem {
             return ls;
 
         } catch (ParseException | IOException e) {
-            e.printStackTrace();
+            logger.error(e);
         }
 
         return null;
@@ -1051,9 +1046,9 @@ public class RecommendationSystem {
             oout.flush();
             logger.info("written recommendationSystemConfiguration.json");
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            logger.error(e);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e);
         }
     } */
 
@@ -1218,9 +1213,9 @@ public class RecommendationSystem {
                     actionsDates.put(data[0], dt);
                 }
             } catch (FileNotFoundException e) {
-                e.printStackTrace();
+                logger.error(e);
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error(e);
             }
         }
 

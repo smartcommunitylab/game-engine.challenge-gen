@@ -1,5 +1,7 @@
 package eu.fbk.das.other;
 
+import eu.fbk.das.innowee.InnoWeeAnalyze;
+import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -13,6 +15,8 @@ import java.util.Map;
 import static eu.fbk.das.utils.Utils.pf;
 
 public class CostAssigner {
+
+    private static final Logger logger = Logger.getLogger(CostAssigner.class);
 
     String path = "/home/loskana/Desktop/choices.csv";
 
@@ -145,7 +149,7 @@ public class CostAssigner {
                 record.put(values[0], choices);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e);
             return false;
         }
 

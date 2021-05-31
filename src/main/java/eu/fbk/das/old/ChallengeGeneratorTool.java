@@ -1,8 +1,10 @@
 package eu.fbk.das.old;
 
 import eu.fbk.das.GamificationEngineRestFacade;
+import eu.fbk.das.rs.challenges.evaluation.ChallengeAnalyzer;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import org.apache.commons.cli.*;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -18,6 +20,8 @@ import java.util.Map;
  * all generated rules</br>
  */
 public class ChallengeGeneratorTool {
+
+    private static final Logger logger = Logger.getLogger(ChallengeGeneratorTool.class);
 
     private static Options options;
     private static HelpFormatter helpFormatter;
@@ -208,7 +212,7 @@ public class ChallengeGeneratorTool {
                 log += msg + Constants.LINE_SEPARATOR;
                 return log;
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(e);
             }
         }
         try {

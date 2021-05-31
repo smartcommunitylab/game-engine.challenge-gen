@@ -1,6 +1,8 @@
+import eu.fbk.das.old.ChallengeGeneratorTool;
 import org.apache.commons.cli.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.util.HashMap;
@@ -8,6 +10,8 @@ import java.util.Map;
 import java.util.Properties;
 
 public class AnalysisCmd {
+
+    private static final Logger logger = Logger.getLogger(AnalysisCmd.class);
 
     private static Options options;
     private static HelpFormatter helpFormatter;
@@ -63,7 +67,7 @@ public class AnalysisCmd {
             firstData = load(first);
             secondData = load(second);
         } catch (NullPointerException | IllegalArgumentException | IOException e) {
-            e.printStackTrace();
+            logger.error(e);
         }
 
         for (String secondKey : secondData.keySet()) {
@@ -105,7 +109,7 @@ public class AnalysisCmd {
             IOUtils.write(sb.toString(), fout);
 
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e);
         }
 
     }

@@ -1,0 +1,9 @@
+2021-04-19 11:58:50 INFO  RecommenderSystemGui:94 - Gui creation
+2021-04-19 11:58:55 INFO  RecommenderSystemController:275 - Connection parameters to gamification engine are ok
+2021-04-19 11:58:56 INFO  RecommenderSystemController:180 - Challenge generation in progress
+2021-04-19 11:58:56 DEBUG RSGenerate:541 - Reading players from game
+2021-04-19 12:00:06 INFO  RecommenderSystemGui:94 - Gui creation
+2021-04-19 12:00:14 INFO  RecommenderSystemController:275 - Connection parameters to gamification engine are ok
+2021-04-19 12:00:18 INFO  RecommenderSystemController:180 - Challenge generation in progress
+2021-04-19 12:00:19 DEBUG RSGenerate:541 - Reading players from game
+2021-04-19 12:05:26 INFO  RSGenerate:142 - Challenge generation completed

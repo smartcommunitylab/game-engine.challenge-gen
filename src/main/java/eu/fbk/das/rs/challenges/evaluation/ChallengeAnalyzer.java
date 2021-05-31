@@ -3,6 +3,7 @@ package eu.fbk.das.rs.challenges.evaluation;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.ext.ChallengeConcept;
 import it.smartcommunitylab.model.ext.GameConcept;
+import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 
 import java.io.BufferedReader;
@@ -15,6 +16,8 @@ import java.util.*;
 import static eu.fbk.das.utils.Utils.*;
 
 public class ChallengeAnalyzer extends ChallengeDataGuru {
+
+    private static final Logger logger = Logger.getLogger(ChallengeAnalyzer.class);
 
     protected boolean checkIfChosen = true;
     private Map<String, List<Double>> incrByCounter;
@@ -285,7 +288,7 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
         try {
             System.out.write(data.getBytes());
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e);
         }
 
     }
@@ -345,7 +348,7 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
             try {
                 return new DateTime(sdf.parse(s));
             } catch (ParseException e) {
-                e.printStackTrace();
+                logger.error(e);
             } return null;
         }
 

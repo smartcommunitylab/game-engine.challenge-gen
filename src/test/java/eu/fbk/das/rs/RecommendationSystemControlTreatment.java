@@ -13,11 +13,7 @@ import java.util.*;
 import static eu.fbk.das.rs.challenges.ChallengeUtil.getPeriodScore;
 import static eu.fbk.das.utils.Utils.*;
 
-public class RecommendationSystemEvaluator extends ChallengesBaseTest {
-
-    public RecommendationSystemEvaluator() {
-        prod = true;
-    }
+public class RecommendationSystemControlTreatment extends ChallengesBaseTest {
 
     Map<String, Integer> res = new HashMap<>();
 
@@ -27,14 +23,107 @@ public class RecommendationSystemEvaluator extends ChallengesBaseTest {
 
     int endW = 66;
 
+    Set<String> controlPlayers = new HashSet<String>(Arrays.asList(
+            "127", "1160", "1616", "2406", "19092", "24060", "24336", "24347", "24465", "24559", "25548", "25683", "26106",
+            "27300", "27350", "27499", "27587", "27695", "27927", "27980", "28011", "28063", "28150", "28393", "28408", "28417",
+            "28448", "28453", "28467", "28502", "28505", "28509", "28519", "28538", "28546", "28547", "28566", "28582", "28593", "28607"));
+
+    Set<String> treatmentPlayers = new HashSet<String>(Arrays.asList(
+            "1069", "11126", "23779", "24349", "24471", "24476", "24599", "24650", "24861", "24896", "25477", "25618", "25744",
+            "25791", "25801", "25883", "26613", "26646", "26796", "27232", "27276", "27287", "27319", "27367", "27374", "27387",
+            "27443", "27592", "27718", "27852", "27905", "28464", "28473", "28474", "28487", "28504", "28543", "28548", "28588", "28606"));
+
+    String[] modes = new String[]{"Walk_Km", "Bike_Km", "green leaves", "Bus_Km", "Train_Km", "Bus_Trips", "Train_Trips"};
+
     @Test
     public void executeAll() {
-        String ferrara20_gameid = conf.get("FERRARA20_GAMEID");
-        conf.put("GAMEID", ferrara20_gameid);
 
         Set<String> players = facade.getGamePlayers(conf.get("GAMEID"));
 
         analyzeChallengePlayers(players);
+
+    }
+
+    @Test
+    public void executeControl() {
+
+        analyzeImprovementPlayers(controlPlayers);
+
+        analyzePerformancesPlayers(controlPlayers);
+
+        analyzeChallengePlayers(controlPlayers);
+
+    }
+
+    @Test
+    public void executeTreatment() {
+
+        analyzeImprovementPlayers(treatmentPlayers);
+
+        analyzePerformancesPlayers(treatmentPlayers);
+
+        analyzeChallengePlayers(treatmentPlayers);
+
+    }
+
+    private void analyzeImprovementPlayers(Set<String> players) {
+        weekResult = new HashMap<>();
+
+        for (String pId: players) {
+            PlayerStateDTO player = facade.getPlayerState(conf.get("GAMEID"), pId);
+            Integer ix = null;
+            Map<String, Double> old = new HashMap<>();
+            for (int w = startW; w <= endW; w++ ) {
+
+                DateTime stDt = parseDate("29/10/2018").plusDays(w * 7);
+
+                if (ix != null) ix++;
+
+                if (!(scoredGreenLeaves(player, stDt)))
+                    continue;
+                else if (ix == null) ix = 0;
+
+                for (String mode: modes) {
+                    double newV = getWeeklyContentMode(player, mode, stDt);
+                    if (old.containsKey(mode)) {
+                        double oldV = old.get(mode);
+                        if (oldV == 0) continue;
+                        addWeekRes(ix, mode, newV / oldV);
+                    }
+                    old.put(mode, newV);
+                }
+            }
+        }
+
+        for (String mode: modes)
+            showResult(mode);
+
+    }
+
+    private void analyzePerformancesPlayers(Set<String> players) {
+        weekResult = new HashMap<>();
+
+        for (String pId: players) {
+            PlayerStateDTO player = facade.getPlayerState(conf.get("GAMEID"), pId);
+            Integer ix = null;
+            for (int w = startW; w <= endW; w++ ) {
+
+                DateTime stDt = parseDate("29/10/2018").plusDays(w * 7);
+
+                if (ix != null) ix++;
+
+                if (!(scoredGreenLeaves(player, stDt)))
+                    continue;
+                else if (ix == null) ix = 0;
+
+                for (String mode: modes)
+                    addWeekRes(ix,mode, getWeeklyContentMode(player, mode, stDt));
+            }
+        }
+
+        for (String mode: modes)
+            showResult(mode);
+
     }
 
     private void analyzeChallengePlayers(Set<String> players) {
