@@ -108,7 +108,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
         }
 
         return chas;
-    }
+    } 
 
     @Override
     public List<GroupExpandedDTO> createStandardGroupChallenges(Map<String, String> conf, Set<String> modelTypes, String assignmentType, Map<String, Object> config, String playerSet, Map<String, String> rewards) {
