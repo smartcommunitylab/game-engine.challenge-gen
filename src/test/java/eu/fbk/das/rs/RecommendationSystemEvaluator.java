@@ -23,7 +23,7 @@ public class RecommendationSystemEvaluator extends ChallengesBaseTest {
 
     Map<Integer, Map<String, List<Double>>> weekResult;
 
-    int startW = 54;
+    int startW = 36;
 
     int endW = 66;
 

@@ -120,14 +120,6 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
 
         improvementValue = roundTarget(mode, improvementValue);
 
-        if (improvementValue == lastCounter)
-            return null;
-
-        if (Math.abs(improvementValue - lastCounter) < 0.01)
-            return null;
-
-        lastCounter = improvementValue;
-
         ChallengeExpandedDTO cdd = prepareChallangeImpr(mode);
 
         cdd.setModelName("percentageIncrement");

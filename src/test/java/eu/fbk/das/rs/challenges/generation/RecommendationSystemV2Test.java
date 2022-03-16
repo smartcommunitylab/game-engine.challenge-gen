@@ -5,6 +5,8 @@ import eu.fbk.das.model.ChallengeExpandedDTO;
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 import eu.fbk.das.utils.Pair;
 import it.smartcommunitylab.model.PlayerStateDTO;
+import it.smartcommunitylab.model.ext.ChallengeConcept;
+import it.smartcommunitylab.model.ext.GameConcept;
 import org.apache.commons.io.IOUtils;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
@@ -24,11 +26,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import static eu.fbk.das.utils.Utils.*;
 
@@ -322,7 +321,7 @@ public class RecommendationSystemV2Test extends ChallengesBaseTest {
         rs.gameId = gameId;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-        Date date = sdf.parse("2021-03-10");
+        Date date = sdf.parse("2021-06-26");
 
         Set<String> pIds = facade.getGamePlayers(gameId);
 
@@ -346,6 +345,13 @@ public class RecommendationSystemV2Test extends ChallengesBaseTest {
             for (String pId : pIds) {
 
                 PlayerStateDTO state = facade.getPlayerState(gameId, pId);
+
+                // check if that week it was active
+                Double currentValue = rs.getWeeklyContentMode(state, "green leaves", new DateTime(date));
+                if (currentValue == 0) {
+                    continue;
+                }
+
                 Map<Integer, double[]> cache = rs.extractRepetitivePerformance(state, date);
                 // if null does not intervene
                 if (cache == null) continue;
@@ -365,7 +371,7 @@ public class RecommendationSystemV2Test extends ChallengesBaseTest {
                 Double repScore = tg.getSecond();
                 double repTarget = tg.getFirst();
 
-                pf("%s - %d - %.2f - %.2f\n", pId, slot, repScore, repTarget);
+                pf("%s # %d # %.2f # %.2f # %.2f\n", pId, slot, repScore, repTarget, ent);
 
                 cnt_rep++;
             }
@@ -376,6 +382,112 @@ public class RecommendationSystemV2Test extends ChallengesBaseTest {
             date = aux.minusDays(7).toDate();
         }
 
+    }
+
+
+    @Test
+    public void extractCorrectErraticBehaviour() {
+        String ferrara20_gameid = conf.get("FERRARA20_GAMEID");
+        conf.put("GAMEID", ferrara20_gameid);
+
+        SimpleDateFormat fmt = new SimpleDateFormat("yyyy/MM/dd");
+        Map<String, List<String>> cache = new HashMap<>();
+
+        Set<String> pIds = facade.getGamePlayers(ferrara20_gameid);
+        for (String pId: pIds) {
+            PlayerStateDTO pl = facade.getPlayerState(conf.get("GAMEID"), pId);
+
+            Set<GameConcept> scores =  pl.getState().get("ChallengeConcept");
+            if (scores == null) continue;
+            for (GameConcept gc : scores) {
+                ChallengeConcept cha = (ChallengeConcept) gc;
+
+                String chNm = cha.getName();
+                if (!(chNm.contains("correctErraticBehaviour")))
+                    continue;
+
+                String chSt = fmt.format(cha.getStart());
+                Map<String, Object> fields = cha.getFields();
+                int cmp = 0;
+                if (cha.isCompleted()) cmp = 1;
+                String res = f("%s,%.2f,%s,%d", pId, fields.get("target"),  fields.get("periodTarget"), cmp);
+
+                if (!cache.containsKey(chSt)) cache.put(chSt, new ArrayList<>());
+                cache.get(chSt).add(res);
+            }
+        }
+
+        TreeSet<String> keys = new TreeSet<>(cache.keySet());
+        for (String k: keys.descendingSet()) {
+            pf("###### %s\n", k);
+            for (String r: cache.get(k))
+                p(r);
+        }
+
+    }
+
+    @Test
+    public void extractChallengeData() {
+        String ferrara20_gameid = conf.get("FERRARA20_GAMEID");
+        conf.put("GAMEID", ferrara20_gameid);
+
+        SimpleDateFormat fmt = new SimpleDateFormat("yyyy/MM/dd");
+
+        Map<String, Map<String, Integer>> cache = new HashMap<>();
+        Set<String> pIds = facade.getGamePlayers(ferrara20_gameid);
+
+        for (String pId: pIds) {
+            PlayerStateDTO pl = facade.getPlayerState(conf.get("GAMEID"), pId);
+            Set<GameConcept> scores =  pl.getState().get("ChallengeConcept");
+            if (scores == null) continue;
+
+            for (GameConcept gc : scores) {
+                ChallengeConcept cha = (ChallengeConcept) gc;
+
+                String nm = cha.getName();
+                if (nm.contains("survey") || nm.contains("initial") || nm.contains("recommend"))
+                    continue;
+
+                String mName = cha.getModelName();
+                //if (mName.contains("group") || mName.contains("repetitive") || mName.contains("absolute"))
+                //     continue;
+
+                String chSt = fmt.format(cha.getStart());
+                addCache(cache, chSt, "tot");
+                Map<String, Object> fields = cha.getFields();
+
+                // check if that week it was active
+                Double currentValue = rs.getWeeklyContentMode(pl, "green leaves", new DateTime(cha.getStart()));
+                if (currentValue == 0) {
+                    addCache(cache, chSt, "active0");
+                    continue;
+                }
+
+                addCache(cache, chSt, "active1");
+
+                // if active, check if also completed
+                if (cha.isCompleted())
+                    addCache(cache, chSt, "comp1");
+                else
+                    addCache(cache, chSt, "comp0");
+            }
+        }
+
+        SortedSet<String> keys = new TreeSet<>(cache.keySet());
+        for (String k: keys) {
+            pf("###### %s\n", k);
+            for (String r: cache.get(k).keySet()) {
+                pf("%s - %d\n", r, cache.get(k).get(r));
+            }
+        }
+
+    }
+
+    private void addCache(Map<String, Map<String, Integer>> cache, String chSt, String ind) {
+        if (!cache.containsKey(chSt)) cache.put(chSt, new HashMap<String, Integer>());
+        Map<String, Integer> chWeek = cache.get(chSt);
+        if (!chWeek.containsKey(ind)) chWeek.put(ind, 0);
+        chWeek.put(ind, chWeek.get(ind) + 1);
     }
 
 }

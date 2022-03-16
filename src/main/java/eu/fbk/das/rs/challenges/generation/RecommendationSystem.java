@@ -581,7 +581,7 @@ public class RecommendationSystem {
             pf("### NewRepetitive, %s, %d, %.2f, %.2f\n", state.getPlayerId(), slot, repTarget, repScore);
             return ls;
 
-        } catch (ParseException | IOException e) {
+        } catch (Exception e) {
             logger.error(e);
         }
 

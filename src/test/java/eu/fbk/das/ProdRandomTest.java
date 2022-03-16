@@ -1,6 +1,8 @@
 package eu.fbk.das;
 
+import eu.fbk.das.api.RecommenderSystemImpl;
 import eu.fbk.das.api.exec.RecommenderSystemGroup;
+import eu.fbk.das.api.exec.RecommenderSystemTantum;
 import eu.fbk.das.api.exec.RecommenderSystemWeekly;
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 import eu.fbk.das.utils.Utils;
@@ -22,6 +24,32 @@ public class ProdRandomTest extends ChallengesBaseTest {
 
     public ProdRandomTest() {
         prod = true;
+    }
+
+    @Test
+    public void checkWeeksTests() {
+
+        String gameId = "5edf5f7d4149dd117cc7f17d";
+
+        Set<String> pIds = facade.getGamePlayers(gameId);
+        for (String pId : pIds) {
+            PlayerStateDTO pl = facade.getPlayerState(gameId, pId);
+
+            Map<ChallengeConcept, Date> cache = new HashMap<>();
+
+            Set<GameConcept> scores =  pl.getState().get("ChallengeConcept");
+            if (scores == null) continue;
+
+            for (GameConcept gc : scores) {
+                ChallengeConcept cha = (ChallengeConcept) gc;
+                String nm = cha.getName();
+                if (nm.startsWith("w73") || nm.startsWith("w74")) {
+                    p(cha);
+                    p(nm);
+                    p(pId);
+                }
+            }
+        }
     }
 
     @Test
@@ -214,56 +242,15 @@ p(gameId);
     }
 
     @Test
-    // test per capire come mai "Un utente senza sfide per questa settimana. ID utente 29889"
     public void checkSingleGeneration() {
         String ferrara20_gameid = conf.get("FERRARA20_GAMEID");
+        p(ferrara20_gameid);
         // Set<String> pIds = facade.getGamePlayers(ferrara20_gameid);
         // RecommenderSystemAPI api = new RecommenderSystemImpl();
         conf.put("GAMEID", ferrara20_gameid);
-        conf.put("execDate", "2020-11-06");
+        conf.put("execDate", "2022-03-08");
         RecommenderSystemWeekly rsw = new RecommenderSystemWeekly();
-        String challengeType = "groupCooperative";
+        // String challengeType = "groupCooperative";
         rsw.go(conf, "all", null, null);
-    }
-
-    @Test
-    public void extractCorrectErraticBehaviour() {
-        String ferrara20_gameid = conf.get("FERRARA20_GAMEID");
-        conf.put("GAMEID", ferrara20_gameid);
-
-        SimpleDateFormat fmt = new SimpleDateFormat("yyyy/MM/dd");
-        Map<String, List<String>> cache = new HashMap<>();
-
-        Set<String> pIds = facade.getGamePlayers(ferrara20_gameid);
-        for (String pId: pIds) {
-            PlayerStateDTO pl = facade.getPlayerState(conf.get("GAMEID"), pId);
-
-            Set<GameConcept> scores =  pl.getState().get("ChallengeConcept");
-            if (scores == null) continue;
-            for (GameConcept gc : scores) {
-                ChallengeConcept cha = (ChallengeConcept) gc;
-
-                String chNm = cha.getName();
-                if (!(chNm.contains("correctErraticBehaviour")))
-                    continue;
-
-                String chSt = fmt.format(cha.getStart());
-                Map<String, Object> fields = cha.getFields();
-                int cmp = 0;
-                if (cha.isCompleted()) cmp = 1;
-                String res = f("%s,%.2f,%s,%d", pId, fields.get("target"),  fields.get("periodTarget"), cmp);
-
-                if (!cache.containsKey(chSt)) cache.put(chSt, new ArrayList<>());
-                cache.get(chSt).add(res);
-            }
-        }
-
-        SortedSet<String> keys = new TreeSet<>(cache.keySet());
-        for (String k: keys) {
-            pf("###### %s\n", k);
-            for (String r: cache.get(k))
-                p(r);
-        }
-
     }
 }
