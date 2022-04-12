@@ -44,7 +44,7 @@ public class ChallengeExpandedDTO extends ChallengeAssignmentDTO {
 
     public Vector<Object> getDisplayData() {
         Vector<Object> result = new Vector<>();
-        result.add(i(getInfo("player")));
+        result.add(getInfo("player"));
         result.add(i(getInfo("playerLevel")));
         result.add(getInfo("id"));
         result.add(getInfo("experiment"));
