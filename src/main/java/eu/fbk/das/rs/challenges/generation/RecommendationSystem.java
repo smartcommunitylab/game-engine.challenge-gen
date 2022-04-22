@@ -605,7 +605,7 @@ public class RecommendationSystem {
         String query = getRepetitiveQuery(state.getPlayerId(), dt);
         // p(query);
 
-        String url = "https://api-dev.smartcommunitylab.it/gamification-stats-" + this.gameId + "-*/_search?size=0";
+        String url = cfg.get("GAMIFICATION_STATS_URL") + "/gamification-stats-" + this.gameId + "-*/_search?size=0";
         String user = cfg.get("API_USER");
         String pass = cfg.get("API_PASS");
 
