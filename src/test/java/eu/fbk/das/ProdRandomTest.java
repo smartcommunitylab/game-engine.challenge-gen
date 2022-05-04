@@ -4,6 +4,7 @@ import eu.fbk.das.api.RecommenderSystemImpl;
 import eu.fbk.das.api.exec.RecommenderSystemGroup;
 import eu.fbk.das.api.exec.RecommenderSystemTantum;
 import eu.fbk.das.api.exec.RecommenderSystemWeekly;
+import eu.fbk.das.model.ChallengeExpandedDTO;
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 import eu.fbk.das.utils.Utils;
 import it.smartcommunitylab.model.PlayerStateDTO;
@@ -24,6 +25,41 @@ public class ProdRandomTest extends ChallengesBaseTest {
 
     public ProdRandomTest() {
         prod = true;
+    }
+
+    @Test
+    public void assignPointInterest() throws ParseException {
+        String ferrara20_gameid = conf.get("FERRARA20_GAMEID");
+        p(ferrara20_gameid);
+
+        String[] pIds = {"33324", "31548", "29473"};
+        // mauro: 28540
+        String[] typePois = {"test"};
+        Integer[] targets = {1, 2, 3};
+
+        for (String pId: pIds) {
+            for (String typePoi: typePois) {
+                for (Integer target: targets) {
+                    ChallengeExpandedDTO cha = new ChallengeExpandedDTO();
+                    cha.setModelName("visitPointInterest");
+                    cha.setInstanceName(f("visitPointInterest_%s_%s_%d", pId, typePoi, target));
+
+                    cha.setData("target", target);
+                    cha.setData("typePoi", typePoi);
+
+                    cha.setData("bonusScore", target*1.0);
+                    cha.setData("bonusPointType", "green leaves");
+                    cha.setData("periodName", "weekly");
+
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
+                    cha.setStart(sdf.parse("03/05/2022"));
+                    cha.setEnd(sdf.parse("10/05/2022"));
+
+                    rs.facade.assignChallengeToPlayer(cha, ferrara20_gameid, pId);
+                }
+            }
+        }
     }
 
     @Test
