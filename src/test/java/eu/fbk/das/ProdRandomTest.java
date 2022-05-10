@@ -32,74 +32,39 @@ public class ProdRandomTest extends ChallengesBaseTest {
     }
 
     @Test
-    public void checkAssignment() {
+    public void assignPointInterest() throws ParseException {
         String ferrara20_gameid = conf.get("FERRARA20_GAMEID");
         p(ferrara20_gameid);
-        // Set<String> pIds = facade.getGamePlayers(ferrara20_gameid);
-        // RecommenderSystemAPI api = new RecommenderSystemImpl();
-        conf.put("GAMEID", ferrara20_gameid);
-        conf.put("execDate", "2022-03-08");
 
-        // List<String> idList = Arrays.asList("28540", "19092", "30453", "27300", "4055", "Raman", "4");
+        String[] pIds = {"33324", "31548", "29473"};
+        // mauro: 28540
+        String[] typePois = {"test"};
+        Integer[] targets = {1, 2, 3};
 
-        List<String> idList = Arrays.asList("33324", "31548", "29473");
+        for (String pId: pIds) {
+            for (String typePoi: typePois) {
+                for (Integer target: targets) {
+                    ChallengeExpandedDTO cha = new ChallengeExpandedDTO();
+                    cha.setModelName("visitPointInterest");
+                    cha.setInstanceName(f("visitPointInterest_%s_%s_%d", pId, typePoi, target));
 
-        for (String playerId: idList) {
-            String typePoi = "airbreak";
+                    cha.setData("target", target);
+                    cha.setData("typePoi", typePoi);
 
-            ChallengeExpandedDTO cha = new ChallengeExpandedDTO();
-            cha.setModelName("visitPointInterest");
-            cha.setInstanceName(String.format("visitPointInterest_%s_%s", playerId, typePoi));
+                    cha.setData("bonusScore", target*1.0);
+                    cha.setData("bonusPointType", "green leaves");
+                    cha.setData("periodName", "weekly");
 
-            cha.setData("periodName", "weekly");
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
-            cha.setData("bonusScore", 100.0);
-            cha.setData("bonusPointType", "green leaves");
+                    cha.setStart(sdf.parse("03/05/2022"));
+                    cha.setEnd(sdf.parse("10/05/2022"));
 
-            cha.setData("target", 2);
-            cha.setData("typePoi", typePoi);
-
-            cha.setStart(convert(LocalDate.now().minusDays(3)));
-            cha.setEnd(convert(LocalDate.now().plusDays(3)));
-
-            RecommendationSystem rs = new RecommendationSystem();
-            rs.facade.assignChallengeToPlayer(cha, ferrara20_gameid, playerId);
-
-            pf("Assegnata sfida %s\n", cha.getInstanceName());
-        }
-    }
-
-    public Date convert(LocalDate dateToConvert) {
-        return java.sql.Date.valueOf(dateToConvert);
-    }
-
-    @Test
-    public void check_ferrara() {
-
-        String gameId = "5edf5f7d4149dd117cc7f17d";
-
-        Integer count = 0;
-
-        String pId = "29473";
-
-        PlayerStateDTO pl = facade.getPlayerState(gameId, pId);
-
-        Map<ChallengeConcept, Date> cache = new HashMap<>();
-
-        Set<GameConcept> scores = pl.getState().get("ChallengeConcept");
-        if (scores != null) {
-
-            for (GameConcept gc : scores) {
-                ChallengeConcept cha = (ChallengeConcept) gc;
-                String nm = cha.getName();
-                if (!nm.contains("visitPointInterest"))
-                    continue;
-                p(nm);
-                p(cha);
+                    rs.facade.assignChallengeToPlayer(cha, ferrara20_gameid, pId);
+                }
             }
         }
     }
-
 
     @Test
     public void checkWeeksTests() {
