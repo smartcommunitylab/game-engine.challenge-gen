@@ -4,7 +4,10 @@ import eu.fbk.das.api.RecommenderSystemImpl;
 import eu.fbk.das.api.exec.RecommenderSystemGroup;
 import eu.fbk.das.api.exec.RecommenderSystemTantum;
 import eu.fbk.das.api.exec.RecommenderSystemWeekly;
+import eu.fbk.das.model.ChallengeExpandedDTO;
+import eu.fbk.das.rs.RecommendationSystemTest;
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
+import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import eu.fbk.das.utils.Utils;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.ext.ChallengeConcept;
@@ -15,6 +18,8 @@ import org.junit.Test;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 
 import static eu.fbk.das.rs.challenges.ChallengeUtil.getPeriodScore;
@@ -27,9 +32,81 @@ public class ProdRandomTest extends ChallengesBaseTest {
     }
 
     @Test
+    public void checkAssignment() {
+        String ferrara20_gameid = conf.get("FERRARA20_GAMEID");
+        p(ferrara20_gameid);
+        // Set<String> pIds = facade.getGamePlayers(ferrara20_gameid);
+        // RecommenderSystemAPI api = new RecommenderSystemImpl();
+        conf.put("GAMEID", ferrara20_gameid);
+        conf.put("execDate", "2022-03-08");
+
+        // List<String> idList = Arrays.asList("28540", "19092", "30453", "27300", "4055", "Raman", "4");
+
+        List<String> idList = Arrays.asList("33324", "31548", "29473");
+
+        for (String playerId: idList) {
+            String typePoi = "airbreak";
+
+            ChallengeExpandedDTO cha = new ChallengeExpandedDTO();
+            cha.setModelName("visitPointInterest");
+            cha.setInstanceName(String.format("visitPointInterest_%s_%s", playerId, typePoi));
+
+            cha.setData("periodName", "weekly");
+
+            cha.setData("bonusScore", 100.0);
+            cha.setData("bonusPointType", "green leaves");
+
+            cha.setData("target", 2);
+            cha.setData("typePoi", typePoi);
+
+            cha.setStart(convert(LocalDate.now().minusDays(3)));
+            cha.setEnd(convert(LocalDate.now().plusDays(3)));
+
+            RecommendationSystem rs = new RecommendationSystem();
+            rs.facade.assignChallengeToPlayer(cha, ferrara20_gameid, playerId);
+
+            pf("Assegnata sfida %s\n", cha.getInstanceName());
+        }
+    }
+
+    public Date convert(LocalDate dateToConvert) {
+        return java.sql.Date.valueOf(dateToConvert);
+    }
+
+    @Test
+    public void check_ferrara() {
+
+        String gameId = "5edf5f7d4149dd117cc7f17d";
+
+        Integer count = 0;
+
+        String pId = "29473";
+
+        PlayerStateDTO pl = facade.getPlayerState(gameId, pId);
+
+        Map<ChallengeConcept, Date> cache = new HashMap<>();
+
+        Set<GameConcept> scores = pl.getState().get("ChallengeConcept");
+        if (scores != null) {
+
+            for (GameConcept gc : scores) {
+                ChallengeConcept cha = (ChallengeConcept) gc;
+                String nm = cha.getName();
+                if (!nm.contains("visitPointInterest"))
+                    continue;
+                p(nm);
+                p(cha);
+            }
+        }
+    }
+
+
+    @Test
     public void checkWeeksTests() {
 
         String gameId = "5edf5f7d4149dd117cc7f17d";
+
+        Integer count = 0;
 
         Set<String> pIds = facade.getGamePlayers(gameId);
         for (String pId : pIds) {
@@ -43,13 +120,19 @@ public class ProdRandomTest extends ChallengesBaseTest {
             for (GameConcept gc : scores) {
                 ChallengeConcept cha = (ChallengeConcept) gc;
                 String nm = cha.getName();
-                if (nm.startsWith("w73") || nm.startsWith("w74")) {
+                if (!nm.startsWith("w7"))
+                    continue;
+
+                if (nm.startsWith("w79")) {
+                    count += 1;
                     p(cha);
                     p(nm);
                     p(pId);
                 }
             }
         }
+
+        p(count);
     }
 
     @Test
