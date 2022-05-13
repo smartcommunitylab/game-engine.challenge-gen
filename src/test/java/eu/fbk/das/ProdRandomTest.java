@@ -5,7 +5,9 @@ import eu.fbk.das.api.exec.RecommenderSystemGroup;
 import eu.fbk.das.api.exec.RecommenderSystemTantum;
 import eu.fbk.das.api.exec.RecommenderSystemWeekly;
 import eu.fbk.das.model.ChallengeExpandedDTO;
+import eu.fbk.das.rs.RecommendationSystemTest;
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
+import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import eu.fbk.das.utils.Utils;
 import eu.trentorise.game.api.rest.ChallengeController;
 import it.smartcommunitylab.model.PlayerStateDTO;
@@ -15,6 +17,8 @@ import org.junit.Test;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 
 import static eu.fbk.das.rs.challenges.ChallengeUtil.getPeriodScore;
@@ -135,6 +139,8 @@ public class ProdRandomTest extends ChallengesBaseTest {
 
         String gameId = "5edf5f7d4149dd117cc7f17d";
 
+        Integer count = 0;
+
         Set<String> pIds = facade.getGamePlayers(gameId);
         for (String pId : pIds) {
             PlayerStateDTO pl = facade.getPlayerState(gameId, pId);
@@ -147,13 +153,19 @@ public class ProdRandomTest extends ChallengesBaseTest {
             for (GameConcept gc : scores) {
                 ChallengeConcept cha = (ChallengeConcept) gc;
                 String nm = cha.getName();
-                if (nm.startsWith("w73") || nm.startsWith("w74")) {
+                if (!nm.startsWith("w7"))
+                    continue;
+
+                if (nm.startsWith("w79")) {
+                    count += 1;
                     p(cha);
                     p(nm);
                     p(pId);
                 }
             }
         }
+
+        p(count);
     }
 
     @Test
