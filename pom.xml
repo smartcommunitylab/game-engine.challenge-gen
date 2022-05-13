@@ -125,7 +125,13 @@
 			<version>4.5.6</version>
 			<scope>compile</scope>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>it.smartcommunitylab.gamification</groupId>
+            <artifactId>game-engine.web</artifactId>
+            <version>3.0.0</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
 	<build>
 		<plugins>
