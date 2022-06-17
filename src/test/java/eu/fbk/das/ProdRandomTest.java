@@ -1,24 +1,31 @@
 package eu.fbk.das;
 
-import eu.fbk.das.api.RecommenderSystemImpl;
+import static eu.fbk.das.rs.challenges.ChallengeUtil.getPeriodScore;
+import static eu.fbk.das.utils.Utils.f;
+import static eu.fbk.das.utils.Utils.p;
+import static eu.fbk.das.utils.Utils.pf;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+
+import org.joda.time.DateTime;
+import org.junit.Test;
+
 import eu.fbk.das.api.exec.RecommenderSystemGroup;
-import eu.fbk.das.api.exec.RecommenderSystemTantum;
 import eu.fbk.das.api.exec.RecommenderSystemWeekly;
+import eu.fbk.das.model.ChallengeExpandedDTO;
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 import eu.fbk.das.utils.Utils;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.ext.ChallengeConcept;
 import it.smartcommunitylab.model.ext.GameConcept;
 import it.smartcommunitylab.model.ext.PointConcept;
-import org.joda.time.DateTime;
-import org.junit.Test;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import static eu.fbk.das.rs.challenges.ChallengeUtil.getPeriodScore;
-import static eu.fbk.das.utils.Utils.*;
 
 public class ProdRandomTest extends ChallengesBaseTest {
 
@@ -27,9 +34,115 @@ public class ProdRandomTest extends ChallengesBaseTest {
     }
 
     @Test
+    public void assignPointInterest() throws ParseException {
+        String ferrara20_gameid = conf.get("FERRARA20_GAMEID");
+        p(ferrara20_gameid);
+
+        String[] pIds = {"33324", "31548", "29473", "30453"};
+        // mauro: 28540
+        String[] typePois = {"test"};
+        Integer[] targets = {1, 2, 3};
+
+        for (String pId: pIds) {
+            for (String typePoi: typePois) {
+                for (Integer target: targets) {
+                    ChallengeExpandedDTO cha = new ChallengeExpandedDTO();
+                    cha.setModelName("visitPointInterest");
+                    cha.setInstanceName(f("visitPointInterest_%s_%s_%d_%s", pId, typePoi, target, UUID.randomUUID()));
+
+                    cha.setData("target", target);
+                    cha.setData("typePoi", typePoi);
+
+                    cha.setData("bonusScore", target*1.0);
+                    cha.setData("bonusPointType", "green leaves");
+                    cha.setData("periodName", "weekly");
+
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
+                    cha.setStart(sdf.parse("03/05/2022"));
+                    cha.setEnd(sdf.parse("05/06/2022"));
+
+                    rs.facade.assignChallengeToPlayer(cha, ferrara20_gameid, pId);
+                }
+            }
+        }
+    }
+
+    @Test
+    public void showChallenge() throws ParseException {
+        String ferrara20_gameid = conf.get("FERRARA20_GAMEID");
+        p(ferrara20_gameid);
+        String pId = "29473";
+
+        // String cha = "visitPointInterest_29473_test_2_e45d5353-cfc7-4b8c-87b7-c3c0624023e2";
+
+        PlayerStateDTO pl = rs.facade.getPlayerState(ferrara20_gameid, pId);
+        Set<GameConcept> scores = pl.getState().get("ChallengeConcept");
+        if (scores != null) {
+            for (GameConcept gc : scores) {
+                ChallengeConcept cha = (ChallengeConcept) gc;
+                String nm = cha.getName();
+                if (nm.contains("visitPointInterest")) {
+                    p(cha);
+                    p(cha.getState());
+                    p(nm);
+                    p(pId);
+                }
+            }
+        }
+    }
+
+
+
+    @Test
+    public void showInterest() throws ParseException {
+        String ferrara20_gameid = conf.get("FERRARA20_GAMEID");
+
+        Set<String> pIds = facade.getGamePlayers(ferrara20_gameid);
+        for (String pId : pIds) {
+            PlayerStateDTO pl = rs.facade.getPlayerState(ferrara20_gameid, pId);
+            Map<ChallengeConcept, Date> cache = new HashMap<>();
+
+
+            Set<GameConcept> scores = pl.getState().get("ChallengeConcept");
+            if (scores != null) {
+                for (GameConcept gc : scores) {
+                    ChallengeConcept cha = (ChallengeConcept) gc;
+                    String nm = cha.getName();
+                    if (nm.contains("visitPointInterest")) {
+                        p(cha);
+                        p(cha.getState());
+                        p(nm);
+                        p(pId);
+                    }
+                }
+            }
+/*
+            Set<GameConcept> badges = pl.getState().get("BadgeCollectionConcept");
+            if (badges != null) {
+                for (GameConcept el : badges) {
+                    BadgeCollectionConcept bcc = (BadgeCollectionConcept) el;
+                    String nm = bcc.getName();
+                    if (bcc.getBadgeEarned().size() == 0)
+                        continue;
+
+                    if (!("test").equals(nm) && !("airbreak").equals(nm) && !("bottmer").equals(nm))
+                        continue;
+
+                    p(pId);
+                    p(nm);
+                    p(bcc.getBadgeEarned());
+                }
+            }*/
+        }
+    }
+
+    @Test
     public void checkWeeksTests() {
 
         String gameId = "5edf5f7d4149dd117cc7f17d";
+
+        Integer count = 0;
 
         Set<String> pIds = facade.getGamePlayers(gameId);
         for (String pId : pIds) {
@@ -43,13 +156,19 @@ public class ProdRandomTest extends ChallengesBaseTest {
             for (GameConcept gc : scores) {
                 ChallengeConcept cha = (ChallengeConcept) gc;
                 String nm = cha.getName();
-                if (nm.startsWith("w73") || nm.startsWith("w74")) {
+                if (!nm.startsWith("w7"))
+                    continue;
+
+                if (nm.startsWith("w79")) {
+                    count += 1;
                     p(cha);
                     p(nm);
                     p(pId);
                 }
             }
         }
+
+        p(count);
     }
 
     @Test
