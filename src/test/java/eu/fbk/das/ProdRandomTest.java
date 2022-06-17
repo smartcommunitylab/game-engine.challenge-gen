@@ -20,24 +20,12 @@ import org.junit.Test;
 import eu.fbk.das.api.exec.RecommenderSystemGroup;
 import eu.fbk.das.api.exec.RecommenderSystemWeekly;
 import eu.fbk.das.model.ChallengeExpandedDTO;
-import eu.fbk.das.rs.RecommendationSystemTest;
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
-import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import eu.fbk.das.utils.Utils;
-import eu.trentorise.game.api.rest.ChallengeController;
 import it.smartcommunitylab.model.PlayerStateDTO;
-import it.smartcommunitylab.model.ext.*;
-import org.joda.time.DateTime;
-import org.junit.Test;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.*;
-
-import static eu.fbk.das.rs.challenges.ChallengeUtil.getPeriodScore;
-import static eu.fbk.das.utils.Utils.*;
+import it.smartcommunitylab.model.ext.ChallengeConcept;
+import it.smartcommunitylab.model.ext.GameConcept;
+import it.smartcommunitylab.model.ext.PointConcept;
 
 public class ProdRandomTest extends ChallengesBaseTest {
 
