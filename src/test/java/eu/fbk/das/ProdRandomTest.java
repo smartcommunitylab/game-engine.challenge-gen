@@ -1,8 +1,23 @@
 package eu.fbk.das;
 
-import eu.fbk.das.api.RecommenderSystemImpl;
+import static eu.fbk.das.rs.challenges.ChallengeUtil.getPeriodScore;
+import static eu.fbk.das.utils.Utils.f;
+import static eu.fbk.das.utils.Utils.p;
+import static eu.fbk.das.utils.Utils.pf;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+
+import org.joda.time.DateTime;
+import org.junit.Test;
+
 import eu.fbk.das.api.exec.RecommenderSystemGroup;
-import eu.fbk.das.api.exec.RecommenderSystemTantum;
 import eu.fbk.das.api.exec.RecommenderSystemWeekly;
 import eu.fbk.das.model.ChallengeExpandedDTO;
 import eu.fbk.das.rs.RecommendationSystemTest;
