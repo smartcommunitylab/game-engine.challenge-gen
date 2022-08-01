@@ -91,8 +91,8 @@ public class RecommendationSystem {
         this.cfg = cfg;
 
         this.host = cfg.get("HOST");
-        this.user = cfg.get("USER");
-        this.pass = cfg.get("PASS");
+        this.user = cfg.get("API_USER");
+        this.pass = cfg.get("API_PASS");
         this.gameId = cfg.get("GAMEID");;
 
         facade = new GamificationEngineRestFacade(host, user, pass);
