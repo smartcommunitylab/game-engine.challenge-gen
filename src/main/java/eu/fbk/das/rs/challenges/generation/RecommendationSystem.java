@@ -1359,6 +1359,7 @@ public class RecommendationSystem {
     	
 		boolean createStandardSingleChallenge = false; // STANDARD SINGLE CHALLENGE
 		boolean createStandardGroupChallenge = false; // STANDARD GROUP CHALLENGE
+		int weekNr = 1;
 
 		Map<String, String> cfg = new HashMap<>();
 		cfg.put("HOST", "https://gedev.playngo.it/gamification"); // https://gedev.playngo.it/gamification
@@ -1367,11 +1368,11 @@ public class RecommendationSystem {
 		cfg.put("GAMEID", "62752181ae6e2235a9544463"); // 62752181ae6e2235a9544463
 
 		RecommendationSystem reSystem = new RecommendationSystem(cfg);
-		reSystem.rscg.prepare(1);
-
+		
 		Set<String> players = reSystem.facade.getGamePlayers(cfg.get("GAMEID"));
 
 		if (createStandardSingleChallenge) {
+			reSystem.rscg.prepare(weekNr);
 			for (String player : players) {
 				reSystem.assignSingleChallenge(cfg.get("GAMEID"), player, "01/08/2022", "08/08/2022",
 						"absoluteIncrement", "WalkKm", 2.0, 100.0);
