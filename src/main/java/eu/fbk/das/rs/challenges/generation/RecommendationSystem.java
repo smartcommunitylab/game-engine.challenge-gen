@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -41,6 +42,7 @@ import org.joda.time.format.DateTimeFormatter;
 
 import eu.fbk.das.GamificationEngineRestFacade;
 import eu.fbk.das.model.ChallengeExpandedDTO;
+import eu.fbk.das.model.GroupExpandedDTO;
 import eu.fbk.das.rs.sortfilter.RecommendationSystemChallengeFilteringAndSorting;
 import eu.fbk.das.utils.Utils;
 import eu.fbk.das.rs.valuator.RecommendationSystemChallengeValuator;
@@ -1333,13 +1335,71 @@ public class RecommendationSystem {
         }
     }
 
+	private void assignSingleChallenge(String gameId, String pId, String start, String end, String model,
+			String counter, Double target, Double score) throws ParseException, java.text.ParseException {
+
+		ChallengeExpandedDTO cha = rscg.prepareChallangeImpr(counter);
+
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
+		cha.setStart(sdf.parse(start));
+		cha.setEnd(sdf.parse(end));
+
+		cha.setModelName(model);
+		cha.setData("target", target);
+		cha.setData("bonusScore", score);
+
+		boolean state = facade.assignChallengeToPlayer(cha, gameId, pId);
+		p(pId);
+		p(state);
+	}
     
-    public static void main(String args[]) {
-    	Map<String, String> cfg = new HashMap<>();
-    	cfg.put("HOST", "");
-    	RecommendationSystem reSystem = new RecommendationSystem(cfg);
-    	reSystem.getPostgresPerformance("jdbc:postgresql://localhost:5432/gamification?user=postgres&password=root", "32766");
+    
+    public static void main(String args[]) throws ParseException, java.text.ParseException {
     	
+		boolean createStandardSingleChallenge = false; // STANDARD SINGLE CHALLENGE
+		boolean createStandardGroupChallenge = false; // STANDARD GROUP CHALLENGE
+
+		Map<String, String> cfg = new HashMap<>();
+		cfg.put("HOST", "https://gedev.playngo.it/gamification"); // https://gedev.playngo.it/gamification
+		cfg.put("API_USER", "long-rovereto");
+		cfg.put("API_PASS", "rov");
+		cfg.put("GAMEID", "62752181ae6e2235a9544463"); // 62752181ae6e2235a9544463
+
+		RecommendationSystem reSystem = new RecommendationSystem(cfg);
+		reSystem.rscg.prepare(1);
+
+		Set<String> players = reSystem.facade.getGamePlayers(cfg.get("GAMEID"));
+
+		if (createStandardSingleChallenge) {
+			for (String player : players) {
+				reSystem.assignSingleChallenge(cfg.get("GAMEID"), player, "01/08/2022", "08/08/2022",
+						"absoluteIncrement", "WalkKm", 2.0, 100.0);
+			}
+		}
+
+		if (createStandardGroupChallenge) {
+			HashMap<String, Double> res = new HashMap<String, Double>() {
+				{
+					put("target", 10.0);
+					put("player1_prz", 5.0);
+					put("player2_prz", 10.0);
+				}
+			};
+
+			DateTime today = new DateTime();
+			DateTime start = today.minusDays(2);
+			DateTime end = today.plusDays(2);
+
+			GroupExpandedDTO gcd = reSystem.facade.makeGroupChallengeDTO(cfg.get("GAMEID"), "groupCompetitiveTime",
+					"Walk_Km", players.stream().findFirst().get(), players.stream().skip(1).findFirst().get(), start,
+					end, res);
+			reSystem.facade.assignGroupChallenge(gcd, cfg.get("GAMEID"));
+		}
+
+//    	POSTGRES QUERY
+//    	reSystem.getPostgresPerformance("jdbc:postgresql://localhost:5432/gamification?user=postgres&password=root", "32766");    	
+
     }
 
 }

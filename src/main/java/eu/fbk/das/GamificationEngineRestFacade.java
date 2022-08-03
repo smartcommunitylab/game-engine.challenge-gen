@@ -251,6 +251,16 @@ public class GamificationEngineRestFacade {
         bonusScore.put(pId1, Math.ceil(res.get("player1_prz")));
         bonusScore.put(pId2, Math.ceil(res.get("player2_prz")));
         r.setBonusScore(bonusScore);
+        
+        final PointConceptDTO calculationPointConcept = new PointConceptDTO();
+        calculationPointConcept.setName(counter);
+        // FIXME valid only for play&go
+        calculationPointConcept.setPeriod("weekly");
+        r.setCalculationPointConcept(calculationPointConcept);
+        final PointConceptDTO targetPointConcept = new PointConceptDTO();
+        targetPointConcept.setName(counter);
+        r.setTargetPointConcept(targetPointConcept);
+        
         gcd.setReward(r);
 
         gcd.setOrigin("gca");
