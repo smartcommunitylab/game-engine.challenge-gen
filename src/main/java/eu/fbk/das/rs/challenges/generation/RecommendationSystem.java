@@ -1375,7 +1375,7 @@ public class RecommendationSystem {
 			reSystem.rscg.prepare(weekNr);
 			for (String player : players) {
 				reSystem.assignSingleChallenge(cfg.get("GAMEID"), player, "01/08/2022", "08/08/2022",
-						"absoluteIncrement", "WalkKm", 2.0, 100.0);
+						"absoluteIncrement", "Walk_Km", 2.0, 100.0);
 			}
 		}
 
