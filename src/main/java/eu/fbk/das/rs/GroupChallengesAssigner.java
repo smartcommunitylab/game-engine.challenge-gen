@@ -215,7 +215,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
 
     }
 
-    protected GroupExpandedDTO createPerfomanceChallenge(String counter, String pId1, String pId2, DateTime start, DateTime end) {
+    public GroupExpandedDTO createPerfomanceChallenge(String counter, String pId1, String pId2, DateTime start, DateTime end) {
 
         GroupExpandedDTO gcd = new GroupExpandedDTO();
         gcd.setChallengeModelName("groupCompetitivePerformance");

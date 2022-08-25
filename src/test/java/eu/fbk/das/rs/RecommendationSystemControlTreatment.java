@@ -15,6 +15,10 @@ import static eu.fbk.das.utils.Utils.*;
 
 public class RecommendationSystemControlTreatment extends ChallengesBaseTest {
 
+    public RecommendationSystemControlTreatment() {
+        prod = true;
+    }
+
     Map<String, Integer> res = new HashMap<>();
 
     Map<Integer, Map<String, List<Double>>> weekResult;

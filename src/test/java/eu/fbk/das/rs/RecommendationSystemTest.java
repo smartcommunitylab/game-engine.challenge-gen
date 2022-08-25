@@ -3,6 +3,8 @@ package eu.fbk.das.rs;
 import static eu.fbk.das.rs.challenges.generation.RecommendationSystem.getChallengeWeek;
 import static eu.fbk.das.utils.Utils.p;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -53,17 +55,24 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
 
         p(success);
 
+       //  assignSingleChallenge("5d9353a3f0856342b2dded7f", "1024", "03/05/2022", "05/06/2022", "absoluteIncrement", "WalkKm", 2.0, 100.0);
     }
 
 
-    private void assignReccomendation(String l, String pId) {
-        ChallengeExpandedDTO cha = rscg.prepareChallangeImpr(l);
-        cha.setStart(new DateTime().toDate());
-        cha.setModelName("absoluteIncrement");
-        cha.setData("target", 1.0);
-        cha.setData("bonusScore", 100.0);
+    private void assignSingleChallenge( String gameId, String pId, String start, String end, String model, String counter, Double target, Double score) throws ParseException {
 
-        boolean state = facade.assignChallengeToPlayer(cha, conf.get("GAMEID"), pId);
+        ChallengeExpandedDTO cha = rscg.prepareChallangeImpr(counter);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
+        cha.setStart(sdf.parse(start));
+        cha.setEnd(sdf.parse(end));
+
+        cha.setModelName(model);
+        cha.setData("target", target);
+        cha.setData("bonusScore", score);
+
+        boolean state = facade.assignChallengeToPlayer(cha, gameId, pId);
         p(pId);
         p(state);
     }

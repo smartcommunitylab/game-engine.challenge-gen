@@ -14,6 +14,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import eu.fbk.das.model.GroupExpandedDTO;
+import eu.fbk.das.rs.GroupChallengesAssigner;
+import eu.fbk.das.rs.TargetPrizeChallengesCalculator;
+import it.smartcommunitylab.model.ext.GroupChallengeDTO;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
@@ -69,6 +73,51 @@ public class ProdRandomTest extends ChallengesBaseTest {
     }
 
     @Test
+    public void assignDeliverableChallenge() throws ParseException {
+        String ferrara20_gameid = conf.get("FERRARA20_GAMEID");
+        p(ferrara20_gameid);
+
+        String pId = "28540"; // mauro
+
+        int target = 3;
+        String mode = "Walk_Km";
+
+        /*ChallengeExpandedDTO cha = new ChallengeExpandedDTO();
+        cha.setModelName("absoluteIncrement");
+        cha.setInstanceName(f("absoluteIncrement_%s_%s_%d_%s", pId, mode, target, UUID.randomUUID()));
+
+        cha.setData("target", target);
+        cha.setData("counterName", mode);
+
+        cha.setData("bonusScore", 100.0);
+        cha.setData("bonusPointType", "green leaves");
+        cha.setData("periodName", "weekly");
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
+        cha.setStart(sdf.parse("02/07/2022"));
+        cha.setEnd(sdf.parse("09/07/2022"));
+
+        rs.facade.assignChallengeToPlayer(cha, ferrara20_gameid, pId);*/
+
+        DateTime d = new DateTime();
+
+        GroupChallengesAssigner gca = new GroupChallengesAssigner(rs);
+        // per mauro ed antonio
+        String pId2 = "23513";
+       //  GroupChallengeDTO gcd = gca.createPerfomanceChallenge("Walk_Km", pId, pId2, d.plusDays(3), d.plusDays(10));
+
+        TargetPrizeChallengesCalculator tpcc = new TargetPrizeChallengesCalculator();
+        tpcc.prepare(rs, ferrara20_gameid, new DateTime());
+        Map<String, Double> result = tpcc.targetPrizeChallengesCompute(pId, pId2, mode, "groupCooperative");
+        GroupExpandedDTO gcd = rs.facade.makeGroupChallengeDTO(rs.gameId,
+                "groupCooperative", mode, pId, pId2,
+                d.plusDays(3), d.plusDays(10), result
+        );
+        facade.assignGroupChallenge(gcd, conf.get("GAMEID"));
+    }
+
+    @Test
     public void showChallenge() throws ParseException {
         String ferrara20_gameid = conf.get("FERRARA20_GAMEID");
         p(ferrara20_gameid);
@@ -93,6 +142,86 @@ public class ProdRandomTest extends ChallengesBaseTest {
     }
 
 
+    @Test
+    public void countChallenge() throws ParseException {
+        String ferrara20_gameid = conf.get("FERRARA20_GAMEID");
+        p(ferrara20_gameid);
+
+        int totSingleCha = 0, complSingleCha = 0, forcedSingleCha = 0;
+
+        int complForcedSingleCha = 0;
+
+        int totMultiCha  = 0, complMultiCha  = 0, forcedMultiCha = 0;
+
+        // String cha = "visitPointInterest_29473_test_2_e45d5353-cfc7-4b8c-87b7-c3c0624023e2";
+
+        double totKmSingle = 0, totKmMult = 0;
+
+        Set<String> pIds = facade.getGamePlayers(ferrara20_gameid);
+        for (String pId : pIds) {
+            PlayerStateDTO pl = rs.facade.getPlayerState(ferrara20_gameid, pId);
+            Map<ChallengeConcept, Date> cache = new HashMap<>();
+
+
+            Set<GameConcept> scores = pl.getState().get("ChallengeConcept");
+            if (scores != null) {
+                for (GameConcept gc : scores) {
+                    ChallengeConcept cha = (ChallengeConcept) gc;
+
+                    if (cha.getOrigin() == null) {
+                        continue;
+                    }
+
+                    if (cha.getOrigin().equals("gca")) {
+                        totMultiCha += 1;
+                        if (cha.isCompleted()) {
+                            complMultiCha += 1;
+                            totKmMult += getDoubleValue(cha.getFields().get("challengeTarget"));
+                        }
+
+
+                            forcedMultiCha += 1;
+
+                    } else if (cha.getOrigin().equals("rs")) {
+                        totSingleCha += 1;
+                        if (cha.isCompleted()) {
+                            complSingleCha += 1;
+                            totKmSingle += getDoubleValue(cha.getFields().get("target"));
+                        }
+
+                        if (cha.isForced())
+                            forcedSingleCha += 1;
+
+                        if (!cha.isForced() && cha.isCompleted())
+                            complForcedSingleCha ++;
+
+
+                    } else if (cha.getOrigin().equals("player")) {
+                        totMultiCha += 1;
+                        if (cha.isCompleted()) {
+                            complMultiCha += 1;
+                            totKmMult += getDoubleValue(cha.getFields().get("challengeTarget"));
+                        }
+
+                       //  forcedMultiCha += 1;
+                    } else
+                        p("attenzione!!");
+                }
+            }
+        }
+
+        p("finito");
+    }
+
+    private double getDoubleValue(Object obj) {
+        if (obj instanceof Integer)
+            return ((Integer) obj).doubleValue();
+        else if (obj instanceof Double)
+            return (Double) obj;
+        else
+            return 0;
+    }
+
 
     @Test
     public void showInterest() throws ParseException {
@@ -109,12 +238,15 @@ public class ProdRandomTest extends ChallengesBaseTest {
                 for (GameConcept gc : scores) {
                     ChallengeConcept cha = (ChallengeConcept) gc;
                     String nm = cha.getName();
-                    if (nm.contains("visitPointInterest")) {
+                    if (cha.getOrigin() == null || !cha.getOrigin().equals("gca"))
+                        continue;
+                    p(cha);
+                    /*if (nm.contains("visitPointInterest")) {
                         p(cha);
                         p(cha.getState());
                         p(nm);
                         p(pId);
-                    }
+                    }*/
                 }
             }
 /*
