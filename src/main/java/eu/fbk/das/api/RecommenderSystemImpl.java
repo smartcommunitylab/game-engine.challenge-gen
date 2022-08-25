@@ -37,8 +37,8 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 
     private void checkUpdateRs(Map<String, String> conf) {
         String host = conf.get("HOST");
-        String user = conf.get("USER");
-        String pass = conf.get("PASS");
+        String user = conf.get("API_USER");
+        String pass = conf.get("API_PASS");
         String gameId = conf.get("GAMEID");
 
         boolean create = rs == null;

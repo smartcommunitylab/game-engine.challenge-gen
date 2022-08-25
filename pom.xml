@@ -108,7 +108,6 @@
 			<version>2.22.1</version>
 		</dependency>
 
-
 		<dependency>
 			<groupId>org.jfree</groupId>
 			<artifactId>jfreechart</artifactId>
@@ -132,6 +131,13 @@
             <version>3.0.0</version>
             <scope>test</scope>
         </dependency>
+        
+        <dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>42.3.6</version>
+		</dependency>
+		
     </dependencies>
 
 	<build>

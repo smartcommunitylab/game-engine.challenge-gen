@@ -8,6 +8,10 @@ import static it.smartcommunitylab.model.ChallengeConcept.StateEnum.COMPLETED;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,6 +42,7 @@ import org.joda.time.format.DateTimeFormatter;
 
 import eu.fbk.das.GamificationEngineRestFacade;
 import eu.fbk.das.model.ChallengeExpandedDTO;
+import eu.fbk.das.model.GroupExpandedDTO;
 import eu.fbk.das.rs.sortfilter.RecommendationSystemChallengeFilteringAndSorting;
 import eu.fbk.das.utils.Utils;
 import eu.fbk.das.rs.valuator.RecommendationSystemChallengeValuator;
@@ -91,8 +96,8 @@ public class RecommendationSystem {
         this.cfg = cfg;
 
         this.host = cfg.get("HOST");
-        this.user = cfg.get("USER");
-        this.pass = cfg.get("PASS");
+        this.user = cfg.get("API_USER");
+        this.pass = cfg.get("API_PASS");
         this.gameId = cfg.get("GAMEID");;
 
         facade = new GamificationEngineRestFacade(host, user, pass);
@@ -616,6 +621,60 @@ public class RecommendationSystem {
         return cache;
     }
 
+    
+    public String getPostgresPerformance(String postgresUrl, String playerId) {
+		
+		/**
+		SELECT
+  		time_bucket('86400.000s',executiontime) AS "time",
+  		sum(deltascore) AS "score",
+  		conceptname AS "concept"
+		
+		FROM public.eventlogs
+
+		WHERE
+  		executiontime BETWEEN '2022-02-01' AND '2022-08-01' AND
+  		gameid = '620a568e554b276aba97d4a4' AND
+  		conceptname = 'green leaves' AND
+  		rulename = 'all modes - update green points' AND
+  		playerid = '32766'
+
+		GROUP BY 1,3
+		ORDER BY 1
+		 */
+
+		try (var conn = DriverManager.getConnection(postgresUrl)) {
+			try (var stmt = conn.createStatement()) {
+				ResultSet rs = stmt.executeQuery(
+						  "SELECT\r\n"
+						+ "  time_bucket('86400.000s',executiontime) AS \"time\",\r\n"
+						+ "  sum(deltascore) AS \"score\",\r\n"
+						+ "  conceptname AS \"concept\"\r\n"
+						+ "FROM public.eventlogs\r\n" + "WHERE\r\n"
+						+ "  executiontime BETWEEN '2022-02-01' AND '2022-08-01' AND\r\n"
+						+ "  gameid = '620a568e554b276aba97d4a4' AND\r\n" + "  conceptname = 'green leaves' AND\r\n"
+						+ "  rulename = 'all modes - update green points' AND\r\n" + "  playerid = '" + playerId + "'\r\n"
+						+ "GROUP BY 1,3\r\n" + "ORDER BY 1");
+
+				while (rs.next()) {
+					String time = rs.getString("time");
+					String score = rs.getString("score");
+					String concept = rs.getString("concept");
+					System.out.printf("time = %s , score = %s , concept = %s  ", time, score, concept);
+					System.out.println();
+				}
+				rs.close();
+				stmt.close();
+				conn.close();
+			}
+		} catch (SQLException ex) {
+			System.err.println(ex.getMessage());
+		}
+
+		return playerId;
+    	
+    }
+    
     public Pair<Double, Double> repetitiveTarget(PlayerStateDTO state, double repDifficulty) {
         String mode = "green leaves";
         Pair<Double, Double> res = rscg.forecastMode(state, mode);
@@ -1276,5 +1335,72 @@ public class RecommendationSystem {
         }
     }
 
+	private void assignSingleChallenge(String gameId, String pId, String start, String end, String model,
+			String counter, Double target, Double score) throws ParseException, java.text.ParseException {
+
+		ChallengeExpandedDTO cha = rscg.prepareChallangeImpr(counter);
+
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
+		cha.setStart(sdf.parse(start));
+		cha.setEnd(sdf.parse(end));
+
+		cha.setModelName(model);
+		cha.setData("target", target);
+		cha.setData("bonusScore", score);
+
+		boolean state = facade.assignChallengeToPlayer(cha, gameId, pId);
+		p(pId);
+		p(state);
+	}
+    
+    
+    public static void main(String args[]) throws ParseException, java.text.ParseException {
+    	
+		boolean createStandardSingleChallenge = false; // STANDARD SINGLE CHALLENGE
+		boolean createStandardGroupChallenge = false; // STANDARD GROUP CHALLENGE
+		int weekNr = 1;
+
+		Map<String, String> cfg = new HashMap<>();
+		cfg.put("HOST", "https://gedev.playngo.it/gamification"); // https://gedev.playngo.it/gamification
+		cfg.put("API_USER", "long-rovereto");
+		cfg.put("API_PASS", "rov");
+		cfg.put("GAMEID", "62752181ae6e2235a9544463"); // 62752181ae6e2235a9544463
+
+		RecommendationSystem reSystem = new RecommendationSystem(cfg);
+		
+		Set<String> players = reSystem.facade.getGamePlayers(cfg.get("GAMEID"));
+
+		if (createStandardSingleChallenge) {
+			reSystem.rscg.prepare(weekNr);
+			for (String player : players) {
+				reSystem.assignSingleChallenge(cfg.get("GAMEID"), player, "01/08/2022", "08/08/2022",
+						"absoluteIncrement", "Walk_Km", 2.0, 100.0);
+			}
+		}
+
+		if (createStandardGroupChallenge) {
+			HashMap<String, Double> res = new HashMap<String, Double>() {
+				{
+					put("target", 10.0);
+					put("player1_prz", 5.0);
+					put("player2_prz", 10.0);
+				}
+			};
+
+			DateTime today = new DateTime();
+			DateTime start = today.minusDays(2);
+			DateTime end = today.plusDays(2);
+
+			GroupExpandedDTO gcd = reSystem.facade.makeGroupChallengeDTO(cfg.get("GAMEID"), "groupCompetitiveTime",
+					"Walk_Km", players.stream().findFirst().get(), players.stream().skip(1).findFirst().get(), start,
+					end, res);
+			reSystem.facade.assignGroupChallenge(gcd, cfg.get("GAMEID"));
+		}
+
+//    	POSTGRES QUERY
+//    	reSystem.getPostgresPerformance("jdbc:postgresql://localhost:5432/gamification?user=postgres&password=root", "32766");    	
+
+    }
 
 }

@@ -34,7 +34,7 @@ public class ChallengesBaseTest {
         conf = new GamificationConfig(prod).extract();
 
         facade = new GamificationEngineRestFacade(conf.get("HOST"),
-                conf.get("USER"), conf.get("PASS"));
+                conf.get("API_USER"), conf.get("API_PASS"));
 
         rs = new RecommendationSystem(conf);
 
