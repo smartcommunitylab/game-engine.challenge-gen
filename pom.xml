@@ -126,13 +126,6 @@
 			<scope>compile</scope>
 		</dependency>
         <dependency>
-            <groupId>it.smartcommunitylab.gamification</groupId>
-            <artifactId>game-engine.web</artifactId>
-            <version>3.0.0</version>
-            <scope>test</scope>
-        </dependency>
-        
-        <dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>42.3.6</version>

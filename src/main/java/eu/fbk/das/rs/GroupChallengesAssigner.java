@@ -292,35 +292,36 @@ public class GroupChallengesAssigner extends ChallengeUtil {
 
     private boolean hasGroupChallenge(PlayerStateDTO state, String counter) {
         Set<GameConcept> scores =  state.getState().get("ChallengeConcept");
-        for (GameConcept gc : scores) {
-           ChallengeConcept cha = (ChallengeConcept) gc;
-           DateTime start = new DateTime(cha.getStart());
+        if (scores!= null) {
+            for (GameConcept gc : scores) {
+                ChallengeConcept cha = (ChallengeConcept) gc;
+                DateTime start = new DateTime(cha.getStart());
 
-           if (start.getWeekOfWeekyear() != execDate.getWeekOfWeekyear())
-               continue;
+                if (start.getWeekOfWeekyear() != execDate.getWeekOfWeekyear())
+                    continue;
 
-            String s = cha.getModelName();
-            Map<String, Object> fields = (Map<String, Object>) cha.getFields();
+                 String s = cha.getModelName();
+                 Map<String, Object> fields = (Map<String, Object>) cha.getFields();
 
-            if (!ArrayUtils.find(s, groupCha))
-                continue;
+                 if (!ArrayUtils.find(s, groupCha))
+                     continue;
 
-            if (!fields.get("challengeScoreName").equals(counter))
-                continue;
+                 if (!fields.get("challengeScoreName").equals(counter))
+                     continue;
 
-            if (!cha.getStateDate().keySet().contains("ASSIGNED"))
-                continue;
+                 if (!cha.getStateDate().keySet().contains("ASSIGNED"))
+                     continue;
 
-           //  p(start.getWeekOfWeekyear());
-           //  p(execDate.getWeekOfWeekyear());
+                //  p(start.getWeekOfWeekyear());
+                //  p(execDate.getWeekOfWeekyear());
 
-            // p(fields.keySet());
+                 // p(fields.keySet());
 
-               return true;
+                    return true;
 
 
+             }        	
         }
-
         return false;
     }
 
