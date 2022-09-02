@@ -4,6 +4,7 @@ import static eu.fbk.das.rs.challenges.ChallengeUtil.getLevel;
 import static eu.fbk.das.rs.challenges.ChallengeUtil.getPeriodScore;
 import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.roundTarget;
 import static eu.fbk.das.utils.Utils.*;
+import static eu.fbk.das.utils.Utils.parseDate;
 import static it.smartcommunitylab.model.ChallengeConcept.StateEnum.COMPLETED;
 
 import java.io.*;
@@ -71,6 +72,7 @@ public class RecommendationSystem {
     
     private final Map<String, String> cfg;
 
+
     public DateTime lastMonday;
     private DateTime execDate;
     protected Integer chaWeek;
@@ -80,6 +82,7 @@ public class RecommendationSystem {
     public String host;
     public String user;
     public String pass;
+    public String postgresUrl;
 
     public RecommendationSystemChallengeGeneration rscg;
     public RecommendationSystemChallengeValuator rscv;
@@ -98,7 +101,8 @@ public class RecommendationSystem {
         this.host = cfg.get("HOST");
         this.user = cfg.get("API_USER");
         this.pass = cfg.get("API_PASS");
-        this.gameId = cfg.get("GAMEID");;
+        this.gameId = cfg.get("GAMEID");
+        this.postgresUrl = cfg.get("POSTGRESURL");
 
         facade = new GamificationEngineRestFacade(host, user, pass);
 
@@ -543,17 +547,17 @@ public class RecommendationSystem {
     protected List<ChallengeExpandedDTO> assignLimitV2(int limit, PlayerStateDTO state, DateTime d) {
 
         // Check if we have to intervene
-        List<ChallengeExpandedDTO> rep = repetitiveIntervene(state, d.toDate());
+        List<ChallengeExpandedDTO> rep = repetitiveIntervene(state, d);
         if (rep != null)
             return rep;
 
         return assignLimit(limit, state, d);
     }
 
-    public List<ChallengeExpandedDTO> repetitiveIntervene(PlayerStateDTO state, Date dt) {
+    public List<ChallengeExpandedDTO> repetitiveIntervene(PlayerStateDTO state, DateTime dt) {
 
         try {
-            Map<Integer, double[]> cache = extractRepetitivePerformance(state, dt);
+            Map<Integer, double[]> cache = extractRepetitivePerformance(state.getPlayerId(), dt);
             // if null does not intervene
             if (cache == null) return null;
             // analyze if we have to assign repetitive
@@ -605,7 +609,8 @@ public class RecommendationSystem {
         return slot;
     }
 
-    protected Map<Integer, double[]> extractRepetitivePerformance(PlayerStateDTO state, Date dt) throws IOException, ParseException {
+    // old version, with api user and password
+    protected Map<Integer, double[]> extractRepetitivePerformanceOld(PlayerStateDTO state, Date dt) throws IOException, ParseException {
         // p(state.getPlayerId());
         String query = getRepetitiveQuery(state.getPlayerId(), dt);
         // p(query);
@@ -621,8 +626,44 @@ public class RecommendationSystem {
         return cache;
     }
 
+    protected Map<Integer, double[]> extractRepetitivePerformance(String pId, DateTime dt) throws IOException, ParseException {
+
+        // starts from last monday
+
+        int week_day = dt.getDayOfWeek();
+        DateTime lastMonday = dt.minusDays(week_day-1).minusDays(7);
+        DateTime start = lastMonday.minusDays( 7 * 4);
+
+        Map<String, Double> perfomance = getPostgresPerformance(postgresUrl, start, dt, gameId, pId);
+
+        Map<Integer, double[]> cacheAll = new HashMap<>();
+        for (int i = 0; i < 5; i++) {
+            DateTime date = start.plusDays(i * 7);
+            double performance_sum = 0;
+            double[] cacheWeek = new double[7];
+            for (int j = 0; j < 7; j++) {
+                String key = formatDateTime(date);
+                if (perfomance.containsKey(key)) {
+                    double score = perfomance.get(key);
+                    performance_sum += score;
+                    cacheWeek[j] = score;
+                }
+
+                date = date.plusDays(1);
+            }
+
+            if (performance_sum > 0)
+                cacheAll.put(i, cacheWeek);
+        }
+
+        if (cacheAll.size() == 0)
+            return null;
+
+        return cacheAll;
+    }
+
     
-    public String getPostgresPerformance(String postgresUrl, String playerId) {
+    public Map<String, Double> getPostgresPerformance(String postgresUrl, DateTime start, DateTime end, String gameId, String playerId) {
 		
 		/**
 		SELECT
@@ -640,28 +681,39 @@ public class RecommendationSystem {
   		playerid = '32766'
 
 		GROUP BY 1,3
-		ORDER BY 1
+		ORDER BY 1;
 		 */
+        
+        String query = "SELECT " +
+                "time_bucket('86400.000s',executiontime) AS \"time\", " +
+                "sum(deltascore) AS \"score\", " +
+                "conceptname AS \"concept\" " +
+                "FROM public.eventlogs " +
+                "WHERE " +
+                "executiontime BETWEEN '%s' AND '%s' AND " +
+                "gameid = '%s' AND " +
+                "conceptname = 'green leaves' AND " +
+                "rulename = 'all modes - update green points' AND " +
+                "playerid = '%s' " +
+                "GROUP BY 1,3 " +
+                "ORDER BY 1;";
+
+        query = String.format(query, formatDateTimeFileName(start), formatDateTimeFileName(end), gameId, playerId);
+        // p(query);
+
+        Map<String, Double> res = new HashMap<>();
 
 		try (var conn = DriverManager.getConnection(postgresUrl)) {
 			try (var stmt = conn.createStatement()) {
-				ResultSet rs = stmt.executeQuery(
-						  "SELECT\r\n"
-						+ "  time_bucket('86400.000s',executiontime) AS \"time\",\r\n"
-						+ "  sum(deltascore) AS \"score\",\r\n"
-						+ "  conceptname AS \"concept\"\r\n"
-						+ "FROM public.eventlogs\r\n" + "WHERE\r\n"
-						+ "  executiontime BETWEEN '2022-02-01' AND '2022-08-01' AND\r\n"
-						+ "  gameid = '620a568e554b276aba97d4a4' AND\r\n" + "  conceptname = 'green leaves' AND\r\n"
-						+ "  rulename = 'all modes - update green points' AND\r\n" + "  playerid = '" + playerId + "'\r\n"
-						+ "GROUP BY 1,3\r\n" + "ORDER BY 1");
+				ResultSet rs = stmt.executeQuery(query);
 
 				while (rs.next()) {
 					String time = rs.getString("time");
-					String score = rs.getString("score");
-					String concept = rs.getString("concept");
-					System.out.printf("time = %s , score = %s , concept = %s  ", time, score, concept);
-					System.out.println();
+					Double score = Double.parseDouble(rs.getString("score"));
+					// String concept = rs.getString("concept");
+					// System.out.printf("time = %s , score = %s , concept = %s  ", time, score, concept);
+					// System.out.println();
+                    res.put(time, score);
 				}
 				rs.close();
 				stmt.close();
@@ -671,7 +723,7 @@ public class RecommendationSystem {
 			System.err.println(ex.getMessage());
 		}
 
-		return playerId;
+		return res;
     	
     }
     
@@ -1398,8 +1450,6 @@ public class RecommendationSystem {
 			reSystem.facade.assignGroupChallenge(gcd, cfg.get("GAMEID"));
 		}
 
-//    	POSTGRES QUERY
-//    	reSystem.getPostgresPerformance("jdbc:postgresql://localhost:5432/gamification?user=postgres&password=root", "32766");    	
 
     }
 

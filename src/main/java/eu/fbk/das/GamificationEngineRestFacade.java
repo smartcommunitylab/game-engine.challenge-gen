@@ -53,6 +53,7 @@ public class GamificationEngineRestFacade {
     private final HashMap<String, Map<String, PlayerStateDTO>> gameStateCache;
 
     public GamificationEngineRestFacade(final String endpoint, final String username, final String password) {
+
         ApiClient client = new ApiClient(endpoint);
         client.setUsername(username);
         client.setPassword(password);

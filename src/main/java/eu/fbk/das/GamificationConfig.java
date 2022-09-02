@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Properties;
 
+import static eu.fbk.das.utils.Utils.p;
+
 public class GamificationConfig {
 
     private static final Logger logger =
@@ -43,6 +45,7 @@ public class GamificationConfig {
         HashMap<String, String> conf = new HashMap<>();
         for (final String name: prop.stringPropertyNames())
             conf.put(name.toUpperCase(), prop.getProperty(name));
+        // p(conf);
         return conf;
     }
 

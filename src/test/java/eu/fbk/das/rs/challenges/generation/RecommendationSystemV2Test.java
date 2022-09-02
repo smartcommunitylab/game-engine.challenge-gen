@@ -66,7 +66,7 @@ public class RecommendationSystemV2Test extends ChallengesBaseTest {
         Set<String> pIds = facade.getGamePlayers(gameId);
          // for (String pId: pIds) p(pId);
 
-        Date date = new SimpleDateFormat("yyyy-MM-dd").parse(conf.get("execDate"));
+        DateTime date = parseDate(conf.get("execDate"));
         Map<String, Object> challengeValues = new HashMap<>();
         challengeValues.put("exec", date);
         challengeValues.put("challengeWeek", 1);
@@ -83,7 +83,7 @@ public class RecommendationSystemV2Test extends ChallengesBaseTest {
         conf.put("GAMEID", gameId);
         conf.put("execDate", "2020-02-1");
 
-        Date date = new SimpleDateFormat("yyyy-MM-dd").parse(conf.get("execDate"));
+        DateTime date = parseDate(conf.get("execDate"));
         Map<String, Object> challengeValues = new HashMap<>();
         challengeValues.put("exec", date);
         challengeValues.put("challengeWeek", 1);
@@ -107,7 +107,7 @@ public class RecommendationSystemV2Test extends ChallengesBaseTest {
         rs.gameId = gameId;
         conf.put("GAMEID", gameId);
         conf.put("execDate", "2021-02-15");
-        Date date = new SimpleDateFormat("yyyy-MM-dd").parse(conf.get("execDate"));
+        DateTime date = parseDate(conf.get("execDate"));
 
         Map<String, Object> challengeValues = new HashMap<>();
         challengeValues.put("exec", date);
@@ -127,9 +127,9 @@ public class RecommendationSystemV2Test extends ChallengesBaseTest {
         }
     }
 
-    private void saveHistogramPerformance(String gameId, Date date, String pId, boolean b) throws IOException, ParseException {
+    private void saveHistogramPerformance(String gameId, DateTime date, String pId, boolean b) throws IOException, ParseException {
         PlayerStateDTO state = facade.getPlayerState(gameId, pId);
-        Map<Integer, double[]> cache = rs.extractRepetitivePerformance(state, date);
+        Map<Integer, double[]> cache = rs.extractRepetitivePerformance(pId, date);
 
         for (Integer w: cache.keySet()) {
 
@@ -172,7 +172,7 @@ public class RecommendationSystemV2Test extends ChallengesBaseTest {
         rs.gameId = gameId;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-        Date date = sdf.parse("2021-02-27");
+        DateTime date = parseDate("2021-02-27");
 
         for (int j = 0; j < 5; j++ ) {
 
@@ -190,7 +190,7 @@ public class RecommendationSystemV2Test extends ChallengesBaseTest {
             for (String pId : pIds) {
 
                 PlayerStateDTO state = facade.getPlayerState(gameId, pId);
-                Map<Integer, double[]> cache = rs.extractRepetitivePerformance(state, date);
+                Map<Integer, double[]> cache = rs.extractRepetitivePerformance(pId, date);
                 // if null does not intervene
                 if (cache == null) continue;
                 // analyze if we have to assign repetitive
@@ -237,8 +237,8 @@ public class RecommendationSystemV2Test extends ChallengesBaseTest {
                 pf("%s - %.2f - %d\n", pId, ent, slot);
             }
 
-            DateTime aux = new DateTime(date.getTime());
-            date = aux.minusDays(7).toDate();
+            DateTime aux = new DateTime(date);
+            date = aux.minusDays(7);
         }
 
     }
@@ -280,7 +280,7 @@ public class RecommendationSystemV2Test extends ChallengesBaseTest {
         rs.gameId = gameId;
         conf.put("GAMEID", gameId);
         conf.put("execDate", "2021-02-24");
-        Date date = new SimpleDateFormat("yyyy-MM-dd").parse(conf.get("execDate"));
+        DateTime date = parseDate(conf.get("execDate"));
 
         Map<String, Object> challengeValues = new HashMap<>();
         challengeValues.put("exec", date);
@@ -321,7 +321,7 @@ public class RecommendationSystemV2Test extends ChallengesBaseTest {
         rs.gameId = gameId;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-        Date date = sdf.parse("2021-06-26");
+        DateTime date = parseDate("2021-06-26");
 
         Set<String> pIds = facade.getGamePlayers(gameId);
 
@@ -352,7 +352,7 @@ public class RecommendationSystemV2Test extends ChallengesBaseTest {
                     continue;
                 }
 
-                Map<Integer, double[]> cache = rs.extractRepetitivePerformance(state, date);
+                Map<Integer, double[]> cache = rs.extractRepetitivePerformance(pId, date);
                 // if null does not intervene
                 if (cache == null) continue;
 
@@ -378,8 +378,8 @@ public class RecommendationSystemV2Test extends ChallengesBaseTest {
 
             pf("### WEEK %s - %d - %d - %.2f - %.2f\n", sdt, cnt_playing, cnt_rep, cnt_rep * 1.0 / cnt_playing, mean_ent / cnt_playing);
 
-            DateTime aux = new DateTime(date.getTime());
-            date = aux.minusDays(7).toDate();
+            DateTime aux = new DateTime(date);
+            date = aux.minusDays(7);
         }
 
     }

@@ -6,15 +6,14 @@ import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 import eu.fbk.das.utils.Utils;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import org.joda.time.DateTime;
+import org.json.simple.parser.ParseException;
 import org.junit.Test;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.io.IOException;
+import java.util.*;
 
 import static eu.fbk.das.utils.ArrayUtils.pos;
-import static eu.fbk.das.utils.Utils.p;
-import static eu.fbk.das.utils.Utils.pf;
+import static eu.fbk.das.utils.Utils.*;
 
 public class RecommendationSystemTest extends ChallengesBaseTest {
 /*
@@ -45,6 +44,24 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
         Double forecastValue = rs.forecastModeOld(current, last);
         pf("forecastValue: %.2f\n\n", forecastValue);
     }*/
+
+    @Test
+    public void testGetPostgresPerformance() throws IOException, ParseException {
+        RecommendationSystem rs = new RecommendationSystem();
+
+        String url = String.format("jdbc:postgresql://localhost:%d/%s?user=%s&password=%s", 5433, "gamification", "postgres", "root");
+
+        DateTime start = parseDate("01/02/2022");
+        DateTime end = parseDate("01/08/2022");
+        String gameId = "620a568e554b276aba97d4a4";
+        String pId = "32766";
+
+        Map<String, Double> res = rs.getPostgresPerformance(url, start, end, gameId, pId);
+        p(res);
+
+        Map<Integer, double[]> cacheAll = rs.extractRepetitivePerformance(pId, new DateTime());
+        p(cacheAll);
+    }
 
 
     @Test
