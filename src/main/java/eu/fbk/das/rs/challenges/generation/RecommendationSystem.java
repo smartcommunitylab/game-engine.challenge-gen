@@ -642,7 +642,7 @@ public class RecommendationSystem {
             double performance_sum = 0;
             double[] cacheWeek = new double[7];
             for (int j = 0; j < 7; j++) {
-                String key = formatDateTime(date);
+                String key = printDate(date);
                 if (perfomance.containsKey(key)) {
                     double score = perfomance.get(key);
                     performance_sum += score;
@@ -703,17 +703,20 @@ public class RecommendationSystem {
 
         Map<String, Double> res = new HashMap<>();
 
+        DateTimeFormatter psqlDateFormat = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+
 		try (var conn = DriverManager.getConnection(postgresUrl)) {
 			try (var stmt = conn.createStatement()) {
 				ResultSet rs = stmt.executeQuery(query);
 
 				while (rs.next()) {
 					String time = rs.getString("time");
+                    DateTime dt = psqlDateFormat.parseDateTime(time);
 					Double score = Double.parseDouble(rs.getString("score"));
 					// String concept = rs.getString("concept");
 					// System.out.printf("time = %s , score = %s , concept = %s  ", time, score, concept);
 					// System.out.println();
-                    res.put(time, score);
+                    res.put(printDate(dt), score);
 				}
 				rs.close();
 				stmt.close();
