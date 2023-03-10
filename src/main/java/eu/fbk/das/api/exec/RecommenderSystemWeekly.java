@@ -32,7 +32,7 @@ public class RecommenderSystemWeekly extends RecommenderSystemExec {
         if (players == null)
             players = "all";
 
-        return api.createStandardSingleChallenges(conf, modelTypes, creationRules, config, players, reward);
+        return api.createStandardSingleChallenges(conf, modelTypes, creationRules, false, config, players, reward);
     }
 
     public boolean exec(Map<String, String> conf, String players, Set<String> modelTypes,  Map<String, String> creationRules) {

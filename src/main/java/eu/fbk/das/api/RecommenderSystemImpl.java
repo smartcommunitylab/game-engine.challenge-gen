@@ -77,8 +77,9 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
         return chas;
     }
 
-    @Override
-    public List<ChallengeExpandedDTO> createStandardSingleChallenges(Map<String, String> conf, Set<String> modelTypes, Map<String, String> creationRules, Map<String, Object> config, String playerSet, Map<String, String> rewards) {
+   @Override
+   public List<ChallengeExpandedDTO> createStandardSingleChallenges(Map<String, String> conf, Set<String> modelTypes, Map<String, String> creationRules, Boolean isLevelStrategy, Map<String, Object> config, String playerSet, Map<String, String> rewards) {
+    
 
         if (playerSet == null || "".equals(playerSet))
             playerSet = "all";
@@ -259,4 +260,5 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
             bs.put(pId, r);
         }
     }
+	
 }

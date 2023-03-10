@@ -31,7 +31,7 @@ public interface RecommenderSystemAPI {
      * @param rewards keys: scoreType / calcType (fixed, bonus, booster) / calcValue / maxValue
      * @return success of operation
      */
-    public List<ChallengeExpandedDTO> createStandardSingleChallenges(Map<String, String> conf, Set<String> modelTypes, Map<String, String> creationRules, Map<String, Object> config, String playerSet, Map<String, String> rewards);
+    public List<ChallengeExpandedDTO> createStandardSingleChallenges(Map<String, String> conf, Set<String> modelTypes, Map<String, String> creationRules, Boolean isLevelStrategy, Map<String, Object> config, String playerSet, Map<String, String> rewards);
 
     /**
      *
