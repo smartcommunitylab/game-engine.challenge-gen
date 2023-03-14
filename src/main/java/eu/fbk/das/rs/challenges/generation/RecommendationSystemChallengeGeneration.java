@@ -22,8 +22,6 @@ import static eu.fbk.das.utils.Utils.*;
  */
 public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
 
-    private static final Logger logger = Logger.getLogger(RecommendationSystem.class);
-
     private double lastCounter;
 
     public RecommendationSystemChallengeGeneration(RecommendationSystem rs) {

@@ -1,35 +1,7 @@
 package eu.fbk.das.utils;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.Closeable;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Scanner;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.io.*;
+import java.util.*;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
@@ -768,5 +740,53 @@ public static int rand(int v) {
 
         int index = Arrays.binarySearch(arr, t);
         return (index < 0) ? -1 : index;
+    }
+
+    public static void logFirstStackTrace(Exception e) {
+        logFirstStackTrace(e, 5);
+    }
+
+    public static void logFirstStackTrace(Exception e, int max) {
+        logFirstStackTrace(e, max, null);
+    }
+
+    public static void logFirstStackTrace(Exception e, int max, StringBuilder sb) {
+        ps(sb, e.toString());
+        StackTraceElement[] elements = e.getStackTrace();
+        for(int ix = 0; ix < elements.length && ix < max; ix++) {
+            ps(sb, "     " + elements[ix]);
+        }
+    }
+
+    public static void logMap(String tx, Map map) {
+        logMap(tx, map, null);
+    }
+
+    public static void logMap(String tx, Map map, StringBuilder sb) {
+        pfs(sb, "map: %s\n", tx);
+        for (Object key: map.keySet()) {
+            pfs(sb, "    %s: %s\n", key, map.get(key));
+        }
+    }
+
+    public static void logSet(String tx, Set set) {
+        logSet(tx, set, null);
+    }
+
+    public static void logSet(String tx, Set set, StringBuilder sb) {
+        pfs(sb, "set: %s\n", tx);
+        for (Object key: set.toArray()) {
+            pfs(sb, "    %s\n", key);
+        }
+    }
+
+    public static void ps(StringBuilder sb, String mex) {
+        if  (sb != null) sb.append(mex);
+        p(mex);
+    }
+
+    public static void pfs(StringBuilder sb, String format, Object... args) {
+        PrintStream s = System.out.format(format, args);
+        ps(sb, s.toString());
     }
 }

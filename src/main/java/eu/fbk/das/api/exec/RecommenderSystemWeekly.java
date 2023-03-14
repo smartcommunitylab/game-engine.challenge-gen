@@ -17,7 +17,7 @@ public class RecommenderSystemWeekly extends RecommenderSystemExec {
             creationRules.put("1", "fixedOne");
             creationRules.put("2", "choiceTwoV2");
             creationRules.put("3", "choiceThreeV2");
-            creationRules.put("other", "choiceThree");
+            creationRules.put("other", "choiceThreeV2");
         }
 
         if (modelTypes == null) {

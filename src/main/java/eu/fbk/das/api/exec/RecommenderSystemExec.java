@@ -32,6 +32,10 @@ public class RecommenderSystemExec {
 
 
     public void prepare(Map<String, String> conf) {
+        // remove last blackslash from url
+        String url = conf.get("HOST").replaceAll("/$", "");
+        conf.put("HOST", url);
+
         if (conf.containsKey("execDate")) {
             execDate = DateTime.parse(conf.get("execDate"));
         }

@@ -130,8 +130,32 @@
 			<artifactId>postgresql</artifactId>
 			<version>42.3.6</version>
 		</dependency>
-		
-    </dependencies>
+		<dependency>
+			<groupId>it.smartcommunitylab.gamification</groupId>
+			<artifactId>gamification-java-client</artifactId>
+			<version>2.4.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>it.smartcommunitylab.gamification</groupId>
+			<artifactId>gamification-java-client</artifactId>
+			<version>2.4.0</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+			<version>4.1</version>
+		</dependency>
+		<dependency>
+			<groupId>it.smartcommunitylab.gamification</groupId>
+			<artifactId>gamification-java-client</artifactId>
+			<version>2.4.1</version>
+			<scope>compile</scope>
+		</dependency>
+
+	</dependencies>
 
 	<build>
 		<plugins>

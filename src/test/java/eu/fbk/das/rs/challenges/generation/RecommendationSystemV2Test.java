@@ -57,7 +57,7 @@ public class RecommendationSystemV2Test extends ChallengesBaseTest {
     }
 
     @Test
-    public void testRepetitiveInterveneSingle() throws java.text.ParseException {
+    public void testRepetitiveInterveneSingle() throws Exception {
         String gameId = conf.get("FERRARA20_GAMEID");
         // String gameId = conf.get("TRENTO19_GAMEID");
         conf.put("GAMEID", gameId);

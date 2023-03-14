@@ -67,8 +67,6 @@ import javax.ws.rs.core.Response;
  * order to run
  */
 public class RecommendationSystem {
-
-    private static final Logger logger = Logger.getLogger(RecommendationSystem.class);
     
     private final Map<String, String> cfg;
 
@@ -591,7 +589,7 @@ public class RecommendationSystem {
             return ls;
 
         } catch (Exception e) {
-            logger.error(e);
+            logFirstStackTrace(e);
         }
 
         return null;
@@ -1328,9 +1326,9 @@ public class RecommendationSystem {
                     actionsDates.put(data[0], dt);
                 }
             } catch (FileNotFoundException e) {
-                logger.error(e);
+                logFirstStackTrace(e);
             } catch (IOException e) {
-                logger.error(e);
+                logFirstStackTrace(e);
             }
         }
 

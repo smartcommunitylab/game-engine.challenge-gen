@@ -73,6 +73,7 @@ public class GamificationEngineRestFacade {
 
         if (!contentCache.containsKey(pId)) {
             try {
+                //PlayerStateDTO state = playerApi.readPlayerUsingGET(gameId, pId, true, null, null);
                 PlayerStateDTO state = playerApi.readPlayerUsingGET(gameId, pId, true, null, null);
                 contentCache.put(pId, state);
             } catch (Exception e) {

@@ -14,8 +14,7 @@ import it.smartcommunitylab.model.ext.GroupChallengeDTO;
 import it.smartcommunitylab.model.ext.GroupChallengeDTO.PointConceptDTO;
 import it.smartcommunitylab.model.ext.GroupChallengeDTO.RewardDTO;
 
-import static eu.fbk.das.utils.Utils.p;
-import static eu.fbk.das.utils.Utils.pf;
+import static eu.fbk.das.utils.Utils.*;
 
 public class RecommenderSystemImpl implements RecommenderSystemAPI {
 
@@ -88,24 +87,41 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 
         List<ChallengeExpandedDTO> chas = new ArrayList<>();
 
+        StringBuilder errors = new StringBuilder();
+
         for (String pId: players) {
 
-            List<ChallengeExpandedDTO> challenges = rs.recommend(pId, modelTypes, creationRules, config);
+            try {
 
-            for (ChallengeExpandedDTO cha: challenges) {
-                // set data
-                dataCha(cha, config);
-                // set reward;
-                reward(cha, rewards);
+                List<ChallengeExpandedDTO> challenges = rs.recommend(pId, modelTypes, creationRules, config);
 
-                cha.setInfo("gameId", rs.gameId);
-                cha.setInfo("pId", pId);
-                chas.add(cha);
+                for (ChallengeExpandedDTO cha : challenges) {
+                    // set data
+                    dataCha(cha, config);
+                    // set reward;
+                    reward(cha, rewards);
 
-                pf("playerId: %s, instanceName: %s, model: %s, s: %s, e: %s, f: %s\n", pId,
-                        cha.getInstanceName(), cha.getModelName(), cha.getStart(), cha.getEnd(), cha.printData());
+                    cha.setInfo("gameId", rs.gameId);
+                    cha.setInfo("pId", pId);
+                    chas.add(cha);
+
+                    pf("playerId: %s, instanceName: %s, model: %s, s: %s, e: %s, f: %s\n", pId,
+                            cha.getInstanceName(), cha.getModelName(), cha.getStart(), cha.getEnd(), cha.printData());
+                }
+            } catch (Exception e) {
+                pfs(errors, "WARNING: error in generation for playerId: %s\n", pId);
+                logFirstStackTrace(e, 5, errors);
+                pfs(errors, "players: %s\n", players);
+                logMap("conf", conf, errors);
+                logSet("modelTypes", modelTypes, errors);
+                logMap("creationRules", creationRules, errors);
+                logMap("config", config, errors);
+                logMap("rewards", rewards, errors);
             }
+
         }
+
+        // Email both the list of challenges, and the error list
 
         return chas;
     }
