@@ -243,16 +243,16 @@ public class ProdRandomTest extends ChallengesBaseTest {
                 PointConcept.Period period = periods.get("weekly");
                 // p(period);
 
-                Map<Long, Double> val = period.getValues();
+              /*  Map<Long, Double> val = period.getValues();
 
                 for (Long key: val.keySet()) {
                     if (key < start_game)
                         start_game = key;
-                }
+                }*/
 
                 // p(val);
 
-                cachePlayer.put(mode, val);
+                // cachePlayer.put(mode, val);
 
                 // TreeMap<LocalDateTime, PointConcept.PeriodInstanceImpl> instances = period.getInstances();
 

@@ -292,9 +292,7 @@ public class RecommendationSystemV2Test extends ChallengesBaseTest {
         // Player high performance / low entropy
         for (String pId: pIds) {
             PlayerStateDTO state = facade.getPlayerState(gameId, pId);
-            List<ChallengeExpandedDTO> ls = rs.repetitiveIntervene(state, date);
-            if (ls == null) continue;
-            ChallengeExpandedDTO rep = ls.get(0); 
+            ChallengeExpandedDTO rep = rs.repetitiveIntervene(state, date);
             pf("%s %.2f %.2f %.2f \n", pId, rep.getData("periodTarget"), rep.getData("target"), rep.getData("bonusScore"));
         }
 

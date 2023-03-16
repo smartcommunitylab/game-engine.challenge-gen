@@ -29,12 +29,16 @@ public class ChallengesBaseTest {
     protected RecommendationSystemChallengeGeneration rscg;
     protected RecommendationSystemChallengeFilteringAndSorting rscf;
 
+    protected String gameId;
+
     @Before
     public void setup() {
         conf = new GamificationConfig(prod).extract();
 
         facade = new GamificationEngineRestFacade(conf.get("HOST"),
                 conf.get("API_USER"), conf.get("API_PASS"));
+
+        gameId = conf.get("GAMEID");
 
         rs = new RecommendationSystem(conf);
 

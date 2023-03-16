@@ -171,9 +171,9 @@ public class RecommendationSystem {
         else if ("choiceThree".equals(rule))
             return assignLimit(3, state, d);
         else if ("choiceTwoV2".equals(rule))
-            return assignLimitV2(2, state, d);
+            return assignLimit(2, state, d);
         else if ("choiceThreeV2".equals(rule))
-            return assignLimitV2(3, state, d);
+            return assignLimit(3, state, d);
         else
             return null;
 
@@ -534,30 +534,19 @@ public class RecommendationSystem {
             cdd.setState("proposed");
         }
 
-        ChallengeExpandedDTO g = rscg.getRepetitive(state.getPlayerId());
+        ChallengeExpandedDTO g = repetitiveIntervene(state, d);
         res.add(g);
 
         return res;
 
     }
 
-
-    protected List<ChallengeExpandedDTO> assignLimitV2(int limit, PlayerStateDTO state, DateTime d) {
-
-        // Check if we have to intervene
-        List<ChallengeExpandedDTO> rep = repetitiveIntervene(state, d);
-        if (rep != null)
-            return rep;
-
-        return assignLimit(limit, state, d);
-    }
-
-    public List<ChallengeExpandedDTO> repetitiveIntervene(PlayerStateDTO state, DateTime dt) {
+    public ChallengeExpandedDTO repetitiveIntervene(PlayerStateDTO state, DateTime dt) {
 
         try {
             Map<Integer, double[]> cache = extractRepetitivePerformance(state.getPlayerId(), dt);
             // if null does not intervene
-            if (cache == null) return null;
+            if (cache == null) return rscg.getRepetitive(state.getPlayerId());
             // analyze if we have to assign repetitive
             double ent = repetitiveInterveneAnalyze(cache);
             int slot = repetitiveSlot(ent);
@@ -567,6 +556,8 @@ public class RecommendationSystem {
             Pair<Double, Double> tg = repetitiveTarget(state, repetitiveDifficulty);
             Double repScore = tg.getSecond();
             double repTarget = tg.getFirst();
+
+            if (repScore <= 1 || repTarget <= 1) return rscg.getRepetitive(state.getPlayerId());
 
             // Create
 
@@ -582,11 +573,8 @@ public class RecommendationSystem {
             rep.setInfo("id", 0);
             rep.setPriority(1);
 
-            List <ChallengeExpandedDTO> ls = new ArrayList<>();
-            ls.add(rep);
-
             pf("### NewRepetitive, %s, %d, %.2f, %.2f\n", state.getPlayerId(), slot, repTarget, repScore);
-            return ls;
+            return rep;
 
         } catch (Exception e) {
             logFirstStackTrace(e);
