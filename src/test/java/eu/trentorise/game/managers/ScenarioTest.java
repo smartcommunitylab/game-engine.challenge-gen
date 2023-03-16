@@ -42,7 +42,7 @@ public class ScenarioTest extends ChallengesBaseTest {
         // modelTypes.add(ChallengesConfig.TRAIN_KM);
 
         RecommenderSystemWeekly rsw = new RecommenderSystemWeekly();
-        List<ChallengeExpandedDTO> res = rsw.go(conf, "u_84d11a2769e1479cb43c23da416e29e7", modelTypes, null);
+        List<ChallengeExpandedDTO> res = rsw.go(conf, "all", modelTypes, null);
 
         Map<String, List<ChallengeExpandedDTO>> cache = new HashMap<>();
 
