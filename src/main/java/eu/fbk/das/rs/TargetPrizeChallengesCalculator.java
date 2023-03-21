@@ -111,6 +111,7 @@ public class TargetPrizeChallengesCalculator {
         tgt = roundTarget(counter, tgt);
 
         // res.put(nm + "_id", Integer.valueOf(pId).doubleValue());
+
         res.put(nm + "_tgt", tgt);
         res.put(nm + "_bas", bas);
 
