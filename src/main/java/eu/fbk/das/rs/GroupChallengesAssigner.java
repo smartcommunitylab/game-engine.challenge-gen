@@ -31,6 +31,7 @@ import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemStatistics;
 import eu.fbk.das.utils.ArrayUtils;
 import eu.fbk.das.utils.Pair;
+import it.smartcommunitylab.JSON;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.ext.ChallengeAssignmentDTO;
 import it.smartcommunitylab.model.ext.ChallengeConcept;
@@ -92,6 +93,16 @@ public class GroupChallengesAssigner extends ChallengeUtil {
         stats.checkAndUpdateStats(execDate);
 
         HashMap<String, HashMap<String, Double>> playersCounterAssignment = getPlayerCounterAssignment(players, stats, modelTypes);
+        
+        System.out.println("#####################");
+        System.out.println("startDate -> " + startDate);
+        System.out.println("endDate -> " + endDate);
+        System.out.println("execDate -> " + execDate);
+        System.out.println("playersCounterAssignment");
+        playersCounterAssignment.entrySet().forEach(entry -> {
+            System.out.println(entry.getKey() + " " + entry.getValue());
+        });
+        System.out.println("#####################");
 
         TargetPrizeChallengesCalculator tpcc = new TargetPrizeChallengesCalculator();
         tpcc.prepare(rs, rs.gameId, execDate);
