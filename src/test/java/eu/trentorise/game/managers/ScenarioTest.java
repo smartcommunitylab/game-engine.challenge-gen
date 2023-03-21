@@ -1,8 +1,11 @@
 package eu.trentorise.game.managers;
 
 import eu.fbk.das.GamificationEngineRestFacade;
+import eu.fbk.das.api.exec.RecommenderSystemGroup;
 import eu.fbk.das.api.exec.RecommenderSystemWeekly;
 import eu.fbk.das.model.ChallengeExpandedDTO;
+import eu.fbk.das.model.GroupExpandedDTO;
+import eu.fbk.das.rs.GroupChallengesAssigner;
 import eu.fbk.das.rs.challenges.ChallengesBaseTest;
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
@@ -20,6 +23,7 @@ public class ScenarioTest extends ChallengesBaseTest {
     }
 
     @Test
+    // TEST SINGLE GENERATION
     public void scenario2() throws Exception {
      //   Set<String> players = facade.getGamePlayers(gameId);
      //   p(players);
@@ -52,5 +56,36 @@ public class ScenarioTest extends ChallengesBaseTest {
 
     }
 
+    @Test
+    // TEST GROUP GENERATION
+    public void scenario3() throws Exception {
+        Set<String> players = facade.getGamePlayers(gameId);
 
+        // String type = "groupCompetitiveTime";
+        String type = "groupCooperative";
+        //  String type = "groupCompetitivePerformance";
+
+        Set<String> modeList = new HashSet<String>(Arrays.asList(ChallengesConfig.WALK_KM,ChallengesConfig.BIKE_KM,ChallengesConfig.GREEN_LEAVES));
+
+        Map<String, Object> config = new HashMap<>();
+
+        GroupChallengesAssigner gca = new GroupChallengesAssigner(rs);
+        List<GroupExpandedDTO> chas = gca.execute(players, modeList, type, config);
+        for (GroupExpandedDTO cha: chas)
+            p(cha);
+    }
+
+
+    @Test
+    // test per capire come mai "Un utente con due sfide di coppia. ID utente 29590"
+    public void checkCoopGeneration() {
+        // String ferrara20_gameid = conf.get("FERRARA20_GAMEID");
+        // Set<String> pIds = facade.getGamePlayers(ferrara20_gameid);
+        // RecommenderSystemAPI api = new RecommenderSystemImpl();
+        conf.put("GAMEID", "640ef0a3d82bd2057035f94e");
+        conf.put("execDate", "2020-11-06");
+        RecommenderSystemGroup rsw = new RecommenderSystemGroup();
+        String challengeType = "groupCooperative";
+        rsw.go(conf, "all", challengeType, null);
+    }
 }

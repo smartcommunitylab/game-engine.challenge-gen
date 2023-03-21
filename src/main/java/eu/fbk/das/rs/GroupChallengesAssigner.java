@@ -60,7 +60,8 @@ public class GroupChallengesAssigner extends ChallengeUtil {
 
         playerLimit = 0;
         timelimit = 600;
-        minLvl = 4;
+        // minLvl = 4;
+        minLvl = 1; // REMOVE ME!
     }
 
     public List<GroupExpandedDTO> execute(Set<String> players, Set<String> modelTypes, String assignmentType, Map<String, Object> challengeValues) {
