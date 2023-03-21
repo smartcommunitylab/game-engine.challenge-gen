@@ -66,7 +66,8 @@ public class GroupChallengesAssigner extends ChallengeUtil {
 
     public List<GroupExpandedDTO> execute(Set<String> players, Set<String> modelTypes, String assignmentType, Map<String, Object> challengeValues) {
 
-        execDate = new DateTime(challengeValues.get("exec"));
+        System.out.println("**td**");
+    	execDate = new DateTime(challengeValues.get("exec"));
         Pair<Date, Date> challengeDates = GamificationEngineRestFacade
                 .getDates(challengeValues.get("start"), challengeValues.get("duration"));
         startDate = new DateTime(challengeDates.getFirst());
