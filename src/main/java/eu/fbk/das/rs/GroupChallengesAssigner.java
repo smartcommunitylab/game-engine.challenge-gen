@@ -338,7 +338,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
         String pId = list.keySet().iterator().next();
         list.remove(pId);
 
-        pf("Assigning repetitive to: %s \n", pId);
+        pf("Assigning repetitive(single challenge) to: %s \n", pId);
 
         // ASSIGN repetitive behaviour
         ChallengeAssignmentDTO rep = rs.rscg.getRepetitive(pId);
