@@ -353,6 +353,8 @@ public class GroupChallengesAssigner extends ChallengeUtil {
 
         // ASSIGN repetitive behaviour
         ChallengeAssignmentDTO rep = rs.rscg.getRepetitive(pId);
+        rep.setStart(startDate.toDate());
+        rep.setEnd(endDate.toDate());
         rs.facade.assignChallengeToPlayer(rep, rs.gameId, pId);
 
         return list;

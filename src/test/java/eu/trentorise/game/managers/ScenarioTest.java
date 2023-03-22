@@ -88,4 +88,24 @@ public class ScenarioTest extends ChallengesBaseTest {
         String challengeType = "groupCooperative";
         rsw.go(conf, "all", challengeType, null);
     }
+
+    @Test
+    // TEST with weeklyStrategy
+    public void testHSC() throws Exception {
+
+        Set<String> modelTypes = new HashSet<>();
+        modelTypes.add(ChallengesConfig.BIKE_KM);
+        modelTypes.add(ChallengesConfig.WALK_KM);
+
+        Map<String, String> weeklyStrategy = new HashMap<>();
+        weeklyStrategy.put("0", "absoluteMbility");
+
+        RecommenderSystemWeekly rsw = new RecommenderSystemWeekly();
+        List<ChallengeExpandedDTO> res = rsw.go(conf, "all", modelTypes, weeklyStrategy);
+
+        for (ChallengeExpandedDTO cha: res) {
+            p(cha);
+        }
+    }
+
 }
