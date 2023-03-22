@@ -358,8 +358,8 @@ public class GroupChallengesAssigner extends ChallengeUtil {
         rep.getData().entrySet().forEach(entry -> {
             System.out.println(entry.getKey() + " " + entry.getValue());
         });
-        System.out.println(rep.getStart());
-        System.out.println(rep.getEnd());
+        System.out.println("Start: " + rep.getStart());
+        System.out.println("End: " + rep.getEnd());
         System.out.println("***********************************");
         rs.facade.assignChallengeToPlayer(rep, rs.gameId, pId);
 
