@@ -355,6 +355,16 @@ public class GroupChallengesAssigner extends ChallengeUtil {
         ChallengeAssignmentDTO rep = rs.rscg.getRepetitive(pId);
         rep.setStart(startDate.toDate());
         rep.setEnd(endDate.toDate());
+
+        System.out.println("********* single challenge ******");
+        System.out.println(rep.getInstanceName());
+        rep.getData().entrySet().forEach(entry -> {
+            System.out.println(entry.getKey() + " " + entry.getValue());
+        });
+        System.out.println("Start: " + rep.getStart());
+        System.out.println("End: " + rep.getEnd());
+        System.out.println("***********************************");
+
         rs.facade.assignChallengeToPlayer(rep, rs.gameId, pId);
 
         return list;
