@@ -31,13 +31,13 @@ import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemStatistics;
 import eu.fbk.das.utils.ArrayUtils;
 import eu.fbk.das.utils.Pair;
-import it.smartcommunitylab.JSON;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.ext.ChallengeAssignmentDTO;
 import it.smartcommunitylab.model.ext.ChallengeConcept;
 import it.smartcommunitylab.model.ext.GameConcept;
 import it.smartcommunitylab.model.ext.GroupChallengeDTO.AttendeeDTO;
 import it.smartcommunitylab.model.ext.GroupChallengeDTO.PointConceptDTO;
+import it.smartcommunitylab.model.ext.GroupChallengeDTO.RewardDTO;
 import it.smartcommunitylab.model.ext.PointConcept;
 
 public class GroupChallengesAssigner extends ChallengeUtil {
@@ -248,9 +248,12 @@ public class GroupChallengesAssigner extends ChallengeUtil {
         pc.setPeriod("weekly");
         gcd.setChallengePointConcept(pc);
 
-        // TODO FIX
-        // RewardDTO rw = new RewardDTO();
-        // rw.setBonusScore(250);
+        RewardDTO rw = new RewardDTO();
+        Map<String, Double> bonusScore = new HashMap<>();
+        bonusScore.put(pId1, 250d);
+        bonusScore.put(pId2, 250d);
+        rw.setBonusScore(bonusScore);
+        gcd.setReward(rw);
 
         gcd.setOrigin("gca");
         gcd.setState("ASSIGNED");
