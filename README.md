@@ -10,7 +10,7 @@ Gamification Engine Challenge Generator is based on two tools:
 2. Challenge uploader: upload generated rules into [Gamification Engine](https://github.com/smartcommunitylab/smartcampus.gamification) 
  
 
-## Prerequisites 
+## Prerequisites
 
 * Java 1.7 or higher
 * Maven 3.2 or higher
