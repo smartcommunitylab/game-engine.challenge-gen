@@ -68,6 +68,8 @@ public class ScenarioTest extends ChallengesBaseTest {
         Set<String> modeList = new HashSet<String>(Arrays.asList(ChallengesConfig.WALK_KM,ChallengesConfig.BIKE_KM,ChallengesConfig.GREEN_LEAVES));
 
         Map<String, Object> config = new HashMap<>();
+//        config.put("start", "2014-06-01T03:02:13Z");
+//        config.put("duration", "7d");
 
         GroupChallengesAssigner gca = new GroupChallengesAssigner(rs);
         List<GroupExpandedDTO> chas = gca.execute(players, modeList, type, config);
