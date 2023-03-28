@@ -47,7 +47,7 @@ public class PerformanceEstimation extends ChallengeUtil {
     }
 
     public void prepare(DateTime date) {
-        super.prepare(getChallengeWeek(date));
+        super.prepare(getChallengeWeek(date, date));
 
         record = new HashMap<>();
         for (String counter: counters) {

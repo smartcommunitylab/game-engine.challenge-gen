@@ -18,6 +18,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import eu.fbk.das.GamificationConfig;
+import eu.fbk.das.rs.challenges.ChallengeUtil;
 import eu.fbk.das.utils.Pair;
 import org.apache.commons.io.IOUtils;
 
@@ -69,7 +70,7 @@ import javax.ws.rs.core.Response;
 public class RecommendationSystem {
 
     private static final Logger logger = Logger.getLogger(RecommendationSystem.class);
-    
+
     private final Map<String, String> cfg;
 
 
@@ -88,13 +89,16 @@ public class RecommendationSystem {
     public RecommendationSystemChallengeValuator rscv;
     public RecommendationSystemChallengeFilteringAndSorting rscf;
     private RecommendationSystemStatistics stats;
-    
+
     private Set<String> modelTypes;
+    private Map<String, String> creationRules;
+    private Map<String, Object> config;
 
     protected int repetitiveDifficulty = 2;
 
     boolean debug = false;
-    
+
+
     public RecommendationSystem(Map<String, String> cfg) {
         this.cfg = cfg;
 
@@ -117,15 +121,20 @@ public class RecommendationSystem {
         this(new GamificationConfig(true).extract());
     }
 
-    // generate challenges
-    public List<ChallengeExpandedDTO> recommend(String pId, Set<String> modelTypes,  Map<String, String> creationRules, Map<String, Object> challengeValues) {
+    public List<ChallengeExpandedDTO> recommend(String pId, Set<String> modelTypes, Map<String, String> creationRules, Map<String, Object> challengeValues) {
+        return recommend(pId, modelTypes, creationRules, challengeValues, true);
+    }
 
-        prepare(challengeValues);
+    // generate challenges
+    public List<ChallengeExpandedDTO> recommend(String pId, Set<String> modelTypes, Map<String, String> creationRules, Map<String, Object> config, boolean isLevelStrategy) {
+
+        prepare(config);
 
         this.modelTypes = modelTypes;
+        this.config = config;
+        this.creationRules = creationRules;
 
         PlayerStateDTO state = facade.getPlayerState(gameId, pId);
-        int lvl = getLevel(state);
 
         // TODO check, serve ancora?
         // String exp = getPlayerExperiment(pId);
@@ -133,10 +142,10 @@ public class RecommendationSystem {
         // OLD method
         // List<ChallengeExpandedDTO> cha = generation2019(pId, state, d, lvl);
 
-       List<ChallengeExpandedDTO> cha = generationRule(pId, state, execDate, lvl, creationRules);
+        List<ChallengeExpandedDTO> cha = generationRule(pId, state, execDate, isLevelStrategy);
 
-        for (ChallengeExpandedDTO c: cha) {
-            c.setInfo("playerLevel", lvl);
+        for (ChallengeExpandedDTO c : cha) {
+            c.setInfo("playerLevel",  getLevel(state));
             c.setInfo("player", pId);
 
             c.setHide(true);
@@ -153,34 +162,103 @@ public class RecommendationSystem {
         // Set next monday as start, and next sunday as end
         int week_day = execDate.getDayOfWeek();
         int d = (7 - week_day) + 1;
-        lastMonday = execDate.minusDays(week_day-1).minusDays(7);
+        lastMonday = execDate.minusDays(week_day - 1).minusDays(7);
         stats.checkAndUpdateStats(execDate);
         rscv.prepare(stats);
         rscg.prepare(chaWeek);
     }
 
-    private List<ChallengeExpandedDTO> generationRule(String pId, PlayerStateDTO state, DateTime d, int lvl, Map<String, String> creationRules) {
-        String rule = creationRules.get(String.valueOf(lvl));
-        if (rule == null) rule = creationRules.get("other");
+    private List<ChallengeExpandedDTO> generationRule(String pId, PlayerStateDTO state, DateTime d, boolean isLevelStrategy) {
 
-        if ("empty".equals(rule))
-            return new ArrayList<>();
+        if (!isLevelStrategy) {
+            int lvl = getLevel(state);
 
-        if ("fixedOne".equals(rule))
-            return getAssigned(state, d, 1);
-        else if ("choiceTwo".equals(rule))
-            return assignLimit(2, state, d);
-        else if ("choiceThree".equals(rule))
-            return assignLimit(3, state, d);
-        else if ("choiceTwoV2".equals(rule))
-            return assignLimitV2(2, state, d);
-        else if ("choiceThreeV2".equals(rule))
-            return assignLimitV2(3, state, d);
-        else
-            return null;
+            String rule = creationRules.get(String.valueOf(lvl));
+            if (rule == null) rule = creationRules.get("other");
 
+            if ("empty".equals(rule))
+                return new ArrayList<>();
+
+            if ("fixedOne".equals(rule))
+                return getAssigned(state, d, 1);
+            else if ("choiceTwo".equals(rule))
+                return assignLimit(2, state, d);
+            else if ("choiceThree".equals(rule))
+                return assignLimit(3, state, d);
+            else if ("choiceTwoV2".equals(rule))
+                return assignLimitV2(2, state, d);
+            else if ("choiceThreeV2".equals(rule))
+                return assignLimitV2(3, state, d);
+
+        } else {
+            // get current week
+            String rule = creationRules.get(String.valueOf(chaWeek));
+
+            if ("mobilityAbsolute".equals(rule))
+                return mobilityAbsolute(state, d);
+            if ("mobilityRepetitive".equals(rule))
+                return mobilityRepetitive(state, d);
+        }
+
+        return null;
     }
 
+    private List<ChallengeExpandedDTO> mobilityRepetitive(PlayerStateDTO state, DateTime d) {
+
+        String bestMode = getHighestQuantileMode(state, d);
+
+        Pair<Double, Double> res = rscg.forecastMode(state, bestMode);
+        double target = res.getFirst();
+        double baseline = res.getSecond();
+
+        target = rscg.checkMax(target, bestMode);
+
+        ChallengeExpandedDTO cdd = rscg.generatePercentage(baseline, bestMode, target);
+        List<ChallengeExpandedDTO> chas = new ArrayList<>();
+        chas.add(cdd);
+        return chas;
+    }
+
+
+    private List<ChallengeExpandedDTO> mobilityAbsolute(PlayerStateDTO state, DateTime d) {
+
+        String bestMode = getHighestQuantileMode(state, d);
+
+        Pair<Double, Double> res = rscg.forecastMode(state, bestMode);
+        double target = res.getFirst();
+        double baseline = res.getSecond();
+
+        target = rscg.checkMax(target, bestMode);
+
+        ChallengeExpandedDTO cdd = rscg.generatePercentage(baseline, bestMode, target);
+        List<ChallengeExpandedDTO> chas = new ArrayList<>();
+        chas.add(cdd);
+        return chas;
+    }
+
+    private String getHighestQuantileMode(PlayerStateDTO state, DateTime d) {
+
+        Integer high_qua = -1;
+        String high_mode = null;
+
+        for (String counter : modelTypes) {
+
+            Double baseline = ChallengeUtil.getWMABaseline(state, counter, execDate);
+            Map<Integer, Double> quant = stats.getQuantiles(counter);
+            int q = ChallengeUtil.getQuantile(baseline, quant);
+            if (q == -1) {
+                p("this is reeeeeaaaally strange");
+                continue;
+            }
+
+            if (q > high_qua) {
+                high_qua = q;
+                high_mode = counter;
+            }
+        }
+
+        return high_mode;
+    }
 
 
     private List<ChallengeExpandedDTO> generation2019(String pId, PlayerStateDTO state, DateTime d, int lvl, String exp) {
@@ -313,7 +391,7 @@ public class RecommendationSystem {
 
         Map<String, Object> cs = facade.getCustomDataPlayer(gameId, pId);
 
-        int w = this.getChallengeWeek(execDate);
+        int w = this.getChallengeWeek(execDate, execDate);
 
         if (cs == null)
             return;
@@ -991,13 +1069,13 @@ public class RecommendationSystem {
         return rscf.filter(challanges, state, d);
     }
 
-    public static int getChallengeWeek(DateTime d) {
-        int s = getChallengeDay(d);
-        return (s/7) +1;
+    public static int getChallengeWeek(DateTime d, DateTime s) {
+        int v = getChallengeDay(d, s);
+        return (v/7) +1;
     }
 
-    public static int getChallengeDay(DateTime d) {
-        return daysApart(d, parseDate("29/10/2018"));
+    public static int getChallengeDay(DateTime d, DateTime s) {
+        return daysApart(d, s);
     }
 
     /*

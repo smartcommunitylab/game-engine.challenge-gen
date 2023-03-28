@@ -21,7 +21,7 @@ public class ChallengeAnalyzerDifficulty extends ChallengeAnalyzer {
         cdg.analyzeAll();
     }
 
-    protected void prepare() {
+    public void prepare() {
         super.prepare();
 
         cache = new LinkedHashMap<>();
@@ -29,6 +29,8 @@ public class ChallengeAnalyzerDifficulty extends ChallengeAnalyzer {
         checkIfChosen = false;
 
         weekStart = 20;
+
+        super.prepare();
     }
 
     protected void experiment(String file) {

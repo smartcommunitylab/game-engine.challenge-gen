@@ -91,7 +91,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 
         for (String pId: players) {
 
-            List<ChallengeExpandedDTO> challenges = rs.recommend(pId, modelTypes, creationRules, config);
+            List<ChallengeExpandedDTO> challenges = rs.recommend(pId, modelTypes, creationRules, config, isLevelStrategy);
 
             for (ChallengeExpandedDTO cha: challenges) {
                 // set data

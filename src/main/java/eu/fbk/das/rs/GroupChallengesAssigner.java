@@ -71,7 +71,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
         startDate = new DateTime(challengeDates.getFirst());
         endDate = new DateTime(challengeDates.getSecond());
 
-        prepare(getChallengeWeek(execDate));
+        prepare(getChallengeWeek(execDate, startDate));
 
         groupChallenges = new ArrayList<>();
 
@@ -343,36 +343,6 @@ public class GroupChallengesAssigner extends ChallengeUtil {
         rs.facade.assignChallengeToPlayer(rep, rs.gameId, pId);
 
         return list;
-    }
-
-    private Double getWMABaseline(PlayerStateDTO state, String counter, DateTime lastMonday) {
-
-        DateTime date = lastMonday;
-        int v = 5;
-
-        double den = 0;
-        double num = 0;
-        for (int ix = 0; ix < v; ix++) {
-            // weight * value
-            Double c = getWeeklyContentMode(state, counter, date);
-            den += (v -ix) * c;
-            num += (v -ix);
-
-            date = date.minusDays(7);
-        }
-
-        double baseline = den / num;
-        return baseline;
-    }
-
-
-    private int getQuantile(Double c, Map<Integer, Double> quant) {
-        for (int i = 0; i < 10; i++) {
-            if (c < quant.get(i))
-                return i;
-        }
-
-        return 9;
     }
 
     public List<Pair<String, String>> chocoModel(Map<String, Integer> playersQuant) {

@@ -321,6 +321,10 @@ public class GamificationEngineRestFacade {
             java.time.Period p = java.time.Period.parse(periodAsIsoFormat);
             java.time.LocalDateTime endDateTime =
                     new Timestamp(startDate.getTime()).toLocalDateTime().plus(p);
+
+            // remove one minute from endDate in order to have them end on 23:59
+            endDateTime = endDateTime.minusMinutes(1);
+
             endDate = Date.from(endDateTime.atZone(java.time.ZoneId.systemDefault()).toInstant());
 
         } catch (Exception e) {

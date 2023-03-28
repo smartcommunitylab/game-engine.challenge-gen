@@ -55,7 +55,7 @@ public class RecommenderSystemExec {
         config.put("exec", execDate.toDate());
         config.put("periodName", "weekly");
 
-        config.put("challengeWeek", getChallengeWeek(execDate));
+        config.put("challengeWeek", getChallengeWeek(execDate, startDate));
 
         reward = new HashMap<>();
         reward.put("scoreType", "green leaves");

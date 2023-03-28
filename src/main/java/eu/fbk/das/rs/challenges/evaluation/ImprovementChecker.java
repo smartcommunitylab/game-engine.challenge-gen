@@ -77,7 +77,7 @@ public class ImprovementChecker extends ChallengeUtil {
     }
 
     public void prepare(DateTime date) {
-        super.prepare(getChallengeWeek(date));
+        super.prepare(getChallengeWeek(date, date));
         weekImpr = new HashMap<String, Map<Integer, List<Double>>>();
         for (String counter: counters) {
             HashMap<Integer, List<Double>> impr = new HashMap<>();

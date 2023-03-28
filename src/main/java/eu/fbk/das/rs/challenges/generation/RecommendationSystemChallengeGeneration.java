@@ -135,7 +135,10 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
         return cdd;
     }
 
-    private double checkMax(double v, String mode) {
+    public double checkMax(double v, String mode) {
+        if (v <= 0)
+            v = 1;
+
         if (mode.equals(ChallengesConfig.WALK_KM) && v >= 70)
             return 70;
         if (mode.equals(ChallengesConfig.BIKE_KM) && v >= 210)

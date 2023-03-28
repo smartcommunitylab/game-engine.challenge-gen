@@ -1,11 +1,13 @@
 package eu.fbk.das.rs.challenges;
 
+import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.getWeeklyContentMode;
 import static eu.fbk.das.utils.Utils.equal;
 import static eu.fbk.das.utils.Utils.f;
 import static eu.fbk.das.utils.Utils.pf;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.joda.time.DateTime;
@@ -33,6 +35,10 @@ public class ChallengeUtil {
 
     public ChallengeUtil(RecommendationSystem rs) {
         this.rs = rs;
+    }
+
+    public void prepare() {
+        prepare(1);
     }
 
     public void prepare(int challengeWeek) {
@@ -97,5 +103,35 @@ public class ChallengeUtil {
             return 0;
         }
 
+    }
+
+    public static Double getWMABaseline(PlayerStateDTO state, String counter, DateTime lastMonday) {
+
+        DateTime date = lastMonday;
+        int v = 5;
+
+        double den = 0;
+        double num = 0;
+        for (int ix = 0; ix < v; ix++) {
+            // weight * value
+            Double c = getWeeklyContentMode(state, counter, date);
+            den += (v -ix) * c;
+            num += (v -ix);
+
+            date = date.minusDays(7);
+        }
+
+        double baseline = den / num;
+        return baseline;
+    }
+
+
+    public static int getQuantile(Double c, Map<Integer, Double> quant) {
+        for (int i = 0; i < 10; i++) {
+            if (c < quant.get(i))
+                return i;
+        }
+
+        return 9;
     }
 }

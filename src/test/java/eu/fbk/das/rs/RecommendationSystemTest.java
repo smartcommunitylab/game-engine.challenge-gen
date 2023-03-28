@@ -27,7 +27,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
         rs = new RecommendationSystem(conf);
 
         rscg = new RecommendationSystemChallengeGeneration(rs);
-        rscg.prepare(getChallengeWeek(new DateTime()));
+        rscg.prepare();
         facade = rs.facade;
     }
 
@@ -93,7 +93,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
 
         Set<String> playerIds = facade.getGamePlayers(conf.get("GAMEID"));
 
-        int w = getChallengeWeek(new DateTime());
+        int w = 1;
 
         for (String pId: playerIds) {
             Map<String, Object> cs = facade.getCustomDataPlayer(conf.get("GAMEID"), pId);
