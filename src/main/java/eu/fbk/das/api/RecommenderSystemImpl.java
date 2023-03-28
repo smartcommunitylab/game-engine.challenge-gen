@@ -169,6 +169,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
     public boolean assignGroupChallenge(Map<String, String> conf, GroupExpandedDTO cha) {
         checkUpdateRs(conf);
         String gameId = (String) cha.getInfo("gameId");
+        cha.setGameId(gameId);
         return rs.facade.assignGroupChallenge(cha, gameId);
     }
 

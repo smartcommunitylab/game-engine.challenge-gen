@@ -31,13 +31,13 @@ import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemStatistics;
 import eu.fbk.das.utils.ArrayUtils;
 import eu.fbk.das.utils.Pair;
-import it.smartcommunitylab.JSON;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.ext.ChallengeAssignmentDTO;
 import it.smartcommunitylab.model.ext.ChallengeConcept;
 import it.smartcommunitylab.model.ext.GameConcept;
 import it.smartcommunitylab.model.ext.GroupChallengeDTO.AttendeeDTO;
 import it.smartcommunitylab.model.ext.GroupChallengeDTO.PointConceptDTO;
+import it.smartcommunitylab.model.ext.GroupChallengeDTO.RewardDTO;
 import it.smartcommunitylab.model.ext.PointConcept;
 
 public class GroupChallengesAssigner extends ChallengeUtil {
@@ -67,7 +67,6 @@ public class GroupChallengesAssigner extends ChallengeUtil {
 
     public List<GroupExpandedDTO> execute(Set<String> players, Set<String> modelTypes, String assignmentType, Map<String, Object> challengeValues) {
 
-        System.out.println("**td**");
     	execDate = new DateTime(challengeValues.get("exec"));
         Pair<Date, Date> challengeDates = GamificationEngineRestFacade
                 .getDates(challengeValues.get("start"), challengeValues.get("duration"));
@@ -94,7 +93,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
 
         HashMap<String, HashMap<String, Double>> playersCounterAssignment = getPlayerCounterAssignment(players, stats, modelTypes);
         
-        System.out.println("#####################");
+        System.out.println("\n##################### playersCounterAssignment #####################");
         System.out.println("startDate -> " + startDate);
         System.out.println("endDate -> " + endDate);
         System.out.println("execDate -> " + execDate);
@@ -102,7 +101,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
         playersCounterAssignment.entrySet().forEach(entry -> {
             System.out.println(entry.getKey() + " " + entry.getValue());
         });
-        System.out.println("#####################");
+        System.out.println("#######################################################################\n");
 
         TargetPrizeChallengesCalculator tpcc = new TargetPrizeChallengesCalculator();
         tpcc.prepare(rs, rs.gameId, execDate);
@@ -249,9 +248,12 @@ public class GroupChallengesAssigner extends ChallengeUtil {
         pc.setPeriod("weekly");
         gcd.setChallengePointConcept(pc);
 
-        // TODO FIX
-        // RewardDTO rw = new RewardDTO();
-        // rw.setBonusScore(250);
+        RewardDTO rw = new RewardDTO();
+        Map<String, Double> bonusScore = new HashMap<>();
+        bonusScore.put(pId1, 250d);
+        bonusScore.put(pId2, 250d);
+        rw.setBonusScore(bonusScore);
+        gcd.setReward(rw);
 
         gcd.setOrigin("gca");
         gcd.setState("ASSIGNED");
@@ -356,14 +358,14 @@ public class GroupChallengesAssigner extends ChallengeUtil {
         rep.setStart(startDate.toDate());
         rep.setEnd(endDate.toDate());
 
-        System.out.println("********* single challenge ******");
+        System.out.println("\n********* single challenge ******");
         System.out.println(rep.getInstanceName());
         rep.getData().entrySet().forEach(entry -> {
             System.out.println(entry.getKey() + " " + entry.getValue());
         });
         System.out.println("Start: " + rep.getStart());
         System.out.println("End: " + rep.getEnd());
-        System.out.println("***********************************");
+        System.out.println("***********************************\n");
 
         rs.facade.assignChallengeToPlayer(rep, rs.gameId, pId);
 
