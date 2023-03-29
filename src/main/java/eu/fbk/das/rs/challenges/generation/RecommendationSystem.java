@@ -100,6 +100,7 @@ public class RecommendationSystem {
 
     boolean debug = false;
     private String ecoLeaves = "green leaves";
+    private String activity = "activity";
 
 
     public RecommendationSystem(Map<String, String> cfg) {
@@ -208,6 +209,10 @@ public class RecommendationSystem {
                 cdd = ecoLeavesAbsolute(state, d);
             else if ("ecoLeavesRepetitive".equals(rule))
                 cdd = ecoLeavesRepetitive(state, d);
+            else if ("partecipationAbsolute".equals(rule))
+                cdd = partecipationAbsolute(state, d);
+            else if ("partecipationRepetitive".equals(rule))
+                cdd = partecipationRepetitive(state, d);            
 
             if (cdd != null)
                 chas.add(cdd);
@@ -215,6 +220,14 @@ public class RecommendationSystem {
         }
 
         return null;
+    }
+
+    private ChallengeExpandedDTO partecipationAbsolute(PlayerStateDTO state, DateTime d) {
+        return getChallengeAbsolute(state, activity);
+    }
+
+    private ChallengeExpandedDTO partecipationRepetitive(PlayerStateDTO state, DateTime d) {
+        return getChallengeRepetitive(state, d, activity);
     }
 
     private ChallengeExpandedDTO ecoLeavesRepetitive(PlayerStateDTO state, DateTime d) {
@@ -230,6 +243,10 @@ public class RecommendationSystem {
 
     private ChallengeExpandedDTO mobilityRepetitive(PlayerStateDTO state, DateTime d) {
         String bestMode = getHighestQuantileMode(state, d);
+        return getChallengeRepetitive(state, d, bestMode);
+    }
+
+    private ChallengeExpandedDTO getChallengeRepetitive(PlayerStateDTO state, DateTime d, String bestMode) {
         int slot = getSlotModeEntropy(state, d, bestMode);
         if (slot == 0)
             return null;
