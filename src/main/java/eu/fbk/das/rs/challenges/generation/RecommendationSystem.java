@@ -174,7 +174,7 @@ public class RecommendationSystem {
 
     private List<ChallengeExpandedDTO> generationRule(String pId, PlayerStateDTO state, DateTime d, boolean isLevelStrategy) {
 
-        if (!isLevelStrategy) {
+        if (isLevelStrategy) {
             int lvl = getLevel(state);
 
             String rule = creationRules.get(String.valueOf(lvl));
