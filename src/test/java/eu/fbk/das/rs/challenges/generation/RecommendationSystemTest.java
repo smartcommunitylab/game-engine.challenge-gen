@@ -10,6 +10,7 @@ import org.json.simple.parser.ParseException;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.*;
 
 import static eu.fbk.das.utils.ArrayUtils.pos;
@@ -46,7 +47,7 @@ public class RecommendationSystemTest extends ChallengesBaseTest {
     }*/
 
     @Test
-    public void testGetPostgresPerformance() throws IOException, ParseException {
+    public void testGetPostgresPerformance() throws IOException, ParseException, SQLException {
         RecommendationSystem rs = new RecommendationSystem();
 
         String url = String.format("jdbc:postgresql://localhost:%d/%s?user=%s&password=%s", 5433, "gamification", "postgres", "root");

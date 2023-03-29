@@ -4,7 +4,6 @@ import static eu.fbk.das.rs.challenges.ChallengeUtil.getLevel;
 import static eu.fbk.das.rs.challenges.ChallengeUtil.getPeriodScore;
 import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.roundTarget;
 import static eu.fbk.das.utils.Utils.*;
-import static eu.fbk.das.utils.Utils.parseDate;
 import static it.smartcommunitylab.model.ChallengeConcept.StateEnum.COMPLETED;
 
 import java.io.*;
@@ -14,17 +13,19 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import eu.fbk.das.GamificationConfig;
+
 import eu.fbk.das.rs.challenges.ChallengeUtil;
 import eu.fbk.das.utils.Pair;
+import eu.fbk.das.utils.Utils;
+import it.smartcommunitylab.model.ChallengeConcept;
 import org.apache.commons.io.IOUtils;
-
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
-
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.AuthCache;
@@ -34,7 +35,9 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.auth.BasicScheme;
-import org.apache.http.impl.client.*;
+import org.apache.http.impl.client.BasicAuthCache;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.joda.time.DateTime;
@@ -46,9 +49,7 @@ import eu.fbk.das.GamificationEngineRestFacade;
 import eu.fbk.das.model.ChallengeExpandedDTO;
 import eu.fbk.das.model.GroupExpandedDTO;
 import eu.fbk.das.rs.sortfilter.RecommendationSystemChallengeFilteringAndSorting;
-import eu.fbk.das.utils.Utils;
 import eu.fbk.das.rs.valuator.RecommendationSystemChallengeValuator;
-import it.smartcommunitylab.model.ChallengeConcept;
 import it.smartcommunitylab.model.PlayerStateDTO;
 import it.smartcommunitylab.model.ext.GameConcept;
 import it.smartcommunitylab.model.ext.PointConcept;
@@ -94,9 +95,11 @@ public class RecommendationSystem {
     private Map<String, String> creationRules;
     private Map<String, Object> config;
 
-    protected int repetitiveDifficulty = 2;
+    // closer to 1: more difficult, closer to 0.5: easier
+    protected double repetitiveDifficulty = 0.8;
 
     boolean debug = false;
+    private String ecoLeaves = "green leaves";
 
 
     public RecommendationSystem(Map<String, String> cfg) {
@@ -194,36 +197,102 @@ public class RecommendationSystem {
             // get current week
             String rule = creationRules.get(String.valueOf(chaWeek));
 
+            List<ChallengeExpandedDTO> chas = new ArrayList<>();
+            ChallengeExpandedDTO cdd = null;
+
             if ("mobilityAbsolute".equals(rule))
-                return mobilityAbsolute(state, d);
-            if ("mobilityRepetitive".equals(rule))
-                return mobilityRepetitive(state, d);
+                cdd = mobilityAbsolute(state, d);
+            else if ("mobilityRepetitive".equals(rule))
+                cdd = mobilityRepetitive(state, d);
+            else if ("ecoLeavesAbsolute".equals(rule))
+                cdd = ecoLeavesAbsolute(state, d);
+            else if ("ecoLeavesRepetitive".equals(rule))
+                cdd = ecoLeavesRepetitive(state, d);
+
+            if (cdd != null)
+                chas.add(cdd);
+            return chas;
         }
 
         return null;
     }
 
-    private List<ChallengeExpandedDTO> mobilityRepetitive(PlayerStateDTO state, DateTime d) {
+    private ChallengeExpandedDTO ecoLeavesRepetitive(PlayerStateDTO state, DateTime d) {
+        ChallengeExpandedDTO rep = repetitiveIntervene(state, d);
+        if (rep == null)
+            rep = rscg.getRepetitive(state.getPlayerId());
+        return rep;
+    }
 
+    private ChallengeExpandedDTO ecoLeavesAbsolute(PlayerStateDTO state, DateTime d) {
+        return getChallengeAbsolute(state, ecoLeaves);
+    }
+
+    private ChallengeExpandedDTO mobilityRepetitive(PlayerStateDTO state, DateTime d) {
         String bestMode = getHighestQuantileMode(state, d);
+        int slot = getSlotModeEntropy(state, d, bestMode);
+        if (slot == 0)
+            return null;
 
-        Pair<Double, Double> res = rscg.forecastMode(state, bestMode);
-        double target = res.getFirst();
-        double baseline = res.getSecond();
+        Pair<Double, Double> tg = repetitiveTarget(state, slot, bestMode);
+        Double repScore = tg.getSecond();
+        double repTarget = tg.getFirst();
 
-        target = rscg.checkMax(target, bestMode);
+        // Create
+        ChallengeExpandedDTO rep = rscg.prepareChallangeImpr("mobilityRepetitive", bestMode);
+        rep.setModelName("repetitiveBehaviour");
+        rep.setData("periodName", "daily");
+        rep.setData("periodTarget", slot * 1.0);
+        rep.setData("target", repTarget);
+        rep.setData("bonusScore", repScore);
 
-        ChallengeExpandedDTO cdd = rscg.generatePercentage(baseline, bestMode, target);
-        List<ChallengeExpandedDTO> chas = new ArrayList<>();
-        chas.add(cdd);
-        return chas;
+        rep.setState("assigned");
+        rep.setOrigin("rs");
+        rep.setInfo("id", 0);
+        rep.setPriority(1);
+
+        pf("### NewRepetitive, %s, %d, %.2f, %.2f\n", state.getPlayerId(), slot, repTarget, repScore);
+        return rep;
+    }
+
+    private int getSlotModeEntropy(PlayerStateDTO state, DateTime d, String mode) {
+        PointConcept modeConcept = null;
+            for (GameConcept gc : state.getState().get("PointConcept")) {
+
+                PointConcept pc = (PointConcept) gc;
+
+                String m = pc.getName();
+                if (!m.equals(mode))
+                    continue;
+
+                modeConcept = pc;
+            }
+
+            if (modeConcept == null)
+                return 2;
+
+            DateTime date = execDate;
+            int max = 7;
+            double[] values = new double[max];
+            for (int i=0; i < max; i++) {
+                values[i] = getPeriodScore(modeConcept, "daily", date);
+                date = date.minusDays(1);
+            }
+
+            Double ent = getEntropy(values);
+            if (ent == null) ent = 0.0;
+            int slot = repetitiveSlot(ent);
+            pf("%.2f - %d", ent, slot);
+            return slot;
     }
 
 
-    private List<ChallengeExpandedDTO> mobilityAbsolute(PlayerStateDTO state, DateTime d) {
-
+    private ChallengeExpandedDTO mobilityAbsolute(PlayerStateDTO state, DateTime d) {
         String bestMode = getHighestQuantileMode(state, d);
+        return getChallengeAbsolute(state, bestMode);
+    }
 
+    private ChallengeExpandedDTO getChallengeAbsolute(PlayerStateDTO state, String bestMode) {
         Pair<Double, Double> res = rscg.forecastMode(state, bestMode);
         double target = res.getFirst();
         double baseline = res.getSecond();
@@ -231,9 +300,7 @@ public class RecommendationSystem {
         target = rscg.checkMax(target, bestMode);
 
         ChallengeExpandedDTO cdd = rscg.generatePercentage(baseline, bestMode, target);
-        List<ChallengeExpandedDTO> chas = new ArrayList<>();
-        chas.add(cdd);
-        return chas;
+        return cdd;
     }
 
     private String getHighestQuantileMode(PlayerStateDTO state, DateTime d) {
@@ -242,6 +309,9 @@ public class RecommendationSystem {
         String high_mode = null;
 
         for (String counter : modelTypes) {
+
+            if (ecoLeaves.equals(counter))
+                continue;
 
             Double baseline = ChallengeUtil.getWMABaseline(state, counter, execDate);
             Map<Integer, Double> quant = stats.getQuantiles(counter);
@@ -625,14 +695,17 @@ public class RecommendationSystem {
     protected List<ChallengeExpandedDTO> assignLimitV2(int limit, PlayerStateDTO state, DateTime d) {
 
         // Check if we have to intervene
-        List<ChallengeExpandedDTO> rep = repetitiveIntervene(state, d);
-        if (rep != null)
-            return rep;
+        ChallengeExpandedDTO rep = repetitiveIntervene(state, d);
+        if (rep != null) {
+            List<ChallengeExpandedDTO> ls = new ArrayList<>();
+            ls.add(rep);
+            return ls;
+        }
 
         return assignLimit(limit, state, d);
     }
 
-    public List<ChallengeExpandedDTO> repetitiveIntervene(PlayerStateDTO state, DateTime dt) {
+    public ChallengeExpandedDTO repetitiveIntervene(PlayerStateDTO state, DateTime dt) {
 
         try {
             Map<Integer, double[]> cache = extractRepetitivePerformance(state.getPlayerId(), dt);
@@ -644,13 +717,13 @@ public class RecommendationSystem {
             if (slot == 0)
                 return null;
 
-            Pair<Double, Double> tg = repetitiveTarget(state, repetitiveDifficulty);
+            Pair<Double, Double> tg = repetitiveTarget(state, slot);
             Double repScore = tg.getSecond();
             double repTarget = tg.getFirst();
 
             // Create
 
-            ChallengeExpandedDTO rep = rscg.prepareChallangeImpr("correctErraticBehaviour", "green leaves");
+            ChallengeExpandedDTO rep = rscg.prepareChallangeImpr("correctErraticBehaviour", ecoLeaves);
             rep.setModelName("repetitiveBehaviour");
             rep.setData("periodName", "daily");
             rep.setData("periodTarget", slot * 1.0);
@@ -662,11 +735,8 @@ public class RecommendationSystem {
             rep.setInfo("id", 0);
             rep.setPriority(1);
 
-            List <ChallengeExpandedDTO> ls = new ArrayList<>();
-            ls.add(rep);
-
             pf("### NewRepetitive, %s, %d, %.2f, %.2f\n", state.getPlayerId(), slot, repTarget, repScore);
-            return ls;
+            return rep;
 
         } catch (Exception e) {
             logger.error(e);
@@ -676,14 +746,12 @@ public class RecommendationSystem {
     }
 
     protected int repetitiveSlot(double ent) {
-        if (ent < -1.5)
-            return 0;
-
-        int slot = 2;
-        if (ent < -1.3) slot = 5;
-        else if (ent < -1.1) slot = 4;
-        else if (ent < -0.9) slot = 3;
-
+        int slot;
+        if (ent < -1.6) slot = 6;
+        else if (ent < -1.3) slot = 5;
+        else if (ent < -1.0) slot = 4;
+        else if (ent < -0.7) slot = 3;
+        else slot = 2;
         return slot;
     }
 
@@ -712,7 +780,13 @@ public class RecommendationSystem {
         DateTime lastMonday = dt.minusDays(week_day-1).minusDays(7);
         DateTime start = lastMonday.minusDays( 7 * 4);
 
-        Map<String, Double> perfomance = getPostgresPerformance(postgresUrl, start, dt, gameId, pId);
+        Map<String, Double> perfomance = null;
+        try {
+            perfomance = getPostgresPerformance(postgresUrl, start, dt, gameId, pId);
+        } catch (SQLException e) {
+            p(e);
+            return null;
+        }
 
         Map<Integer, double[]> cacheAll = new HashMap<>();
         for (int i = 0; i < 5; i++) {
@@ -741,7 +815,7 @@ public class RecommendationSystem {
     }
 
     
-    public Map<String, Double> getPostgresPerformance(String postgresUrl, DateTime start, DateTime end, String gameId, String playerId) {
+    public Map<String, Double> getPostgresPerformance(String postgresUrl, DateTime start, DateTime end, String gameId, String playerId) throws SQLException {
 		
 		/**
 		SELECT
@@ -807,18 +881,23 @@ public class RecommendationSystem {
 		return res;
     	
     }
-    
+
     public Pair<Double, Double> repetitiveTarget(PlayerStateDTO state, double repDifficulty) {
-        String mode = "green leaves";
+        return repetitiveTarget(state, repDifficulty, ecoLeaves);
+    }
+    
+    public Pair<Double, Double> repetitiveTarget(PlayerStateDTO state, double slots, String mode) {
         Pair<Double, Double> res = rscg.forecastMode(state, mode);
         double target = res.getFirst();
         double baseline = res.getSecond();
         target = roundTarget(mode, target);
+
         ChallengeExpandedDTO cdd = rscg.generatePercentage(baseline, mode, target, true);
         double score = (Double) cdd.getData("bonusScore");
 
         // repDifficulty should be in (1-15) range, def value 5
-        double repTarget = target / (15 - repDifficulty);
+        double repTarget = Math.ceil(target * repetitiveDifficulty / slots);
+       repTarget = Math.max(repTarget, 1.0);
 
         // return target, score
         return new Pair<Double, Double>(repTarget, score);
@@ -830,15 +909,8 @@ public class RecommendationSystem {
 
             for (Integer wk: cacheEnt.keySet()) {
                 double[] cacheWeek = cacheEnt.get(wk);
-                double tot = 0, ent = 0;
-                for (double e: cacheWeek) tot += e;
-                if (tot <= 0) continue;
-                for (double e: cacheWeek) {
-                    // p(e);
-                    if (e <= 0) continue;
-                    double p = e / tot;
-                    ent += p * Math.log(p);
-                }
+                Double ent = getEntropy(cacheWeek);
+                if (ent == null) continue;
 
                 allEnt.add(ent);
             }
@@ -861,6 +933,19 @@ public class RecommendationSystem {
         double ent = den / num;
 
             return ent;
+    }
+
+    private Double getEntropy(double[] cacheWeek) {
+        double tot = 0, ent = 0;
+        for (double e: cacheWeek) tot += e;
+        if (tot <= 0) return null;
+        for (double e: cacheWeek) {
+            // p(e);
+            if (e <= 0) continue;
+            double p = e / tot;
+            ent += p * Math.log(p);
+        }
+        return ent;
     }
 
     protected Map<Integer, double[]> getTimeSeriesPerformance(String response) throws ParseException {
@@ -1171,7 +1256,7 @@ public class RecommendationSystem {
         List<LeaderboardPosition> result = new ArrayList<LeaderboardPosition>();
         for (PlayerStateDTO content : gameData) {
             for (PointConcept pc : content.getState().getPointConcept()) {
-                if (pc.getName().equals("green leaves")) {
+                if (pc.getName().equals(ecoLeaves)) {
                     Integer score = (int) Math.round(pc
                             .getPeriodCurrentScore("weekly"));
                     result.add(new LeaderboardPosition(score, content
@@ -1350,7 +1435,7 @@ public class RecommendationSystem {
             double green_leaves = -1;
             for (GameConcept gc: state.getState().get("PointConcept")) {
                 PointConcept pt = (PointConcept) gc;
-                if ("green leaves".equals(pt.getName()))
+                if (ecoLeaves.equals(pt.getName()))
                     green_leaves = pt.getScore();
             }
 

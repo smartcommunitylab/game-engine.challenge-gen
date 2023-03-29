@@ -508,7 +508,7 @@ p(gameId);
     @Test
     public void checkHSCGeneration() {
 
-        conf.put("GAMEID", "640ef0a3d82bd2057035f94e");
+        conf.put("GAMEID", "63eb47e2f3ffe74ae078d250");
 
         DateTime execDate = new DateTime("2023-03-28");
 
@@ -524,8 +524,8 @@ p(gameId);
         modelTypes.add(ChallengesConfig.GREEN_LEAVES);
 
         Map<String, String> creationRules = new HashMap<>();
-        creationRules.put("1", "mobilityAbsolute");
-        creationRules.put("2", "mobilityRepetitive");
+        creationRules.put("2", "mobilityAbsolute");
+        creationRules.put("1", "mobilityRepetitive");
 
         Map<String, Object> config = cloneMap(conf);
         config.put("start", fmt.print(startDate));
@@ -538,6 +538,9 @@ p(gameId);
         reward.put("scoreType", "green leaves");
 
         List<ChallengeExpandedDTO> chas = api.createStandardSingleChallenges(conf, modelTypes, creationRules, true, config, "all", reward);
+
+        for (ChallengeExpandedDTO cha: chas)
+            p(cha);
     }
 
     private Map<String, Object> cloneMap(Map<String, String> conf) {
