@@ -311,7 +311,7 @@ public class RecommendationSystem {
 
         Map<String, Object> cs = facade.getCustomDataPlayer(gameId, pId);
 
-        int w = this.getChallengeWeek(execDate);
+        int w = this.getChallengeWeek(execDate, execDate);
 
         if (cs == null)
             return;
@@ -496,7 +496,7 @@ public class RecommendationSystem {
 
     protected List<ChallengeExpandedDTO> assignLimit(int limit, PlayerStateDTO state, DateTime d) {
 
-        List<ChallengeExpandedDTO> list = recommendAll(state, d);
+        List<ChallengeExpandedDTO> list = recommendAll(state, d, limit);
         if (list == null || list.isEmpty())
             return null;
 
@@ -962,6 +962,10 @@ public class RecommendationSystem {
     }
 
     public List<ChallengeExpandedDTO> recommendAll(PlayerStateDTO state, DateTime d) {
+        return recommendAll(state, d, null);
+    }
+
+    public List<ChallengeExpandedDTO> recommendAll(PlayerStateDTO state, DateTime d, Integer limit) {
 
         List<ChallengeExpandedDTO> challanges = new ArrayList<>();
         for (String mode : modelTypes) {
@@ -974,16 +978,26 @@ public class RecommendationSystem {
 
         }
 
+        if (limit != null && challanges.size() < limit) {
+            // get a new challenge
+            String mode = modelTypes.iterator().next();
+            challanges.addAll(rscg.generate(state, mode, true));
+        }
+
         return rscf.filter(challanges, state, d);
     }
 
     public static int getChallengeWeek(DateTime d) {
-        int s = getChallengeDay(d);
-        return (s/7) +1;
+        return getChallengeWeek(d, d);
     }
 
-    public static int getChallengeDay(DateTime d) {
-        return daysApart(d, parseDate("29/10/2018"));
+    public static int getChallengeWeek(DateTime d, DateTime s) {
+        int v = getChallengeDay(d, s);
+        return (v/7) +1;
+    }
+
+    public static int getChallengeDay(DateTime d, DateTime s) {
+        return daysApart(d, s);
     }
 
     /*

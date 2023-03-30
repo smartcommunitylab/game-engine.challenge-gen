@@ -29,13 +29,17 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
     }
 
     public List<ChallengeExpandedDTO> generate(PlayerStateDTO state, String mode) {
+        return generate(state, mode, false);
+    }
+
+    public List<ChallengeExpandedDTO> generate(PlayerStateDTO state, String mode, boolean easier) {
 
         prepare(rs.chaWeek);
 
         List<ChallengeExpandedDTO> output = new ArrayList<>();
 
         Double currentValue = rs.getWeeklyContentMode(state, mode, rs.lastMonday);
-        currentValue  = round(currentValue, 1);
+        currentValue = round(currentValue, 1);
 
         lastCounter = -1.0;
 
@@ -58,7 +62,9 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
 
                 target = checkMax(target, mode);
 
-            ChallengeExpandedDTO cdd = generatePercentage(baseline, mode, target);
+                if (easier) target *= 0.9;
+
+                ChallengeExpandedDTO cdd = generatePercentage(baseline, mode, target);
                 if (cdd != null)
                     output.add(cdd);
 
