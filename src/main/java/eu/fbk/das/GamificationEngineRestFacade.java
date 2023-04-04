@@ -51,6 +51,8 @@ public class GamificationEngineRestFacade {
     private final GameControllerApi gameApi;
 
     private final HashMap<String, Map<String, PlayerStateDTO>> gameStateCache;
+    
+    public static final String ACTIVE_CAMPAIGN_KEY = "activePlayer";
 
     public GamificationEngineRestFacade(final String endpoint, final String username, final String password) {
 
@@ -141,15 +143,22 @@ public class GamificationEngineRestFacade {
         return players;
     }
 
-    private void addAllPlayers(Set<String> players, List<PlayerStateDTO> content) {
-        // Map<String, PlayerStateDTO> contentCache = getGameCache(gameId);
+	private void addAllPlayers(Set<String> players, List<PlayerStateDTO> content) {
+		// Map<String, PlayerStateDTO> contentCache = getGameCache(gameId);
 
-        for (PlayerStateDTO st: content) {
-            String playerId = st.getPlayerId();
-            players.add(playerId);
-           //  contentCache.put(playerId, st);
-        }
-    }
+		for (PlayerStateDTO st : content) {
+			String playerId = st.getPlayerId();
+			
+			// contentCache.put(playerId, st);
+
+			// filter custom data.
+			if (st.getCustomData().containsKey(ACTIVE_CAMPAIGN_KEY)
+					&& st.getCustomData().get(ACTIVE_CAMPAIGN_KEY).equals(false)) {
+				continue;
+			}
+			players.add(playerId);
+		}
+	}
 
     private void apiErr(Exception e) {
         p("ERRORE NELL'ESECUZIONE DI UNA API");

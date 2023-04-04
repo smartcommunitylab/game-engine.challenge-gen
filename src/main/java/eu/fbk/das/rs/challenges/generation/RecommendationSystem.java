@@ -514,7 +514,7 @@ public class RecommendationSystem {
 
         for (int i = 0; i < limit -1 && ix < list.size(); i++) {
             boolean found = false;
-            while (!found) {
+            while (!found && ix < list.size()) {
 
                 cha = list.get(ix++);
                 counter = (String) cha.getData("counterName");
