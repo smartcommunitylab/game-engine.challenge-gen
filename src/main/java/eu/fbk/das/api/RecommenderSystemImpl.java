@@ -88,6 +88,12 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
         List<ChallengeExpandedDTO> chas = new ArrayList<>();
 
         StringBuilder errors = new StringBuilder();
+        
+        System.out.println("\n##################### configMap #####################");
+        config.entrySet().forEach(entry -> {
+            System.out.println(entry.getKey() + " " + entry.getValue());
+        });
+        System.out.println("#########################################################\n");
 
         for (String pId: players) {
 
