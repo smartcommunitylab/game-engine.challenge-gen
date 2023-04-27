@@ -79,7 +79,14 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
     @Override
     public List<ChallengeExpandedDTO> createStandardSingleChallenges(Map<String, String> conf, Set<String> modelTypes, Map<String, String> creationRules, Map<String, Object> config, String playerSet, Map<String, String> rewards) {
 
-        if (playerSet == null || "".equals(playerSet))
+       
+		System.out.println("\n##################### configMap #####################");
+		config.entrySet().forEach(entry -> {
+			System.out.println(entry.getKey() + " " + entry.getValue());
+		});
+		System.out.println("#########################################################\n");
+
+    	if (playerSet == null || "".equals(playerSet))
             playerSet = "all";
 
         checkUpdateRs(conf);
@@ -89,12 +96,6 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 
         StringBuilder errors = new StringBuilder();
         
-        System.out.println("\n##################### configMap #####################");
-        config.entrySet().forEach(entry -> {
-            System.out.println(entry.getKey() + " " + entry.getValue());
-        });
-        System.out.println("#########################################################\n");
-
         for (String pId: players) {
 
             try {
