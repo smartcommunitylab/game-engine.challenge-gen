@@ -537,7 +537,10 @@ public class RecommendationSystem {
         System.out.println(res.size() + " challenges with PROPOSED state (playerId: " + state.getPlayerId());
         
         ChallengeExpandedDTO g = repetitiveIntervene(state, d);
-        res.add(g);
+        if (g != null) {
+        	res.add(g);	
+        }
+        
 
         return res;
 
