@@ -351,15 +351,12 @@ public class GroupChallengesAssigner extends ChallengeUtil {
         // worst
         String pId = list.keySet().iterator().next();
         list.remove(pId);
-
         pf("Assigning repetitive(single challenge) to: %s \n", pId);
-
-        // ASSIGN repetitive behaviour
-        ChallengeAssignmentDTO rep = rs.rscg.getRepetitive(pId);
+//      ChallengeAssignmentDTO rep = rs.rscg.getRepetitive(pId); // old
+        ChallengeAssignmentDTO rep = rs.rscg.getFixedRepetitive(pId);
         rep.setStart(startDate.toDate());
         rep.setEnd(endDate.toDate());
-
-        System.out.println("\n********* single challenge ******");
+        System.out.println("\n********* single challenge (Repetitive Fixed) ******");
         System.out.println(rep.getInstanceName());
         rep.getData().entrySet().forEach(entry -> {
             System.out.println(entry.getKey() + " " + entry.getValue());
@@ -367,9 +364,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
         System.out.println("Start: " + rep.getStart());
         System.out.println("End: " + rep.getEnd());
         System.out.println("***********************************\n");
-
         rs.facade.assignChallengeToPlayer(rep, rs.gameId, pId);
-
         return list;
     }
 

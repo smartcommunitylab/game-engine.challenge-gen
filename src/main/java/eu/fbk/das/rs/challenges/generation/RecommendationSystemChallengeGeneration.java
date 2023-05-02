@@ -1,6 +1,7 @@
 package eu.fbk.das.rs.challenges.generation;
 
 import eu.fbk.das.model.ChallengeExpandedDTO;
+import eu.fbk.das.old.Constants;
 import eu.fbk.das.rs.challenges.ChallengeUtil;
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
 import eu.fbk.das.utils.Pair;
@@ -407,6 +408,23 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
         return rs.getWeeklyContentMode(state, counter, date);
     }
 
+    public ChallengeExpandedDTO getFixedRepetitive(String pId) {
+        ChallengeExpandedDTO repchallenge = new ChallengeExpandedDTO();
+        repchallenge.setModelName(Constants.REPETITIVE_BEHAVIOUR);
+        repchallenge.setData("bonusPointType", Constants.MODE_GREEN_LEAVES);
+        repchallenge.setData("counterName", Constants.MODE_GREEN_LEAVES);
+        repchallenge.setInstanceName("rs_fixed_" + UUID.randomUUID());
+        repchallenge.setData("periodName", "daily");
+        repchallenge.setData("periodTarget", 7);
+        repchallenge.setData("target", 30);
+        repchallenge.setData("bonusScore", 150);
+        repchallenge.setState("assigned");
+        repchallenge.setOrigin("rs");
+        repchallenge.setInfo("id", 0);
+        repchallenge.setInfo("player", pId);        
+        return repchallenge;
+    }
+    
     public ChallengeExpandedDTO getRepetitive(String pId) {
 
         ChallengeExpandedDTO rep = prepareChallangeImpr("green leaves");

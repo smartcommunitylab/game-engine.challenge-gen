@@ -58,6 +58,7 @@ public final class Constants {
     public static final String POI_STATE = "poiState";
     public static final String EVENT_STATE = "eventState";
     public static final String MIN_MAX_SEPARATOR = "<";
+    public static final String MODE_GREEN_LEAVES = "green leaves";
 
     // counters for rules
     public static final String[] COUNTERS = {"gp_current", "zero_impact_trips_past", "walk_km_past",
