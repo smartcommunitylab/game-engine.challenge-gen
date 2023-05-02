@@ -590,7 +590,7 @@ public class RecommendationSystem {
 
     protected int repetitiveSlot(double ent) {
         if (ent < -1.5)
-            return 0;
+            return 6;
 
         int slot = 2;
         if (ent < -1.3) slot = 5;
