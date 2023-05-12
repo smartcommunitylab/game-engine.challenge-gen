@@ -415,9 +415,9 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
         repchallenge.setData("counterName", Constants.MODE_GREEN_LEAVES);
         repchallenge.setInstanceName("rs_fixed_" + UUID.randomUUID());
         repchallenge.setData("periodName", "daily");
-        repchallenge.setData("periodTarget", 7);
-        repchallenge.setData("target", 30);
-        repchallenge.setData("bonusScore", 150);
+        repchallenge.setData("periodTarget", 7.0);
+        repchallenge.setData("target", 30.0);
+        repchallenge.setData("bonusScore", 150.0);
         repchallenge.setState("assigned");
         repchallenge.setOrigin("rs");
         repchallenge.setInfo("id", 0);
