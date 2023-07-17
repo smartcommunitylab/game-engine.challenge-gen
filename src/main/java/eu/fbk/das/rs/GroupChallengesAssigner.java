@@ -84,6 +84,11 @@ public class GroupChallengesAssigner extends ChallengeUtil {
 
         players = removeNotPartecipating(players);
 
+        System.out.println("startDate -> " + startDate);
+        System.out.println("endDate -> " + endDate);
+        System.out.println("execDate -> " + execDate);
+        System.out.println("players -> " + players.size());
+        
         if (players.size() == 0)
             return new ArrayList<>();
 
@@ -95,9 +100,6 @@ public class GroupChallengesAssigner extends ChallengeUtil {
         HashMap<String, HashMap<String, Double>> playersCounterAssignment = getPlayerCounterAssignment(players, stats, modelTypes);
         
         System.out.println("\n##################### playersCounterAssignment #####################");
-        System.out.println("startDate -> " + startDate);
-        System.out.println("endDate -> " + endDate);
-        System.out.println("execDate -> " + execDate);
         System.out.println("playersCounterAssignment");
         playersCounterAssignment.entrySet().forEach(entry -> {
             System.out.println(entry.getKey() + " " + entry.getValue());

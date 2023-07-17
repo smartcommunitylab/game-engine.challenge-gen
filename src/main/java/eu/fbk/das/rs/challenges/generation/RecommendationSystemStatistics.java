@@ -60,6 +60,8 @@ public class RecommendationSystemStatistics extends ChallengeUtil {
         lastMondayKey = fmt.print(lastMonday);
         if (cache.containsKey(lastMondayKey)) return cache.get(lastMondayKey);
 
+        System.out.println("Stats Offline -> " + offline);
+        
         if (offline)
             return updateStatsOffline();
 
