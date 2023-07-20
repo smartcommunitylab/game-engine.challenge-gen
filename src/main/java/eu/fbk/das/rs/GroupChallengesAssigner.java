@@ -61,9 +61,6 @@ public class GroupChallengesAssigner extends ChallengeUtil {
 
         playerLimit = 0;
         timelimit = 600;
-        minLvl = 4;
-//        minLvl = 1; // REMOVE ME!
-        System.out.println("configured minimum level for group challenge: " + minLvl);
     }
 
     public List<GroupExpandedDTO> execute(Set<String> players, Set<String> modelTypes, String assignmentType, Map<String, Object> challengeValues) {
@@ -73,7 +70,8 @@ public class GroupChallengesAssigner extends ChallengeUtil {
                 .getDates(challengeValues.get("start"), challengeValues.get("duration"));
         startDate = new DateTime(challengeDates.getFirst());
         endDate = new DateTime(challengeDates.getSecond());
-
+        minLvl = (Integer) challengeValues.get("minLevel");
+        System.out.println("configured minimum level for group challenge: " + minLvl);
         prepare(getChallengeWeek(execDate));
 
         groupChallenges = new ArrayList<>();
