@@ -70,8 +70,12 @@ public class GroupChallengesAssigner extends ChallengeUtil {
                 .getDates(challengeValues.get("start"), challengeValues.get("duration"));
         startDate = new DateTime(challengeDates.getFirst());
         endDate = new DateTime(challengeDates.getSecond());
-        minLvl = (Integer) challengeValues.get("minLevel");
+        
+        if (challengeValues.containsKey("minLevel")) {
+        	minLvl = (Integer) challengeValues.get("minLevel");	
+        }        
         System.out.println("configured minimum level for group challenge: " + minLvl);
+        
         prepare(getChallengeWeek(execDate));
 
         groupChallenges = new ArrayList<>();
