@@ -22,7 +22,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
     private Set<String> players;
 
     private void prepare(String playerSet) {
-
+    	System.out.println("playerSet -> " + playerSet);
         if ("all".equals(playerSet))
             players = rs.facade.getGamePlayers(rs.gameId);
         else {
@@ -135,7 +135,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 
     @Override
     public List<GroupExpandedDTO> createStandardGroupChallenges(Map<String, String> conf, Set<String> modelTypes, String assignmentType, Map<String, Object> config, String playerSet, Map<String, String> rewards) {
-    	System.out.println("playerSet -> " + playerSet);
+
         if (playerSet == null || "".equals(playerSet))
             playerSet = "all";
 
