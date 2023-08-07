@@ -79,6 +79,8 @@ public class GroupChallengesAssigner extends ChallengeUtil {
         prepare(getChallengeWeek(execDate));
 
         groupChallenges = new ArrayList<>();
+        
+        System.out.println("players before filter -> " + players.size());
 
         players = filterLevel(players);
 
@@ -89,7 +91,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
         System.out.println("startDate -> " + startDate);
         System.out.println("endDate -> " + endDate);
         System.out.println("execDate -> " + execDate);
-        System.out.println("players -> " + players.size());
+        System.out.println("players after filter -> " + players.size());
         
         if (players.size() == 0)
             return new ArrayList<>();
