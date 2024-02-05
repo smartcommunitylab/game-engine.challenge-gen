@@ -1,6 +1,7 @@
 package eu.fbk.das.api;
 
 import eu.fbk.das.model.GroupExpandedDTO;
+import eu.fbk.das.rs.challenges.Challenge;
 import eu.fbk.das.model.ChallengeExpandedDTO;
 import it.smartcommunitylab.model.ext.GroupChallengeDTO;
 
@@ -45,6 +46,15 @@ public interface RecommenderSystemAPI {
      */
     public List<GroupExpandedDTO> createStandardGroupChallenges(Map<String, String> conf, Set<String> modelTypes, String assignmentType, Map<String, Object> config, String playerSet, Map<String, String> rewards);
 
+    /**
+     * 
+     * @param conf keys: host / user / pass / gameId
+     * @param creationRules assigns to each week (key) a list of challenges
+     * @param config keys: start / end / challengeWeek / execDate (required), hide (optional)
+     * @return
+     */
+	public List<ChallengeExpandedDTO> createHSCChallenges(Map<String, String> conf, Map<String, List<Challenge>> creationRules, Map<String, Object> config);
+    
     public boolean assignSingleChallenge(Map<String, String> conf, ChallengeExpandedDTO cha);
 
     public boolean assignGroupChallenge(Map<String, String> conf, GroupExpandedDTO cha);
