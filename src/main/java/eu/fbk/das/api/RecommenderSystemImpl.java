@@ -25,7 +25,9 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 
 	private static RecommendationSystem rs;
 	private Set<String> players;
-
+	private static final String MEMBERS_PLAYERS = "member";
+	private static final String TEAM_PLAYERS = "team";
+	
 	private void prepare(String playerSet) {
 		System.out.println("playerSet -> " + playerSet);
 		if ("all".equals(playerSet))
@@ -297,16 +299,66 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 	@Override
 	public List<ChallengeExpandedDTO> createHSCChallenges(Map<String, String> conf,
 			Map<String, List<Challenge>> creationRules, Map<String, Object> config) {
-		
+
 		printConfig(creationRules, config);
-		
-		// here to insert code of HSC Challenge generation.
 		List<ChallengeExpandedDTO> chas = new ArrayList<>();
+		checkUpdateRs(conf);		
 		
+		// read challenge Week 0,1,2
+		String challengeWeek = conf.get("challengeWeek");
+		if (challengeWeek != null && !challengeWeek.isEmpty()) {
+			// read challenge configuration for week.
+			List<Challenge> challengeConfigs = creationRules.get(challengeWeek);
+			for (Challenge rCfg: challengeConfigs) {
+				// prepare players.
+				preparePlayers(rCfg.getPlayerSet());
+				// recommend Weekly
+				for (String pId : players) {
+//					List<ChallengeExpandedDTO> challenges = rs.recommend(pId, modelTypes, creationRules, config,
+//							isLevelStrategy);
+
+//					for (ChallengeExpandedDTO cha : challenges) {
+//						// set data
+//						dataCha(cha, config);
+//						// set reward;
+//						reward(cha, rewards);
+//
+//						cha.setInfo("gameId", rs.gameId);
+//						cha.setInfo("pId", pId);
+//						chas.add(cha);
+//
+//						pf("playerId: %s, instanceName: %s, model: %s, s: %s, e: %s, f: %s\n", pId,
+//								cha.getInstanceName(), cha.getModelName(), cha.getStart(), cha.getEnd(),
+//								cha.printData());
+//					}
+				}			
+			}			
+		}
 		return chas;
+
+	}
+
+	private void preparePlayers(Set<String> playerSet) {
+		if (playerSet != null && !playerSet.isEmpty()) {
+            if (playerSet.contains(TEAM_PLAYERS)) {
+            	players.addAll(rs.facade.getTeamPlayers(rs.gameId));
+            } else if (playerSet.contains(MEMBERS_PLAYERS)) {
+            	players.addAll(rs.facade.getMemberPlayers(rs.gameId));	
+            } else {
+            	for (String p: playerSet) {
+    		    	players.add(p.trim());
+    		    }            	
+            }
+		}	
 	}
 
 	private void printConfig(Map<String, List<Challenge>> creationRules, Map<String, Object> config) {
+		// read challenge Week 0,1,2
+		// read challenge configuration for week.
+		// call gamification to get player set of challenge week configuration.
+		// prepare players.
+		// recommend Weekly
+
 		System.out.println("\n##################### configMap #####################");
 		config.entrySet().forEach(entry -> {
 			System.out.println(entry.getKey() + " " + entry.getValue());
@@ -316,11 +368,11 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 		creationRules.entrySet().forEach(entry -> {
 			System.out.println("week index: " + entry.getKey());
 			System.out.println("\n##################### challenges #####################");
-			for (Challenge ch: entry.getValue()) {
-			    System.out.println(ch);
+			for (Challenge ch : entry.getValue()) {
+				System.out.println(ch);
 			}
 			System.out.println("\n##########################################");
-		});		
+		});
 	}
-	
+
 }

@@ -42,358 +42,401 @@ import it.smartcommunitylab.model.ext.GroupChallengeDTO.RewardDTO;
 
 public class GamificationEngineRestFacade {
 
-    // API: https://dev.smartcommunitylab.it/gamification/swagger-ui.html
+	// API: https://dev.smartcommunitylab.it/gamification/swagger-ui.html
 
-    private static final Logger logger = Logger
-            .getLogger(GamificationEngineRestFacade.class);
+	private static final Logger logger = Logger.getLogger(GamificationEngineRestFacade.class);
 
-    private final PlayerControllerApi playerApi;
-    private final GameControllerApi gameApi;
+	private final PlayerControllerApi playerApi;
+	private final GameControllerApi gameApi;
 
-    private final HashMap<String, Map<String, PlayerStateDTO>> gameStateCache;
-    
-    public static final String ACTIVE_CAMPAIGN_KEY = "activePlayer";
+	private final HashMap<String, Map<String, PlayerStateDTO>> gameStateCache;
 
-    public GamificationEngineRestFacade(final String endpoint, final String username, final String password) {
+	public static final String IS_TEAM = "isTeam";
 
-        ApiClient client = new ApiClient(endpoint);
-        client.setUsername(username);
-        client.setPassword(password);
+	public GamificationEngineRestFacade(final String endpoint, final String username, final String password) {
 
-        playerApi = new PlayerControllerApi(client);
-        gameApi = new GameControllerApi(client);
+		ApiClient client = new ApiClient(endpoint);
+		client.setUsername(username);
+		client.setPassword(password);
 
-        gameStateCache = new HashMap<>();
-    }
+		playerApi = new PlayerControllerApi(client);
+		gameApi = new GameControllerApi(client);
 
-    public PlayerStateDTO getPlayerState(String gameId, String pId) {
+		gameStateCache = new HashMap<>();
+	}
 
-        checkGameId(gameId);
-        checkPlayerId(pId);
+	public PlayerStateDTO getPlayerState(String gameId, String pId) {
 
-        Map<String, PlayerStateDTO> contentCache = getGameCache(gameId);
+		checkGameId(gameId);
+		checkPlayerId(pId);
 
-        if (!contentCache.containsKey(pId)) {
-            try {
-                //PlayerStateDTO state = playerApi.readPlayerUsingGET(gameId, pId, true, null, null);
-                PlayerStateDTO state = playerApi.readPlayerUsingGET(gameId, pId, true, null, null);
-                contentCache.put(pId, state);
-            } catch (Exception e) {
-                apiErr(e);
-                return null;
-            }
-        }
+		Map<String, PlayerStateDTO> contentCache = getGameCache(gameId);
 
-        return contentCache.get(pId);
-    }
+		if (!contentCache.containsKey(pId)) {
+			try {
+				PlayerStateDTO state = playerApi.readPlayerUsingGET(gameId, pId, true, null, null);
+				contentCache.put(pId, state);
+			} catch (Exception e) {
+				apiErr(e);
+				return null;
+			}
+		}
 
-    private Map<String, PlayerStateDTO> getGameCache(String gameId) {
-        if (!gameStateCache.containsKey(gameId))
-            gameStateCache.put(gameId, new HashMap<>());
+		return contentCache.get(pId);
+	}
 
-        return gameStateCache.get(gameId);
-    }
+	private Map<String, PlayerStateDTO> getGameCache(String gameId) {
+		if (!gameStateCache.containsKey(gameId))
+			gameStateCache.put(gameId, new HashMap<>());
 
-    private void checkPlayerId(String pId) {
-        if (pId == null) {
-            throw new IllegalArgumentException("playerId cannot be null");
-        }
-    }
+		return gameStateCache.get(gameId);
+	}
 
-    private void checkGameId(String gameId) {
-        if (gameId == null || "".equals(gameId)) {
-            throw new IllegalArgumentException("gameId cannot be null");
-        }
-    }
+	private void checkPlayerId(String pId) {
+		if (pId == null) {
+			throw new IllegalArgumentException("playerId cannot be null");
+		}
+	}
 
-    /**
-     * Gets the list of playerIds in the given game
-     *
-     * @param gameId id of the game
-     * @return list of playerIds
-     */
-    public Set<String> getGamePlayers(String gameId) {
-        checkGameId(gameId);
+	private void checkGameId(String gameId) {
+		if (gameId == null || "".equals(gameId)) {
+			throw new IllegalArgumentException("gameId cannot be null");
+		}
+	}
 
-        Set<String> players = new TreeSet<>();
-        String size = "100";
+	/**
+	 * Gets the list of playerIds in the given game
+	 *
+	 * @param gameId id of the game
+	 * @return list of playerIds
+	 */
+	public Set<String> getGamePlayers(String gameId) {
+		checkGameId(gameId);
 
-        Projection p = new Projection();
-        p.addIncludeItem("playerId");
-        RawSearchQuery rw = new RawSearchQuery();
-        rw.setProjection(p);
-        WrapperQuery q = new WrapperQuery();
-        q.setRawQuery(rw);
+		Set<String> players = new TreeSet<>();
+		String size = "100";
 
-        try {
-            PagePlayerStateDTO result = playerApi.searchByQueryUsingPOST(gameId,  q,"1", size);
-            int totPages = result.getTotalPages();
-            addAllPlayers(players, result.getContent());
-            if(totPages > 1) {
-	            for (int i = 2; i <= totPages; i++) {
-	                result = playerApi.searchByQueryUsingPOST(gameId, q, Integer.toString(i), size);
-	                addAllPlayers(players, result.getContent());
-	            }
-            }
-        } catch (Exception e) {
-            apiErr(e);
-            return null;
-        }
+		Projection p = new Projection();
+		p.addIncludeItem("playerId");
+		RawSearchQuery rw = new RawSearchQuery();
+		rw.setProjection(p);
+		WrapperQuery q = new WrapperQuery();
+		q.setRawQuery(rw);
 
-        return players;
-    }
+		try {
+			PagePlayerStateDTO result = playerApi.searchByQueryUsingPOST(gameId, q, "1", size);
+			int totPages = result.getTotalPages();
+			addAllPlayers(players, result.getContent());
+			if (totPages > 1) {
+				for (int i = 2; i <= totPages; i++) {
+					result = playerApi.searchByQueryUsingPOST(gameId, q, Integer.toString(i), size);
+					addAllPlayers(players, result.getContent());
+				}
+			}
+		} catch (Exception e) {
+			apiErr(e);
+			return null;
+		}
+
+		return players;
+	}
 
 	private void addAllPlayers(Set<String> players, List<PlayerStateDTO> content) {
 		// Map<String, PlayerStateDTO> contentCache = getGameCache(gameId);
 
 		for (PlayerStateDTO st : content) {
 			String playerId = st.getPlayerId();
-			
-			// contentCache.put(playerId, st);
-
-			// filter custom data.
-			if (st.getCustomData().containsKey(ACTIVE_CAMPAIGN_KEY)
-					&& st.getCustomData().get(ACTIVE_CAMPAIGN_KEY).equals(false)) {
-				continue;
-			}
 			players.add(playerId);
+			// contentCache.put(playerId, st);
 		}
 	}
 
-    private void apiErr(Exception e) {
-        p("ERRORE NELL'ESECUZIONE DI UNA API");
-        logger.error(e);
-    }
+	private void apiErr(Exception e) {
+		p("ERRORE NELL'ESECUZIONE DI UNA API");
+		logger.error(e);
+	}
 
-    private void apiErr(ApiException e) {
-        p("ERRORE NELL'ESECUZIONE DI UNA API");
-        logger.error(e.getResponseBody());
-    }
+	private void apiErr(ApiException e) {
+		p("ERRORE NELL'ESECUZIONE DI UNA API");
+		logger.error(e.getResponseBody());
+	}
 
-    public boolean assignChallengeToPlayer(ChallengeAssignmentDTO cdd, String gameId, String playerId) {
-        if (cdd == null || gameId == null || playerId == null) {
-            throw new IllegalArgumentException("challenge, gameId and playerId cannot be null");
-        }
+	public boolean assignChallengeToPlayer(ChallengeAssignmentDTO cdd, String gameId, String playerId) {
+		if (cdd == null || gameId == null || playerId == null) {
+			throw new IllegalArgumentException("challenge, gameId and playerId cannot be null");
+		}
 
-        try {
-            playerApi.assignChallengeUsingPOST(cdd, gameId, playerId);
-        } catch (ApiException e) {
-            apiErr(e);
-            return false;
-        }
+		try {
+			playerApi.assignChallengeUsingPOST(cdd, gameId, playerId);
+		} catch (ApiException e) {
+			apiErr(e);
+			return false;
+		}
 
-        return true;
-    }
+		return true;
+	}
 
-    public boolean assignGroupChallenge(GroupChallengeDTO cdd, String gameId) {
-        if (cdd == null || gameId == null) {
-            throw new IllegalArgumentException("challenge, gameId and playerId cannot be null");
-        }
+	public boolean assignGroupChallenge(GroupChallengeDTO cdd, String gameId) {
+		if (cdd == null || gameId == null) {
+			throw new IllegalArgumentException("challenge, gameId and playerId cannot be null");
+		}
 
-        try {
-            playerApi.assignGroupChallengeUsingPOST(cdd, gameId);
-        } catch (ApiException e) {
-            apiErr(e);
-            return false;
-        }
+		try {
+			playerApi.assignGroupChallengeUsingPOST(cdd, gameId);
+		} catch (ApiException e) {
+			apiErr(e);
+			return false;
+		}
 
-        return true;
-    }
+		return true;
+	}
 
-    public List<ChallengeConcept> getChallengesPlayer(String gameId, String playerId) {
-        if (gameId == null || playerId == null) {
-            throw new IllegalArgumentException("challenge, gameId and playerId cannot be null");
-        }
+	public List<ChallengeConcept> getChallengesPlayer(String gameId, String playerId) {
+		if (gameId == null || playerId == null) {
+			throw new IllegalArgumentException("challenge, gameId and playerId cannot be null");
+		}
 
-        try {
-            return playerApi.getPlayerChallengeUsingGET(gameId, playerId);
-        } catch (ApiException e) {
-            apiErr(e);
-            return null;
-        }
-    }
+		try {
+			return playerApi.getPlayerChallengeUsingGET(gameId, playerId);
+		} catch (ApiException e) {
+			apiErr(e);
+			return null;
+		}
+	}
 
-    public List<GameStatistics> readGameStatistics(String gameId, DateTime timestamp, String pcName) {
-        checkGameId(gameId);
-        List<GameStatistics> res;
+	public List<GameStatistics> readGameStatistics(String gameId, DateTime timestamp, String pcName) {
+		checkGameId(gameId);
+		List<GameStatistics> res;
 
-        try {
-            res = gameApi.readGameStatisticsUsingGET(gameId, pcName, "weekly",
-                    timestamp.getMillis(), null, 1, 100); // take first 100 stats
-        } catch (ApiException e) {
-            apiErr(e);
-            return null;
-        }
+		try {
+			res = gameApi.readGameStatisticsUsingGET(gameId, pcName, "weekly", timestamp.getMillis(), null, 1, 100); // take
+																														// first
+																														// 100
+																														// stats
+		} catch (ApiException e) {
+			apiErr(e);
+			return null;
+		}
 
-        return res;
-    }
+		return res;
+	}
 
-    public List<GameStatistics> readGameStatistics(String gameId, DateTime timestamp) {
-        return readGameStatistics(gameId, timestamp, "");
-    }
-    
-    public GroupExpandedDTO makeGroupChallengeDTO(String gameId, String mode, String counter,
-            String pId1, String pId2, DateTime start, DateTime end, Map<String, Double> res) {
+	public List<GameStatistics> readGameStatistics(String gameId, DateTime timestamp) {
+		return readGameStatistics(gameId, timestamp, "");
+	}
 
-        GroupExpandedDTO gcd = new GroupExpandedDTO();
-        gcd.setChallengeModelName(mode);
-        gcd.setGameId(gameId);
-        gcd.setAttendees(new ArrayList<GroupChallengeDTO.AttendeeDTO>());
-        AttendeeDTO a1 = new AttendeeDTO();
-        a1.setPlayerId(pId1);
-        a1.setRole("GUEST");
+	public GroupExpandedDTO makeGroupChallengeDTO(String gameId, String mode, String counter, String pId1, String pId2,
+			DateTime start, DateTime end, Map<String, Double> res) {
 
-        gcd.getAttendees().add(a1);
+		GroupExpandedDTO gcd = new GroupExpandedDTO();
+		gcd.setChallengeModelName(mode);
+		gcd.setGameId(gameId);
+		gcd.setAttendees(new ArrayList<GroupChallengeDTO.AttendeeDTO>());
+		AttendeeDTO a1 = new AttendeeDTO();
+		a1.setPlayerId(pId1);
+		a1.setRole("GUEST");
 
-        AttendeeDTO a2 = new AttendeeDTO();
-        a2.setPlayerId(pId2);
-        a2.setRole("GUEST");
-        gcd.getAttendees().add(a2);
+		gcd.getAttendees().add(a1);
 
-        gcd.setChallengeTarget(Math.ceil(res.get("target")));
+		AttendeeDTO a2 = new AttendeeDTO();
+		a2.setPlayerId(pId2);
+		a2.setRole("GUEST");
+		gcd.getAttendees().add(a2);
 
-        PointConceptDTO cpc = new PointConceptDTO();
-        cpc.setName(counter);
-        cpc.setPeriod("weekly");
-        gcd.setChallengePointConcept(cpc);
+		gcd.setChallengeTarget(Math.ceil(res.get("target")));
 
-        RewardDTO r = new RewardDTO();
-        Map<String, Double> bonusScore = new HashMap<>();
-        bonusScore.put(pId1, Math.ceil(res.get("player1_prz")));
-        bonusScore.put(pId2, Math.ceil(res.get("player2_prz")));
-        r.setBonusScore(bonusScore);
-        
-        final PointConceptDTO calculationPointConcept = new PointConceptDTO();
-        calculationPointConcept.setName(counter);
-        // FIXME valid only for play&go
-        calculationPointConcept.setPeriod("weekly");
-        r.setCalculationPointConcept(calculationPointConcept);
-        final PointConceptDTO targetPointConcept = new PointConceptDTO();
-        targetPointConcept.setName(counter);
-        r.setTargetPointConcept(targetPointConcept);
-        
-        gcd.setReward(r);
+		PointConceptDTO cpc = new PointConceptDTO();
+		cpc.setName(counter);
+		cpc.setPeriod("weekly");
+		gcd.setChallengePointConcept(cpc);
 
-        gcd.setOrigin("gca");
-        gcd.setState("ASSIGNED");
+		RewardDTO r = new RewardDTO();
+		Map<String, Double> bonusScore = new HashMap<>();
+		bonusScore.put(pId1, Math.ceil(res.get("player1_prz")));
+		bonusScore.put(pId2, Math.ceil(res.get("player2_prz")));
+		r.setBonusScore(bonusScore);
 
-        gcd.setStart(start.toDate());
-        gcd.setEnd(end.toDate());
+		final PointConceptDTO calculationPointConcept = new PointConceptDTO();
+		calculationPointConcept.setName(counter);
+		// FIXME valid only for play&go
+		calculationPointConcept.setPeriod("weekly");
+		r.setCalculationPointConcept(calculationPointConcept);
+		final PointConceptDTO targetPointConcept = new PointConceptDTO();
+		targetPointConcept.setName(counter);
+		r.setTargetPointConcept(targetPointConcept);
 
-        return gcd;
-    }
+		gcd.setReward(r);
 
-    public static OffsetDateTime jodaToOffset(DateTime dt) {
-        long millis = dt.getMillis();
-        // java.time.Instant
-        Instant instant = Instant.ofEpochMilli(millis);
+		gcd.setOrigin("gca");
+		gcd.setState("ASSIGNED");
 
-        // get total offset (joda returns milliseconds, java.time takes seconds)
-        int offsetSeconds = dt.getZone().getOffset(millis) / 1000;
-        return OffsetDateTime.ofInstant(instant, ZoneOffset.ofTotalSeconds(offsetSeconds));
-    }
+		gcd.setStart(start.toDate());
+		gcd.setEnd(end.toDate());
 
-    public static OffsetDateTime dateToOffset(Date date) {
-        String s = formatDateAsUTC(date);
-        return OffsetDateTime.parse(s);
-    }
+		return gcd;
+	}
 
+	public static OffsetDateTime jodaToOffset(DateTime dt) {
+		long millis = dt.getMillis();
+		// java.time.Instant
+		Instant instant = Instant.ofEpochMilli(millis);
 
-    public static String formatDateAsUTC(Date date) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-        // sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        String s = sdf.format(date);
-        return addChar(s, ':', 22);
-    }
+		// get total offset (joda returns milliseconds, java.time takes seconds)
+		int offsetSeconds = dt.getZone().getOffset(millis) / 1000;
+		return OffsetDateTime.ofInstant(instant, ZoneOffset.ofTotalSeconds(offsetSeconds));
+	}
 
-    public static String addChar(String str, char ch, int position) {
-        return str.substring(0, position) + ch + str.substring(position);
-    }
+	public static OffsetDateTime dateToOffset(Date date) {
+		String s = formatDateAsUTC(date);
+		return OffsetDateTime.parse(s);
+	}
 
-    public static Pair<Date, Date> getDates(Object start, Object duration) {
+	public static String formatDateAsUTC(Date date) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+		// sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+		String s = sdf.format(date);
+		return addChar(s, ':', 22);
+	}
 
-        Date startDate = null;
-        Date endDate = null;
+	public static String addChar(String str, char ch, int position) {
+		return str.substring(0, position) + ch + str.substring(position);
+	}
 
-        if (start == null || duration == null) {
-            p("NULL START / DURATION!");
-            return new Pair<>(startDate, endDate);
-        }
+	public static Pair<Date, Date> getDates(Object start, Object duration) {
 
-        try {
-            startDate =
-                    ISODateTimeFormat.dateTimeNoMillis().parseLocalDateTime((String) start)
-                            .toDate();
+		Date startDate = null;
+		Date endDate = null;
 
-            String periodAsIsoFormat = "P" + ((String) duration).toUpperCase();
-            java.time.Period p = java.time.Period.parse(periodAsIsoFormat);
-            java.time.LocalDateTime endDateTime =
-                    new Timestamp(startDate.getTime()).toLocalDateTime().plus(p);
+		if (start == null || duration == null) {
+			p("NULL START / DURATION!");
+			return new Pair<>(startDate, endDate);
+		}
 
-            // remove one minute from endDate in order to have them end on 23:59
-            endDateTime = endDateTime.minusMinutes(1);
+		try {
+			startDate = ISODateTimeFormat.dateTimeNoMillis().parseLocalDateTime((String) start).toDate();
 
-            endDate = Date.from(endDateTime.atZone(java.time.ZoneId.systemDefault()).toInstant());
+			String periodAsIsoFormat = "P" + ((String) duration).toUpperCase();
+			java.time.Period p = java.time.Period.parse(periodAsIsoFormat);
+			java.time.LocalDateTime endDateTime = new Timestamp(startDate.getTime()).toLocalDateTime().plus(p);
 
-        } catch (Exception e) {
-            logger.error(e);
-        }
+			// remove one minute from endDate in order to have them end on 23:59
+			endDateTime = endDateTime.minusMinutes(1);
 
-        return new Pair<>(startDate, endDate);
-    }
+			endDate = Date.from(endDateTime.atZone(java.time.ZoneId.systemDefault()).toInstant());
 
-    public Map<String, Object> getCustomDataPlayer(String gameId, String pId) {
-        try {
-            return playerApi.readCustomDataUsingGET(gameId, pId);
-        } catch (ApiException e) {
-            apiErr(e);
-            return null;
-        }
-    }
+		} catch (Exception e) {
+			logger.error(e);
+		}
 
-    public void setCustomDataPlayer(String gameId, String pId, Map<String, Object> cs) {
-        try {
-            playerApi.updateCustomDataUsingPUT1(gameId, pId, cs);
-        } catch (ApiException e) {
-            apiErr(e);
-        }
-    }
+		return new Pair<>(startDate, endDate);
+	}
 
-    public Map<String, PlayerStateDTO> readGameState(String gameId) {
-        Set<String> players = getGamePlayers(gameId);
-        Map<String, PlayerStateDTO> res = new HashMap<>();
-        for (String pId: players) {
-            res.put(pId, getPlayerState(gameId, pId));
-        }
-        return res;
-    }
+	public Map<String, Object> getCustomDataPlayer(String gameId, String pId) {
+		try {
+			return playerApi.readCustomDataUsingGET(gameId, pId);
+		} catch (ApiException e) {
+			apiErr(e);
+			return null;
+		}
+	}
 
-    /*
-    public Map<String, Object> getCustomDataPlayer(String gameId, String playerId) {
-        if (gameId == null || playerId == null) {
-            throw new IllegalArgumentException("challenge, gameId and playerId cannot be null");
-        }
+	public void setCustomDataPlayer(String gameId, String pId, Map<String, Object> cs) {
+		try {
+			playerApi.updateCustomDataUsingPUT1(gameId, pId, cs);
+		} catch (ApiException e) {
+			apiErr(e);
+		}
+	}
 
-        try {
-            res = playerApi.read.readGameStatisticsUsingGET(gameId, pcName, "weekly", timestamp.getMillis(), "", -1, -1);
-        } catch (ApiException e) {
-            apiErr(e);
-            return null;
-        }
+	public Map<String, PlayerStateDTO> readGameState(String gameId) {
+		Set<String> players = getGamePlayers(gameId);
+		Map<String, PlayerStateDTO> res = new HashMap<>();
+		for (String pId : players) {
+			res.put(pId, getPlayerState(gameId, pId));
+		}
+		return res;
+	}
 
-        return res;
-    }
+	public Set<String> getTeamPlayers(String gameId) {
+		checkGameId(gameId);
+		Set<String> players = new TreeSet<>();
+		String size = "100";
+		Projection p = new Projection();
+		p.addIncludeItem("playerId");
+		p.addIncludeItem("metadata");
+		RawSearchQuery rw = new RawSearchQuery();
+		rw.setProjection(p);
+		WrapperQuery q = new WrapperQuery();
+		q.setRawQuery(rw);
 
-    public boolean setCustomDataPlayer(String gameId, String playerId, Map<String, Object> cs) {
-        if (gameId == null || playerId == null) {
-            throw new IllegalArgumentException("challenge, gameId and playerId cannot be null");
-        }
-        WebTarget target = getCustomDataPath(gameId, playerId);
-        Response response = put(target, cs);
-        return response != null;
-    }*/
+		try {
+			PagePlayerStateDTO result = playerApi.searchByQueryUsingPOST(gameId, q, "1", size);
+			int totPages = result.getTotalPages();
+			addTeamPlayers(players, result.getContent());
+			if (totPages > 1) {
+				for (int i = 2; i <= totPages; i++) {
+					result = playerApi.searchByQueryUsingPOST(gameId, q, Integer.toString(i), size);
+					addTeamPlayers(players, result.getContent());
+				}
+			}
+		} catch (Exception e) {
+			apiErr(e);
+			return null;
+		}
 
+		return players;
+	}
+
+	private void addTeamPlayers(Set<String> players, List<PlayerStateDTO> content) {
+		for (PlayerStateDTO st : content) {
+			if (st != null && isTeam(st)) {
+				players.add(st.getPlayerId());
+			}
+		}
+	}
+
+	private boolean isTeam(PlayerStateDTO state) {
+		return state.getCustomData().get(IS_TEAM) != null && (Boolean) (state.getCustomData().get(IS_TEAM));
+	}
+
+	public Set<String> getMemberPlayers(String gameId) {
+		checkGameId(gameId);
+		Set<String> players = new TreeSet<>();
+		String size = "100";
+		Projection p = new Projection();
+		p.addIncludeItem("playerId");
+		p.addIncludeItem("metadata");
+		RawSearchQuery rw = new RawSearchQuery();
+		rw.setProjection(p);
+		WrapperQuery q = new WrapperQuery();
+		q.setRawQuery(rw);
+
+		try {
+			PagePlayerStateDTO result = playerApi.searchByQueryUsingPOST(gameId, q, "1", size);
+			int totPages = result.getTotalPages();
+			addMemberPlayers(players, result.getContent());
+			if (totPages > 1) {
+				for (int i = 2; i <= totPages; i++) {
+					result = playerApi.searchByQueryUsingPOST(gameId, q, Integer.toString(i), size);
+					addTeamPlayers(players, result.getContent());
+				}
+			}
+		} catch (Exception e) {
+			apiErr(e);
+			return null;
+		}
+
+		return players;
+	}
+
+	private void addMemberPlayers(Set<String> players, List<PlayerStateDTO> content) {
+		for (PlayerStateDTO st : content) {
+			if (st != null && !isTeam(st)) {
+				players.add(st.getPlayerId());
+			}
+		}		
+	}
+	
 }
-
