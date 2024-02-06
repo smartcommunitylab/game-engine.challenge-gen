@@ -308,7 +308,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 		int challengeWeek = (Integer) config.get("challengeWeek");
 		if (challengeWeek > -1) {
 			// read challenge configuration for week.
-			List<Challenge> challengeConfigs = creationRules.get(challengeWeek);
+			List<Challenge> challengeConfigs = creationRules.get(String.valueOf(challengeWeek));
 			if (challengeConfigs != null && !challengeConfigs.isEmpty()) {
 				for (Challenge rCfg: challengeConfigs) {
 					// prepare players.
@@ -341,6 +341,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 	}
 
 	private void preparePlayers(Set<String> playerSet) {
+		players = new HashSet<>();
 		if (playerSet != null && !playerSet.isEmpty()) {
             if (playerSet.contains(TEAM_PLAYERS)) {
             	players.addAll(rs.facade.getTeamPlayers(rs.gameId));
