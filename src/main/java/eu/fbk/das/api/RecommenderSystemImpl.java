@@ -313,8 +313,9 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 				for (Challenge rCfg: challengeConfigs) {
 					// prepare players.
 					preparePlayers(rCfg.getPlayerSet());
-					// recommend Weekly
+					// recommend week strategy challenges.
 					for (String pId : players) {
+						// [AM] your input from here.
 						List<ChallengeExpandedDTO> challenges = rs.generationRuleHSC(pId, rCfg);
 
 //						for (ChallengeExpandedDTO cha : challenges) {
@@ -322,15 +323,16 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 //							dataCha(cha, config);
 //							// set reward;
 //							reward(cha, rewards);
-	//
+//
 //							cha.setInfo("gameId", rs.gameId);
 //							cha.setInfo("pId", pId);
 //							chas.add(cha);
-	//
+//
 //							pf("playerId: %s, instanceName: %s, model: %s, s: %s, e: %s, f: %s\n", pId,
 //									cha.getInstanceName(), cha.getModelName(), cha.getStart(), cha.getEnd(),
 //									cha.printData());
 //						}
+						
 					}			
 				}				
 			}			

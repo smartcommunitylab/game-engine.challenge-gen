@@ -420,7 +420,7 @@ public class GamificationEngineRestFacade {
 			if (totPages > 1) {
 				for (int i = 2; i <= totPages; i++) {
 					result = playerApi.searchByQueryUsingPOST(gameId, q, Integer.toString(i), size);
-					addTeamPlayers(players, result.getContent());
+					addMemberPlayers(players, result.getContent());
 				}
 			}
 		} catch (Exception e) {
