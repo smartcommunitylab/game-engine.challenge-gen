@@ -305,34 +305,37 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 		checkUpdateRs(conf);		
 		
 		// read challenge Week 0,1,2
-		String challengeWeek = conf.get("challengeWeek");
-		if (challengeWeek != null && !challengeWeek.isEmpty()) {
+		int challengeWeek = (Integer) config.get("challengeWeek");
+		if (challengeWeek > -1) {
 			// read challenge configuration for week.
 			List<Challenge> challengeConfigs = creationRules.get(challengeWeek);
-			for (Challenge rCfg: challengeConfigs) {
-				// prepare players.
-				preparePlayers(rCfg.getPlayerSet());
-				// recommend Weekly
-				for (String pId : players) {
-					List<ChallengeExpandedDTO> challenges = rs.generationRuleHSC(pId, rCfg);
+			if (challengeConfigs != null && !challengeConfigs.isEmpty()) {
+				for (Challenge rCfg: challengeConfigs) {
+					// prepare players.
+					preparePlayers(rCfg.getPlayerSet());
+					// recommend Weekly
+					for (String pId : players) {
+						List<ChallengeExpandedDTO> challenges = rs.generationRuleHSC(pId, rCfg);
 
-//					for (ChallengeExpandedDTO cha : challenges) {
-//						// set data
-//						dataCha(cha, config);
-//						// set reward;
-//						reward(cha, rewards);
-//
-//						cha.setInfo("gameId", rs.gameId);
-//						cha.setInfo("pId", pId);
-//						chas.add(cha);
-//
-//						pf("playerId: %s, instanceName: %s, model: %s, s: %s, e: %s, f: %s\n", pId,
-//								cha.getInstanceName(), cha.getModelName(), cha.getStart(), cha.getEnd(),
-//								cha.printData());
-//					}
-				}			
+//						for (ChallengeExpandedDTO cha : challenges) {
+//							// set data
+//							dataCha(cha, config);
+//							// set reward;
+//							reward(cha, rewards);
+	//
+//							cha.setInfo("gameId", rs.gameId);
+//							cha.setInfo("pId", pId);
+//							chas.add(cha);
+	//
+//							pf("playerId: %s, instanceName: %s, model: %s, s: %s, e: %s, f: %s\n", pId,
+//									cha.getInstanceName(), cha.getModelName(), cha.getStart(), cha.getEnd(),
+//									cha.printData());
+//						}
+					}			
+				}				
 			}			
 		}
+		
 		return chas;
 
 	}
