@@ -18,7 +18,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import eu.fbk.das.GamificationConfig;
-
+import eu.fbk.das.rs.challenges.Challenge;
 import eu.fbk.das.rs.challenges.ChallengeUtil;
 import eu.fbk.das.utils.Pair;
 import org.apache.commons.io.IOUtils;
@@ -182,6 +182,11 @@ public class RecommendationSystem {
             return null;
 
     }
+    
+	public List<ChallengeExpandedDTO> generationRuleHSC(String pId, Challenge rCfg) {		
+		PlayerStateDTO state = facade.getPlayerState(gameId, pId);		 
+		return null;		
+	}
 
 
     private ChallengeExpandedDTO partecipationAbsolute(PlayerStateDTO state, DateTime d) {

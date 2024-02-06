@@ -314,8 +314,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 				preparePlayers(rCfg.getPlayerSet());
 				// recommend Weekly
 				for (String pId : players) {
-//					List<ChallengeExpandedDTO> challenges = rs.recommend(pId, modelTypes, creationRules, config,
-//							isLevelStrategy);
+					List<ChallengeExpandedDTO> challenges = rs.generationRuleHSC(pId, rCfg);
 
 //					for (ChallengeExpandedDTO cha : challenges) {
 //						// set data
