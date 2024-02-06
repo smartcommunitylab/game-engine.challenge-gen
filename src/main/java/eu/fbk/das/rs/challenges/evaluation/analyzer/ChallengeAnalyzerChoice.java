@@ -23,7 +23,7 @@ public class ChallengeAnalyzerChoice extends ChallengeAnalyzer {
         cdg.analyzeAll();
     }
 
-    protected void prepare() {
+    public void prepare() {
         super.prepare();
 
         cache = new TreeMap<>();

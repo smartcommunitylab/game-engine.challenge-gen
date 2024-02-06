@@ -18,6 +18,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import eu.fbk.das.GamificationConfig;
+
+import eu.fbk.das.rs.challenges.ChallengeUtil;
 import eu.fbk.das.utils.Pair;
 import org.apache.commons.io.IOUtils;
 
@@ -92,6 +94,8 @@ public class RecommendationSystem {
     protected int repetitiveDifficulty = 2;
 
     boolean debug = false;
+    private String ecoLeaves = "green leaves";
+    private String activity = "activity";
     
     public RecommendationSystem(Map<String, String> cfg) {
         this.cfg = cfg;
@@ -179,6 +183,131 @@ public class RecommendationSystem {
 
     }
 
+
+    private ChallengeExpandedDTO partecipationAbsolute(PlayerStateDTO state, DateTime d) {
+        return getChallengeAbsolute(state, activity);
+    }
+
+    private ChallengeExpandedDTO partecipationRepetitive(PlayerStateDTO state, DateTime d) {
+        return getChallengeRepetitive(state, d, activity);
+    }
+
+    private ChallengeExpandedDTO ecoLeavesRepetitive(PlayerStateDTO state, DateTime d) {
+        ChallengeExpandedDTO rep = repetitiveIntervene(state, d);
+        if (rep == null)
+            rep = rscg.getRepetitive(state.getPlayerId());
+        return rep;
+    }
+
+    private ChallengeExpandedDTO ecoLeavesAbsolute(PlayerStateDTO state, DateTime d) {
+        return getChallengeAbsolute(state, ecoLeaves);
+    }
+
+    private ChallengeExpandedDTO mobilityRepetitive(PlayerStateDTO state, DateTime d) {
+        String bestMode = getHighestQuantileMode(state, d);
+        return getChallengeRepetitive(state, d, bestMode);
+    }
+
+    private ChallengeExpandedDTO getChallengeRepetitive(PlayerStateDTO state, DateTime d, String bestMode) {
+        int slot = getSlotModeEntropy(state, d, bestMode);
+        if (slot == 0)
+            return null;
+
+        Pair<Double, Double> tg = repetitiveTarget(state, slot, bestMode);
+        Double repScore = tg.getSecond();
+        double repTarget = tg.getFirst();
+
+        // Create
+        ChallengeExpandedDTO rep = rscg.prepareChallangeImpr("mobilityRepetitive", bestMode);
+        rep.setModelName("repetitiveBehaviour");
+        rep.setData("periodName", "daily");
+        rep.setData("periodTarget", slot * 1.0);
+        rep.setData("target", repTarget);
+        rep.setData("bonusScore", repScore);
+
+        rep.setState("assigned");
+        rep.setOrigin("rs");
+        rep.setInfo("id", 0);
+        rep.setPriority(1);
+
+        pf("### NewRepetitive, %s, %d, %.2f, %.2f\n", state.getPlayerId(), slot, repTarget, repScore);
+        return rep;
+    }
+
+    private int getSlotModeEntropy(PlayerStateDTO state, DateTime d, String mode) {
+        PointConcept modeConcept = null;
+            for (GameConcept gc : state.getState().get("PointConcept")) {
+
+                PointConcept pc = (PointConcept) gc;
+
+                String m = pc.getName();
+                if (!m.equals(mode))
+                    continue;
+
+                modeConcept = pc;
+            }
+
+            if (modeConcept == null)
+                return 2;
+
+            DateTime date = execDate;
+            int max = 7;
+            double[] values = new double[max];
+            for (int i=0; i < max; i++) {
+                values[i] = getPeriodScore(modeConcept, "daily", date);
+                date = date.minusDays(1);
+            }
+
+            Double ent = getEntropy(values);
+            if (ent == null) ent = 0.0;
+            int slot = repetitiveSlot(ent);
+            pf("%.2f - %d", ent, slot);
+            return slot;
+    }
+
+
+    private ChallengeExpandedDTO mobilityAbsolute(PlayerStateDTO state, DateTime d) {
+        String bestMode = getHighestQuantileMode(state, d);
+        return getChallengeAbsolute(state, bestMode);
+    }
+
+    private ChallengeExpandedDTO getChallengeAbsolute(PlayerStateDTO state, String bestMode) {
+        Pair<Double, Double> res = rscg.forecastMode(state, bestMode);
+        double target = res.getFirst();
+        double baseline = res.getSecond();
+
+        target = rscg.checkMax(target, bestMode);
+
+        ChallengeExpandedDTO cdd = rscg.generatePercentage(baseline, bestMode, target);
+        return cdd;
+    }
+
+    private String getHighestQuantileMode(PlayerStateDTO state, DateTime d) {
+
+        Integer high_qua = -1;
+        String high_mode = null;
+
+        for (String counter : modelTypes) {
+
+            if (ecoLeaves.equals(counter))
+                continue;
+
+            Double baseline = ChallengeUtil.getWMABaseline(state, counter, execDate);
+            Map<Integer, Double> quant = stats.getQuantiles(counter);
+            int q = ChallengeUtil.getQuantile(baseline, quant);
+            if (q == -1) {
+                p("this is reeeeeaaaally strange");
+                continue;
+            }
+
+            if (q > high_qua) {
+                high_qua = q;
+                high_mode = counter;
+            }
+        }
+
+        return high_mode;
+    }
 
 
     private List<ChallengeExpandedDTO> generation2019(String pId, PlayerStateDTO state, DateTime d, int lvl, String exp) {
@@ -722,16 +851,21 @@ public class RecommendationSystem {
     }
     
     public Pair<Double, Double> repetitiveTarget(PlayerStateDTO state, double repDifficulty) {
-        String mode = "green leaves";
+        return repetitiveTarget(state, repDifficulty, ecoLeaves);
+    }
+    
+    public Pair<Double, Double> repetitiveTarget(PlayerStateDTO state, double slots, String mode) {
         Pair<Double, Double> res = rscg.forecastMode(state, mode);
         double target = res.getFirst();
         double baseline = res.getSecond();
         target = roundTarget(mode, target);
+
         ChallengeExpandedDTO cdd = rscg.generatePercentage(baseline, mode, target, true);
         double score = (Double) cdd.getData("bonusScore");
 
         // repDifficulty should be in (1-15) range, def value 5
-        double repTarget = target / (15 - repDifficulty);
+        double repTarget = Math.ceil(target * repetitiveDifficulty / slots);
+       repTarget = Math.max(repTarget, 1.0);
 
         // return target, score
         return new Pair<Double, Double>(repTarget, score);
@@ -776,6 +910,19 @@ public class RecommendationSystem {
             return ent;
     }
 
+    private Double getEntropy(double[] cacheWeek) {
+        double tot = 0, ent = 0;
+        for (double e: cacheWeek) tot += e;
+        if (tot <= 0) return null;
+        for (double e: cacheWeek) {
+            // p(e);
+            if (e <= 0) continue;
+            double p = e / tot;
+            ent += p * Math.log(p);
+        }
+        return ent;
+    }
+    
     protected Map<Integer, double[]> getTimeSeriesPerformance(String response) throws ParseException {
 
         JSONParser parser = new JSONParser();

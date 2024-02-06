@@ -24,7 +24,7 @@ public class ChallengeAnalyzerTgtChoice extends ChallengeAnalyzer {
         cdg.analyzeSelected();
     }
 
-    protected void prepare() {
+    public void prepare() {
         files = new String[] {"week-22/challenges-2019-03-26-complete.csv"};
     }
 

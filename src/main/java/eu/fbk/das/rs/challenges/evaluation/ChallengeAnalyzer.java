@@ -168,7 +168,7 @@ public class ChallengeAnalyzer extends ChallengeDataGuru {
         }
 
 
-    protected void prepare() {
+    public void prepare() {
         incrTot = new ArrayList<Double>();
         incrByLvl = new ArrayList<List<Double>>();
         incrByCounter = new HashMap<>();

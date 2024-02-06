@@ -374,7 +374,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
         return list;
     }
 
-    private Double getWMABaseline(PlayerStateDTO state, String counter, DateTime lastMonday) {
+    public static Double getWMABaseline(PlayerStateDTO state, String counter, DateTime lastMonday) {
 
         DateTime date = lastMonday;
         int v = 5;
@@ -395,7 +395,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
     }
 
 
-    private int getQuantile(Double c, Map<Integer, Double> quant) {
+    public static int getQuantile(Double c, Map<Integer, Double> quant) {
         for (int i = 0; i < 10; i++) {
             if (c < quant.get(i))
                 return i;

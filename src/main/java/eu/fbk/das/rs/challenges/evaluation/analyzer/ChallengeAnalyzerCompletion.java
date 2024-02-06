@@ -24,7 +24,7 @@ public class ChallengeAnalyzerCompletion extends ChallengeAnalyzer {
         cdg.execute();
     }
 
-    protected void prepare() {
+    public void prepare() {
         super.prepare();
 
         playerLimit = 0;
