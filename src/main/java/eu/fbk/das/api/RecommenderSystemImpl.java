@@ -300,7 +300,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 	public List<ChallengeExpandedDTO> createHSCChallenges(Map<String, String> conf,
 			Map<String, List<Challenge>> creationRules, Map<String, Object> config) {
 
-		printConfig(creationRules, config);
+//		printConfig(creationRules, config);
 		List<ChallengeExpandedDTO> chas = new ArrayList<>();
 		checkUpdateRs(conf);		
 		
@@ -310,13 +310,15 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 			// read challenge configuration for week.
 			List<Challenge> challengeConfigs = creationRules.get(String.valueOf(challengeWeek));
 			if (challengeConfigs != null && !challengeConfigs.isEmpty()) {
+				
+				System.out.println(challengeConfigs);
 				for (Challenge rCfg: challengeConfigs) {
 					// prepare players.
 					preparePlayers(rCfg.getPlayerSet());
 					// recommend week strategy challenges.
 					for (String pId : players) {
-						// [AM] your input from here.
-						List<ChallengeExpandedDTO> challenges = rs.generationRuleHSC(pId, rCfg);
+						/** [AM] your input from here. **/
+						List<ChallengeExpandedDTO> challenges = rs.recommendHSC(pId, rCfg, config);
 
 //						for (ChallengeExpandedDTO cha : challenges) {
 //							// set data

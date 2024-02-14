@@ -147,6 +147,29 @@ public class RecommendationSystem {
         return cha;
 
     }
+    
+    // generate challenges
+    public List<ChallengeExpandedDTO> recommendHSC(String pId, Challenge rCfg, Map<String, Object> challengeValues) {
+
+        prepare(challengeValues);
+
+//        this.modelTypes = rCfg.modelTypes;
+
+        PlayerStateDTO state = facade.getPlayerState(gameId, pId);
+//        int lvl = getLevel(state);
+
+        List<ChallengeExpandedDTO> cha = generationRuleHSC(pId, state, execDate, rCfg);
+
+        for (ChallengeExpandedDTO c: cha) {
+//            c.setInfo("playerLevel", lvl);
+            c.setInfo("player", pId);
+
+            c.setHide(true);
+        }
+
+        return cha;
+
+    }
 
     protected void prepare(Map<String, Object> challengeValues) {
         chaWeek = (Integer) challengeValues.get("challengeWeek");
@@ -183,8 +206,7 @@ public class RecommendationSystem {
 
     }
     
-	public List<ChallengeExpandedDTO> generationRuleHSC(String pId, Challenge rCfg) {		
-		PlayerStateDTO state = facade.getPlayerState(gameId, pId);		 
+	public List<ChallengeExpandedDTO> generationRuleHSC(String pId, PlayerStateDTO state, DateTime d, Challenge rCfg) {		
 		return null;		
 	}
 
