@@ -333,9 +333,10 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 //							pf("playerId: %s, instanceName: %s, model: %s, s: %s, e: %s, f: %s\n", pId,
 //									cha.getInstanceName(), cha.getModelName(), cha.getStart(), cha.getEnd(),
 //									cha.printData());
-//						}
-						
-					}			
+//						}						
+					}
+					System.out.println("player total: " + players.size() + ", playerType: " + rCfg.getPlayerSet() + ", challengeType: " + rCfg.getChallengeTyp() +  ", strategy: " + rCfg.getStrategy()
+					+ ", mode: " + rCfg.getPointConcepts() + ", rewardScoreName: " + rCfg.getReward().getScoreName());
 				}				
 			}			
 		}

@@ -160,11 +160,13 @@ public class RecommendationSystem {
 
         List<ChallengeExpandedDTO> cha = generationRuleHSC(pId, state, execDate, rCfg);
 
-        for (ChallengeExpandedDTO c: cha) {
-//            c.setInfo("playerLevel", lvl);
-            c.setInfo("player", pId);
+        if (cha != null && ! cha.isEmpty()) {
+            for (ChallengeExpandedDTO c: cha) {
+//              c.setInfo("playerLevel", lvl);
+              c.setInfo("player", pId);
 
-            c.setHide(true);
+              c.setHide(true);
+          }
         }
 
         return cha;
@@ -206,7 +208,7 @@ public class RecommendationSystem {
 
     }
     
-	public List<ChallengeExpandedDTO> generationRuleHSC(String pId, PlayerStateDTO state, DateTime d, Challenge rCfg) {		
+	public List<ChallengeExpandedDTO> generationRuleHSC(String pId, PlayerStateDTO state, DateTime d, Challenge rCfg) {
 		return null;		
 	}
 
