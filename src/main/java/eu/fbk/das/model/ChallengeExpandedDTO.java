@@ -45,12 +45,14 @@ public class ChallengeExpandedDTO extends ChallengeAssignmentDTO {
     public Vector<Object> getDisplayData() {
         Vector<Object> result = new Vector<>();
         result.add(getInfo("player"));
-        result.add(i(getInfo("playerLevel")));
+        if (getInfo("playerLevel") != null)
+        	result.add(i(getInfo("playerLevel")));
         result.add(getInfo("id"));
         result.add(getInfo("experiment"));
         result.add(getModelName());
         result.add(getData("counterName"));
-        result.add(m(getData("baseline")));
+        if (getInfo("baseline") != null)
+        	result.add(m(getData("")));
         result.add(m(getData("target")));
         result.add(m(getInfo("improvement")));
         result.add(m(getData("difficulty")));

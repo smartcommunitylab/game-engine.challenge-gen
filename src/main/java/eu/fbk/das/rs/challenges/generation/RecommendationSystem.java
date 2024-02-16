@@ -148,30 +148,12 @@ public class RecommendationSystem {
 
     }
     
-    // generate challenges
-    public List<ChallengeExpandedDTO> recommendHSC(String pId, Challenge rCfg, Map<String, Object> challengeValues) {
-
-        prepare(challengeValues);
-
-//        this.modelTypes = rCfg.modelTypes;
-
-        PlayerStateDTO state = facade.getPlayerState(gameId, pId);
-//        int lvl = getLevel(state);
-
-        List<ChallengeExpandedDTO> cha = generationRuleHSC(pId, state, execDate, rCfg);
-
-        if (cha != null && ! cha.isEmpty()) {
-            for (ChallengeExpandedDTO c: cha) {
-//              c.setInfo("playerLevel", lvl);
-              c.setInfo("player", pId);
-
-              c.setHide(true);
-          }
-        }
-
-        return cha;
-
-    }
+	public List<ChallengeExpandedDTO> recommendHSC(String pId, Challenge chg, Map<String, Object> challengeValues) {
+		prepare(challengeValues);
+		this.modelTypes = chg.getPointConcepts();
+		PlayerStateDTO state = facade.getPlayerState(gameId, pId);
+		return generationRuleHSC(pId, state, execDate, chg);
+	}
 
     protected void prepare(Map<String, Object> challengeValues) {
         chaWeek = (Integer) challengeValues.get("challengeWeek");
@@ -208,108 +190,23 @@ public class RecommendationSystem {
 
     }
     
-	public List<ChallengeExpandedDTO> generationRuleHSC(String pId, PlayerStateDTO state, DateTime d, Challenge rCfg) {
-		return null;		
+	public List<ChallengeExpandedDTO> generationRuleHSC(String pId, PlayerStateDTO state, DateTime d, Challenge chg) {
+		List<ChallengeExpandedDTO> chas = new ArrayList<>();
+		ChallengeExpandedDTO cdd = null;
+		if ("fixedOne".equals(chg.getStrategy()) && "percentageIncrement".equals(chg.getChallengeTyp())) {
+			String bestMode = getHighestQuantileMode(state, d);
+			cdd = getIncrementChallenge(state, bestMode, chg);
+		}
+		if (cdd != null)
+			chas.add(cdd);
+		return chas;
+
 	}
 
-
-    private ChallengeExpandedDTO partecipationAbsolute(PlayerStateDTO state, DateTime d) {
-        return getChallengeAbsolute(state, activity);
-    }
-
-    private ChallengeExpandedDTO partecipationRepetitive(PlayerStateDTO state, DateTime d) {
-        return getChallengeRepetitive(state, d, activity);
-    }
-
-    private ChallengeExpandedDTO ecoLeavesRepetitive(PlayerStateDTO state, DateTime d) {
-        ChallengeExpandedDTO rep = repetitiveIntervene(state, d);
-        if (rep == null)
-            rep = rscg.getRepetitive(state.getPlayerId());
-        return rep;
-    }
-
-    private ChallengeExpandedDTO ecoLeavesAbsolute(PlayerStateDTO state, DateTime d) {
-        return getChallengeAbsolute(state, ecoLeaves);
-    }
-
-    private ChallengeExpandedDTO mobilityRepetitive(PlayerStateDTO state, DateTime d) {
-        String bestMode = getHighestQuantileMode(state, d);
-        return getChallengeRepetitive(state, d, bestMode);
-    }
-
-    private ChallengeExpandedDTO getChallengeRepetitive(PlayerStateDTO state, DateTime d, String bestMode) {
-        int slot = getSlotModeEntropy(state, d, bestMode);
-        if (slot == 0)
-            return null;
-
-        Pair<Double, Double> tg = repetitiveTarget(state, slot, bestMode);
-        Double repScore = tg.getSecond();
-        double repTarget = tg.getFirst();
-
-        // Create
-        ChallengeExpandedDTO rep = rscg.prepareChallangeImpr("mobilityRepetitive", bestMode);
-        rep.setModelName("repetitiveBehaviour");
-        rep.setData("periodName", "daily");
-        rep.setData("periodTarget", slot * 1.0);
-        rep.setData("target", repTarget);
-        rep.setData("bonusScore", repScore);
-
-        rep.setState("assigned");
-        rep.setOrigin("rs");
-        rep.setInfo("id", 0);
-        rep.setPriority(1);
-
-        pf("### NewRepetitive, %s, %d, %.2f, %.2f\n", state.getPlayerId(), slot, repTarget, repScore);
-        return rep;
-    }
-
-    private int getSlotModeEntropy(PlayerStateDTO state, DateTime d, String mode) {
-        PointConcept modeConcept = null;
-            for (GameConcept gc : state.getState().get("PointConcept")) {
-
-                PointConcept pc = (PointConcept) gc;
-
-                String m = pc.getName();
-                if (!m.equals(mode))
-                    continue;
-
-                modeConcept = pc;
-            }
-
-            if (modeConcept == null)
-                return 2;
-
-            DateTime date = execDate;
-            int max = 7;
-            double[] values = new double[max];
-            for (int i=0; i < max; i++) {
-                values[i] = getPeriodScore(modeConcept, "daily", date);
-                date = date.minusDays(1);
-            }
-
-            Double ent = getEntropy(values);
-            if (ent == null) ent = 0.0;
-            int slot = repetitiveSlot(ent);
-            pf("%.2f - %d", ent, slot);
-            return slot;
-    }
-
-
-    private ChallengeExpandedDTO mobilityAbsolute(PlayerStateDTO state, DateTime d) {
-        String bestMode = getHighestQuantileMode(state, d);
-        return getChallengeAbsolute(state, bestMode);
-    }
-
-    private ChallengeExpandedDTO getChallengeAbsolute(PlayerStateDTO state, String bestMode) {
-        Pair<Double, Double> res = rscg.forecastMode(state, bestMode);
-        double target = res.getFirst();
-        double baseline = res.getSecond();
-
-        target = rscg.checkMax(target, bestMode);
-
-        ChallengeExpandedDTO cdd = rscg.generatePercentage(baseline, bestMode, target);
-        return cdd;
-    }
+	private ChallengeExpandedDTO getIncrementChallenge(PlayerStateDTO state, String bestMode, Challenge rCfg) {
+		List<ChallengeExpandedDTO> cdd = rscg.generateIncrement(state, bestMode, rCfg, false);
+		return cdd.get(0);
+	}
 
     private String getHighestQuantileMode(PlayerStateDTO state, DateTime d) {
 

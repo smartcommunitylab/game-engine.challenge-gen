@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import eu.fbk.das.model.ChallengeExpandedDTO;
 import eu.fbk.das.model.GroupExpandedDTO;
 import eu.fbk.das.rs.GroupChallengesAssigner;
@@ -22,7 +24,7 @@ import it.smartcommunitylab.model.ext.GroupChallengeDTO.PointConceptDTO;
 import it.smartcommunitylab.model.ext.GroupChallengeDTO.RewardDTO;
 
 public class RecommenderSystemImpl implements RecommenderSystemAPI {
-
+	private static final Logger logger = Logger.getLogger(RecommenderSystemImpl.class);
 	private static RecommendationSystem rs;
 	private Set<String> players;
 	private static final String MEMBERS_PLAYERS = "member";
@@ -299,50 +301,28 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 	@Override
 	public List<ChallengeExpandedDTO> createHSCChallenges(Map<String, String> conf,
 			Map<String, List<Challenge>> creationRules, Map<String, Object> config) {
-
-//		printConfig(creationRules, config);
 		List<ChallengeExpandedDTO> chas = new ArrayList<>();
-		checkUpdateRs(conf);		
-		
-		// read challenge Week 0,1,2
+		checkUpdateRs(conf);
 		int challengeWeek = (Integer) config.get("challengeWeek");
-		if (challengeWeek > -1) {
-			// read challenge configuration for week.
-			List<Challenge> challengeConfigs = creationRules.get(String.valueOf(challengeWeek));
-			if (challengeConfigs != null && !challengeConfigs.isEmpty()) {
-				
-				System.out.println(challengeConfigs);
-				for (Challenge rCfg: challengeConfigs) {
-					// prepare players.
-					preparePlayers(rCfg.getPlayerSet());
-					// recommend week strategy challenges.
-					for (String pId : players) {
-						/** [AM] your input from here. **/
-						List<ChallengeExpandedDTO> challenges = rs.recommendHSC(pId, rCfg, config);
-
-//						for (ChallengeExpandedDTO cha : challenges) {
-//							// set data
-//							dataCha(cha, config);
-//							// set reward;
-//							reward(cha, rewards);
-//
-//							cha.setInfo("gameId", rs.gameId);
-//							cha.setInfo("pId", pId);
-//							chas.add(cha);
-//
-//							pf("playerId: %s, instanceName: %s, model: %s, s: %s, e: %s, f: %s\n", pId,
-//									cha.getInstanceName(), cha.getModelName(), cha.getStart(), cha.getEnd(),
-//									cha.printData());
-//						}						
+		List<Challenge> challenges = creationRules.get(String.valueOf(challengeWeek));
+		if (challenges != null && !challenges.isEmpty()) {
+			for (Challenge chg : challenges) {
+				logger.info(chg);
+				// validate challenge config.
+				preparePlayers(chg.getPlayerSet());
+				for (String pId : players) {
+					for (ChallengeExpandedDTO cha : rs.recommendHSC(pId, chg, config)) {
+						dataCha(cha, config);
+						cha.setInfo("gameId", rs.gameId);
+						cha.setInfo("pId", pId);
+						chas.add(cha);
+						pf("playerId: %s, instanceName: %s, model: %s, s: %s, e: %s, f: %s\n", pId, cha.getInstanceName(),
+								cha.getModelName(), cha.getStart(), cha.getEnd(), cha.printData());
 					}
-					System.out.println("player total: " + players.size() + ", playerType: " + rCfg.getPlayerSet() + ", challengeType: " + rCfg.getChallengeTyp() +  ", strategy: " + rCfg.getStrategy()
-					+ ", mode: " + rCfg.getPointConcepts() + ", rewardScoreName: " + rCfg.getReward().getScoreName());
-				}				
-			}			
+				}
+			}
 		}
-		
 		return chas;
-
 	}
 
 	private void preparePlayers(Set<String> playerSet) {

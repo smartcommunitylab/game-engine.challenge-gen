@@ -1,7 +1,9 @@
 package eu.fbk.das.rs.challenges.generation;
 
+import eu.fbk.das.api.RecommenderSystemImpl;
 import eu.fbk.das.model.ChallengeExpandedDTO;
 import eu.fbk.das.old.Constants;
+import eu.fbk.das.rs.challenges.Challenge;
 import eu.fbk.das.rs.challenges.ChallengeUtil;
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
 import eu.fbk.das.utils.Pair;
@@ -22,9 +24,11 @@ import static eu.fbk.das.utils.Utils.*;
  * challenges using provided {@link ChallengesConfig}
  */
 public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
-
-    private double lastCounter;
-
+	private static final Logger logger = Logger.getLogger(RecommendationSystemChallengeGeneration.class);
+	private double lastCounter;
+	public static final String NAME_METADATA = "team-name";
+    public static final String MAXMEMBER_CUSTOMEDATA = "maxMembers";
+    
     public RecommendationSystemChallengeGeneration(RecommendationSystem rs) {
         super(rs);
     }
@@ -549,6 +553,73 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
         return out;
     }
 
+    public List<ChallengeExpandedDTO> generateIncrement(PlayerStateDTO state, String mode, Challenge rCfg, boolean easier) {
+		prepare(rs.chaWeek);
+		List<ChallengeExpandedDTO> output = new ArrayList<>();
+		Double currentValue = rs.getWeeklyContentMode(state, mode, rs.lastMonday);
+		currentValue = round(currentValue, 1);
+		lastCounter = -1.0;
+		if (currentValue >= 1) {
+			Pair<Double, Double> res;
+			res = forecastMode(state, mode);
+			double target = res.getFirst();
+			double baseline = res.getSecond();
+			// check if state is teamPlayer or Player.
+			if (Boolean.TRUE.equals(isTeamState(state))) {
+				if (state.getCustomData().containsKey(MAXMEMBER_CUSTOMEDATA)) {
+					double maxMembers = (double) state.getCustomData().get(MAXMEMBER_CUSTOMEDATA);
+					target = checkMaxTeam(target, mode, maxMembers);
+				} else {
+					logger.error("Skipping team - missing attribute maxMembers");
+					return output;
+				}
+			} else {
+				target = checkMax(target, mode);
+			}
+			if (easier)
+				target *= 0.9;
+			ChallengeExpandedDTO cdd = generatePercentage(baseline, mode, target);
+			cdd.setData("bonusScore", rCfg.getReward().getValue()); 
+			cdd.setData("bonusPointType", rCfg.getReward().getScoreName());
+			output.add(cdd);
+		} else {
+			ChallengeExpandedDTO cdd = prepareChallangeImpr(mode);
+			cdd.setModelName("absoluteIncrement");
+			cdd.setData("bonusScore", rCfg.getReward().getValue()); 
+			cdd.setData("bonusPointType", rCfg.getReward().getScoreName());
+			if (equal(mode, ChallengesConfig.GREEN_LEAVES)) {
+				cdd.setData("target", 100.0);
+				cdd.setInfo("improvement", 1.0);
+				rs.rscv.valuate(cdd);
+			} else {
+				cdd.setData("target", 1.0);
+				cdd.setInfo("improvement", 1.0);
+				rs.rscv.valuate(cdd);
+			}
+			output.add(cdd);
+		}
+		return output;
+    }
 
+	private Boolean isTeamState(PlayerStateDTO state) {
+		return (state != null && state.getState().get(NAME_METADATA) != null);
+	}
+
+	private double checkMaxTeam(double v, String mode, double maxMembers) {
+		if (mode.equals(ChallengesConfig.WALK_KM) && v >= (70 * maxMembers))
+			return 70 * maxMembers;
+		if (mode.equals(ChallengesConfig.BIKE_KM) && v >= (210 * maxMembers))
+			return 210 * maxMembers;
+		if (mode.equals(ChallengesConfig.TRAIN_TRIPS) && v >= (56 * maxMembers))
+			return 56 * maxMembers;
+		if (mode.equals(ChallengesConfig.BUS_TRIPS) && v >= (56 * maxMembers))
+			return 56 * maxMembers;
+
+		if (mode.equals(ChallengesConfig.GREEN_LEAVES) && v >= (3000 * maxMembers))
+			return 3000 * maxMembers;
+
+		return v;
+	}
+    
 }
 
