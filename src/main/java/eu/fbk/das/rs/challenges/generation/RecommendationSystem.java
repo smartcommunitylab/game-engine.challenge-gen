@@ -196,13 +196,78 @@ public class RecommendationSystem {
 		if ("fixedOne".equals(chg.getStrategy()) && "percentageIncrement".equals(chg.getChallengeTyp())) {
 			String bestMode = getHighestQuantileMode(state, d);
 			cdd = getIncrementChallenge(state, bestMode, chg);
+		} else if ("fixedOne".equals(chg.getStrategy()) && "repetitiveBehavior".equals(chg.getChallengeTyp())) {
+			String bestMode = getHighestQuantileMode(state, d);
+			if ("green leaves".equals(bestMode)) {
+				cdd = repetitiveIntervene(state, d);
+				if (cdd == null)
+					cdd = rscg.getRepetitive(state.getPlayerId());
+			} else {
+				  cdd = getChallengeRepetitive(state, d, bestMode);
+			}
 		}
 		if (cdd != null)
 			chas.add(cdd);
 		return chas;
-
 	}
 
+    private ChallengeExpandedDTO getChallengeRepetitive(PlayerStateDTO state, DateTime d, String bestMode) {
+        int slot = getSlotModeEntropy(state, d, bestMode);
+        if (slot == 0)
+            return null;
+
+        Pair<Double, Double> tg = repetitiveTarget(state, slot, bestMode);
+        Double repScore = tg.getSecond();
+        double repTarget = tg.getFirst();
+
+        // Create
+        ChallengeExpandedDTO rep = rscg.prepareChallangeImpr("mobilityRepetitive", bestMode);
+        rep.setModelName("repetitiveBehaviour");
+        rep.setData("periodName", "daily");
+        rep.setData("periodTarget", slot * 1.0);
+        rep.setData("target", repTarget);
+        rep.setData("bonusScore", repScore);
+
+        rep.setState("assigned");
+        rep.setOrigin("rs");
+        rep.setInfo("id", 0);
+        rep.setPriority(1);
+
+        pf("### NewRepetitive, %s, %d, %.2f, %.2f\n", state.getPlayerId(), slot, repTarget, repScore);
+        return rep;
+    }
+    
+    private int getSlotModeEntropy(PlayerStateDTO state, DateTime d, String mode) {
+        PointConcept modeConcept = null;
+            for (GameConcept gc : state.getState().get("PointConcept")) {
+
+                PointConcept pc = (PointConcept) gc;
+
+                String m = pc.getName();
+                if (!m.equals(mode))
+                    continue;
+
+                modeConcept = pc;
+            }
+
+            if (modeConcept == null)
+                return 2;
+
+            DateTime date = execDate;
+            int max = 7;
+            double[] values = new double[max];
+            for (int i=0; i < max; i++) {
+                values[i] = getPeriodScore(modeConcept, "daily", date);
+                date = date.minusDays(1);
+            }
+
+            Double ent = getEntropy(values);
+            if (ent == null) ent = 0.0;
+            int slot = repetitiveSlot(ent);
+            pf("%.2f - %d", ent, slot);
+            return slot;
+    }
+    
 	private ChallengeExpandedDTO getIncrementChallenge(PlayerStateDTO state, String bestMode, Challenge rCfg) {
 		List<ChallengeExpandedDTO> cdd = rscg.generateIncrement(state, bestMode, rCfg, false);
 		return cdd.get(0);
@@ -215,8 +280,10 @@ public class RecommendationSystem {
 
         for (String counter : modelTypes) {
 
-            if (ecoLeaves.equals(counter))
-                continue;
+            if (ecoLeaves.equals(counter)) {
+            	high_mode = counter;
+            	continue;
+            }   
 
             Double baseline = ChallengeUtil.getWMABaseline(state, counter, execDate);
             Map<Integer, Double> quant = stats.getQuantiles(counter);

@@ -83,7 +83,7 @@ public class ChallengesConfig {
 
     // Transportation mode configuration
     // First, declare call supported modes. Order matters!
-    public static String[] defaultMode = {WALK_KM, BUS_KM, BIKE_KM, TRAIN_KM, GREEN_LEAVES};
+    public static String[] defaultMode = {WALK_KM, BUS_KM, BIKE_KM, TRAIN_KM, GREEN_LEAVES, TRAIN_TRIPS, BIKE_TRIPS, BUS_TRIPS};
     // Second, declare corresponding *_Trips of *_Km modes (i.e. Walk_km =>
     // Walk_Trips), used for try once challenges
     private static final String[] defaultModetrip = {BIKE_TRIPS, WALK_TRIPS,

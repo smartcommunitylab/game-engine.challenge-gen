@@ -26,8 +26,8 @@ import static eu.fbk.das.utils.Utils.*;
 public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
 	private static final Logger logger = Logger.getLogger(RecommendationSystemChallengeGeneration.class);
 	private double lastCounter;
-	public static final String NAME_METADATA = "team-name";
-    public static final String MAXMEMBER_CUSTOMEDATA = "maxMembers";
+	public static final String TEAM = "team";
+    public static final String CURRENTPLAYERS_CUSTOMEDATA = "currentPlayers";
     
     public RecommendationSystemChallengeGeneration(RecommendationSystem rs) {
         super(rs);
@@ -565,10 +565,10 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
 			double target = res.getFirst();
 			double baseline = res.getSecond();
 			// check if state is teamPlayer or Player.
-			if (Boolean.TRUE.equals(isTeamState(state))) {
-				if (state.getCustomData().containsKey(MAXMEMBER_CUSTOMEDATA)) {
-					double maxMembers = (double) state.getCustomData().get(MAXMEMBER_CUSTOMEDATA);
-					target = checkMaxTeam(target, mode, maxMembers);
+			if (rCfg.getPlayerSet().contains(TEAM)) {
+				if (state.getCustomData().containsKey(CURRENTPLAYERS_CUSTOMEDATA)) {
+					Integer activePlayers = (Integer) state.getCustomData().get(CURRENTPLAYERS_CUSTOMEDATA);
+					target = checkMaxTeam(target, mode, activePlayers);
 				} else {
 					logger.error("Skipping team - missing attribute maxMembers");
 					return output;
@@ -601,22 +601,18 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
 		return output;
     }
 
-	private Boolean isTeamState(PlayerStateDTO state) {
-		return (state != null && state.getState().get(NAME_METADATA) != null);
-	}
+	private double checkMaxTeam(double v, String mode, double activeMembers) {
+		if (mode.equals(ChallengesConfig.WALK_KM) && v >= (70 * activeMembers))
+			return 70 * activeMembers;
+		if (mode.equals(ChallengesConfig.BIKE_KM) && v >= (210 * activeMembers))
+			return 210 * activeMembers;
+		if (mode.equals(ChallengesConfig.TRAIN_TRIPS) && v >= (56 * activeMembers))
+			return 56 * activeMembers;
+		if (mode.equals(ChallengesConfig.BUS_TRIPS) && v >= (56 * activeMembers))
+			return 56 * activeMembers;
 
-	private double checkMaxTeam(double v, String mode, double maxMembers) {
-		if (mode.equals(ChallengesConfig.WALK_KM) && v >= (70 * maxMembers))
-			return 70 * maxMembers;
-		if (mode.equals(ChallengesConfig.BIKE_KM) && v >= (210 * maxMembers))
-			return 210 * maxMembers;
-		if (mode.equals(ChallengesConfig.TRAIN_TRIPS) && v >= (56 * maxMembers))
-			return 56 * maxMembers;
-		if (mode.equals(ChallengesConfig.BUS_TRIPS) && v >= (56 * maxMembers))
-			return 56 * maxMembers;
-
-		if (mode.equals(ChallengesConfig.GREEN_LEAVES) && v >= (3000 * maxMembers))
-			return 3000 * maxMembers;
+		if (mode.equals(ChallengesConfig.GREEN_LEAVES) && v >= (3000 * activeMembers))
+			return 3000 * activeMembers;
 
 		return v;
 	}

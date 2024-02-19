@@ -310,6 +310,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 				logger.info(chg);
 				// validate challenge config.
 				preparePlayers(chg.getPlayerSet());
+				logger.info(chg.getPlayerSet() + " challenge generation for " + players.size() + " " + chg.getPlayerSet());
 				for (String pId : players) {
 					for (ChallengeExpandedDTO cha : rs.recommendHSC(pId, chg, config)) {
 						dataCha(cha, config);
