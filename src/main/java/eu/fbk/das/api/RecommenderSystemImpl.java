@@ -304,7 +304,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 		List<ChallengeExpandedDTO> chas = new ArrayList<>();
 		checkUpdateRs(conf);
 		int challengeWeek = (Integer) config.get("challengeWeek");
-		logger.info("********** WEEK INDEX " +  challengeWeek + "**********");
+		logger.info("********** WEEK INDEX " +  challengeWeek + " **********");
 		List<Challenge> challenges = creationRules.get(String.valueOf(challengeWeek));
 		if (challenges != null && !challenges.isEmpty()) {
 			for (Challenge chg : challenges) {
