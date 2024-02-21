@@ -319,7 +319,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 						cha.setInfo("pId", pId);
 						chas.add(cha);
 						pf("playerId: %s, instanceName: %s, model: %s, s: %s, e: %s, f: %s\n", pId, cha.getInstanceName(),
-								cha.getModelName(), cha.getStart(), cha.getEnd(), cha.printData());
+								cha.getModelName(), cha.getStart(), cha.getEnd(), cha.printFields());
 					}
 				}
 			}
