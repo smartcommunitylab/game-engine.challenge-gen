@@ -7,6 +7,8 @@ import static eu.fbk.das.utils.Utils.pf;
 import static eu.fbk.das.utils.Utils.pfs;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +31,9 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 	private Set<String> players;
 	private static final String MEMBERS_PLAYERS = "member";
 	private static final String TEAM_PLAYERS = "team";
-	
+	private static final String MODE_MAX_VALUES = "modeMax";
+	private static final Set<String> groupChaTypes = new HashSet<>(Arrays.asList("groupCooperative", "groupCompetitiveTime", "groupCompetitivePerformance")); 
+			
 	private void prepare(String playerSet) {
 		System.out.println("playerSet -> " + playerSet);
 		if ("all".equals(playerSet))
@@ -101,6 +105,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 			playerSet = "all";
 
 		checkUpdateRs(conf);
+		initModeMax(config);
 		prepare(playerSet);
 
 		List<ChallengeExpandedDTO> chas = new ArrayList<>();
@@ -155,6 +160,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 			assignmentType = "groupCooperative";
 
 		checkUpdateRs(conf);
+		initModeMax(config);
 		prepare(playerSet);
 
 		List<GroupExpandedDTO> chas = new ArrayList<>();
@@ -197,7 +203,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 	private void dataCha(ChallengeExpandedDTO cha, Map<String, Object> config) {
 		for (String k : config.keySet()) {
 			Object v = config.get(k);
-			if ("start".equals(k) || "duration".equals(k))
+			if ("start".equals(k) || "duration".equals(k) || "modeMax".equals(k))
 				continue;
 			if ("hide".equals(k)) {
 				cha.setHide((Boolean) v);
@@ -243,7 +249,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 	private void dataGroup(GroupExpandedDTO gcd, Map<String, Object> config) {
 		for (String k : config.keySet()) {
 			Object v = config.get(k);
-			if ("start".equals(k) || "duration".equals(k))
+			if ("start".equals(k) || "duration".equals(k) || "modeMax".equals(k))
 				continue;
 			// else String v = challengeValues.get(k);
 			// else cha.setData(k, v);
@@ -299,70 +305,126 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 	}
 
 	@Override
-	public List<ChallengeExpandedDTO> createHSCChallenges(Map<String, String> conf,
+	public List<ChallengeExpandedDTO> createHSCSingleChallenges(Map<String, String> conf,
 			Map<String, List<Challenge>> creationRules, Map<String, Object> config) {
 		List<ChallengeExpandedDTO> chas = new ArrayList<>();
 		checkUpdateRs(conf);
+		initModeMax(config);
 		int challengeWeek = (Integer) config.get("challengeWeek");
-		logger.info("********** WEEK INDEX " +  challengeWeek + " **********");
+		logger.info("********** WEEK INDEX(SINGLE) " + challengeWeek + " **********");
 		List<Challenge> challenges = creationRules.get(String.valueOf(challengeWeek));
 		if (challenges != null && !challenges.isEmpty()) {
 			for (Challenge chg : challenges) {
+				String chgType = chg.getChallengeTyp();
+				if (groupChaTypes.contains(chgType)) {
+					continue;
+				}
 				logger.info(chg);
 				// validate challenge config.
 				preparePlayers(chg.getPlayerSet());
-				logger.info(chg.getPlayerSet() + " challenge generation for " + players.size() + " " + chg.getPlayerSet());
+				logger.info(
+						chg.getPlayerSet() + " challenge generation for " + players.size() + " " + chg.getPlayerSet());
 				for (String pId : players) {
 					for (ChallengeExpandedDTO cha : rs.recommendHSC(pId, chg, config)) {
 						dataCha(cha, config);
 						cha.setInfo("gameId", rs.gameId);
 						cha.setInfo("pId", pId);
 						chas.add(cha);
-						pf("playerId: %s, instanceName: %s, model: %s, s: %s, e: %s, f: %s\n", pId, cha.getInstanceName(),
-								cha.getModelName(), cha.getStart(), cha.getEnd(), cha.printFields());
+						pf("playerId: %s, instanceName: %s, model: %s, s: %s, e: %s, f: %s\n", pId,
+								cha.getInstanceName(), cha.getModelName(), cha.getStart(), cha.getEnd(),
+								cha.printFields());
 					}
 				}
 			}
 		}
 		return chas;
 	}
+	
+	@Override
+	public List<GroupExpandedDTO> createHSCGroupChallenges(Map<String, String> conf,
+			Map<String, List<Challenge>> creationRules, Map<String, Object> config) {
+		List<GroupExpandedDTO> chas = new ArrayList<>();
+		checkUpdateRs(conf);
+		GroupChallengesAssigner gca = new GroupChallengesAssigner(rs);
+		initModeMaxGCA(config, gca);		
+		int challengeWeek = (Integer) config.get("challengeWeek");
+		logger.info("********** WEEK INDEX(GROUP) " + challengeWeek + " **********");
+		List<Challenge> challenges = creationRules.get(String.valueOf(challengeWeek));
+		if (challenges != null && !challenges.isEmpty()) {
+			for (Challenge chg : challenges) {
+				// validate challenge config.
+				String chgType = chg.getChallengeTyp();
+				if (!groupChaTypes.contains(chgType)) {
+					continue;
+				}
+				logger.info(chg);
+				Map<String, String> rewards = prepareHSCRewards(chg.getReward());
+				preparePlayers(chg.getPlayerSet());
+				List<GroupExpandedDTO> groupChallenges = gca.executeGroupHSC(players, chg.getPointConcepts(), chg, config);
+				for (GroupExpandedDTO gcd : groupChallenges) {
+					// set data
+					dataGroup(gcd, config);
+					// set reward;
+					rewardGroup(gcd, rewards);
+					chas.add(gcd);
+					pf("model:%s, pc:%s, target:%s, rewardTargetPC:%s, s:%s, e:%s, attendee1:%s, attendee2: %s, rewardBonus:%s \n",
+							gcd.getChallengeModelName(),
+							gcd.getChallengePointConcept().getName(),
+							gcd.getChallengeTarget(),
+							gcd.getReward().getTargetPointConcept().getName(),
+							gcd.getStart(),
+							gcd.getEnd(),
+							gcd.getAttendees().get(0).getPlayerId(),
+							gcd.getAttendees().get(1).getPlayerId(),
+							gcd.getReward().getBonusScore()
+							);
+				}
+			}
+		}
+		return chas;
+	}
 
+	private void initModeMaxGCA(Map<String, Object> config, GroupChallengesAssigner gca) {
+		if (config.get(MODE_MAX_VALUES) != null) {
+        	Map<?,?> modeMaxMap = (Map<?, ?>) config.get(MODE_MAX_VALUES);
+        	for(Map.Entry<?, ?> entry :modeMaxMap.entrySet()){
+        		gca.getModeMax().put((String)entry.getKey(),(Integer) entry.getValue()); 
+            }
+       }		
+	}
+
+	public static Map<String, String> prepareHSCRewards(eu.fbk.das.rs.challenges.Challenge.Reward reward) {
+		Map<String, String> confs = new HashMap<>();
+		confs.put("scoreType", reward.getScoreName());
+		confs.put("calcType", reward.getType());
+		confs.put("calcValue", String.valueOf(reward.getValue()));
+		confs.put("maxValue", String.valueOf(reward.getMaxValue()));
+		return confs;
+	}
+
+	private void initModeMax(Map<String, Object> config) {
+		// initialize modeMax value
+        if (config.get(MODE_MAX_VALUES) != null) {
+        	Map<?,?> modeMaxMap = (Map<?, ?>) config.get(MODE_MAX_VALUES);
+        	for(Map.Entry<?, ?> entry :modeMaxMap.entrySet()){
+                rs.rscg.getModeMax().put((String)entry.getKey(),(Integer) entry.getValue()); 
+            }
+        }	
+	}
+	
 	private void preparePlayers(Set<String> playerSet) {
 		players = new HashSet<>();
 		if (playerSet != null && !playerSet.isEmpty()) {
-            if (playerSet.contains(TEAM_PLAYERS)) {
-            	players.addAll(rs.facade.getTeamPlayers(rs.gameId));
-            } else if (playerSet.contains(MEMBERS_PLAYERS)) {
-            	players.addAll(rs.facade.getMemberPlayers(rs.gameId));	
-            } else {
-            	for (String p: playerSet) {
-    		    	players.add(p.trim());
-    		    }            	
-            }
-		}	
-	}
-
-	private void printConfig(Map<String, List<Challenge>> creationRules, Map<String, Object> config) {
-		// read challenge Week 0,1,2
-		// read challenge configuration for week.
-		// call gamification to get player set of challenge week configuration.
-		// prepare players.
-		// recommend Weekly
-
-		System.out.println("\n##################### configMap #####################");
-		config.entrySet().forEach(entry -> {
-			System.out.println(entry.getKey() + " " + entry.getValue());
-		});
-		System.out.println("#########################################################\n");
-
-		creationRules.entrySet().forEach(entry -> {
-			System.out.println("week index: " + entry.getKey());
-			System.out.println("\n##################### challenges #####################");
-			for (Challenge ch : entry.getValue()) {
-				System.out.println(ch);
+			if (playerSet.contains(TEAM_PLAYERS)) {
+				players.addAll(rs.facade.getTeamPlayers(rs.gameId));
+			} else if (playerSet.contains(MEMBERS_PLAYERS)) {
+				players.addAll(rs.facade.getMemberPlayers(rs.gameId));
+			} else {
+				for (String p : playerSet) {
+					players.add(p.trim());
+				}
 			}
-			System.out.println("\n##########################################");
-		});
+		}
 	}
 
 }

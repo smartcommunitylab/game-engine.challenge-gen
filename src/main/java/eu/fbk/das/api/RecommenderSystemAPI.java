@@ -53,7 +53,16 @@ public interface RecommenderSystemAPI {
      * @param config keys: start / end / challengeWeek / execDate (required), hide (optional)
      * @return
      */
-	public List<ChallengeExpandedDTO> createHSCChallenges(Map<String, String> conf, Map<String, List<Challenge>> creationRules, Map<String, Object> config);
+	public List<ChallengeExpandedDTO> createHSCSingleChallenges(Map<String, String> conf, Map<String, List<Challenge>> creationRules, Map<String, Object> config);
+	
+	/**
+	 * 
+	 * @param conf
+	 * @param creationRules
+	 * @param config
+	 * @return
+	 */
+	public List<GroupExpandedDTO> createHSCGroupChallenges(Map<String, String> conf, Map<String, List<Challenge>> creationRules, Map<String, Object> config);
     
     public boolean assignSingleChallenge(Map<String, String> conf, ChallengeExpandedDTO cha);
 

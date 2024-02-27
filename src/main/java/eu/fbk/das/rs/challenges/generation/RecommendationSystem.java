@@ -18,6 +18,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import eu.fbk.das.GamificationConfig;
+import eu.fbk.das.rs.GroupChallengesAssigner;
 import eu.fbk.das.rs.challenges.Challenge;
 import eu.fbk.das.rs.challenges.ChallengeUtil;
 import eu.fbk.das.utils.Pair;
@@ -74,7 +75,7 @@ public class RecommendationSystem {
 
 
     public DateTime lastMonday;
-    private DateTime execDate;
+    public DateTime execDate;
     protected Integer chaWeek;
 
     public GamificationEngineRestFacade facade;
@@ -155,7 +156,7 @@ public class RecommendationSystem {
 		return generationRuleHSC(pId, state, execDate, chg);
 	}
 
-    protected void prepare(Map<String, Object> challengeValues) {
+    public void prepare(Map<String, Object> challengeValues) {
         chaWeek = (Integer) challengeValues.get("challengeWeek");
         Date execDateParam = (Date) challengeValues.get("exec");
         execDate = new DateTime(execDateParam.getTime());
@@ -203,11 +204,14 @@ public class RecommendationSystem {
 				if (cdd == null)
 					cdd = rscg.getRepetitive(state.getPlayerId());
 			} else {
-				  cdd = getChallengeRepetitive(state, d, bestMode);
+				  cdd = getChallengeRepetitive(state, d, bestMode);				
 			}
 		}
-		if (cdd != null)
+		if (cdd != null) {
+			cdd.setData("bonusScore", chg.getReward().getValue());
 			chas.add(cdd);
+		}
+		
 		return chas;
 	}
 

@@ -32,6 +32,15 @@ import it.smartcommunitylab.model.ext.PointConcept;
 import com.google.common.math.Quantiles;
 
 public class ProdRandomTest extends ChallengesBaseTest {
+	
+	private static HashMap<String, Integer> modeMax = new HashMap<String, Integer>();
+	{
+		modeMax.put("Walk_Km", 70);
+		modeMax.put("Bike_Km", 210);
+		modeMax.put("Train_Trips", 56);
+		modeMax.put("Bus_Trips", 56);
+		modeMax.put("green leaves", 3000);
+	};
 
     public ProdRandomTest() {
         prod = true;
@@ -428,7 +437,7 @@ public class ProdRandomTest extends ChallengesBaseTest {
        //  GroupChallengeDTO gcd = gca.createPerfomanceChallenge("Walk_Km", pId, pId2, d.plusDays(3), d.plusDays(10));
 
         TargetPrizeChallengesCalculator tpcc = new TargetPrizeChallengesCalculator();
-        tpcc.prepare(rs, ferrara20_gameid, new DateTime());
+        tpcc.prepare(rs, ferrara20_gameid, new DateTime(), modeMax);
         Map<String, Double> result = tpcc.targetPrizeChallengesCompute(pId, pId2, mode, "groupCooperative");
         GroupExpandedDTO gcd = rs.facade.makeGroupChallengeDTO(rs.gameId,
                 "groupCooperative", mode, pId, pId2,

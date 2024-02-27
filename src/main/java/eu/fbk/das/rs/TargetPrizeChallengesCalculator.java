@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 
 import eu.fbk.das.GamificationEngineRestFacade;
+import eu.fbk.das.rs.challenges.Challenge;
 import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
 import eu.fbk.das.rs.challenges.calculator.DifficultyCalculator;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
@@ -26,27 +27,22 @@ public class TargetPrizeChallengesCalculator {
 
     private static final Logger logger = Logger.getLogger(TargetPrizeChallengesCalculator.class);
     private GamificationEngineRestFacade facade;
-
     private DateTime execDate;
     private DateTime lastMonday;
-
     private GameStatistics gs;
-
     private DifficultyCalculator dc;
-
     private String gameId;
     private RecommendationSystem rs;
     private double modifier = 0.9;
-
+    private HashMap<String, Integer> modeMax =  new HashMap<>();
+    
     // TODO remove
-    public void prepare(RecommendationSystem rs, String gameId, DateTime execDate) {
-
+    public void prepare(RecommendationSystem rs, String gameId, DateTime execDate, HashMap<String, Integer> modeMaxMap) {
         this.execDate = execDate;
-
         facade = rs.facade;
-
         this.rs = rs;
         this.gameId = gameId;
+        this.modeMax = modeMaxMap;
     }
 
 
@@ -97,6 +93,35 @@ public class TargetPrizeChallengesCalculator {
         return res;
     }
 
+    public Map<String, Double> targetPrizeHSCChallengesCompute(String pId_1, String pId_2, String counter, String type, Challenge chg) {
+        prepare();
+        Map<String, Double> res = new HashMap<>();
+        Pair<Double, Double> res1 = getForecast("player1", pId_1, res, counter);
+        double player1_tgt = res1.getFirst();
+        Pair<Double, Double> res2 = getForecast("player2", pId_2, res, counter);
+        double player2_tgt = res2.getFirst();
+        double target;
+        if (("groupCompetitiveTime").equals(type)) {
+            target = roundTarget(counter,((player1_tgt + player2_tgt) / 2.0) * modifier);
+            target = checkMaxTargetCompetitive(counter, target);
+            res.put("target", target);
+            res.put("player1_prz", chg.getReward().getValue());
+            res.put("player2_prz",  chg.getReward().getValue());
+        }
+        else if ("groupCooperative".equals(type)) {
+            target = roundTarget(counter, (player1_tgt + player2_tgt) * modifier);
+            target = checkMaxTargetCooperative(counter, target);
+            double prz = chg.getReward().getValue();
+            res.put("target", target);
+            res.put("player1_prz", prz);
+            res.put("player2_prz", prz);
+        }  else if (type.equals("groupCompetitivePerformance")) {
+            p("WRONG TYPE");
+        } else
+            p("UNKOWN TYPE");
+        return res;
+    }
+    
     private Pair<Double, Double> getForecast(String nm, String pId, Map<String, Double> res,  String counter) {
 
         PlayerStateDTO state = facade.getPlayerState(gameId, pId);
@@ -118,48 +143,40 @@ public class TargetPrizeChallengesCalculator {
         return new Pair<>(tgt, bas);
     }
 
-    private double checkMaxTargetCompetitive(String counter, double v) {
-            if ("Walk_Km".equals(counter))
-                return Math.min(70, v);
-            if ("Bike_Km".equals(counter))
-                return Math.min(210, v);
-            if ("green leaves".equals(counter))
-                return Math.min(3000, v);
+	private double checkMaxTargetCompetitive(String counter, double v) {
+		if (counter.equals(ChallengesConfig.WALK_KM) || counter.equals(ChallengesConfig.BIKE_KM)
+				|| counter.equals(ChallengesConfig.TRAIN_TRIPS) || counter.equals(ChallengesConfig.BUS_TRIPS)
+				|| counter.equals(ChallengesConfig.GREEN_LEAVES)) {
+			return Math.min(this.modeMax.get(counter), v);
+		}
+		logger.warn(String.format(
+				"Unsupported value %s calculating max target for group competitive, valid values: Walk_Km, Bike_Km, green leaves",
+				counter));
+		return 0.0;
+	}
 
+	private double checkMaxTargetCooperative(String counter, double v) {
+		if (counter.equals(ChallengesConfig.WALK_KM) || counter.equals(ChallengesConfig.BIKE_KM)
+				|| counter.equals(ChallengesConfig.TRAIN_TRIPS) || counter.equals(ChallengesConfig.BUS_TRIPS)
+				|| counter.equals(ChallengesConfig.GREEN_LEAVES)) {
+			return Math.min(this.modeMax.get(counter) * 2, v);
+		}
+		logger.warn(String.format(
+				"Unsupported value %s calculating max target for group cooperative, valid values: Walk_Km, Bike_Km, green leaves",
+				counter));
+		return 0.0;
+	}
 
-        logger.warn(String.format(
-                "Unsupported value %s calculating max target for group competitive, valid values: Walk_Km, Bike_Km, green leaves",
-                counter));
-            return 0.0;
-        }
-
-    private double checkMaxTargetCooperative(String counter, double v) {
-        if ("Walk_Km".equals(counter))
-            return Math.min(140, v);
-        if ("Bike_Km".equals(counter))
-            return Math.min(420, v);
-        if ("green leaves".equals(counter))
-            return Math.min(6000, v);
-
-        logger.warn(String.format(
-                "Unsupported value %s calculating max target for group cooperative, valid values: Walk_Km, Bike_Km, green leaves",
-                counter));
-        return 0.0;
-    }
-
-    private Double checkMinTarget(String counter, Double v) {
-        if ("Walk_Km".equals(counter))
-            return Math.max(1, v);
-        if ("Bike_Km".equals(counter))
-            return Math.max(5, v);
-        if ("green leaves".equals(counter))
-            return Math.max(50, v);
-
-        logger.warn(String.format(
-                "Unsupported value %s calculating min target, valid values: Walk_Km, Bike_Km, green leaves",
-                counter));
-        return 0.0;
-    }
+	private Double checkMinTarget(String counter, Double v) {
+		if (counter.equals(ChallengesConfig.WALK_KM) || counter.equals(ChallengesConfig.BIKE_KM)
+				|| counter.equals(ChallengesConfig.TRAIN_TRIPS) || counter.equals(ChallengesConfig.BUS_TRIPS)
+				|| counter.equals(ChallengesConfig.GREEN_LEAVES)) {
+			return Math.max(this.modeMax.get(counter), v);
+		}
+		logger.warn(String.format(
+				"Unsupported value %s calculating min target, valid values: Walk_Km, Bike_Km, green leaves", counter));
+		return 0.0;
+	}
 
     private Map<Integer, Double> getQuantiles2(String gameId, String counter) {
         return rs.getStats().getQuantiles(counter);
@@ -345,6 +362,53 @@ public class TargetPrizeChallengesCalculator {
 
     public static String f(String format, Object... args) {
         return String.format(format, args);
+    }
+    
+    public Map<String, Double> targetPrizeChallengesConfig(String pId_1, String pId_2, String counter, String type) {
+
+        prepare();
+
+        Map<Integer, Double> quantiles = getQuantiles2(gameId, counter);
+
+        Map<String, Double> res = new HashMap<>();
+
+        Pair<Double, Double> res1 = getForecast("player1", pId_1, res, counter);
+        double player1_tgt = res1.getFirst();
+        double player1_bas = res1.getSecond();
+
+        Pair<Double, Double> res2 = getForecast("player2", pId_2, res, counter);
+        double player2_tgt = res2.getFirst();
+        double player2_bas = res2.getSecond();
+
+
+        double target;
+        if (type.equals("groupCompetitiveTime")) {
+            target = roundTarget(counter,((player1_tgt + player2_tgt) / 2.0) * modifier);
+
+            target = checkMaxTargetCompetitive(counter, target);
+
+            res.put("target", target);
+                    res.put("player1_prz", evaluate(target, player1_bas, counter, quantiles));
+            res.put("player2_prz",  evaluate(target, player2_bas, counter, quantiles));
+        }
+        else if (type.equals("groupCooperative")) {
+            target = roundTarget(counter, (player1_tgt + player2_tgt) * modifier);
+
+            target = checkMaxTargetCooperative(counter, target);
+
+            double player1_prz = evaluate(player1_tgt, player1_bas, counter, quantiles);
+            double player2_prz = evaluate(player2_tgt, player2_bas, counter, quantiles);
+            double prz = Math.max(player1_prz, player2_prz);
+
+            res.put("target", target);
+            res.put("player1_prz", prz);
+            res.put("player2_prz", prz);
+        }  else if (type.equals("groupCompetitivePerformance")) {
+            p("WRONG TYPE");
+        } else
+            p("UNKOWN TYPE");
+
+        return res;
     }
 
     public static void p(String s) {

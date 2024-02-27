@@ -25,7 +25,10 @@ import org.chocosolver.solver.variables.IntVar;
 import org.joda.time.DateTime;
 
 import eu.fbk.das.GamificationEngineRestFacade;
+import eu.fbk.das.model.ChallengeExpandedDTO;
 import eu.fbk.das.model.GroupExpandedDTO;
+import eu.fbk.das.rs.challenges.Challenge;
+import eu.fbk.das.rs.challenges.Challenge.Reward;
 import eu.fbk.das.rs.challenges.ChallengeUtil;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystem;
 import eu.fbk.das.rs.challenges.generation.RecommendationSystemStatistics;
@@ -49,16 +52,14 @@ public class GroupChallengesAssigner extends ChallengeUtil {
     private double bcost = 3;
     private List<GroupExpandedDTO> groupChallenges;
     private Set<String> modelTypes;
-
     private DateTime execDate;
     private DateTime startDate;
     private DateTime endDate;
+    private HashMap<String, Integer> modeMax =  new HashMap<>();
 
     public GroupChallengesAssigner(RecommendationSystem rs) {
         super(rs);
-
         Arrays.sort(groupCha);
-
         playerLimit = 0;
         timelimit = 600;
     }
@@ -111,7 +112,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
         System.out.println("#######################################################################\n");
 
         TargetPrizeChallengesCalculator tpcc = new TargetPrizeChallengesCalculator();
-        tpcc.prepare(rs, rs.gameId, execDate);
+        tpcc.prepare(rs, rs.gameId, execDate, modeMax);
 
         for (String mode : modelTypes) {
 
@@ -565,5 +566,113 @@ public class GroupChallengesAssigner extends ChallengeUtil {
         return 0;
 
     }
+    
+    public List<GroupExpandedDTO> executeGroupHSC(Set<String> players, Set<String> modelTypes, Challenge chg, Map<String, Object> challengeValues) {
+    	execDate = new DateTime(challengeValues.get("exec"));
+        Pair<Date, Date> challengeDates = GamificationEngineRestFacade
+                .getDates(challengeValues.get("start"), challengeValues.get("duration"));
+        startDate = new DateTime(challengeDates.getFirst());
+        endDate = new DateTime(challengeDates.getSecond());
+        prepare(getChallengeWeek(execDate));
+        groupChallenges = new ArrayList<>();
+        
+        if (players.size() == 0)
+            return new ArrayList<>();
+
+        RecommendationSystemStatistics stats = rs.getStats();
+        stats.checkAndUpdateStats(execDate);
+        HashMap<String, HashMap<String, Double>> playersCounterAssignment = getPlayerCounterAssignment(players, stats, modelTypes);
+
+        TargetPrizeChallengesCalculator tpcc = new TargetPrizeChallengesCalculator();
+        tpcc.prepare(rs, rs.gameId, execDate, modeMax);
+
+        for (String mode : modelTypes) {
+            // Make sure they are all even
+            Map<String, Double> res = checkEvenGenerateRepetitive(playersCounterAssignment.get(mode), chg.getReward());
+            Map<String, Integer> playersQuant = getPlayersQuantile(res, stats.getQuantiles(mode));
+            List<Pair<String, String>> reduced = reduce(playersQuant);
+            List<Pair<String, String>> pairs = chocoModel(playersQuant);
+            pairs.addAll(reduced);
+            for (Pair<String, String> p: pairs) {
+                prepareHSCGroupChallenge(chg.getChallengeTyp(), tpcc, mode, p, rs.gameId, chg);
+            }
+        }
+        return groupChallenges;
+    }
+    
+    private Map<String, Double> checkEvenGenerateRepetitive(HashMap<String, Double> originalList, Reward reward) {
+    	  Map<String, Double> list = sortByValues(originalList);
+
+          if (list.size() % 2 == 0)
+              return  list;
+
+          // worst
+          String pId = list.keySet().iterator().next();
+          list.remove(pId);
+          pf("HSC repetitive single challenge for uneven player: %s \n", pId);
+          PlayerStateDTO state = rs.facade.getPlayerState(rs.gameId, pId);
+          ChallengeExpandedDTO rep = rs.repetitiveIntervene(state, execDate);
+          rep.setData("bonusScore", reward.getValue());
+          rep.setStart(startDate.toDate());
+          rep.setEnd(endDate.toDate());
+//          rs.facade.assignChallengeToPlayer(rep, rs.gameId, pId);
+          return list;
+	}
+
+	private void prepareHSCGroupChallenge(String type, TargetPrizeChallengesCalculator tpcc, String mode, Pair<String, String> p, String gameId, Challenge chg) {
+		GroupExpandedDTO gcd;
+		if ("groupCompetitivePerformance".equals(type))
+			gcd = createHSCPerfomanceChallenge(mode, p.getFirst(), p.getSecond(), startDate, endDate, chg);
+		else {
+			Map<String, Double> result = tpcc.targetPrizeHSCChallengesCompute(p.getFirst(), p.getSecond(), mode, type,
+					chg);
+			pf("%.2f, %s, %.2f, %.0f, %s, %.2f, %.0f, %s, %s\n", result.get("target"), p.getFirst(),
+					result.get("player1_bas"), result.get("player1_prz"), p.getSecond(), result.get("player2_bas"),
+					result.get("player2_prz"), mode, type);
+
+			gcd = rs.facade.makeGroupChallengeDTO(rs.gameId, type, mode, p.getFirst(), p.getSecond(), startDate,
+					endDate, result);
+		}
+		gcd.setInfo("gameId", gameId);
+		groupChallenges.add(gcd);
+    }
+    
+    public GroupExpandedDTO createHSCPerfomanceChallenge(String counter, String pId1, String pId2, DateTime start, DateTime end, Challenge chg) {
+        GroupExpandedDTO gcd = new GroupExpandedDTO();
+        gcd.setChallengeModelName("groupCompetitivePerformance");
+        List<AttendeeDTO> attendee = new ArrayList<>();
+        AttendeeDTO att1 = new AttendeeDTO();
+        att1.setRole("GUEST");
+        att1.setPlayerId(pId1);
+        attendee.add(att1);
+        AttendeeDTO att2 = new AttendeeDTO();
+        att2.setRole("GUEST");
+        att2.setPlayerId(pId2);
+        attendee.add(att2);
+        gcd.setAttendees(attendee);
+
+        PointConceptDTO pc = new PointConceptDTO();
+        pc.setName(counter);
+        pc.setPeriod("weekly");
+        gcd.setChallengePointConcept(pc);
+
+        RewardDTO rw = new RewardDTO();
+        Map<String, Double> bonusScore = new HashMap<>();
+        bonusScore.put(pId1, chg.getReward().getValue());
+        bonusScore.put(pId2, chg.getReward().getValue());
+        rw.setBonusScore(bonusScore);
+        gcd.setReward(rw);
+
+        gcd.setOrigin("gca");
+        gcd.setState("ASSIGNED");
+        gcd.setStart(start.toDate());
+        gcd.setEnd(end.toDate());
+
+        return gcd;
+    }
+
+	public HashMap<String, Integer> getModeMax() {
+		return modeMax;
+	}
 
 }

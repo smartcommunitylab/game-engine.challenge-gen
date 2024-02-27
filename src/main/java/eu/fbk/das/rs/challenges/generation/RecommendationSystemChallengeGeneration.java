@@ -28,6 +28,7 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
 	private double lastCounter;
 	public static final String TEAM = "team";
     public static final String CURRENTPLAYERS_CUSTOMEDATA = "currentPlayers";
+    private HashMap<String, Integer> modeMax =  new HashMap<>();
     
     public RecommendationSystemChallengeGeneration(RecommendationSystem rs) {
         super(rs);
@@ -145,17 +146,16 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
     }
 
     public double checkMax(double v, String mode) {
-        if (mode.equals(ChallengesConfig.WALK_KM) && v >= 70)
-            return 70;
-        if (mode.equals(ChallengesConfig.BIKE_KM) && v >= 210)
-            return 210;
-        if (mode.equals(ChallengesConfig.TRAIN_TRIPS) && v >= 56)
-            return 56;
-        if (mode.equals(ChallengesConfig.BUS_TRIPS) && v >= 56)
-            return 56;
-
-        if (mode.equals(ChallengesConfig.GREEN_LEAVES) && v >= 3000)
-            return 3000;
+        if (mode.equals(ChallengesConfig.WALK_KM) && v >= modeMax.get(ChallengesConfig.WALK_KM))
+            return modeMax.get(ChallengesConfig.WALK_KM);
+        if (mode.equals(ChallengesConfig.BIKE_KM) && v >= modeMax.get(ChallengesConfig.BIKE_KM))
+            return modeMax.get(ChallengesConfig.BIKE_KM);
+        if (mode.equals(ChallengesConfig.TRAIN_TRIPS) && v >= modeMax.get(ChallengesConfig.TRAIN_TRIPS))
+            return modeMax.get(ChallengesConfig.TRAIN_TRIPS);
+        if (mode.equals(ChallengesConfig.BUS_TRIPS) && v >= modeMax.get(ChallengesConfig.BUS_TRIPS))
+            return modeMax.get(ChallengesConfig.BUS_TRIPS);
+        if (mode.equals(ChallengesConfig.GREEN_LEAVES) && v >= modeMax.get(ChallengesConfig.GREEN_LEAVES))
+            return modeMax.get(ChallengesConfig.GREEN_LEAVES);
 
         return v;
 
@@ -602,20 +602,26 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
     }
 
 	private double checkMaxTeam(double v, String mode, double activeMembers) {
-		if (mode.equals(ChallengesConfig.WALK_KM) && v >= (70 * activeMembers))
-			return 70 * activeMembers;
-		if (mode.equals(ChallengesConfig.BIKE_KM) && v >= (210 * activeMembers))
-			return 210 * activeMembers;
-		if (mode.equals(ChallengesConfig.TRAIN_TRIPS) && v >= (56 * activeMembers))
-			return 56 * activeMembers;
-		if (mode.equals(ChallengesConfig.BUS_TRIPS) && v >= (56 * activeMembers))
-			return 56 * activeMembers;
-
-		if (mode.equals(ChallengesConfig.GREEN_LEAVES) && v >= (3000 * activeMembers))
-			return 3000 * activeMembers;
-
+		if (mode.equals(ChallengesConfig.WALK_KM) && v >= (modeMax.get(ChallengesConfig.WALK_KM) * activeMembers))
+			return modeMax.get(ChallengesConfig.WALK_KM) * activeMembers;
+		if (mode.equals(ChallengesConfig.BIKE_KM) && v >= (modeMax.get(ChallengesConfig.BIKE_KM) * activeMembers))
+			return modeMax.get(ChallengesConfig.BIKE_KM) * activeMembers;
+		if (mode.equals(ChallengesConfig.TRAIN_TRIPS)
+				&& v >= (modeMax.get(ChallengesConfig.TRAIN_TRIPS) * activeMembers))
+			return modeMax.get(ChallengesConfig.TRAIN_TRIPS) * activeMembers;
+		if (mode.equals(ChallengesConfig.BUS_TRIPS) && v >= (modeMax.get(ChallengesConfig.BUS_TRIPS) * activeMembers))
+			return modeMax.get(ChallengesConfig.BUS_TRIPS) * activeMembers;
+		if (mode.equals(ChallengesConfig.GREEN_LEAVES)
+				&& v >= (modeMax.get(ChallengesConfig.GREEN_LEAVES) * activeMembers))
+			return modeMax.get(ChallengesConfig.GREEN_LEAVES) * activeMembers;
 		return v;
 	}
+
+	public HashMap<String, Integer> getModeMax() {
+		return modeMax;
+	}
+
+	
     
 }
 

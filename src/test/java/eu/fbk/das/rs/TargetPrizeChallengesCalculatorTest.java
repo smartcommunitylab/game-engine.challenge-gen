@@ -13,6 +13,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,6 +33,16 @@ public class TargetPrizeChallengesCalculatorTest extends ChallengesBaseTest {
     private String[] key2 = new String[] {"bas", "tgt", "prz"};
     private String gameId;
     private RecommendationSystem rs;
+    
+	private static HashMap<String, Integer> modeMax = new HashMap<String, Integer>();
+	{
+		modeMax.put("Walk_Km", 70);
+		modeMax.put("Bike_Km", 210);
+		modeMax.put("Train_Trips", 56);
+		modeMax.put("Bus_Trips", 56);
+		modeMax.put("green leaves", 3000);
+	};
+
 
     @Test
     public void test() {
@@ -99,7 +110,7 @@ public class TargetPrizeChallengesCalculatorTest extends ChallengesBaseTest {
         rs = new RecommendationSystem(conf);
 
         tpcc = new TargetPrizeChallengesCalculator();
-        tpcc.prepare(rs, gameId, new DateTime());
+        tpcc.prepare(rs, gameId, new DateTime(), modeMax);
 
     }
 
