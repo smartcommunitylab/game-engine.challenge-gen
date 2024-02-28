@@ -753,6 +753,11 @@ public class RecommendationSystem {
 
         Map<String, Double> perfomance = getPostgresPerformance(postgresUrl, start, dt, gameId, pId);
 
+        System.out.println("*** Postgres Performance for player: " + pId + "***");
+        for (Map.Entry<String, Double> entry : perfomance.entrySet()) {
+            System.out.println(entry.getKey() + ":" + entry.getValue().toString());
+        }
+        
         Map<Integer, double[]> cacheAll = new HashMap<>();
         for (int i = 0; i < 5; i++) {
             DateTime date = start.plusDays(i * 7);
