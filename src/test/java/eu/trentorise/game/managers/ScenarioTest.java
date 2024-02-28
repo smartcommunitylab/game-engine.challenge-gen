@@ -72,7 +72,7 @@ public class ScenarioTest extends ChallengesBaseTest {
 //        config.put("duration", "7d");
 
         GroupChallengesAssigner gca = new GroupChallengesAssigner(rs);
-        List<GroupExpandedDTO> chas = gca.execute(players, modeList, type, config);
+        List<GroupExpandedDTO> chas = gca.execute(false, players, modeList, type, config);
         for (GroupExpandedDTO cha: chas)
             p(cha);
     }

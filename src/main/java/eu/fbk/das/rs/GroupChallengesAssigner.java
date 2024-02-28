@@ -64,7 +64,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
         timelimit = 600;
     }
 
-    public List<GroupExpandedDTO> execute(Set<String> players, Set<String> modelTypes, String assignmentType, Map<String, Object> challengeValues) {
+    public List<GroupExpandedDTO> execute(Boolean assignUnEvenRepetitive, Set<String> players, Set<String> modelTypes, String assignmentType, Map<String, Object> challengeValues) {
 
     	execDate = new DateTime(challengeValues.get("exec"));
         Pair<Date, Date> challengeDates = GamificationEngineRestFacade
@@ -117,7 +117,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
         for (String mode : modelTypes) {
 
             // Make sure they are all even
-            Map<String, Double> res = checkEven(playersCounterAssignment.get(mode));
+            Map<String, Double> res = checkEven(assignUnEvenRepetitive, playersCounterAssignment.get(mode));
 
             Map<String, Integer> playersQuant = getPlayersQuantile(res, stats.getQuantiles(mode));
 
@@ -348,7 +348,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
         return false;
     }
 
-    private Map<String, Double> checkEven(HashMap<String, Double> originalList) {
+    private Map<String, Double> checkEven(Boolean assignUnEvenRepetitive, HashMap<String, Double> originalList) {
 
         Map<String, Double> list = sortByValues(originalList);
 
@@ -371,7 +371,8 @@ public class GroupChallengesAssigner extends ChallengeUtil {
         System.out.println("Start: " + rep.getStart());
         System.out.println("End: " + rep.getEnd());
         System.out.println("***********************************\n");
-        rs.facade.assignChallengeToPlayer(rep, rs.gameId, pId);
+        if (Boolean.TRUE.equals(assignUnEvenRepetitive))
+        	rs.facade.assignChallengeToPlayer(rep, rs.gameId, pId);
         return list;
     }
 
@@ -567,7 +568,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
 
     }
     
-    public List<GroupExpandedDTO> executeGroupHSC(Set<String> players, Set<String> modelTypes, Challenge chg, Map<String, Object> challengeValues) {
+    public List<GroupExpandedDTO> executeGroupHSC(Boolean assignUnEvenRepetitive, Set<String> players, Set<String> modelTypes, Challenge chg, Map<String, Object> challengeValues) {
     	execDate = new DateTime(challengeValues.get("exec"));
         Pair<Date, Date> challengeDates = GamificationEngineRestFacade
                 .getDates(challengeValues.get("start"), challengeValues.get("duration"));
@@ -588,7 +589,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
 
         for (String mode : modelTypes) {
             // Make sure they are all even
-            Map<String, Double> res = checkEvenGenerateRepetitive(playersCounterAssignment.get(mode), chg.getReward());
+            Map<String, Double> res = checkEvenGenerateRepetitive(assignUnEvenRepetitive, playersCounterAssignment.get(mode), chg.getReward());
             Map<String, Integer> playersQuant = getPlayersQuantile(res, stats.getQuantiles(mode));
             List<Pair<String, String>> reduced = reduce(playersQuant);
             List<Pair<String, String>> pairs = chocoModel(playersQuant);
@@ -600,7 +601,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
         return groupChallenges;
     }
     
-    private Map<String, Double> checkEvenGenerateRepetitive(HashMap<String, Double> originalList, Reward reward) {
+    private Map<String, Double> checkEvenGenerateRepetitive(Boolean assignUnEvenRepetitive, HashMap<String, Double> originalList, Reward reward) {
     	  Map<String, Double> list = sortByValues(originalList);
 
           if (list.size() % 2 == 0)
@@ -615,11 +616,13 @@ public class GroupChallengesAssigner extends ChallengeUtil {
           rep.setData("bonusScore", reward.getValue());
           rep.setStart(startDate.toDate());
           rep.setEnd(endDate.toDate());
-//          rs.facade.assignChallengeToPlayer(rep, rs.gameId, pId);
+          if (Boolean.TRUE.equals(assignUnEvenRepetitive))
+        	  rs.facade.assignChallengeToPlayer(rep, rs.gameId, pId);
           return list;
 	}
 
-	private void prepareHSCGroupChallenge(String type, TargetPrizeChallengesCalculator tpcc, String mode, Pair<String, String> p, String gameId, Challenge chg) {
+	private void prepareHSCGroupChallenge(String type, TargetPrizeChallengesCalculator tpcc, String mode,
+			Pair<String, String> p, String gameId, Challenge chg) {
 		GroupExpandedDTO gcd;
 		if ("groupCompetitivePerformance".equals(type))
 			gcd = createHSCPerfomanceChallenge(mode, p.getFirst(), p.getSecond(), startDate, endDate, chg);
@@ -635,7 +638,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
 		}
 		gcd.setInfo("gameId", gameId);
 		groupChallenges.add(gcd);
-    }
+	}
     
     public GroupExpandedDTO createHSCPerfomanceChallenge(String counter, String pId1, String pId2, DateTime start, DateTime end, Challenge chg) {
         GroupExpandedDTO gcd = new GroupExpandedDTO();

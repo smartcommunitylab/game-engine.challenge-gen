@@ -35,7 +35,9 @@ public class TargetPrizeChallengesCalculator {
     private RecommendationSystem rs;
     private double modifier = 0.9;
     private HashMap<String, Integer> modeMax =  new HashMap<>();
-    
+    public static final String TEAM = "team";
+    public static final String CURRENTPLAYERS_CUSTOMEDATA = "currentPlayers";
+     
     // TODO remove
     public void prepare(RecommendationSystem rs, String gameId, DateTime execDate, HashMap<String, Integer> modeMaxMap) {
         this.execDate = execDate;
@@ -93,36 +95,131 @@ public class TargetPrizeChallengesCalculator {
         return res;
     }
 
-    public Map<String, Double> targetPrizeHSCChallengesCompute(String pId_1, String pId_2, String counter, String type, Challenge chg) {
-        prepare();
-        Map<String, Double> res = new HashMap<>();
-        Pair<Double, Double> res1 = getForecast("player1", pId_1, res, counter);
-        double player1_tgt = res1.getFirst();
-        Pair<Double, Double> res2 = getForecast("player2", pId_2, res, counter);
-        double player2_tgt = res2.getFirst();
-        double target;
-        if (("groupCompetitiveTime").equals(type)) {
-            target = roundTarget(counter,((player1_tgt + player2_tgt) / 2.0) * modifier);
-            target = checkMaxTargetCompetitive(counter, target);
-            res.put("target", target);
-            res.put("player1_prz", chg.getReward().getValue());
-            res.put("player2_prz",  chg.getReward().getValue());
-        }
-        else if ("groupCooperative".equals(type)) {
-            target = roundTarget(counter, (player1_tgt + player2_tgt) * modifier);
-            target = checkMaxTargetCooperative(counter, target);
-            double prz = chg.getReward().getValue();
-            res.put("target", target);
-            res.put("player1_prz", prz);
-            res.put("player2_prz", prz);
-        }  else if (type.equals("groupCompetitivePerformance")) {
-            p("WRONG TYPE");
-        } else
-            p("UNKOWN TYPE");
-        return res;
-    }
+	public Map<String, Double> targetPrizeHSCChallengesCompute(String pId_1, String pId_2, String counter, String type,
+			Challenge chg) {
+		prepare();
+		Map<String, Double> res = new HashMap<>();
+		Pair<Double, Double> res1 = getForecast("player1", pId_1, res, counter);
+		double player1_tgt = res1.getFirst();
+		Pair<Double, Double> res2 = getForecast("player2", pId_2, res, counter);
+		double player2_tgt = res2.getFirst();
+		double target;
+		if (("groupCompetitiveTime").equals(type)) {
+			target = roundTarget(counter, ((player1_tgt + player2_tgt) / 2.0) * modifier);
+			// TEAM
+			if (chg.getPlayerSet().contains(TEAM)) {
+				PlayerStateDTO ts1 = facade.getPlayerState(gameId, pId_1);
+				PlayerStateDTO ts2 = facade.getPlayerState(gameId, pId_2);
+				if (ts1.getCustomData().containsKey(CURRENTPLAYERS_CUSTOMEDATA)
+						&& ts2.getCustomData().containsKey(CURRENTPLAYERS_CUSTOMEDATA)) {
+					Integer activePlayersT1 = (Integer) ts1.getCustomData().get(CURRENTPLAYERS_CUSTOMEDATA);
+					Integer activePlayersT2 = (Integer) ts2.getCustomData().get(CURRENTPLAYERS_CUSTOMEDATA);
+					Integer media = (activePlayersT1 + activePlayersT2) / 2;
+					target = checkMaxTargetCompetitive(counter, target, media);
+				} else {
+					logger.error("Skipping team - missing attribute maxMembers");
+				}
+			} else {
+				target = checkMaxTargetCompetitive(counter, target);
+			}
+			res.put("target", target);
+			res.put("player1_prz", chg.getReward().getValue());
+			res.put("player2_prz", chg.getReward().getValue());
+		} else if ("groupCooperative".equals(type)) {
+			target = roundTarget(counter, (player1_tgt + player2_tgt) * modifier);
+			// team or single player
+			if (chg.getPlayerSet().contains(TEAM)) {
+				PlayerStateDTO ts1 = facade.getPlayerState(gameId, pId_1);
+				PlayerStateDTO ts2 = facade.getPlayerState(gameId, pId_2);
+				if (ts1.getCustomData().containsKey(CURRENTPLAYERS_CUSTOMEDATA)
+						&& ts2.getCustomData().containsKey(CURRENTPLAYERS_CUSTOMEDATA)) {
+					Integer activePlayersT1 = (Integer) ts1.getCustomData().get(CURRENTPLAYERS_CUSTOMEDATA);
+					Integer activePlayersT2 = (Integer) ts2.getCustomData().get(CURRENTPLAYERS_CUSTOMEDATA);
+					Integer somma = activePlayersT1 + activePlayersT2;
+					target = checkMaxTargetCooperative(counter, target, somma);
+				} else {
+					logger.error("Skipping team - missing attribute maxMembers");
+				}
+			} else {
+				target = checkMaxTargetCooperative(counter, target);
+			}
+			double prz = chg.getReward().getValue();
+			res.put("target", target);
+			res.put("player1_prz", prz);
+			res.put("player2_prz", prz);
+		} else if (type.equals("groupCompetitivePerformance")) {
+			p("WRONG TYPE");
+		} else
+			p("UNKOWN TYPE");
+		return res;
+	}
     
-    private Pair<Double, Double> getForecast(String nm, String pId, Map<String, Double> res,  String counter) {
+    
+	private double checkMaxTargetCompetitive(String mode, double v) {
+		if (mode.equals(ChallengesConfig.WALK_KM) && v >= modeMax.get(ChallengesConfig.WALK_KM))
+			return Math.min(this.modeMax.get(mode), v);
+		if (mode.equals(ChallengesConfig.BIKE_KM) && v >= modeMax.get(ChallengesConfig.BIKE_KM))
+			return Math.min(this.modeMax.get(mode), v);
+		if (mode.equals(ChallengesConfig.TRAIN_TRIPS) && v >= modeMax.get(ChallengesConfig.TRAIN_TRIPS))
+			return Math.min(this.modeMax.get(mode), v);
+		if (mode.equals(ChallengesConfig.BUS_TRIPS) && v >= modeMax.get(ChallengesConfig.BUS_TRIPS))
+			return Math.min(this.modeMax.get(mode), v);
+		if (mode.equals(ChallengesConfig.GREEN_LEAVES) && v >= modeMax.get(ChallengesConfig.GREEN_LEAVES))
+			return Math.min(this.modeMax.get(mode), v);
+
+		return v;
+	}
+
+	private double checkMaxTargetCompetitive(String mode, double v, Integer activeMembers) {
+		if (mode.equals(ChallengesConfig.WALK_KM) && v >= (modeMax.get(ChallengesConfig.WALK_KM) * activeMembers))
+			return Math.min(this.modeMax.get(mode) * activeMembers, v);
+		if (mode.equals(ChallengesConfig.BIKE_KM) && v >= (modeMax.get(ChallengesConfig.BIKE_KM) * activeMembers))
+			return Math.min(this.modeMax.get(mode) * activeMembers, v);
+		if (mode.equals(ChallengesConfig.TRAIN_TRIPS)
+				&& v >= (modeMax.get(ChallengesConfig.TRAIN_TRIPS) * activeMembers))
+			return Math.min(this.modeMax.get(mode) * activeMembers, v);
+		if (mode.equals(ChallengesConfig.BUS_TRIPS) && v >= (modeMax.get(ChallengesConfig.BUS_TRIPS) * activeMembers))
+			return Math.min(this.modeMax.get(mode) * activeMembers, v);
+		if (mode.equals(ChallengesConfig.GREEN_LEAVES)
+				&& v >= (modeMax.get(ChallengesConfig.GREEN_LEAVES) * activeMembers))
+			return Math.min(this.modeMax.get(mode) * activeMembers, v);
+		
+		return v;
+	}
+
+	private double checkMaxTargetCooperative(String mode, double v) {
+		if (mode.equals(ChallengesConfig.WALK_KM) && v >= modeMax.get(ChallengesConfig.WALK_KM))
+			return Math.min(this.modeMax.get(mode) * 2, v);
+		if (mode.equals(ChallengesConfig.BIKE_KM) && v >= modeMax.get(ChallengesConfig.BIKE_KM))
+			return Math.min(this.modeMax.get(mode) * 2, v);
+		if (mode.equals(ChallengesConfig.TRAIN_TRIPS) && v >= modeMax.get(ChallengesConfig.TRAIN_TRIPS))
+			return Math.min(this.modeMax.get(mode) * 2, v);
+		if (mode.equals(ChallengesConfig.BUS_TRIPS) && v >= modeMax.get(ChallengesConfig.BUS_TRIPS))
+			return Math.min(this.modeMax.get(mode) * 2, v);
+		if (mode.equals(ChallengesConfig.GREEN_LEAVES) && v >= modeMax.get(ChallengesConfig.GREEN_LEAVES))
+			return Math.min(this.modeMax.get(mode) * 2, v);
+
+		return v;
+	}
+	
+	private double checkMaxTargetCooperative(String mode, double v, double activeMembers) {
+		if (mode.equals(ChallengesConfig.WALK_KM) && v >= (modeMax.get(ChallengesConfig.WALK_KM) * activeMembers))
+			return Math.min(this.modeMax.get(mode) * activeMembers * 2, v);
+		if (mode.equals(ChallengesConfig.BIKE_KM) && v >= (modeMax.get(ChallengesConfig.BIKE_KM) * activeMembers))
+			return Math.min(this.modeMax.get(mode) * activeMembers * 2, v);
+		if (mode.equals(ChallengesConfig.TRAIN_TRIPS)
+				&& v >= (modeMax.get(ChallengesConfig.TRAIN_TRIPS) * activeMembers))
+			return Math.min(this.modeMax.get(mode) * activeMembers * 2, v);
+		if (mode.equals(ChallengesConfig.BUS_TRIPS) && v >= (modeMax.get(ChallengesConfig.BUS_TRIPS) * activeMembers))
+			return Math.min(this.modeMax.get(mode) * activeMembers * 2, v);
+		if (mode.equals(ChallengesConfig.GREEN_LEAVES)
+				&& v >= (modeMax.get(ChallengesConfig.GREEN_LEAVES) * activeMembers))
+			return Math.min(this.modeMax.get(mode) * activeMembers * 2, v);
+		
+		return v;
+	}
+	
+   private Pair<Double, Double> getForecast(String nm, String pId, Map<String, Double> res,  String counter) {
 
         PlayerStateDTO state = facade.getPlayerState(gameId, pId);
 
@@ -142,30 +239,6 @@ public class TargetPrizeChallengesCalculator {
 
         return new Pair<>(tgt, bas);
     }
-
-	private double checkMaxTargetCompetitive(String counter, double v) {
-		if (counter.equals(ChallengesConfig.WALK_KM) || counter.equals(ChallengesConfig.BIKE_KM)
-				|| counter.equals(ChallengesConfig.TRAIN_TRIPS) || counter.equals(ChallengesConfig.BUS_TRIPS)
-				|| counter.equals(ChallengesConfig.GREEN_LEAVES)) {
-			return Math.min(this.modeMax.get(counter), v);
-		}
-		logger.warn(String.format(
-				"Unsupported value %s calculating max target for group competitive, valid values: Walk_Km, Bike_Km, green leaves",
-				counter));
-		return 0.0;
-	}
-
-	private double checkMaxTargetCooperative(String counter, double v) {
-		if (counter.equals(ChallengesConfig.WALK_KM) || counter.equals(ChallengesConfig.BIKE_KM)
-				|| counter.equals(ChallengesConfig.TRAIN_TRIPS) || counter.equals(ChallengesConfig.BUS_TRIPS)
-				|| counter.equals(ChallengesConfig.GREEN_LEAVES)) {
-			return Math.min(this.modeMax.get(counter) * 2, v);
-		}
-		logger.warn(String.format(
-				"Unsupported value %s calculating max target for group cooperative, valid values: Walk_Km, Bike_Km, green leaves",
-				counter));
-		return 0.0;
-	}
 
 	private Double checkMinTarget(String counter, Double v) {
 		if (counter.equals(ChallengesConfig.WALK_KM) || counter.equals(ChallengesConfig.BIKE_KM)
@@ -414,4 +487,5 @@ public class TargetPrizeChallengesCalculator {
     public static void p(String s) {
         System.out.println(s);
     }
+    
 }

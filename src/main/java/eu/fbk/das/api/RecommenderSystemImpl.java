@@ -163,10 +163,12 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 		initModeMax(config);
 		prepare(playerSet);
 
+		boolean assignUnEvenRepetitive = Boolean.parseBoolean(conf.get("ASSIGN"));
+		
 		List<GroupExpandedDTO> chas = new ArrayList<>();
 
 		GroupChallengesAssigner gca = new GroupChallengesAssigner(rs);
-		List<GroupExpandedDTO> groupChallenges = gca.execute(players, modelTypes, assignmentType, config);
+		List<GroupExpandedDTO> groupChallenges = gca.execute(assignUnEvenRepetitive, players, modelTypes, assignmentType, config);
 
 		for (GroupExpandedDTO gcd : groupChallenges) {
 			// set data
@@ -348,6 +350,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 		GroupChallengesAssigner gca = new GroupChallengesAssigner(rs);
 		initModeMaxGCA(config, gca);		
 		int challengeWeek = (Integer) config.get("challengeWeek");
+		boolean assignUnEvenRepetitive = Boolean.parseBoolean(conf.get("ASSIGN"));
 		logger.info("********** WEEK INDEX(GROUP) " + challengeWeek + " **********");
 		List<Challenge> challenges = creationRules.get(String.valueOf(challengeWeek));
 		if (challenges != null && !challenges.isEmpty()) {
@@ -360,7 +363,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 				logger.info(chg);
 				Map<String, String> rewards = prepareHSCRewards(chg.getReward());
 				preparePlayers(chg.getPlayerSet());
-				List<GroupExpandedDTO> groupChallenges = gca.executeGroupHSC(players, chg.getPointConcepts(), chg, config);
+				List<GroupExpandedDTO> groupChallenges = gca.executeGroupHSC(assignUnEvenRepetitive, players, chg.getPointConcepts(), chg, config);
 				for (GroupExpandedDTO gcd : groupChallenges) {
 					// set data
 					dataGroup(gcd, config);

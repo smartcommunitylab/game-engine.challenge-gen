@@ -48,7 +48,7 @@ public class GroupChallengesAssignerTest extends ChallengesBaseTest {
 
         Map<String, Object> config = new HashMap<>();
 
-        gca.execute(players, modeList,  type, config);
+        gca.execute(false, players, modeList,  type, config);
     }
 
     @Test
