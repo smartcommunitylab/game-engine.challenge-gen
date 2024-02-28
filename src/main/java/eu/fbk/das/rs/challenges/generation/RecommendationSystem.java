@@ -815,7 +815,7 @@ public class RecommendationSystem {
                 "executiontime BETWEEN '%s' AND '%s' AND " +
                 "gameid = '%s' AND " +
                 "conceptname = 'green leaves' AND " +
-                "rulename = 'all modes - update green points' AND " +
+//                "rulename = 'all modes - update green points' AND " +
                 "playerid = '%s' " +
                 "GROUP BY 1,3 " +
                 "ORDER BY 1;";
