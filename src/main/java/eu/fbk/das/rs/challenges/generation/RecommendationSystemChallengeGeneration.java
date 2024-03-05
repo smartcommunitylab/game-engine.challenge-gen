@@ -306,7 +306,13 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
             date = date.minusDays(7);
         }
 
-        double baseline = den / num;
+        double baseline;
+        
+        if (num == 0) {
+        	baseline = 0;	
+        } else {
+        	baseline = den / num;	
+        }         
 
         double pv = baseline * booster;
 
