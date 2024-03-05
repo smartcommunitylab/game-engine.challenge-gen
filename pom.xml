@@ -13,7 +13,7 @@
 		</repository>
 	</repositories>
 
-	<dependencies>
+	<dependencies> 
 
 		<dependency>
 			<groupId>junit</groupId>
@@ -21,7 +21,6 @@
 			<version>4.13.1</version>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-all</artifactId>
