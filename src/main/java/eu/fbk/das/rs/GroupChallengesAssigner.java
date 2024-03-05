@@ -393,7 +393,14 @@ public class GroupChallengesAssigner extends ChallengeUtil {
             date = date.minusDays(7);
         }
 
-        double baseline = den / num;
+        double baseline;
+        
+        if (num == 0) {
+        	baseline = 0;	
+        } else {
+        	baseline = den / num;	
+        }
+        
         return baseline;
     }
 
