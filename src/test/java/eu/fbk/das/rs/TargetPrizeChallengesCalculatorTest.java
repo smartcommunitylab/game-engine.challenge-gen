@@ -42,6 +42,15 @@ public class TargetPrizeChallengesCalculatorTest extends ChallengesBaseTest {
 		modeMax.put("Bus_Trips", 56);
 		modeMax.put("green leaves", 3000);
 	};
+	
+	private static HashMap<String, Integer> modeMin = new HashMap<String, Integer>();
+	{
+		modeMax.put("Walk_Km", 1);
+		modeMax.put("Bike_Km", 5);
+		modeMax.put("Train_Trips", 1);
+		modeMax.put("Bus_Trips", 1);
+		modeMax.put("green leaves", 50);
+	};
 
 
     @Test
@@ -110,7 +119,7 @@ public class TargetPrizeChallengesCalculatorTest extends ChallengesBaseTest {
         rs = new RecommendationSystem(conf);
 
         tpcc = new TargetPrizeChallengesCalculator();
-        tpcc.prepare(rs, gameId, new DateTime(), modeMax);
+        tpcc.prepare(rs, gameId, new DateTime(), modeMax, modeMin);
 
     }
 

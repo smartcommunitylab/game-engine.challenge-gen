@@ -29,6 +29,7 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
 	public static final String TEAM = "team";
     public static final String CURRENTPLAYERS_CUSTOMEDATA = "currentPlayers";
     private HashMap<String, Integer> modeMax =  new HashMap<>();
+    private HashMap<String, Integer> modeMin =  new HashMap<>();
     
     public RecommendationSystemChallengeGeneration(RecommendationSystem rs) {
         super(rs);
@@ -621,7 +622,9 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
 		return modeMax;
 	}
 
+	public HashMap<String, Integer> getModeMin() {
+		return modeMin;
+	}
 	
-    
 }
 

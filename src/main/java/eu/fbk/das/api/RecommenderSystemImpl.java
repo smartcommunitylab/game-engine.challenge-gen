@@ -32,6 +32,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 	private static final String MEMBERS_PLAYERS = "member";
 	private static final String TEAM_PLAYERS = "team";
 	private static final String MODE_MAX_VALUES = "modeMax";
+	private static final String MODE_MIN_VALUES = "modeMin";
 	private static final Set<String> groupChaTypes = new HashSet<>(Arrays.asList("groupCooperative", "groupCompetitiveTime", "groupCompetitivePerformance")); 
 			
 	private void prepare(String playerSet) {
@@ -105,7 +106,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 			playerSet = "all";
 
 		checkUpdateRs(conf);
-		initModeMax(config);
+		initModeThreshold(config);
 		prepare(playerSet);
 
 		List<ChallengeExpandedDTO> chas = new ArrayList<>();
@@ -160,7 +161,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 			assignmentType = "groupCooperative";
 
 		checkUpdateRs(conf);
-		initModeMax(config);
+		initModeThreshold(config);
 		prepare(playerSet);
 
 		boolean assignUnEvenRepetitive = Boolean.parseBoolean(conf.get("ASSIGN"));
@@ -205,7 +206,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 	private void dataCha(ChallengeExpandedDTO cha, Map<String, Object> config) {
 		for (String k : config.keySet()) {
 			Object v = config.get(k);
-			if ("start".equals(k) || "duration".equals(k) || "modeMax".equals(k))
+			if ("start".equals(k) || "duration".equals(k) || "modeMax".equals(k) || "modeMin".equals(k))
 				continue;
 			if ("hide".equals(k)) {
 				cha.setHide((Boolean) v);
@@ -251,7 +252,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 	private void dataGroup(GroupExpandedDTO gcd, Map<String, Object> config) {
 		for (String k : config.keySet()) {
 			Object v = config.get(k);
-			if ("start".equals(k) || "duration".equals(k) || "modeMax".equals(k))
+			if ("start".equals(k) || "duration".equals(k) || "modeMax".equals(k) || "modeMin".equals(k))
 				continue;
 			// else String v = challengeValues.get(k);
 			// else cha.setData(k, v);
@@ -311,7 +312,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 			Map<String, List<Challenge>> creationRules, Map<String, Object> config) {
 		List<ChallengeExpandedDTO> chas = new ArrayList<>();
 		checkUpdateRs(conf);
-		initModeMax(config);
+		initModeThreshold(config);
 		int challengeWeek = (Integer) config.get("challengeWeek");
 		logger.info("********** WEEK INDEX(SINGLE) " + challengeWeek + " **********");
 		List<Challenge> challenges = creationRules.get(String.valueOf(challengeWeek));
@@ -348,7 +349,7 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 		List<GroupExpandedDTO> chas = new ArrayList<>();
 		checkUpdateRs(conf);
 		GroupChallengesAssigner gca = new GroupChallengesAssigner(rs);
-		initModeMaxGCA(config, gca);		
+		initModeThresholdGCA(config, gca);		
 		int challengeWeek = (Integer) config.get("challengeWeek");
 		boolean assignUnEvenRepetitive = Boolean.parseBoolean(conf.get("ASSIGN"));
 		logger.info("********** WEEK INDEX(GROUP) " + challengeWeek + " **********");
@@ -387,13 +388,19 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 		return chas;
 	}
 
-	private void initModeMaxGCA(Map<String, Object> config, GroupChallengesAssigner gca) {
+	private void initModeThresholdGCA(Map<String, Object> config, GroupChallengesAssigner gca) {
 		if (config.get(MODE_MAX_VALUES) != null) {
         	Map<?,?> modeMaxMap = (Map<?, ?>) config.get(MODE_MAX_VALUES);
         	for(Map.Entry<?, ?> entry :modeMaxMap.entrySet()){
         		gca.getModeMax().put((String)entry.getKey(),(Integer) entry.getValue()); 
             }
-       }		
+       }
+	   if (config.get(MODE_MIN_VALUES) != null) {
+        	Map<?,?> modeMinMap = (Map<?, ?>) config.get(MODE_MIN_VALUES);
+        	for(Map.Entry<?, ?> entry :modeMinMap.entrySet()){
+        		gca.getModeMin().put((String)entry.getKey(),(Integer) entry.getValue()); 
+            }
+       }	
 	}
 
 	public static Map<String, String> prepareHSCRewards(eu.fbk.das.rs.challenges.Challenge.Reward reward) {
@@ -405,14 +412,20 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 		return confs;
 	}
 
-	private void initModeMax(Map<String, Object> config) {
+	private void initModeThreshold(Map<String, Object> config) {
 		// initialize modeMax value
         if (config.get(MODE_MAX_VALUES) != null) {
         	Map<?,?> modeMaxMap = (Map<?, ?>) config.get(MODE_MAX_VALUES);
         	for(Map.Entry<?, ?> entry :modeMaxMap.entrySet()){
                 rs.rscg.getModeMax().put((String)entry.getKey(),(Integer) entry.getValue()); 
             }
-        }	
+        }
+        if (config.get(MODE_MIN_VALUES) != null) {
+        	Map<?,?> modeMinMap = (Map<?, ?>) config.get(MODE_MIN_VALUES);
+        	for(Map.Entry<?, ?> entry :modeMinMap.entrySet()){
+                rs.rscg.getModeMin().put((String)entry.getKey(),(Integer) entry.getValue()); 
+            }
+        }
 	}
 	
 	private void preparePlayers(Set<String> playerSet) {

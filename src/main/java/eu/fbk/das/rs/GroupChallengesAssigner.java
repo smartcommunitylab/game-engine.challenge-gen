@@ -56,6 +56,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
     private DateTime startDate;
     private DateTime endDate;
     private HashMap<String, Integer> modeMax =  new HashMap<>();
+    private HashMap<String, Integer> modeMin =  new HashMap<>();
 
     public GroupChallengesAssigner(RecommendationSystem rs) {
         super(rs);
@@ -112,7 +113,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
         System.out.println("#######################################################################\n");
 
         TargetPrizeChallengesCalculator tpcc = new TargetPrizeChallengesCalculator();
-        tpcc.prepare(rs, rs.gameId, execDate, modeMax);
+        tpcc.prepare(rs, rs.gameId, execDate, modeMax, modeMin);
 
         for (String mode : modelTypes) {
 
@@ -585,7 +586,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
         HashMap<String, HashMap<String, Double>> playersCounterAssignment = getPlayerCounterAssignment(players, stats, modelTypes);
 
         TargetPrizeChallengesCalculator tpcc = new TargetPrizeChallengesCalculator();
-        tpcc.prepare(rs, rs.gameId, execDate, modeMax);
+        tpcc.prepare(rs, rs.gameId, execDate, modeMax, modeMin);
 
         for (String mode : modelTypes) {
             // Make sure they are all even
@@ -616,6 +617,9 @@ public class GroupChallengesAssigner extends ChallengeUtil {
           rep.setData("bonusScore", reward.getValue());
           rep.setStart(startDate.toDate());
           rep.setEnd(endDate.toDate());
+          rep.getData().entrySet().forEach(entry -> {
+        	  pf(entry.getKey() + ":" + entry.getValue() + ", ");
+          });
           if (Boolean.TRUE.equals(assignUnEvenRepetitive))
         	  rs.facade.assignChallengeToPlayer(rep, rs.gameId, pId);
           return list;
@@ -676,6 +680,10 @@ public class GroupChallengesAssigner extends ChallengeUtil {
 
 	public HashMap<String, Integer> getModeMax() {
 		return modeMax;
+	}
+
+	public HashMap<String, Integer> getModeMin() {
+		return modeMin;
 	}
 
 }

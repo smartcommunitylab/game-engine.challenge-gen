@@ -35,17 +35,19 @@ public class TargetPrizeChallengesCalculator {
     private RecommendationSystem rs;
     private double modifier = 0.9;
     private HashMap<String, Integer> modeMax =  new HashMap<>();
+    private HashMap<String, Integer> modeMin =  new HashMap<>();
     public static final String TEAM = "team";
     public static final String CURRENTPLAYERS_CUSTOMEDATA = "currentPlayers";
      
-    // TODO remove
-    public void prepare(RecommendationSystem rs, String gameId, DateTime execDate, HashMap<String, Integer> modeMaxMap) {
-        this.execDate = execDate;
-        facade = rs.facade;
-        this.rs = rs;
-        this.gameId = gameId;
-        this.modeMax = modeMaxMap;
-    }
+	public void prepare(RecommendationSystem rs, String gameId, DateTime execDate, HashMap<String, Integer> modeMaxMap,
+			HashMap<String, Integer> modeMinMap) {
+		this.execDate = execDate;
+		facade = rs.facade;
+		this.rs = rs;
+		this.gameId = gameId;
+		this.modeMax = modeMaxMap;
+		this.modeMin = modeMinMap;
+	}
 
 
     public Map<String, Double> targetPrizeChallengesCompute(String pId_1, String pId_2, String counter, String type) {
@@ -99,9 +101,9 @@ public class TargetPrizeChallengesCalculator {
 			Challenge chg) {
 		prepare();
 		Map<String, Double> res = new HashMap<>();
-		Pair<Double, Double> res1 = getForecast("player1", pId_1, res, counter);
+		Pair<Double, Double> res1 = getForecastHSC("player1", pId_1, res, counter, chg);
 		double player1_tgt = res1.getFirst();
-		Pair<Double, Double> res2 = getForecast("player2", pId_2, res, counter);
+		Pair<Double, Double> res2 = getForecastHSC("player2", pId_2, res, counter, chg);
 		double player2_tgt = res2.getFirst();
 		double target;
 		if (("groupCompetitiveTime").equals(type)) {
@@ -154,7 +156,30 @@ public class TargetPrizeChallengesCalculator {
 		return res;
 	}
     
-    
+	private Pair<Double, Double> getForecastHSC(String nm, String pId, Map<String, Double> res, String counter,
+			Challenge chg) {
+		PlayerStateDTO state = facade.getPlayerState(gameId, pId);
+		Pair<Double, Double> forecast = forecastMode(state, counter);
+		double tgt = forecast.getFirst();
+		double bas = forecast.getSecond();
+
+		if (chg.getPlayerSet().contains(TEAM)) {
+			if (state.getCustomData().containsKey(CURRENTPLAYERS_CUSTOMEDATA)) {
+				Integer activePlayers = (Integer) state.getCustomData().get(CURRENTPLAYERS_CUSTOMEDATA);
+				tgt = checkMinTargetTeam(counter, tgt, activePlayers);
+			} else {
+				logger.error("Skipping team - missing attribute maxMembers");
+			}
+		} else {
+			tgt = checkMinTarget(counter, tgt);
+		}
+
+		tgt = roundTarget(counter, tgt);
+		res.put(nm + "_tgt", tgt);
+		res.put(nm + "_bas", bas);
+		return new Pair<>(tgt, bas);
+	}
+	   
 	private double checkMaxTargetCompetitive(String mode, double v) {
 		if (mode.equals(ChallengesConfig.WALK_KM) && v >= modeMax.get(ChallengesConfig.WALK_KM))
 			return Math.min(this.modeMax.get(mode), v);
@@ -219,36 +244,53 @@ public class TargetPrizeChallengesCalculator {
 		return v;
 	}
 	
-   private Pair<Double, Double> getForecast(String nm, String pId, Map<String, Double> res,  String counter) {
+	private Pair<Double, Double> getForecast(String nm, String pId, Map<String, Double> res, String counter) {
 
-        PlayerStateDTO state = facade.getPlayerState(gameId, pId);
+		PlayerStateDTO state = facade.getPlayerState(gameId, pId);
 
-        Pair<Double, Double> forecast = forecastMode(state, counter);
+		Pair<Double, Double> forecast = forecastMode(state, counter);
 
-        double tgt = forecast.getFirst();
-        double bas = forecast.getSecond();
+		double tgt = forecast.getFirst();
+		double bas = forecast.getSecond();
 
-        tgt = checkMinTarget(counter, tgt);
+		tgt = checkMinTarget(counter, tgt);
 
-        tgt = roundTarget(counter, tgt);
+		tgt = roundTarget(counter, tgt);
 
-        // res.put(nm + "_id", Integer.valueOf(pId).doubleValue());
+		// res.put(nm + "_id", Integer.valueOf(pId).doubleValue());
 
-        res.put(nm + "_tgt", tgt);
-        res.put(nm + "_bas", bas);
+		res.put(nm + "_tgt", tgt);
+		res.put(nm + "_bas", bas);
 
-        return new Pair<>(tgt, bas);
-    }
+		return new Pair<>(tgt, bas);
+	}
 
 	private Double checkMinTarget(String counter, Double v) {
 		if (counter.equals(ChallengesConfig.WALK_KM) || counter.equals(ChallengesConfig.BIKE_KM)
 				|| counter.equals(ChallengesConfig.TRAIN_TRIPS) || counter.equals(ChallengesConfig.BUS_TRIPS)
 				|| counter.equals(ChallengesConfig.GREEN_LEAVES)) {
-			return Math.max(this.modeMax.get(counter), v);
+			return Math.max(this.modeMin.get(counter), v);
 		}
 		logger.warn(String.format(
 				"Unsupported value %s calculating min target, valid values: Walk_Km, Bike_Km, green leaves", counter));
 		return 0.0;
+	}
+	
+	private double checkMinTargetTeam(String counter, Double v, Integer activeMembers) {
+		if (counter.equals(ChallengesConfig.WALK_KM) && v <= (modeMin.get(ChallengesConfig.WALK_KM) * activeMembers))
+			return (modeMin.get(ChallengesConfig.WALK_KM) * activeMembers);
+		if (counter.equals(ChallengesConfig.BIKE_KM) && v <= (modeMin.get(ChallengesConfig.BIKE_KM) * activeMembers))
+			return (modeMin.get(ChallengesConfig.BIKE_KM) * activeMembers);
+		if (counter.equals(ChallengesConfig.TRAIN_TRIPS)
+				&& v <= (modeMin.get(ChallengesConfig.TRAIN_TRIPS) * activeMembers))
+			return (modeMin.get(ChallengesConfig.TRAIN_TRIPS) * activeMembers);
+		if (counter.equals(ChallengesConfig.BUS_TRIPS)
+				&& v <= (modeMin.get(ChallengesConfig.BUS_TRIPS) * activeMembers))
+			return (modeMin.get(ChallengesConfig.BUS_TRIPS) * activeMembers);
+		if (counter.equals(ChallengesConfig.GREEN_LEAVES)
+				&& v <= (modeMin.get(ChallengesConfig.GREEN_LEAVES) * activeMembers))
+			return (modeMin.get(ChallengesConfig.GREEN_LEAVES) * activeMembers);
+		return v;
 	}
 
     private Map<Integer, Double> getQuantiles2(String gameId, String counter) {
@@ -310,7 +352,13 @@ public class TargetPrizeChallengesCalculator {
             date = date.minusDays(7);
         }
 
-        double baseline = den / num;
+        double baseline;
+        
+        if (num == 0) {
+        	baseline = 0;	
+        } else {
+        	baseline = den / num;	
+        }         
 
         double pv = baseline * booster;
 
@@ -324,7 +372,7 @@ public class TargetPrizeChallengesCalculator {
         while (i < 100) {
             // weight * value
             Double c = getWeeklyContentMode(state, counter, date);
-            if (c.equals(-1.0))
+            if (c > 0)
                 break;
             i++;
             date = date.minusDays(7);
@@ -351,51 +399,6 @@ public class TargetPrizeChallengesCalculator {
 
 
         return new Pair<Double, Double>(value, currentValue);
-    }
-
-    // old approach
-    private Pair<Double, Double> forecastOld(Map<String, Double> res, String nm, PlayerStateDTO state, String counter) {
-
-        // Last 3 values?
-        int v = 3;
-        double[][] d = new double[v][];
-
-        DateTime date = lastMonday;
-
-        double wma = 0;
-        int wma_d = 0;
-
-        for (int i = 0 ; i < v; i++) {
-            int ix = v - (i+1);
-            d[ix] = new double[2];
-            Double c = getWeeklyContentMode(state, counter, date);
-            d[ix][1] = c;
-            d[ix][0] = ix + 1;
-            date = date.minusDays(7);
-            res.put(f("%s_base_%d", nm, ix), c);
-
-            wma += (v-i) * c;
-            wma_d += (v-i);
-        }
-
-        wma /= wma_d;
-
-        SimpleRegression simpleRegression = new SimpleRegression(true);
-        simpleRegression.addData(d);
-
-        double slope = simpleRegression.getSlope();
-        double intercept =  simpleRegression.getIntercept();
-        double pv;
-        if (slope < 0)
-            pv = wma * 1.1;
-        else
-            pv = intercept + slope * (v+1) * 0.9;
-
-        pv = checkMinTarget(counter, pv);
-
-        res.put(f("%s_tgt", nm), pv);
-
-        return new Pair<Double, Double>(pv, wma);
     }
 
     /*
