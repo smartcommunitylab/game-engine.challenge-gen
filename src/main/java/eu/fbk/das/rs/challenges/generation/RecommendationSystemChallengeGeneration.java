@@ -320,7 +320,7 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
         while (i < 100) {
             // weight * value
             Double c = getWeeklyContentMode(state, counter, date);
-            if (c.equals(-1.0))
+            if (c > 0)
                 break;
             i++;
             date = date.minusDays(7);
