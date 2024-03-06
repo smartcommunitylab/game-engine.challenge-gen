@@ -55,8 +55,8 @@ public class GroupChallengesAssigner extends ChallengeUtil {
     private DateTime execDate;
     private DateTime startDate;
     private DateTime endDate;
-    private HashMap<String, Integer> modeMax =  new HashMap<>();
-    private HashMap<String, Integer> modeMin =  new HashMap<>();
+    private HashMap<String, Double> modeMax =  new HashMap<>();
+    private HashMap<String, Double> modeMin =  new HashMap<>();
 
     public GroupChallengesAssigner(RecommendationSystem rs) {
         super(rs);
@@ -685,11 +685,11 @@ public class GroupChallengesAssigner extends ChallengeUtil {
         return gcd;
     }
 
-	public HashMap<String, Integer> getModeMax() {
+	public HashMap<String, Double> getModeMax() {
 		return modeMax;
 	}
 
-	public HashMap<String, Integer> getModeMin() {
+	public HashMap<String, Double> getModeMin() {
 		return modeMin;
 	}
 

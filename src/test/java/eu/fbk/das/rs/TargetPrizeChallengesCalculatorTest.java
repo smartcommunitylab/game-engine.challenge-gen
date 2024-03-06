@@ -34,22 +34,22 @@ public class TargetPrizeChallengesCalculatorTest extends ChallengesBaseTest {
     private String gameId;
     private RecommendationSystem rs;
     
-	private static HashMap<String, Integer> modeMax = new HashMap<String, Integer>();
+	private static HashMap<String, Double> modeMax = new HashMap<String, Double>();
 	{
-		modeMax.put("Walk_Km", 70);
-		modeMax.put("Bike_Km", 210);
-		modeMax.put("Train_Trips", 56);
-		modeMax.put("Bus_Trips", 56);
-		modeMax.put("green leaves", 3000);
+		modeMax.put("Walk_Km", 0.5);
+		modeMax.put("Bike_Km", 210.0);
+		modeMax.put("Train_Trips", 56.0);
+		modeMax.put("Bus_Trips", 56.0);
+		modeMax.put("green leaves", 3000.0);
 	};
 	
-	private static HashMap<String, Integer> modeMin = new HashMap<String, Integer>();
+	private static HashMap<String, Double> modeMin = new HashMap<String, Double>();
 	{
-		modeMax.put("Walk_Km", 1);
-		modeMax.put("Bike_Km", 5);
-		modeMax.put("Train_Trips", 1);
-		modeMax.put("Bus_Trips", 1);
-		modeMax.put("green leaves", 50);
+		modeMax.put("Walk_Km", 0.5);
+		modeMax.put("Bike_Km", 0.5);
+		modeMax.put("Train_Trips", 1.0);
+		modeMax.put("Bus_Trips", 1.0);
+		modeMax.put("green leaves", 50.0);
 	};
 
 
