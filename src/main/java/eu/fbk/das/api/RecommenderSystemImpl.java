@@ -392,13 +392,13 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
 		if (config.get(MODE_MAX_VALUES) != null) {
         	Map<?,?> modeMaxMap = (Map<?, ?>) config.get(MODE_MAX_VALUES);
         	for(Map.Entry<?, ?> entry :modeMaxMap.entrySet()){
-        		gca.getModeMax().put((String)entry.getKey(),(Integer) entry.getValue()); 
+        		gca.getModeMax().put((String)entry.getKey(),(Double) entry.getValue()); 
             }
        }
 	   if (config.get(MODE_MIN_VALUES) != null) {
         	Map<?,?> modeMinMap = (Map<?, ?>) config.get(MODE_MIN_VALUES);
         	for(Map.Entry<?, ?> entry :modeMinMap.entrySet()){
-        		gca.getModeMin().put((String)entry.getKey(),(Integer) entry.getValue()); 
+        		gca.getModeMin().put((String)entry.getKey(),(Double) entry.getValue()); 
             }
        }	
 	}
@@ -417,13 +417,13 @@ public class RecommenderSystemImpl implements RecommenderSystemAPI {
         if (config.get(MODE_MAX_VALUES) != null) {
         	Map<?,?> modeMaxMap = (Map<?, ?>) config.get(MODE_MAX_VALUES);
         	for(Map.Entry<?, ?> entry :modeMaxMap.entrySet()){
-                rs.rscg.getModeMax().put((String)entry.getKey(),(Integer) entry.getValue()); 
+                rs.rscg.getModeMax().put((String)entry.getKey(),(Double) entry.getValue()); 
             }
         }
         if (config.get(MODE_MIN_VALUES) != null) {
         	Map<?,?> modeMinMap = (Map<?, ?>) config.get(MODE_MIN_VALUES);
         	for(Map.Entry<?, ?> entry :modeMinMap.entrySet()){
-                rs.rscg.getModeMin().put((String)entry.getKey(),(Integer) entry.getValue()); 
+                rs.rscg.getModeMin().put((String)entry.getKey(),(Double) entry.getValue()); 
             }
         }
 	}

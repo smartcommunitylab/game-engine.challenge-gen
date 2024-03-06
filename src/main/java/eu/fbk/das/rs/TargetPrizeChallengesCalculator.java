@@ -34,13 +34,14 @@ public class TargetPrizeChallengesCalculator {
     private String gameId;
     private RecommendationSystem rs;
     private double modifier = 0.9;
-    private HashMap<String, Integer> modeMax =  new HashMap<>();
-    private HashMap<String, Integer> modeMin =  new HashMap<>();
+    private HashMap<String, Double> modeMax =  new HashMap<>();
+    private HashMap<String, Double> modeMin =  new HashMap<>();
     public static final String TEAM = "team";
     public static final String CURRENTPLAYERS_CUSTOMEDATA = "currentPlayers";
+	private static final double MIN_MODIFIER = 0.5;
      
-	public void prepare(RecommendationSystem rs, String gameId, DateTime execDate, HashMap<String, Integer> modeMaxMap,
-			HashMap<String, Integer> modeMinMap) {
+	public void prepare(RecommendationSystem rs, String gameId, DateTime execDate, HashMap<String, Double> modeMaxMap,
+			HashMap<String, Double> modeMinMap) {
 		this.execDate = execDate;
 		facade = rs.facade;
 		this.rs = rs;
@@ -277,19 +278,19 @@ public class TargetPrizeChallengesCalculator {
 	}
 	
 	private double checkMinTargetTeam(String counter, Double v, Integer activeMembers) {
-		if (counter.equals(ChallengesConfig.WALK_KM) && v <= (modeMin.get(ChallengesConfig.WALK_KM) * activeMembers))
-			return (modeMin.get(ChallengesConfig.WALK_KM) * activeMembers);
-		if (counter.equals(ChallengesConfig.BIKE_KM) && v <= (modeMin.get(ChallengesConfig.BIKE_KM) * activeMembers))
-			return (modeMin.get(ChallengesConfig.BIKE_KM) * activeMembers);
+		if (counter.equals(ChallengesConfig.WALK_KM) && v <= (modeMin.get(ChallengesConfig.WALK_KM) * activeMembers * MIN_MODIFIER))
+			return (modeMin.get(ChallengesConfig.WALK_KM) * activeMembers * MIN_MODIFIER);
+		if (counter.equals(ChallengesConfig.BIKE_KM) && v <= (modeMin.get(ChallengesConfig.BIKE_KM) * activeMembers * MIN_MODIFIER))
+			return (modeMin.get(ChallengesConfig.BIKE_KM) * activeMembers * MIN_MODIFIER);
 		if (counter.equals(ChallengesConfig.TRAIN_TRIPS)
-				&& v <= (modeMin.get(ChallengesConfig.TRAIN_TRIPS) * activeMembers))
-			return (modeMin.get(ChallengesConfig.TRAIN_TRIPS) * activeMembers);
+				&& v <= (modeMin.get(ChallengesConfig.TRAIN_TRIPS) * activeMembers * MIN_MODIFIER))
+			return (modeMin.get(ChallengesConfig.TRAIN_TRIPS) * activeMembers * MIN_MODIFIER);
 		if (counter.equals(ChallengesConfig.BUS_TRIPS)
-				&& v <= (modeMin.get(ChallengesConfig.BUS_TRIPS) * activeMembers))
-			return (modeMin.get(ChallengesConfig.BUS_TRIPS) * activeMembers);
+				&& v <= (modeMin.get(ChallengesConfig.BUS_TRIPS) * activeMembers * MIN_MODIFIER))
+			return (modeMin.get(ChallengesConfig.BUS_TRIPS) * activeMembers * MIN_MODIFIER);
 		if (counter.equals(ChallengesConfig.GREEN_LEAVES)
-				&& v <= (modeMin.get(ChallengesConfig.GREEN_LEAVES) * activeMembers))
-			return (modeMin.get(ChallengesConfig.GREEN_LEAVES) * activeMembers);
+				&& v <= (modeMin.get(ChallengesConfig.GREEN_LEAVES) * activeMembers * MIN_MODIFIER))
+			return (modeMin.get(ChallengesConfig.GREEN_LEAVES) * activeMembers * MIN_MODIFIER);
 		return v;
 	}
 
