@@ -1,6 +1,25 @@
 package eu.fbk.das.rs.challenges.generation;
 
-import eu.fbk.das.api.RecommenderSystemImpl;
+import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.booster;
+import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.roundTarget;
+import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.week_n;
+import static eu.fbk.das.utils.Utils.daysApart;
+import static eu.fbk.das.utils.Utils.equal;
+import static eu.fbk.das.utils.Utils.f;
+import static eu.fbk.das.utils.Utils.findIndex;
+import static eu.fbk.das.utils.Utils.jumpToMonday;
+import static eu.fbk.das.utils.Utils.round;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import org.apache.commons.math3.stat.regression.SimpleRegression;
+import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+
 import eu.fbk.das.model.ChallengeExpandedDTO;
 import eu.fbk.das.old.Constants;
 import eu.fbk.das.rs.challenges.Challenge;
@@ -9,14 +28,6 @@ import eu.fbk.das.rs.challenges.calculator.ChallengesConfig;
 import eu.fbk.das.utils.Pair;
 import it.smartcommunitylab.model.ChallengeConcept;
 import it.smartcommunitylab.model.PlayerStateDTO;
-import org.apache.commons.math3.stat.regression.SimpleRegression;
-import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
-
-import java.util.*;
-
-import static eu.fbk.das.rs.challenges.calculator.ChallengesConfig.*;
-import static eu.fbk.das.utils.Utils.*;
 
 
 /**
@@ -30,6 +41,8 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
     public static final String CURRENTPLAYERS_CUSTOMEDATA = "currentPlayers";
     private HashMap<String, Double> modeMax =  new HashMap<>();
     private HashMap<String, Double> modeMin =  new HashMap<>();
+	private static final double MIN_MODIFIER = 0.5;
+
     
     public RecommendationSystemChallengeGeneration(RecommendationSystem rs) {
         super(rs);
@@ -322,7 +335,7 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
     private int getWeekPlaying(PlayerStateDTO state, String counter) {
 
         DateTime date = rs.lastMonday;
-        int i = 0;
+        int i = 1;
         while (i < 100) {
             // weight * value
             Double c = getWeeklyContentMode(state, counter, date);
@@ -585,26 +598,34 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
 			}
 			if (easier)
 				target *= 0.9;
-			ChallengeExpandedDTO cdd = generatePercentage(baseline, mode, target);
-			cdd.setData("bonusScore", rCfg.getReward().getValue()); 
+			ChallengeExpandedDTO cdd = prepareChallangeImpr(mode);
+			cdd.setModelName("percentageIncrement");
+			cdd.setData("bonusScore", rCfg.getReward().getValue());
 			cdd.setData("bonusPointType", rCfg.getReward().getScoreName());
+			cdd.setData("target", target);
 			output.add(cdd);
 		} else {
 			ChallengeExpandedDTO cdd = prepareChallangeImpr(mode);
 			cdd.setModelName("absoluteIncrement");
-			cdd.setData("bonusScore", rCfg.getReward().getValue()); 
+			cdd.setData("bonusScore", rCfg.getReward().getValue());
 			cdd.setData("bonusPointType", rCfg.getReward().getScoreName());
-			if (equal(mode, ChallengesConfig.GREEN_LEAVES)) {
-				cdd.setData("target", 100.0);
-				cdd.setInfo("improvement", 1.0);
-				rs.rscv.valuate(cdd);
+			double target = 0.0;
+			// check if state is teamPlayer or Player.
+			if (rCfg.getPlayerSet().contains(TEAM)) {
+				if (state.getCustomData().containsKey(CURRENTPLAYERS_CUSTOMEDATA)) {
+					Integer activePlayers = (Integer) state.getCustomData().get(CURRENTPLAYERS_CUSTOMEDATA);
+					target = checkMinTargetTeam(mode, target, activePlayers);
+				} else {
+					logger.error("Skipping team - missing attribute maxMembers");
+					return output;
+				}
 			} else {
-				cdd.setData("target", 1.0);
-				cdd.setInfo("improvement", 1.0);
-				rs.rscv.valuate(cdd);
+				target = checkMinTarget(mode, target);
 			}
+			cdd.setData("target", target);
 			output.add(cdd);
 		}
+
 		return output;
     }
 
@@ -621,6 +642,35 @@ public class RecommendationSystemChallengeGeneration extends ChallengeUtil {
 		if (mode.equals(ChallengesConfig.GREEN_LEAVES)
 				&& v >= (modeMax.get(ChallengesConfig.GREEN_LEAVES) * activeMembers))
 			return modeMax.get(ChallengesConfig.GREEN_LEAVES) * activeMembers;
+		return v;
+	}
+
+	
+	private Double checkMinTarget(String counter, Double v) {
+		if (counter.equals(ChallengesConfig.WALK_KM) || counter.equals(ChallengesConfig.BIKE_KM)
+				|| counter.equals(ChallengesConfig.TRAIN_TRIPS) || counter.equals(ChallengesConfig.BUS_TRIPS)
+				|| counter.equals(ChallengesConfig.GREEN_LEAVES)) {
+			return Math.max(this.modeMin.get(counter), v);
+		}
+		logger.warn(String.format(
+				"Unsupported value %s calculating min target, valid values: Walk_Km, Bike_Km, green leaves", counter));
+		return 0.0;
+	}
+	
+	private double checkMinTargetTeam(String counter, Double v, Integer activeMembers) {
+		if (counter.equals(ChallengesConfig.WALK_KM) && v <= (modeMin.get(ChallengesConfig.WALK_KM) * activeMembers * MIN_MODIFIER))
+			return (modeMin.get(ChallengesConfig.WALK_KM) * activeMembers * MIN_MODIFIER);
+		if (counter.equals(ChallengesConfig.BIKE_KM) && v <= (modeMin.get(ChallengesConfig.BIKE_KM) * activeMembers * MIN_MODIFIER))
+			return (modeMin.get(ChallengesConfig.BIKE_KM) * activeMembers * MIN_MODIFIER);
+		if (counter.equals(ChallengesConfig.TRAIN_TRIPS)
+				&& v <= (modeMin.get(ChallengesConfig.TRAIN_TRIPS) * activeMembers * MIN_MODIFIER))
+			return (modeMin.get(ChallengesConfig.TRAIN_TRIPS) * activeMembers * MIN_MODIFIER);
+		if (counter.equals(ChallengesConfig.BUS_TRIPS)
+				&& v <= (modeMin.get(ChallengesConfig.BUS_TRIPS) * activeMembers * MIN_MODIFIER))
+			return (modeMin.get(ChallengesConfig.BUS_TRIPS) * activeMembers * MIN_MODIFIER);
+		if (counter.equals(ChallengesConfig.GREEN_LEAVES)
+				&& v <= (modeMin.get(ChallengesConfig.GREEN_LEAVES) * activeMembers * MIN_MODIFIER))
+			return (modeMin.get(ChallengesConfig.GREEN_LEAVES) * activeMembers * MIN_MODIFIER);
 		return v;
 	}
 

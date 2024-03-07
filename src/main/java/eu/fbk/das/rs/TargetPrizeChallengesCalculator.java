@@ -230,17 +230,17 @@ public class TargetPrizeChallengesCalculator {
 	
 	private double checkMaxTargetCooperative(String mode, double v, double activeMembers) {
 		if (mode.equals(ChallengesConfig.WALK_KM) && v >= (modeMax.get(ChallengesConfig.WALK_KM) * activeMembers))
-			return Math.min(this.modeMax.get(mode) * activeMembers * 2, v);
+			return Math.min(this.modeMax.get(mode) * activeMembers, v);
 		if (mode.equals(ChallengesConfig.BIKE_KM) && v >= (modeMax.get(ChallengesConfig.BIKE_KM) * activeMembers))
-			return Math.min(this.modeMax.get(mode) * activeMembers * 2, v);
+			return Math.min(this.modeMax.get(mode) * activeMembers, v);
 		if (mode.equals(ChallengesConfig.TRAIN_TRIPS)
 				&& v >= (modeMax.get(ChallengesConfig.TRAIN_TRIPS) * activeMembers))
-			return Math.min(this.modeMax.get(mode) * activeMembers * 2, v);
+			return Math.min(this.modeMax.get(mode) * activeMembers, v);
 		if (mode.equals(ChallengesConfig.BUS_TRIPS) && v >= (modeMax.get(ChallengesConfig.BUS_TRIPS) * activeMembers))
-			return Math.min(this.modeMax.get(mode) * activeMembers * 2, v);
+			return Math.min(this.modeMax.get(mode) * activeMembers, v);
 		if (mode.equals(ChallengesConfig.GREEN_LEAVES)
 				&& v >= (modeMax.get(ChallengesConfig.GREEN_LEAVES) * activeMembers))
-			return Math.min(this.modeMax.get(mode) * activeMembers * 2, v);
+			return Math.min(this.modeMax.get(mode) * activeMembers, v);
 		
 		return v;
 	}
@@ -369,7 +369,7 @@ public class TargetPrizeChallengesCalculator {
     private int getWeekPlaying(PlayerStateDTO state, String counter) {
 
         DateTime date = lastMonday;
-        int i = 0;
+        int i = 1;
         while (i < 100) {
             // weight * value
             Double c = getWeeklyContentMode(state, counter, date);
