@@ -577,6 +577,7 @@ public class GroupChallengesAssigner extends ChallengeUtil {
     }
     
     public List<GroupExpandedDTO> executeGroupHSC(Boolean assignUnEvenRepetitive, Set<String> players, Set<String> modelTypes, Challenge chg, Map<String, Object> challengeValues) {
+    	rs.prepare(challengeValues);
     	execDate = new DateTime(challengeValues.get("exec"));
         Pair<Date, Date> challengeDates = GamificationEngineRestFacade
                 .getDates(challengeValues.get("start"), challengeValues.get("duration"));
